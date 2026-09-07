@@ -1,129 +1,231 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
-import { Container } from "@/components/ui/Container";
+import { SplitText } from "@/components/ui/SplitText";
+import { Counter } from "@/components/ui/Counter";
+import { MagneticLink } from "@/components/ui/MagneticLink";
+import { BranchDiagram } from "@/components/art/BranchDiagram";
+import { SeasonsSemesters } from "@/components/art/SeasonsSemesters";
+import { GlobeArcs } from "@/components/art/GlobeArcs";
+import { Contours } from "@/components/art/Contours";
 import { person, highestBranch, researchItems } from "@/content/site";
+
+const AREA_TONE: Record<string, string> = {
+  "Political economy of internationalization": "text-azure",
+  "Partnership management": "text-verdant",
+  "International student experience": "text-ember",
+  "Internationalization theory": "text-azure",
+  "Securitization of international students": "text-ember",
+  "Intercultural competence development": "text-verdant",
+  "Displaced scholars, STEM access": "text-verdant",
+};
 
 export default function Home() {
   return (
     <>
-      {/* Hero */}
-      <section className="relative flex min-h-[92vh] flex-col items-center justify-center overflow-hidden px-6 text-center">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(173,133,54,0.10),_transparent_60%)]"
-        />
-        <Reveal>
-          <p className="mb-6 text-xs font-sans uppercase tracking-[0.35em] text-ink-text-muted">
-            Istanbul
-          </p>
-        </Reveal>
-        <Reveal delay={0.15}>
-          <h1 className="font-serif text-[clamp(2.75rem,9vw,7rem)] font-medium leading-[0.95] tracking-tight text-ink-text text-balance">
-            {person.name}
-          </h1>
-        </Reveal>
-        <Reveal delay={0.35}>
-          <p className="mt-6 font-sans text-sm uppercase tracking-[0.3em] text-gold-bright sm:text-base">
-            {person.positioning}
-          </p>
-        </Reveal>
-        <Reveal delay={0.55}>
-          <div className="mt-16 flex flex-col items-center gap-2 text-ink-text-muted">
-            <span className="text-xs uppercase tracking-[0.2em]">Scroll</span>
-            <span className="h-10 w-px bg-gradient-to-b from-ink-text-muted to-transparent" />
-          </div>
-        </Reveal>
-      </section>
+      {/* ─────────── Act I — Arrival ─────────── */}
+      <section className="relative min-h-[94vh] overflow-hidden">
+        {/* Branch: a full-bleed backdrop on small screens, a right-hand column above lg */}
+        <BranchDiagram className="absolute bottom-0 right-0 top-0 h-full w-full opacity-[0.22] lg:left-auto lg:w-[52%] lg:opacity-100" />
 
-      {/* The person / the work */}
-      <section className="border-t border-ink-text/10 py-28">
-        <Container>
-          <div className="grid gap-12 lg:grid-cols-[0.4fr_1fr]">
-            <Reveal>
-              <p className="text-xs font-sans uppercase tracking-[0.2em] text-ink-text-muted">
-                The Author
+        {/* pointer-events-none so the branch stays hoverable underneath */}
+        <div className="pointer-events-none relative mx-auto flex min-h-[94vh] max-w-7xl items-center px-6 sm:px-10">
+          <div className="pointer-events-auto relative z-10 w-full py-28 lg:max-w-[52%]">
+            <p className="eyebrow">
+              <span className="inline-block h-px w-8 translate-y-[-4px] bg-ember" /> Istanbul
+            </p>
+
+            <h1 className="mt-6 font-display text-[clamp(3.25rem,8.5vw,8rem)] font-normal leading-[0.86] tracking-[-0.03em]">
+              <SplitText text="Saadan" delay={0.1} />
+              <br />
+              <SplitText text="Qasmani" delay={0.22} className="italic text-ember" />
+            </h1>
+
+            <SplitText
+              text={person.positioning}
+              as="p"
+              delay={0.55}
+              className="mt-8 font-sans text-sm uppercase tracking-[0.2em] text-ink-soft"
+            />
+
+            {/* Hover is a pointer affordance — hidden where there is no cursor */}
+            <Reveal delay={1}>
+              <p className="mt-10 hidden items-center gap-3 text-sm text-ink-faint lg:flex">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-ember" />
+                Hover the marked junctions to trace the work
               </p>
             </Reveal>
+          </div>
+        </div>
+
+        <div className="absolute bottom-8 left-6 z-10 sm:left-10">
+          <Reveal delay={1.3}>
+            <div className="flex items-center gap-3">
+              <span className="h-px w-10 bg-ink-faint" />
+              <span className="text-[10px] uppercase tracking-[0.25em] text-ink-faint">
+                Scroll
+              </span>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ─────────── Act II — The statement ─────────── */}
+      <section className="border-t border-line py-28 sm:py-36">
+        <div className="mx-auto max-w-7xl px-6 sm:px-10">
+          <div className="grid gap-12 lg:grid-cols-[0.32fr_1fr]">
+            <Reveal>
+              <p className="eyebrow lg:sticky lg:top-32">The Author</p>
+            </Reveal>
+            <div>
+              <SplitText
+                text={person.bio}
+                as="p"
+                stagger={0.012}
+                className="max-w-4xl font-serif text-2xl leading-[1.5] text-ink sm:text-[2rem] sm:leading-[1.45]"
+              />
+              <Reveal delay={0.2}>
+                <div className="mt-10">
+                  <MagneticLink href="/about">Read the biography</MagneticLink>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────── Act III — Seasons / Semesters ─────────── */}
+      <SeasonsSemesters />
+
+      {/* ─────────── Act IV — The reach ─────────── */}
+      <section className="border-t border-line bg-canvas-light py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 sm:px-10">
+          <div className="grid items-center gap-16 lg:grid-cols-[1fr_0.9fr]">
+            <div>
+              <Reveal>
+                <p className="eyebrow">The Practice</p>
+              </Reveal>
+              <SplitText
+                text="Training delivered where the questions are hardest."
+                as="h2"
+                className="mt-5 max-w-xl font-display text-4xl leading-[1.05] sm:text-6xl"
+              />
+              <Reveal delay={0.15}>
+                <p className="mt-7 max-w-lg text-base leading-relaxed text-ink-soft">
+                  {person.practitionerNote}
+                </p>
+              </Reveal>
+
+              <dl className="mt-12 grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3">
+                {[
+                  { n: 12, suffix: "+", label: "Countries" },
+                  { n: 70, suffix: "+", label: "Nationalities" },
+                  { n: 8, suffix: "", label: "Research papers in progress" },
+                ].map((stat, i) => (
+                  <Reveal key={stat.label} delay={i * 0.08}>
+                    <div>
+                      <dt className="font-display text-5xl text-ink sm:text-6xl">
+                        <Counter to={stat.n} suffix={stat.suffix} />
+                      </dt>
+                      <dd className="mt-2 text-xs uppercase tracking-[0.14em] text-ink-faint">
+                        {stat.label}
+                      </dd>
+                    </div>
+                  </Reveal>
+                ))}
+              </dl>
+            </div>
+
+            <Reveal delay={0.2}>
+              <GlobeArcs />
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────── Act V — The archive ─────────── */}
+      <section className="border-t border-line py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 sm:px-10">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <Reveal>
+                <p className="eyebrow">The Archive</p>
+              </Reveal>
+              <SplitText
+                text="Research in progress"
+                as="h2"
+                className="mt-5 font-display text-4xl leading-none sm:text-6xl"
+              />
+            </div>
             <Reveal delay={0.1}>
-              <p className="font-serif text-2xl leading-relaxed text-ink-text sm:text-3xl text-balance">
-                {person.bio}
-              </p>
               <Link
-                href="/about"
-                className="mt-8 inline-block border-b border-gold/50 pb-1 text-sm uppercase tracking-[0.16em] text-gold-bright transition-colors hover:border-gold-bright"
+                href="/research"
+                className="group inline-flex items-center gap-2 text-sm uppercase tracking-[0.14em] text-ink-soft transition-colors hover:text-ink"
               >
-                Read the full biography
+                All research
+                <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
               </Link>
             </Reveal>
           </div>
-        </Container>
-      </section>
 
-      {/* Research strip */}
-      <section className="border-t border-ink-text/10 bg-ink-deep py-28">
-        <Container>
-          <Reveal>
-            <p className="text-xs font-sans uppercase tracking-[0.2em] text-ink-text-muted">
-              Selected Research
-            </p>
-          </Reveal>
-          <div className="mt-10 grid gap-px overflow-hidden border border-ink-text/10 sm:grid-cols-2 lg:grid-cols-4">
-            {researchItems.slice(0, 4).map((item, i) => (
+          <ul className="mt-14 border-t border-line">
+            {researchItems.slice(0, 5).map((item, i) => (
               <Reveal key={item.slug} delay={i * 0.05}>
-                <Link
-                  href={`/research#${item.slug}`}
-                  className="group flex h-full flex-col justify-between bg-ink p-6 transition-colors hover:bg-ink-raised"
-                >
-                  <p className="font-serif text-lg leading-snug text-ink-text text-balance">
-                    {item.title}
-                  </p>
-                  <p className="mt-6 text-xs uppercase tracking-[0.14em] text-ink-text-muted group-hover:text-gold-bright">
-                    {item.area}
-                  </p>
-                </Link>
+                <li>
+                  <Link
+                    href={`/research#${item.slug}`}
+                    className="group grid items-baseline gap-2 border-b border-line py-7 transition-colors hover:bg-canvas-deep/40 sm:grid-cols-[auto_1fr_auto] sm:gap-8"
+                  >
+                    <span className="font-sans text-xs tabular-nums text-ink-faint">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-serif text-xl leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-2 sm:text-2xl">
+                      {item.title}
+                    </span>
+                    <span
+                      className={`text-xs uppercase tracking-[0.12em] ${AREA_TONE[item.area] ?? "text-ink-faint"}`}
+                    >
+                      {item.area}
+                    </span>
+                  </Link>
+                </li>
               </Reveal>
             ))}
-          </div>
-          <Reveal delay={0.2}>
-            <Link
-              href="/research"
-              className="mt-8 inline-block border-b border-ink-text/30 pb-1 text-sm uppercase tracking-[0.16em] text-ink-text-muted transition-colors hover:border-ink-text hover:text-ink-text"
-            >
-              View the archive
-            </Link>
-          </Reveal>
-        </Container>
+          </ul>
+        </div>
       </section>
 
-      {/* The Highest Branch — temperature change */}
-      <section className="relative overflow-hidden border-t border-gold/20 bg-gradient-to-b from-ink via-ink to-burgundy/10 py-32">
-        <Container>
-          <div className="mx-auto max-w-3xl text-center">
+      {/* ─────────── Act VI — The novel ─────────── */}
+      <section className="relative overflow-hidden border-t border-line bg-canvas-deep py-28 sm:py-36">
+        <Contours className="pointer-events-none absolute -right-[15%] top-0 h-full w-[110%] opacity-40 lg:right-0 lg:w-[62%] lg:opacity-90" />
+
+        <div className="relative mx-auto max-w-7xl px-6 sm:px-10">
+          <div className="max-w-2xl">
             <Reveal>
-              <p className="text-xs font-sans uppercase tracking-[0.3em] text-gold-bright">
-                The Novel
+              <p className="eyebrow">
+                <span className="inline-block h-px w-8 translate-y-[-4px] bg-ember" /> The Novel
               </p>
             </Reveal>
-            <Reveal delay={0.15}>
-              <h2 className="mt-6 font-serif text-4xl italic leading-tight text-ink-text sm:text-6xl text-balance">
-                {highestBranch.title}
-              </h2>
-            </Reveal>
-            <Reveal delay={0.3}>
-              <p className="mt-8 font-serif text-lg leading-relaxed text-ink-text-muted text-balance">
+            <SplitText
+              text={highestBranch.title}
+              as="h2"
+              className="mt-6 font-display text-5xl italic leading-[0.95] text-ink sm:text-8xl"
+            />
+            <Reveal delay={0.25}>
+              <p className="mt-8 max-w-xl font-serif text-xl leading-relaxed text-ink-soft sm:text-2xl">
                 {highestBranch.synopsis}
               </p>
             </Reveal>
-            <Reveal delay={0.45}>
-              <Link
-                href="/the-highest-branch"
-                className="mt-10 inline-block border border-gold/60 px-8 py-3 text-xs font-sans uppercase tracking-[0.2em] text-gold-bright transition-colors hover:border-gold-bright hover:bg-gold/10"
-              >
-                Enter the Novel
-              </Link>
+            <Reveal delay={0.4}>
+              <div className="mt-10 flex flex-wrap items-center gap-5">
+                <MagneticLink href="/the-highest-branch">Enter the novel</MagneticLink>
+                <span className="text-xs uppercase tracking-[0.14em] text-ink-faint">
+                  {highestBranch.chapterCount} chapters ·{" "}
+                  <Counter to={highestBranch.wordCount} format /> words
+                </span>
+              </div>
             </Reveal>
           </div>
-        </Container>
+        </div>
       </section>
     </>
   );

@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 
-export function NewsletterForm({ compact = false }: { compact?: boolean }) {
+export function NewsletterForm() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -34,15 +33,15 @@ export function NewsletterForm({ compact = false }: { compact?: boolean }) {
 
   if (status === "done") {
     return (
-      <p className="font-serif italic text-gold-bright">
+      <p className="font-serif text-xl italic text-verdant">
         You have entered the correspondence.
       </p>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:flex-row sm:items-start">
-      <div className="flex-1">
+    <form onSubmit={onSubmit} className="w-full">
+      <div className="flex items-end gap-4 border-b border-ink pb-2 transition-colors focus-within:border-ember">
         <label htmlFor="newsletter-email" className="sr-only">
           Email address
         </label>
@@ -53,20 +52,20 @@ export function NewsletterForm({ compact = false }: { compact?: boolean }) {
           placeholder="your@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className={cn(
-            "w-full border-b border-ink-text/30 bg-transparent py-2 text-sm text-ink-text placeholder:text-ink-text-muted focus:border-gold-bright focus:outline-none",
-            compact ? "" : "text-base"
-          )}
+          className="w-full bg-transparent py-1 text-base text-ink placeholder:text-ink-faint focus:outline-none"
         />
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="group shrink-0 text-xs font-medium uppercase tracking-[0.16em] text-ink transition-colors hover:text-ember disabled:opacity-50"
+        >
+          {status === "loading" ? "Sending" : "Subscribe"}
+          <span className="ml-2 inline-block transition-transform duration-300 group-hover:translate-x-1">
+            →
+          </span>
+        </button>
       </div>
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="whitespace-nowrap border border-gold/50 px-4 py-2 text-xs font-sans uppercase tracking-[0.18em] text-gold-bright transition-colors hover:border-gold-bright hover:bg-gold/10 disabled:opacity-50"
-      >
-        {status === "loading" ? "Sending…" : "Subscribe"}
-      </button>
-      {error && <p className="text-xs text-burgundy-bright sm:basis-full">{error}</p>}
+      {error && <p className="mt-2 text-sm text-ember">{error}</p>}
     </form>
   );
 }

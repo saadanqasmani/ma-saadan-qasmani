@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Container } from "@/components/ui/Container";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { publications, highestBranch } from "@/content/site";
 
@@ -11,51 +11,55 @@ export const metadata: Metadata = {
 
 export default function PublicationsPage() {
   return (
-    <Container className="py-28">
-      <Reveal>
-        <p className="text-xs font-sans uppercase tracking-[0.2em] text-ink-text-muted">
-          Publications
-        </p>
-        <h1 className="mt-4 font-serif text-4xl text-ink-text sm:text-6xl">Published Work</h1>
-      </Reveal>
+    <>
+      <PageHeader eyebrow="Publications" title="Published Work" />
 
-      <Reveal delay={0.1}>
-        <Link
-          href="/the-highest-branch"
-          className="mt-16 flex flex-col justify-between gap-6 border border-gold/30 p-8 transition-colors hover:border-gold/60 sm:flex-row sm:items-center"
-        >
-          <div>
-            <p className="text-xs uppercase tracking-[0.16em] text-gold-bright">
-              Flagship — Forthcoming
-            </p>
-            <p className="mt-2 font-serif text-2xl italic text-ink-text">
-              {highestBranch.title}
-            </p>
-            <p className="mt-1 text-sm text-ink-text-muted">{highestBranch.genre}</p>
-          </div>
-          <span className="whitespace-nowrap text-xs uppercase tracking-[0.16em] text-gold-bright">
-            Read More →
-          </span>
-        </Link>
-      </Reveal>
-
-      <div className="mt-16 divide-y divide-ink-text/10 border-t border-ink-text/10">
-        {publications.length === 0 ? (
-          <p className="py-16 text-center text-sm text-ink-text-muted">
-            Further publications will appear here as they are released.
-          </p>
-        ) : (
-          publications.map((pub) => (
-            <article key={pub.slug} className="py-8">
-              <p className="text-xs uppercase tracking-[0.14em] text-ink-text-muted">
-                {pub.kind} · {pub.date}
+      <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-24">
+        <Reveal>
+          <Link
+            href="/the-highest-branch"
+            className="group relative flex flex-col justify-between gap-8 overflow-hidden border border-ink bg-canvas-light p-8 transition-colors sm:flex-row sm:items-end sm:p-12"
+          >
+            <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
+            <div className="relative">
+              <p className="eyebrow transition-colors group-hover:text-canvas-light/70">
+                Flagship — Forthcoming
               </p>
-              <h2 className="mt-2 font-serif text-2xl text-ink-text">{pub.title}</h2>
-              <p className="mt-2 max-w-2xl text-sm text-ink-text-muted">{pub.summary}</p>
-            </article>
-          ))
-        )}
-      </div>
-    </Container>
+              <p className="mt-4 font-display text-4xl italic leading-none transition-colors group-hover:text-canvas-light sm:text-6xl">
+                {highestBranch.title}
+              </p>
+              <p className="mt-4 text-sm text-ink-soft transition-colors group-hover:text-canvas-light/80">
+                {highestBranch.genre} · {highestBranch.chapterCount} chapters
+              </p>
+            </div>
+            <span className="relative whitespace-nowrap text-xs uppercase tracking-[0.16em] transition-colors group-hover:text-canvas-light">
+              Read more →
+            </span>
+          </Link>
+        </Reveal>
+
+        <div className="mt-16 border-t border-line">
+          {publications.length === 0 ? (
+            <p className="py-20 text-center font-serif text-lg italic text-ink-faint">
+              Further publications will appear here as they are released.
+            </p>
+          ) : (
+            publications.map((pub, i) => (
+              <Reveal key={pub.slug} delay={i * 0.05}>
+                <article className="grid gap-3 border-b border-line py-8 sm:grid-cols-[8rem_1fr] sm:gap-8">
+                  <p className="text-xs uppercase tracking-[0.12em] text-ink-faint">
+                    {pub.kind} · {pub.date}
+                  </p>
+                  <div>
+                    <h2 className="font-serif text-2xl text-ink">{pub.title}</h2>
+                    <p className="mt-2 max-w-2xl text-sm text-ink-soft">{pub.summary}</p>
+                  </div>
+                </article>
+              </Reveal>
+            ))
+          )}
+        </div>
+      </section>
+    </>
   );
 }

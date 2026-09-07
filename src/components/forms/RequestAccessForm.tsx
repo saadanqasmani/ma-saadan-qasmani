@@ -4,7 +4,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Label, TextInput, TextArea, FormNotice } from "@/components/forms/fields";
+import {
+  Label,
+  TextInput,
+  TextArea,
+  FormNotice,
+  submitButtonClass,
+  SubmitLabel,
+} from "@/components/forms/fields";
 
 const schema = z.object({
   full_name: z.string().min(1, "Required"),
@@ -68,7 +75,7 @@ export function RequestAccessForm({
         <button
           type="button"
           onClick={onClose}
-          className="text-xs uppercase tracking-[0.16em] text-ink-text-muted hover:text-ink-text"
+          className="text-xs uppercase tracking-[0.16em] text-ink-soft hover:text-ink"
         >
           Close
         </button>
@@ -78,8 +85,8 @@ export function RequestAccessForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
-      <p className="text-sm text-ink-text-muted">
-        Requesting access to <span className="text-ink-text">&ldquo;{researchTitle}&rdquo;</span>.
+      <p className="text-sm text-ink-soft">
+        Requesting access to <span className="text-ink">&ldquo;{researchTitle}&rdquo;</span>.
         Every request is reviewed before anything is sent.
       </p>
 
@@ -138,17 +145,13 @@ export function RequestAccessForm({
       {serverError && <FormNotice tone="error">{serverError}</FormNotice>}
 
       <div className="flex items-center gap-4">
-        <button
-          type="submit"
-          disabled={status === "loading"}
-          className="border border-gold/50 px-6 py-3 text-xs font-sans uppercase tracking-[0.18em] text-gold-bright transition-colors hover:border-gold-bright hover:bg-gold/10 disabled:opacity-50"
-        >
-          {status === "loading" ? "Sending…" : "Submit Request"}
+        <button type="submit" disabled={status === "loading"} className={submitButtonClass}>
+          <SubmitLabel>{status === "loading" ? "Sending…" : "Submit Request"}</SubmitLabel>
         </button>
         <button
           type="button"
           onClick={onClose}
-          className="text-xs uppercase tracking-[0.16em] text-ink-text-muted hover:text-ink-text"
+          className="text-xs uppercase tracking-[0.16em] text-ink-faint transition-colors hover:text-ink"
         >
           Cancel
         </button>

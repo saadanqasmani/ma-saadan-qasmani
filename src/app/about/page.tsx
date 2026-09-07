@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { Container } from "@/components/ui/Container";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
+import { SplitText } from "@/components/ui/SplitText";
+import { MagneticLink } from "@/components/ui/MagneticLink";
 import { person } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -10,80 +12,95 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <Container className="py-28">
-      <Reveal>
-        <p className="text-xs font-sans uppercase tracking-[0.2em] text-ink-text-muted">
-          The Author
-        </p>
-        <h1 className="mt-4 font-serif text-4xl text-ink-text sm:text-6xl">The Person</h1>
-      </Reveal>
+    <>
+      <PageHeader eyebrow="The Author" title="The Person" />
 
-      <div className="mt-16 grid gap-16 lg:grid-cols-[1fr_1.4fr]">
-        <Reveal>
-          <div className="space-y-8">
-            <div>
-              <p className="text-xs uppercase tracking-[0.16em] text-ink-text-muted">
-                Based In
-              </p>
-              <p className="mt-2 font-serif text-lg text-ink-text">{person.location}</p>
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.16em] text-ink-text-muted">
-                Current Roles
-              </p>
-              <ul className="mt-3 space-y-3">
-                {person.roles.map((role) => (
-                  <li key={role.title}>
-                    <p className="font-serif text-lg text-ink-text">{role.title}</p>
-                    <p className="text-sm text-ink-text-muted">{role.org}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.16em] text-ink-text-muted">Founded</p>
-              <ul className="mt-3 space-y-3">
-                {person.founded.map((f) => (
-                  <li key={f.name}>
-                    <p className="font-serif text-lg text-ink-text">{f.name}</p>
-                    <p className="text-sm text-ink-text-muted">{f.org}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.16em] text-ink-text-muted">
-                Recognition
-              </p>
-              <ul className="mt-3 space-y-3">
-                {person.honors.map((h) => (
-                  <li key={h.title}>
-                    <p className="font-serif text-lg text-ink-text">{h.title}</p>
-                    <p className="text-sm text-ink-text-muted">{h.year}</p>
-                  </li>
-                ))}
-              </ul>
+      <section className="mx-auto max-w-7xl px-6 py-20 sm:px-10 sm:py-28">
+        <div className="grid gap-16 lg:grid-cols-[0.32fr_1fr]">
+          <Reveal>
+            <p className="eyebrow lg:sticky lg:top-32">Biography</p>
+          </Reveal>
+          <div>
+            <SplitText
+              text={person.bio}
+              as="p"
+              stagger={0.012}
+              className="max-w-3xl font-serif text-2xl leading-[1.5] sm:text-[1.85rem] sm:leading-[1.45]"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-line bg-canvas-light py-20 sm:py-28">
+        <div className="mx-auto max-w-7xl px-6 sm:px-10">
+          <div className="grid gap-16 lg:grid-cols-[0.32fr_1fr]">
+            <Reveal>
+              <p className="eyebrow lg:sticky lg:top-32">The Work</p>
+            </Reveal>
+
+            <div className="space-y-16">
+              <div>
+                <h2 className="font-display text-3xl sm:text-4xl">Current roles</h2>
+                <ul className="mt-8 border-t border-line">
+                  {person.roles.map((role, i) => (
+                    <Reveal key={role.title} delay={i * 0.06}>
+                      <li className="grid gap-1 border-b border-line py-6 sm:grid-cols-[1fr_auto] sm:items-baseline sm:gap-8">
+                        <span className="font-serif text-xl text-ink">{role.title}</span>
+                        <span className="text-sm text-ink-soft">{role.org}</span>
+                      </li>
+                    </Reveal>
+                  ))}
+                </ul>
+              </div>
+
+              <Reveal>
+                <div>
+                  <h2 className="font-display text-3xl sm:text-4xl">Practice</h2>
+                  <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
+                    {person.practitionerNote}
+                  </p>
+                </div>
+              </Reveal>
+
+              <div className="grid gap-12 sm:grid-cols-2">
+                <Reveal>
+                  <div>
+                    <h2 className="font-display text-2xl">Founded</h2>
+                    <ul className="mt-5 space-y-4">
+                      {person.founded.map((f) => (
+                        <li key={f.name}>
+                          <p className="font-serif text-lg text-ink">{f.name}</p>
+                          <p className="text-sm text-ink-faint">{f.org}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Reveal>
+                <Reveal delay={0.08}>
+                  <div>
+                    <h2 className="font-display text-2xl">Recognition</h2>
+                    <ul className="mt-5 space-y-4">
+                      {person.honors.map((h) => (
+                        <li key={h.title}>
+                          <p className="font-serif text-lg text-ink">{h.title}</p>
+                          <p className="text-sm text-ink-faint">{h.year}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Reveal>
+              </div>
+
+              <Reveal>
+                <div className="flex flex-wrap gap-4 pt-4">
+                  <MagneticLink href="/research">The research</MagneticLink>
+                  <MagneticLink href="/contact">Get in touch</MagneticLink>
+                </div>
+              </Reveal>
             </div>
           </div>
-        </Reveal>
-
-        <Reveal delay={0.1}>
-          <div className="space-y-8">
-            <p className="font-serif text-2xl leading-relaxed text-ink-text text-balance">
-              {person.bio}
-            </p>
-            <div className="rule" />
-            <div>
-              <p className="text-xs uppercase tracking-[0.16em] text-ink-text-muted">
-                The Work
-              </p>
-              <p className="mt-3 text-base leading-relaxed text-ink-text-muted">
-                {person.practitionerNote}
-              </p>
-            </div>
-          </div>
-        </Reveal>
-      </div>
-    </Container>
+        </div>
+      </section>
+    </>
   );
 }

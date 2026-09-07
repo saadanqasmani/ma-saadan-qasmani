@@ -4,7 +4,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Label, TextInput, TextArea, Select, FormNotice } from "@/components/forms/fields";
+import {
+  Label,
+  TextInput,
+  TextArea,
+  Select,
+  FormNotice,
+  submitButtonClass,
+  SubmitLabel,
+} from "@/components/forms/fields";
 
 const schema = z.object({
   full_name: z.string().min(1, "Required"),
@@ -136,19 +144,15 @@ export function DirectOrderForm() {
         <TextArea id="message" {...register("message")} />
       </div>
 
-      <p className="text-xs text-ink-text-muted">
+      <p className="text-xs text-ink-soft">
         This form does not collect payment or banking details. Saadan reviews every order
         personally and sends payment instructions directly once your order is confirmed.
       </p>
 
       {serverError && <FormNotice tone="error">{serverError}</FormNotice>}
 
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="border border-gold/50 px-6 py-3 text-xs font-sans uppercase tracking-[0.18em] text-gold-bright transition-colors hover:border-gold-bright hover:bg-gold/10 disabled:opacity-50"
-      >
-        {status === "loading" ? "Sending…" : "Submit Order"}
+      <button type="submit" disabled={status === "loading"} className={submitButtonClass}>
+        <SubmitLabel>{status === "loading" ? "Sending…" : "Submit Order"}</SubmitLabel>
       </button>
     </form>
   );

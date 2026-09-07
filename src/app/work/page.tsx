@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Container } from "@/components/ui/Container";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { workItems } from "@/content/site";
 
@@ -8,39 +8,47 @@ export const metadata: Metadata = {
   description: "A living archive of projects, roles, and initiatives.",
 };
 
+const CATEGORY_TONE: Record<string, string> = {
+  Projects: "text-azure",
+  "Global Engagement": "text-verdant",
+  "International Education": "text-ember",
+};
+
 export default function WorkPage() {
   return (
-    <Container className="py-28">
-      <Reveal>
-        <p className="text-xs font-sans uppercase tracking-[0.2em] text-ink-text-muted">
-          The Work
-        </p>
-        <h1 className="mt-4 font-serif text-4xl text-ink-text sm:text-6xl">A Living Archive</h1>
-        <p className="mt-6 max-w-2xl text-base text-ink-text-muted">
-          Academic, professional, and creative work, added continuously.
-        </p>
-      </Reveal>
+    <>
+      <PageHeader
+        eyebrow="The Work"
+        title="A Living Archive"
+        lede="Academic, professional, and creative work — added continuously rather than curated once."
+      />
 
-      <div className="mt-16 divide-y divide-ink-text/10 border-t border-ink-text/10">
-        {workItems.map((item, i) => (
-          <Reveal key={item.slug} delay={i * 0.04}>
-            <article className="grid gap-2 py-8 sm:grid-cols-[120px_1fr_auto] sm:items-start sm:gap-8">
-              <p className="text-xs uppercase tracking-[0.14em] text-ink-text-muted">
-                {item.date}
-              </p>
-              <div>
-                <h2 className="font-serif text-2xl text-ink-text">{item.title}</h2>
-                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-text-muted">
-                  {item.summary}
-                </p>
-              </div>
-              <p className="text-xs uppercase tracking-[0.14em] text-gold-bright sm:text-right">
-                {item.category}
-              </p>
-            </article>
-          </Reveal>
-        ))}
-      </div>
-    </Container>
+      <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-24">
+        <ul className="border-t border-line">
+          {workItems.map((item, i) => (
+            <Reveal key={item.slug} delay={i * 0.05}>
+              <li className="group grid gap-3 border-b border-line py-9 transition-colors hover:bg-canvas-light sm:grid-cols-[7rem_1fr_auto] sm:gap-8">
+                <span className="font-sans text-sm tabular-nums text-ink-faint">{item.date}</span>
+                <div>
+                  <h2 className="font-serif text-2xl leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl">
+                    {item.title}
+                  </h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-soft">
+                    {item.summary}
+                  </p>
+                </div>
+                <span
+                  className={`text-xs uppercase tracking-[0.12em] sm:text-right ${
+                    CATEGORY_TONE[item.category] ?? "text-ink-faint"
+                  }`}
+                >
+                  {item.category}
+                </span>
+              </li>
+            </Reveal>
+          ))}
+        </ul>
+      </section>
+    </>
   );
 }

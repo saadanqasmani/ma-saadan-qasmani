@@ -4,7 +4,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Label, TextInput, TextArea, FormNotice } from "@/components/forms/fields";
+import {
+  Label,
+  TextInput,
+  TextArea,
+  FormNotice,
+  submitButtonClass,
+  SubmitLabel,
+} from "@/components/forms/fields";
 
 const schema = z.object({
   name: z.string().min(1, "Required"),
@@ -84,12 +91,8 @@ export function ContactForm() {
 
       {serverError && <FormNotice tone="error">{serverError}</FormNotice>}
 
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="border border-gold/50 px-6 py-3 text-xs font-sans uppercase tracking-[0.18em] text-gold-bright transition-colors hover:border-gold-bright hover:bg-gold/10 disabled:opacity-50"
-      >
-        {status === "loading" ? "Sending…" : "Send Message"}
+      <button type="submit" disabled={status === "loading"} className={submitButtonClass}>
+        <SubmitLabel>{status === "loading" ? "Sending…" : "Send Message"}</SubmitLabel>
       </button>
     </form>
   );
