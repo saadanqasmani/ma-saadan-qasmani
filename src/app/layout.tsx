@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { person } from "@/content/site";
 import { CollectionProvider } from "@/components/collect/CollectionProvider";
 import { MarginaliaPanel } from "@/components/collect/MarginaliaPanel";
+import { siteUrl } from "@/lib/siteUrl";
 
 const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
@@ -27,7 +28,6 @@ const instrumentSans = Instrument_Sans({
   weight: ["400", "500", "600"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://saadanqasmani.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
