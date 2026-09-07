@@ -4,6 +4,8 @@ import { Reveal } from "@/components/ui/Reveal";
 import { SplitText } from "@/components/ui/SplitText";
 import { MagneticLink } from "@/components/ui/MagneticLink";
 import { person } from "@/content/site";
+import { Figure } from "@/components/media/Figure";
+import { Mark } from "@/components/collect/Mark";
 
 export const metadata: Metadata = {
   title: "The Author",
@@ -17,9 +19,19 @@ export default function AboutPage() {
 
       <section className="mx-auto max-w-7xl px-6 py-20 sm:px-10 sm:py-28">
         <div className="grid gap-16 lg:grid-cols-[0.32fr_1fr]">
-          <Reveal>
-            <p className="eyebrow lg:sticky lg:top-32">Biography</p>
-          </Reveal>
+          <div className="space-y-8">
+            <Reveal>
+              <p className="eyebrow">Biography</p>
+            </Reveal>
+            <Figure
+              src={person.portrait}
+              alt="Saadan Qasmani"
+              label="Author portrait"
+              spec="Portrait orientation · 1200 × 1600 px or larger · /public/portrait.jpg"
+              ratio="3 / 4"
+              tone="ember"
+            />
+          </div>
           <div>
             <SplitText
               text={person.bio}
@@ -55,7 +67,10 @@ export default function AboutPage() {
 
               <Reveal>
                 <div>
-                  <h2 className="font-display text-3xl sm:text-4xl">Practice</h2>
+                  <h2 className="flex items-center gap-2 font-display text-3xl sm:text-4xl">
+                    Practice
+                    <Mark id="unesco" />
+                  </h2>
                   <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
                     {person.practitionerNote}
                   </p>
@@ -65,7 +80,10 @@ export default function AboutPage() {
               <div className="grid gap-12 sm:grid-cols-2">
                 <Reveal>
                   <div>
-                    <h2 className="font-display text-2xl">Founded</h2>
+                    <h2 className="flex items-center gap-2 font-display text-2xl">
+                      Founded
+                      <Mark id="founded" />
+                    </h2>
                     <ul className="mt-5 space-y-4">
                       {person.founded.map((f) => (
                         <li key={f.name}>

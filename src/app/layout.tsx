@@ -4,6 +4,8 @@ import "./globals.css";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { person } from "@/content/site";
+import { CollectionProvider } from "@/components/collect/CollectionProvider";
+import { MarginaliaPanel } from "@/components/collect/MarginaliaPanel";
 
 const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
@@ -61,11 +63,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
-        <SiteHeader />
-        <main id="main-content" className="flex-1">
-          {children}
-        </main>
-        <SiteFooter />
+        <CollectionProvider>
+          <SiteHeader />
+          <main id="main-content" className="flex-1">
+            {children}
+          </main>
+          <SiteFooter />
+          <MarginaliaPanel />
+        </CollectionProvider>
       </body>
     </html>
   );

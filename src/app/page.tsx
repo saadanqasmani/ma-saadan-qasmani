@@ -8,6 +8,7 @@ import { SeasonsSemesters } from "@/components/art/SeasonsSemesters";
 import { GlobeArcs } from "@/components/art/GlobeArcs";
 import { Contours } from "@/components/art/Contours";
 import { person, highestBranch, researchItems } from "@/content/site";
+import { Mark } from "@/components/collect/Mark";
 
 const AREA_TONE: Record<string, string> = {
   "Political economy of internationalization": "text-azure",
@@ -30,8 +31,9 @@ export default function Home() {
         {/* pointer-events-none so the branch stays hoverable underneath */}
         <div className="pointer-events-none relative mx-auto flex min-h-[94vh] max-w-7xl items-center px-6 sm:px-10">
           <div className="pointer-events-auto relative z-10 w-full py-28 lg:max-w-[52%]">
-            <p className="eyebrow">
-              <span className="inline-block h-px w-8 translate-y-[-4px] bg-ember" /> Istanbul
+            <p className="eyebrow flex items-center gap-1">
+              <span className="inline-block h-px w-8 bg-ember" /> Istanbul
+              <Mark id="istanbul" className="-my-2 ml-1" />
             </p>
 
             <h1 className="mt-6 font-display text-[clamp(3.25rem,8.5vw,8rem)] font-normal leading-[0.86] tracking-[-0.03em]">
@@ -126,8 +128,11 @@ export default function Home() {
                       <dt className="font-display text-5xl text-ink sm:text-6xl">
                         <Counter to={stat.n} suffix={stat.suffix} />
                       </dt>
-                      <dd className="mt-2 text-xs uppercase tracking-[0.14em] text-ink-faint">
+                      <dd className="mt-2 flex items-center gap-1 text-xs uppercase tracking-[0.14em] text-ink-faint">
                         {stat.label}
+                        {stat.label === "Nationalities" && (
+                          <Mark id="nationalities" className="-my-2" />
+                        )}
                       </dd>
                     </div>
                   </Reveal>

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "motion/react";
 import { navLinks, novelLink } from "@/content/nav";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
+import { MarginaliaIndicator } from "@/components/collect/MarginaliaIndicator";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
@@ -68,6 +69,7 @@ export function SiteHeader() {
                 />
               </Link>
             ))}
+            <MarginaliaIndicator />
             <Link
               href={novelLink.href}
               className="group relative overflow-hidden border border-ink px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em]"
@@ -79,7 +81,9 @@ export function SiteHeader() {
             </Link>
           </nav>
 
-          <button
+          <div className="flex items-center gap-4 lg:hidden">
+            <MarginaliaIndicator />
+            <button
             type="button"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
@@ -98,7 +102,8 @@ export function SiteHeader() {
                 open && "-translate-y-[3px] -rotate-45"
               )}
             />
-          </button>
+            </button>
+          </div>
         </div>
       </header>
 

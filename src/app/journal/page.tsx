@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { blogPosts } from "@/content/site";
+import { Figure } from "@/components/media/Figure";
 
 export const metadata: Metadata = {
   title: "The Journal",
@@ -24,7 +25,7 @@ export default function JournalPage() {
             <Reveal key={post.slug} delay={i * 0.05}>
               <Link
                 href={`/journal/${post.slug}`}
-                className="group grid gap-4 border-b border-line py-10 transition-colors hover:bg-canvas-light sm:grid-cols-[10rem_1fr] sm:gap-10"
+                className="group grid gap-6 border-b border-line py-10 transition-colors hover:bg-canvas-light sm:grid-cols-[7rem_14rem_1fr] sm:gap-8"
               >
                 <p className="text-xs uppercase tracking-[0.12em] text-ink-faint">
                   {post.category}
@@ -33,6 +34,14 @@ export default function JournalPage() {
                     {post.readingTime} · {post.date}
                   </span>
                 </p>
+                <Figure
+                  src={post.coverImage}
+                  alt={post.title}
+                  label="Cover"
+                  spec="1600 × 1000 px"
+                  ratio="16 / 10"
+                  tone="azure"
+                />
                 <div>
                   <h2 className="font-display text-3xl leading-tight text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-4xl">
                     {post.title}

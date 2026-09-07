@@ -8,6 +8,7 @@ import {
   useTransform,
   type MotionValue,
 } from "motion/react";
+import { Mark } from "@/components/collect/Mark";
 
 const BAR_COUNT = 8;
 const BAR_HEIGHTS = [120, 168, 210, 236, 252, 236, 268, 300];
@@ -67,7 +68,10 @@ export function SeasonsSemesters() {
         <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-6 sm:px-10 lg:grid-cols-2">
           {/* Text side */}
           <div className="relative order-2 lg:order-1">
-            <p className="eyebrow">The Novel · The Thesis</p>
+            <p className="eyebrow flex items-center gap-1">
+              The Novel · The Thesis
+              <Mark id="seasons" className="-my-2" />
+            </p>
             <h2 className="mt-5 max-w-lg font-display text-4xl leading-[1.05] text-ink sm:text-6xl">
               Two ways of measuring a life.
             </h2>

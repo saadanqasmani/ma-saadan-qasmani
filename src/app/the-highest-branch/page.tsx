@@ -5,6 +5,8 @@ import { Counter } from "@/components/ui/Counter";
 import { Contours } from "@/components/art/Contours";
 import { highestBranch, person } from "@/content/site";
 import { PurchasePanel } from "@/components/book/PurchasePanel";
+import { Figure } from "@/components/media/Figure";
+import { Mark } from "@/components/collect/Mark";
 
 export const metadata: Metadata = {
   title: highestBranch.title,
@@ -30,8 +32,9 @@ export default function HighestBranchPage() {
 
         <div className="relative mx-auto w-full max-w-7xl px-6 sm:px-10">
           <Reveal>
-            <p className="eyebrow">
-              <span className="inline-block h-px w-8 translate-y-[-4px] bg-ember" /> A Novel
+            <p className="eyebrow flex items-center gap-1">
+              <span className="inline-block h-px w-8 bg-ember" /> A Novel
+              <Mark id="branch" className="-my-2 ml-1" />
             </p>
           </Reveal>
 
@@ -59,9 +62,19 @@ export default function HighestBranchPage() {
       <section className="border-b border-line py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <div className="grid gap-16 lg:grid-cols-[0.32fr_1fr]">
-            <Reveal>
-              <p className="eyebrow lg:sticky lg:top-32">The Book</p>
-            </Reveal>
+            <div className="space-y-8">
+              <Reveal>
+                <p className="eyebrow">The Book</p>
+              </Reveal>
+              <Figure
+                src={highestBranch.coverImage}
+                alt={`Cover of ${highestBranch.title}`}
+                label="Book cover"
+                spec="Cover artwork · 1600 × 2400 px · not yet commissioned"
+                ratio="2 / 3"
+                tone="ember"
+              />
+            </div>
 
             <div>
               <SplitText
