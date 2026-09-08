@@ -5,6 +5,23 @@ import { NewsletterForm } from "@/components/forms/NewsletterForm";
 export function SiteFooter() {
   return (
     <footer className="relative overflow-hidden border-t border-line bg-canvas-deep">
+      {/* The one solid block of colour on every page. The site is otherwise
+          ink on bone, so this is where the palette gets to be loud. */}
+      <div className="bg-azure">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 px-6 py-7 sm:px-10">
+          <p className="font-display text-2xl leading-tight text-canvas-light sm:text-3xl">
+            The Highest Branch <span className="text-ember-light">·</span> 19 October 2026
+          </p>
+          <Link
+            href="/the-highest-branch"
+            className="group inline-flex items-center gap-3 border border-canvas-light/50 px-6 py-3 text-xs uppercase tracking-[0.16em] text-canvas-light transition-colors hover:bg-canvas-light hover:text-azure"
+          >
+            <span className="inline-block h-px w-6 bg-current transition-all duration-300 group-hover:w-10" />
+            The novel
+          </Link>
+        </div>
+      </div>
+
       <div className="mx-auto max-w-7xl px-6 pb-12 pt-20 sm:px-10">
         <div className="grid gap-14 lg:grid-cols-[1.3fr_1fr_1fr]">
           <div>

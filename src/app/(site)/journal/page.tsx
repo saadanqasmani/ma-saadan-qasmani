@@ -18,7 +18,9 @@ export default async function JournalPage() {
     <>
       <PageHeader
         eyebrow="The Journal"
-        title="Essays & Notes"
+        title="Essays"
+        accent="& Notes"
+        accentTone="azure"
         lede="Writing that sits between the research and the fiction."
         aside={
           <Reveal delay={0.3}>

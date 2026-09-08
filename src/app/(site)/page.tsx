@@ -145,13 +145,13 @@ export default async function Home() {
 
               <dl className="mt-12 grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3">
                 {[
-                  { n: 12, suffix: "", label: "Countries" },
-                  { n: 70, suffix: "+", label: "Nationalities" },
-                  { n: 9, suffix: "", label: "Research papers in progress" },
+                  { n: 12, suffix: "", label: "Countries", tone: "text-azure" },
+                  { n: 70, suffix: "+", label: "Nationalities", tone: "text-ember" },
+                  { n: 9, suffix: "", label: "Research papers in progress", tone: "text-verdant" },
                 ].map((stat, i) => (
                   <Reveal key={stat.label} delay={i * 0.08}>
                     <div>
-                      <dt className="font-display text-5xl text-ink sm:text-6xl">
+                      <dt className={`font-display text-5xl sm:text-6xl ${stat.tone}`}>
                         <Counter to={stat.n} suffix={stat.suffix} />
                       </dt>
                       <dd className="mt-2 flex items-center gap-1 text-xs uppercase tracking-[0.14em] text-ink-faint">

@@ -15,7 +15,8 @@ export default async function WorkPage() {
     <>
       <PageHeader
         eyebrow="The Work"
-        title="A Living Archive"
+        title="A Living"
+        accent="Archive"
         lede="Academic, professional, and creative work — added continuously rather than curated once."
       />
 

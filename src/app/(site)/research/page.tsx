@@ -21,6 +21,8 @@ export default async function ResearchPage() {
       <PageHeader
         eyebrow="The Archive"
         title="Research"
+        accent="Archive"
+        accentTone="azure"
         lede="Working papers on the political economy of internationalization, nation branding, and the securitization of international students. Restricted papers are sent only after a request is reviewed personally."
       />
       <section className="border-b border-line bg-canvas-light py-16 sm:py-20">

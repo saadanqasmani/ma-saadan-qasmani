@@ -5,6 +5,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Mark } from "@/components/collect/Mark";
 import { iris } from "@/content/iris";
 import { irisDemo } from "@/content/site";
+import { IrisEye } from "@/components/novel/IrisEye";
 
 /**
  * The IRIS project page.
@@ -15,7 +16,7 @@ import { irisDemo } from "@/content/site";
  */
 
 export const metadata: Metadata = {
-  title: "IRIS",
+  title: `${iris.name} by ${iris.by}`,
   description: `${iris.expansion}. ${iris.lede}`,
 };
 
@@ -45,9 +46,13 @@ function DemoLink({ className = "" }: { className?: string }) {
 export default function IrisPage() {
   return (
     <>
+      <IrisEye />
+
       <PageHeader
         eyebrow="The Work · Project"
         title={iris.name}
+        accent={`by ${iris.by}`}
+        accentTone="azure"
         lede={iris.lede}
       />
 

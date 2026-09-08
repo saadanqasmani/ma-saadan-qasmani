@@ -14,7 +14,9 @@ export default function ContactPage() {
     <>
       <PageHeader
         eyebrow="Correspondence"
-        title="Get in Touch"
+        title="Get in"
+        accent="Touch"
+        accentTone="azure"
         lede="For professional inquiries, speaking requests, research collaboration, or general correspondence."
       />
 

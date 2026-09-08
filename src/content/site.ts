@@ -133,6 +133,9 @@ export const highestBranch = {
  */
 export const orgLinks: Record<string, string | null> = {
   "STAR Scholars Network": "https://starscholars.org",
+  // A path rather than a URL: IRIS has a page on this site, so the role links
+  // inward instead of off to somewhere else.
+  "IRIS — internationalization management SaaS platform": "/work/iris",
   "Istanbul Aydın University": "https://www.aydin.edu.tr",
 };
 

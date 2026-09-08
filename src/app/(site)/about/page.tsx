@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { SplitText } from "@/components/ui/SplitText";
@@ -23,7 +24,7 @@ export default async function AboutPage() {
 
   return (
     <>
-      <PageHeader eyebrow="The Author" title="The Person" />
+      <PageHeader eyebrow="The Author" title="The" accent="Person" />
 
       <section className="mx-auto max-w-7xl px-6 py-20 sm:px-10 sm:py-28">
         <div className="grid gap-16 lg:grid-cols-[0.32fr_1fr]">
@@ -69,14 +70,25 @@ export default async function AboutPage() {
                       <li className="grid gap-1 border-b border-line py-6 sm:grid-cols-[1fr_auto] sm:items-baseline sm:gap-8">
                         <span className="font-serif text-xl text-ink">{role.title}</span>
                         {orgLinks[role.org] ? (
-                          <a
-                            href={orgLinks[role.org]!}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-ink-soft underline decoration-ember decoration-1 underline-offset-4 transition-colors hover:text-ember"
-                          >
-                            {role.org}
-                          </a>
+                          // An internal path opens in place; an external site
+                          // opens in its own tab.
+                          orgLinks[role.org]!.startsWith("/") ? (
+                            <Link
+                              href={orgLinks[role.org]!}
+                              className="text-sm text-ink-soft underline decoration-azure decoration-1 underline-offset-4 transition-colors hover:text-azure"
+                            >
+                              {role.org}
+                            </Link>
+                          ) : (
+                            <a
+                              href={orgLinks[role.org]!}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-ink-soft underline decoration-ember decoration-1 underline-offset-4 transition-colors hover:text-ember"
+                            >
+                              {role.org}
+                            </a>
+                          )
                         ) : (
                           <span className="text-sm text-ink-soft">{role.org}</span>
                         )}

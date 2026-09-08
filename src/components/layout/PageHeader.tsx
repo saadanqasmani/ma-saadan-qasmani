@@ -5,11 +5,20 @@ export function PageHeader({
   eyebrow,
   title,
   lede,
+  accent,
+  accentTone = "ember",
   aside,
 }: {
   eyebrow: string;
   title: string;
   lede?: string;
+  /**
+   * The trailing part of the title, set in colour. The novel page has always
+   * put "Branch" in ember; this makes that treatment available everywhere
+   * instead of being one page's exception.
+   */
+  accent?: string;
+  accentTone?: "ember" | "azure" | "verdant";
   /** Optional art set beside the title. Absent on every page that has none. */
   aside?: React.ReactNode;
 }) {
@@ -28,11 +37,23 @@ export function PageHeader({
             <span className="inline-block h-px w-8 translate-y-[-4px] bg-ember" /> {eyebrow}
           </p>
         </Reveal>
-        <SplitText
-          text={title}
-          as="h1"
-          className="mt-6 font-display text-[clamp(2.75rem,8vw,7rem)] leading-[0.9] tracking-[-0.02em]"
-        />
+        <h1 className="mt-6 font-display text-[clamp(2.75rem,8vw,7rem)] leading-[0.9] tracking-[-0.02em]">
+          <SplitText text={title} as="span" className="block" />
+          {accent && (
+            <SplitText
+              text={accent}
+              as="span"
+              delay={0.15}
+              className={`block ${
+                accentTone === "azure"
+                  ? "text-azure"
+                  : accentTone === "verdant"
+                    ? "text-verdant"
+                    : "text-ember"
+              }`}
+            />
+          )}
+        </h1>
         {lede && (
           <Reveal delay={0.2}>
             <p className="mt-8 max-w-2xl font-serif text-xl leading-relaxed text-ink-soft">

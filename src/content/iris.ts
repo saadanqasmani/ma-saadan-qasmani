@@ -10,6 +10,8 @@
 
 export const iris = {
   name: "IRIS",
+  /** As it is credited on the product site. */
+  by: "EduYork",
   expansion: "International Relations Intelligent System",
   lede:
     "Internationalization, transformed from an administrative process into a strategic, measurable, data-driven function.",
