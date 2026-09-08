@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
+import world from "@/content/worldOutline.json";
 
 /**
- * Orthographic hemisphere with arcs springing from Istanbul.
- * Only the three UNESCO Peace and Diplomacy Programme cities are labelled —
- * every other point is deliberately unlabelled, standing for reach without
- * claiming a specific city.
+ * Orthographic hemisphere with routes springing from Istanbul.
+ *
+ * The coastlines are real: Natural Earth's 110m country outlines, clipped to
+ * the visible hemisphere and simplified, then projected through the same
+ * function as the routes. Drawing a map from memory would have put an
+ * inaccurate world on a professional site.
  */
 
 // Centred and zoomed on the three programme cities so the routes read large.
@@ -34,17 +37,51 @@ const HOME = { name: "Türkiye", lon: 28.98, lat: 41.01 };
 // Countries, plotted at their capitals. The label names the country, because
 // that is the claim being made: training was delivered there.
 const DESTINATIONS = [
-  { name: "Pakistan", lon: 73.06, lat: 33.69, note: "Training delivered" },
-  { name: "Nepal", lon: 85.32, lat: 27.7, note: "UNESCO Peace and Diplomacy Programme" },
-  { name: "Iraq", lon: 44.36, lat: 33.31, note: "UNESCO Peace and Diplomacy Programme" },
+  { name: "Germany", label: "Germany", lon: 13.4, lat: 52.52, dx: 0, dy: 34, note: "Training delivered" },
+  // Qatar and the UAE are 3 degrees apart: one goes above its point, the
+  // other below and to the side, or the two labels sit on top of each other.
+  { name: "Qatar", label: "Qatar", lon: 51.53, lat: 25.28, dx: -34, dy: -18, note: "Training delivered" },
+  { name: "United Arab Emirates", label: "UAE", lon: 54.37, lat: 24.45, dx: 32, dy: 36, note: "Training delivered" },
+  { name: "Pakistan", label: "Pakistan", lon: 73.06, lat: 33.69, dx: 0, dy: 36, note: "Training delivered" },
+  { name: "Nepal", label: "Nepal", lon: 85.32, lat: 27.7, dx: 6, dy: 36, note: "UNESCO Peace and Diplomacy Programme" },
+  { name: "Iraq", label: "Iraq", lon: 44.36, lat: 33.31, dx: -18, dy: 36, note: "UNESCO Peace and Diplomacy Programme" },
 ];
 
-// Unlabelled reach — decorative, no claim about specific cities.
-const REACH = [
-  [12, 48], [2, 52], [-3, 40], [10, 30], [24, -5], [37, -1],
-  [55, 25], [67, 24], [77, 13], [100, 14], [4, 62], [-9, 52],
-  [31, 30], [35, 50], [49, 41], [72, 40],
-];
+/** The countries the routes name, so the map can pick them out of the land. */
+const NAMED = new Set(["Türkiye", ...["Germany", "Qatar", "United Arab Emirates", "Pakistan", "Nepal", "Iraq"]]);
+
+// The JSON widens tuples to number[]; the projector only ever reads [0] and
+// [1], so a narrower local type is the honest description.
+type Ring = number[][];
+
+/**
+ * A ring becomes a path only where it is on the near side of the globe. An
+ * orthographic projection folds the far side back over the near one, so a
+ * ring that crosses the limb has to be broken rather than closed.
+ */
+function ringPath(ring: Ring): string {
+  let d = "";
+  let drawing = false;
+  for (const [lon, lat] of ring) {
+    const p = project(lon, lat);
+    if (!p.visible) {
+      drawing = false;
+      continue;
+    }
+    d += `${drawing ? "L" : "M"} ${p.x.toFixed(1)} ${p.y.toFixed(1)} `;
+    drawing = true;
+  }
+  return d;
+}
+
+const LAND_PATHS = (world.land as Ring[]).map(ringPath).filter((d) => d.length > 40);
+const NAMED_PATHS = Object.entries(world.highlight as Record<string, Ring[]>)
+  .filter(([name]) => NAMED.has(name))
+  .map(([name, rings]) => ({
+    name,
+    d: rings.map(ringPath).join(" ").trim(),
+  }))
+  .filter((c) => c.d.length > 20);
 
 function arcPath(a: { x: number; y: number }, b: { x: number; y: number }) {
   const mx = (a.x + b.x) / 2;
@@ -66,14 +103,13 @@ export function GlobeArcs() {
 
   const home = project(HOME.lon, HOME.lat);
   const dests = DESTINATIONS.map((d) => ({ ...d, ...project(d.lon, d.lat) }));
-  const reach = REACH.map(([lon, lat]) => project(lon, lat)).filter((p) => p.visible);
 
   const activeNote = dests.find((d) => d.name === active)?.note;
 
   return (
     <div className="relative">
-      <svg viewBox="150 175 620 400" fill="none" className="h-auto w-full" role="img"
-        aria-label="A hemisphere with routes from Türkiye to Pakistan, Nepal and Iraq">
+      <svg viewBox="126 148 660 440" fill="none" className="h-auto w-full" role="img"
+        aria-label="A map of the eastern hemisphere with routes from Istanbul to Germany, Qatar, the United Arab Emirates, Pakistan, Nepal and Iraq">
         {/* Globe body */}
         <circle cx={CX} cy={CY} r={R} fill="var(--canvas-light)" opacity={0.7} />
         <circle cx={CX} cy={CY} r={R} stroke="var(--line-strong)" strokeWidth={1.2} />
@@ -109,20 +145,32 @@ export function GlobeArcs() {
           />
         ))}
 
-        {/* Unlabelled reach */}
-        {reach.map((p, i) => (
-          <motion.circle
-            key={i}
-            cx={p.x}
-            cy={p.y}
-            r={2.6}
-            fill="var(--ink-faint)"
-            initial={reduced ? undefined : { opacity: 0 }}
-            whileInView={reduced ? undefined : { opacity: 0.55 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.5 + i * 0.04 }}
-          />
-        ))}
+        {/* Coastlines. Drawn under everything, at a weight that reads as
+            ground rather than as content. */}
+        <g stroke="var(--ink)" strokeWidth={0.9} strokeLinejoin="round" opacity={0.28}>
+          {LAND_PATHS.map((d, i) => (
+            <path key={i} d={d} />
+          ))}
+        </g>
+
+        {/* The countries the routes actually name, filled so they read out of
+            the land without needing a label of their own. */}
+        <g>
+          {NAMED_PATHS.map((c) => (
+            <motion.path
+              key={c.name}
+              d={c.d}
+              fill={c.name === "Türkiye" ? "var(--ember)" : "var(--azure)"}
+              stroke={c.name === "Türkiye" ? "var(--ember)" : "var(--azure)"}
+              strokeWidth={0.8}
+              strokeLinejoin="round"
+              initial={reduced ? undefined : { opacity: 0 }}
+              whileInView={reduced ? undefined : { opacity: active === c.name ? 0.42 : 0.2 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            />
+          ))}
+        </g>
 
         {/* Arcs */}
         {dests.map((d, i) => (
@@ -177,14 +225,14 @@ export function GlobeArcs() {
               className="transition-all duration-300"
             />
             <text
-              x={d.x}
-              y={d.y + 34}
+              x={d.x + d.dx}
+              y={d.y + d.dy}
               textAnchor="middle"
               className="fill-ink font-sans"
               fontSize={23}
               fontWeight={500}
             >
-              {d.name}
+              {d.label}
             </text>
           </g>
         ))}

@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { getBlogPosts } from "@/lib/data";
 import { Figure } from "@/components/media/Figure";
+import { NewsletterForm } from "@/components/forms/NewsletterForm";
 
 export const metadata: Metadata = {
   title: "The Journal",
@@ -36,6 +37,26 @@ export default async function JournalPage() {
       />
 
       <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-24">
+        {blogPosts.length === 0 && (
+          <Reveal>
+            <div className="max-w-2xl border-t border-line pt-10">
+              <p className="eyebrow">Coming soon</p>
+              <h2 className="mt-5 font-display text-3xl leading-tight sm:text-4xl">
+                The first essays are still being written.
+              </h2>
+              <p className="mt-5 text-lg leading-relaxed text-ink-soft">
+                This is where the writing between the research and the fiction will live:
+                notes from the archive, arguments still forming, and the occasional piece
+                that belongs to neither. Subscribe and each one reaches you as it is
+                published.
+              </p>
+              <div className="mt-9 max-w-md">
+                <NewsletterForm />
+              </div>
+            </div>
+          </Reveal>
+        )}
+
         <div className="border-t border-line">
           {blogPosts.map((post, i) => (
             <Reveal key={post.slug} delay={i * 0.05}>

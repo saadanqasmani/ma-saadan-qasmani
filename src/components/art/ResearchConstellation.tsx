@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import type { ResearchItem } from "@/content/site";
 
@@ -31,6 +31,14 @@ export function ResearchConstellation({ items }: { items: ResearchItem[] }) {
   const reduced = useReducedMotion();
   const [active, setActive] = useState<string | null>(null);
   const [activeArea, setActiveArea] = useState<number | null>(null);
+  /**
+   * Pointer position within the figure, for the tooltip that follows the
+   * cursor. Null when the pointer is not over the figure, which includes
+   * keyboard focus: in that case the caption below is the readout, since
+   * there is no cursor to sit beside.
+   */
+  const [cursor, setCursor] = useState<{ x: number; y: number; w: number } | null>(null);
+  const figureRef = useRef<HTMLElement>(null);
 
   const { areas, papers } = useMemo(() => {
     const areaNames = Array.from(new Set(items.map((i) => i.area)));
@@ -70,7 +78,17 @@ export function ResearchConstellation({ items }: { items: ResearchItem[] }) {
   const anyActive = active !== null || activeArea !== null;
 
   return (
-    <figure className="relative">
+    <figure
+      ref={figureRef}
+      className="relative"
+      onMouseMove={(e) => {
+        // Measured here rather than during render: the width is needed to
+        // decide which side of the cursor the card sits on.
+        const r = figureRef.current?.getBoundingClientRect();
+        if (r) setCursor({ x: e.clientX - r.left, y: e.clientY - r.top, w: r.width });
+      }}
+      onMouseLeave={() => setCursor(null)}
+    >
       <svg
         viewBox="196 76 528 448"
         fill="none"
@@ -219,6 +237,40 @@ export function ResearchConstellation({ items }: { items: ResearchItem[] }) {
           );
         })}
       </svg>
+
+      {/* The readout follows the cursor: the caption below the figure sits
+          past the fold at default zoom, so the label it switched to was
+          invisible exactly when someone was reading it. */}
+      {cursor && (activePaper || activeArea !== null) && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute z-20 max-w-xs border border-ink bg-canvas-light px-4 py-3 shadow-[0_10px_30px_-18px_rgba(21,20,15,0.6)]"
+          style={{
+            left: cursor.x,
+            top: cursor.y,
+            // Flip to the other side of the cursor near the edges so the card
+            // is never clipped by the figure.
+            transform: `translate(${
+              cursor.x > cursor.w - 300 ? "calc(-100% - 16px)" : "16px"
+            }, ${cursor.y < 90 ? "16px" : "calc(-100% - 16px)"})`,
+          }}
+        >
+          {activePaper ? (
+            <>
+              <span className="block font-serif text-base leading-snug text-ink">
+                {activePaper.item.title}
+              </span>
+              <span className="mt-1 block text-[10px] uppercase tracking-[0.12em] text-ink-faint">
+                {activePaper.item.area} · {activePaper.item.type}
+              </span>
+            </>
+          ) : (
+            <span className="block font-serif text-base text-ink">
+              {areas[activeArea!].name}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Readout — one line, so the figure never turns into a label soup */}
       <figcaption className="mt-2 min-h-[3.25rem] border-t border-line pt-3">

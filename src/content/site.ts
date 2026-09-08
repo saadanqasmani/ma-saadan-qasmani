@@ -411,18 +411,4 @@ export type BlogPost = {
 
 // PLACEHOLDER — no blog posts on record yet. This entry demonstrates the
 // content model only and should be replaced or removed.
-export const blogPosts: BlogPost[] = [
-  {
-    slug: "welcome-to-the-journal",
-    title: "Notes on Beginning an Archive",
-    subtitle: "Placeholder entry",
-    date: "2026-01-01",
-    category: "Notes",
-    tags: ["placeholder"],
-    readingTime: "1 min",
-    excerpt:
-      "This is a placeholder journal entry demonstrating the post template. Replace with real writing.",
-    coverImage: null,
-    body: "This is a placeholder journal entry demonstrating the post template. Replace with real writing.",
-  },
-];
+export const blogPosts: BlogPost[] = [];

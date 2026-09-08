@@ -5,6 +5,7 @@ import { SplitText } from "@/components/ui/SplitText";
 import { MagneticLink } from "@/components/ui/MagneticLink";
 import { getPerson } from "@/lib/data";
 import { Figure } from "@/components/media/Figure";
+import { SocialRow } from "@/components/layout/SocialRow";
 import { GalleryTrigger } from "@/components/media/GalleryTrigger";
 import { Mark } from "@/components/collect/Mark";
 import { orgLinks } from "@/content/site";
@@ -39,6 +40,7 @@ export default async function AboutPage() {
               ratio="3 / 4"
               tone="ember"
             />
+            <SocialRow className="mt-5" />
           </div>
           <div>
             <SplitText

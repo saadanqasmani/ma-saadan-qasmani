@@ -10,6 +10,7 @@ import { Contours } from "@/components/art/Contours";
 import { getPerson, getBook, getResearchItems } from "@/lib/data";
 import { Mark } from "@/components/collect/Mark";
 import { Figure } from "@/components/media/Figure";
+import { SocialRow } from "@/components/layout/SocialRow";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { personJsonLd, websiteJsonLd } from "@/lib/seo/jsonLd";
 
@@ -90,14 +91,18 @@ export default async function Home() {
               <p className="eyebrow lg:sticky lg:top-32">The Author</p>
             </Reveal>
             <div className="grid gap-10 sm:grid-cols-[minmax(0,15rem)_1fr] sm:gap-12">
-              <Figure
-                src={person.portrait}
-                bare
-                ratio="3/4"
-                label="Author portrait"
-                spec="Portrait orientation · /public/portrait.png"
-                className="w-full max-w-[15rem]"
-              />
+              <div className="space-y-5">
+                <Figure
+                  src={person.portrait}
+                  bare
+                  ratio="3/4"
+                  label="Author portrait"
+                  spec="Portrait orientation · /public/portrait.png"
+                  className="w-full max-w-[15rem]"
+                />
+                <SocialRow />
+              </div>
+
               <div>
                 <SplitText
                   text={person.bio}
