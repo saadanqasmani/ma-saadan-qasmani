@@ -4,7 +4,16 @@ import { Fragment, useRef } from "react";
 import { motion, useInView, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
-/** Word-by-word mask reveal. Each word rises out of a clipped line. */
+/**
+ * Word-by-word mask reveal. Each word rises out of a clipped line.
+ *
+ * The mask needs to be taller than the line box. At display sizes with tight
+ * leading, an italic serif's descenders and ascenders overflow the line, and
+ * the clip that makes the reveal work was slicing them off. The padding gives
+ * the mask room and the negative margin gives the space back, so the line
+ * spacing is unchanged; the hidden state starts further down to stay hidden
+ * behind the taller box.
+ */
 export function SplitText({
   text,
   className,
@@ -35,11 +44,14 @@ export function SplitText({
     >
       {words.map((word, i) => (
         <Fragment key={i}>
-          <span className="inline-block overflow-hidden align-bottom" aria-hidden>
+          <span
+            className="inline-block overflow-hidden align-bottom pb-[0.24em] pt-[0.1em] [margin-bottom:-0.24em] [margin-top:-0.1em]"
+            aria-hidden
+          >
             <motion.span
               className="inline-block will-change-transform"
-              initial={{ y: "110%" }}
-              animate={inView ? { y: "0%" } : { y: "110%" }}
+              initial={{ y: "165%" }}
+              animate={inView ? { y: "0%" } : { y: "165%" }}
               transition={{
                 duration: 0.9,
                 delay: delay + i * stagger,
