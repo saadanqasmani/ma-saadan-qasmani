@@ -1,11 +1,6 @@
 import { cn } from "@/lib/utils";
 import { humanizeStatus } from "@/lib/admin/resources";
-import {
-  adminEmails,
-  supabaseAnonKey,
-  supabaseServiceRoleKey,
-  supabaseUrl,
-} from "@/lib/supabase/env";
+import { statusOf, type EnvStatus } from "@/lib/supabase/env";
 
 export function AdminHeading({
   eyebrow,
@@ -67,30 +62,30 @@ export function EmptyState({ children }: { children: React.ReactNode }) {
 
 export function NotConnected() {
   // Names only, never values: this page is reachable before sign-in.
-  const checks = [
+  const checks: { label: string; status: EnvStatus; why: string }[] = [
     {
-      label: "NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL",
-      ok: Boolean(supabaseUrl),
+      label: "SUPABASE_URL",
+      status: statusOf("NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL"),
       why: "The address of your Supabase project.",
     },
     {
-      label: "NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY",
-      ok: Boolean(supabaseAnonKey),
+      label: "SUPABASE_ANON_KEY",
+      status: statusOf("NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_ANON_KEY"),
       why: "Lets the site read published content and sign you in.",
     },
     {
       label: "SUPABASE_SERVICE_ROLE_KEY",
-      ok: Boolean(supabaseServiceRoleKey),
+      status: statusOf("SUPABASE_SERVICE_ROLE_KEY"),
       why: "Lets the dashboard save changes. Server-side only.",
     },
     {
       label: "ADMIN_EMAILS",
-      ok: adminEmails.length > 0,
+      status: statusOf("ADMIN_EMAILS"),
       why: "Comma-separated list of addresses allowed in here.",
     },
   ];
 
-  const missing = checks.filter((c) => !c.ok);
+  const missing = checks.filter((c) => c.status !== "ok");
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-24">
@@ -110,11 +105,17 @@ export function NotConnected() {
       <ul className="mt-8 border-t border-line">
         {checks.map((c) => (
           <li key={c.label} className="grid gap-1 border-b border-line py-4 sm:grid-cols-[1.5rem_1fr]">
-            <span className={c.ok ? "text-verdant" : "text-ember"}>{c.ok ? "\u2713" : "\u00d7"}</span>
+            <span className={c.status === "ok" ? "text-verdant" : "text-ember"}>
+              {c.status === "ok" ? "\u2713" : c.status === "empty" ? "!" : "\u00d7"}
+            </span>
             <div>
               <p className="break-all font-mono text-sm text-ink">{c.label}</p>
               <p className="mt-0.5 text-sm text-ink-soft">
-                {c.ok ? "Found." : c.why}
+                {c.status === "ok"
+                  ? "Found."
+                  : c.status === "empty"
+                    ? "This variable exists but its value is blank. Open it and paste the value in."
+                    : c.why}
               </p>
             </div>
           </li>
