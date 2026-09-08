@@ -181,14 +181,21 @@ alter table contact_messages enable row level security;
 alter table admins enable row level security;
 
 -- Public read access to published content only.
+-- Each policy is dropped first so this file can be re-run safely: CREATE
+-- POLICY has no IF NOT EXISTS form, unlike CREATE TABLE.
+drop policy if exists "public read published work" on work_items;
 create policy "public read published work" on work_items
   for select using (published = true);
+drop policy if exists "public read published research" on research_items;
 create policy "public read published research" on research_items
   for select using (published = true);
+drop policy if exists "public read published publications" on publications;
 create policy "public read published publications" on publications
   for select using (published = true);
+drop policy if exists "public read book settings" on book_settings;
 create policy "public read book settings" on book_settings
   for select using (true);
+drop policy if exists "public read published posts" on blog_posts;
 create policy "public read published posts" on blog_posts
   for select using (published = true);
 

@@ -54,7 +54,8 @@ Nothing is sent to anyone automatically. Orders and access requests wait for you
 ### Switching it on
 
 1. Create a Supabase project at supabase.com.
-2. In the SQL editor, run `supabase/migrations/0001_init.sql`, then `0002_admin.sql`.
+2. In the SQL editor, run every file in `supabase/migrations` in order. They are written
+   to be safely re-runnable, so running one twice is harmless.
 3. Set these environment variables in your hosting provider, then redeploy:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`

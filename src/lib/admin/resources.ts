@@ -169,7 +169,7 @@ export const RESOURCES: Resource[] = [
       { name: "slug", label: "URL slug", type: "text", required: true },
       { name: "kind", label: "Kind", type: "select", options: ["Book", "Article", "Essay", "Research Paper", "Other"] },
       { name: "summary", label: "Summary", type: "textarea" },
-      { name: "date", label: "Date", type: "date" },
+      { name: "date", label: "Date", type: "text", help: "Free text, e.g. 2026 or March 2026" },
       { name: "external_link", label: "External link", type: "url" },
       { name: "sort_order", label: "Order", type: "number" },
       { name: "published", label: "Show on the site", type: "boolean" },
