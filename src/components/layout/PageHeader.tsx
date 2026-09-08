@@ -7,6 +7,7 @@ export function PageHeader({
   lede,
   accent,
   accentTone = "ember",
+  sub,
   aside,
 }: {
   eyebrow: string;
@@ -19,6 +20,8 @@ export function PageHeader({
    */
   accent?: string;
   accentTone?: "ember" | "azure" | "verdant";
+  /** A quiet line under the title, for an attribution rather than a phrase. */
+  sub?: string;
   /** Optional art set beside the title. Absent on every page that has none. */
   aside?: React.ReactNode;
 }) {
@@ -54,6 +57,13 @@ export function PageHeader({
             />
           )}
         </h1>
+        {sub && (
+          <Reveal delay={0.18}>
+            <p className="mt-3 font-serif text-lg font-light italic text-ink-faint sm:text-xl">
+              {sub}
+            </p>
+          </Reveal>
+        )}
         {lede && (
           <Reveal delay={0.2}>
             <p className="mt-8 max-w-2xl font-serif text-xl leading-relaxed text-ink-soft">

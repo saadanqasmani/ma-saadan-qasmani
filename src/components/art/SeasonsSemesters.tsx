@@ -9,11 +9,15 @@ import {
   type MotionValue,
 } from "motion/react";
 import { Mark } from "@/components/collect/Mark";
+import { FORMS, GROUND, leaves, morphPath, windows } from "@/lib/art/skyline";
 
-const BAR_COUNT = 8;
-const BAR_HEIGHTS = [120, 168, 210, 236, 252, 236, 268, 300];
-
-function Bar({
+/**
+ * One form, holding its shape from forest to city.
+ *
+ * Each converts a little later than the one to its left, so the change sweeps
+ * across the row rather than happening to everything at once.
+ */
+function Form({
   progress,
   index,
   reduced,
@@ -22,25 +26,63 @@ function Bar({
   index: number;
   reduced: boolean | null;
 }) {
-  const start = 0.42 + index * 0.045;
-  const scaleY = useTransform(progress, [start, start + 0.12], [0, 1]);
-  const height = BAR_HEIGHTS[index];
-  const x = 92 + index * 52;
+  const from = 0.24 + index * 0.052;
+  const to = from + 0.2;
+  const tallest = index === FORMS.length - 1;
+
+  const d = useTransform(progress, (v) => {
+    const k = reduced ? 1 : Math.min(1, Math.max(0, (v - from) / (to - from)));
+    return morphPath(index, k * k * (3 - 2 * k));
+  });
+  const cityOpacity = useTransform(progress, [from + 0.04, to], [0, 1]);
+  const forestOpacity = useTransform(progress, [from, to - 0.04], [1, 0]);
+  const fillOpacity = useTransform(progress, [from + 0.08, to], [0, tallest ? 0.9 : 0.12]);
 
   return (
-    <motion.rect
-      x={x}
-      y={520 - height}
-      width={30}
-      height={height}
-      fill={index === BAR_COUNT - 1 ? "var(--ember)" : "var(--azure)"}
-      opacity={index === BAR_COUNT - 1 ? 1 : 0.32 + index * 0.08}
-      style={
-        reduced
-          ? undefined
-          : { scaleY, transformOrigin: `${x + 15}px 520px` }
-      }
-    />
+    <g>
+      {/* One outline, drawn twice: the colour changes by crossfading two
+          strokes over the same path, so the shape stays single-sourced. */}
+      <motion.path
+        d={d}
+        fill={tallest ? "var(--ember)" : "var(--azure)"}
+        style={reduced ? { fillOpacity: tallest ? 0.9 : 0.12 } : { fillOpacity }}
+        stroke="none"
+      />
+      <motion.path
+        d={d}
+        fill="none"
+        stroke="var(--verdant)"
+        strokeWidth={1.8}
+        strokeLinejoin="round"
+        style={reduced ? { opacity: 0 } : { opacity: forestOpacity }}
+      />
+      <motion.path
+        d={d}
+        fill="none"
+        stroke={tallest ? "var(--ember)" : "var(--ink)"}
+        strokeWidth={1.8}
+        strokeLinejoin="round"
+        style={reduced ? { opacity: 1 } : { opacity: cityOpacity }}
+      />
+
+      <motion.g
+        fill="var(--verdant)"
+        style={reduced ? { opacity: 0 } : { opacity: forestOpacity }}
+      >
+        {leaves(index).map((l, i) => (
+          <circle key={i} cx={l.x} cy={l.y} r={2.2} opacity={0.6} />
+        ))}
+      </motion.g>
+
+      <motion.g
+        fill={tallest ? "var(--canvas)" : "var(--ink)"}
+        style={reduced ? { opacity: 0.45 } : { opacity: cityOpacity }}
+      >
+        {windows(index).map((w, i) => (
+          <rect key={i} x={w.x} y={w.y} width={w.w} height={w.h} opacity={0.45} />
+        ))}
+      </motion.g>
+    </g>
   );
 }
 
@@ -52,15 +94,11 @@ export function SeasonsSemesters() {
     offset: ["start start", "end end"],
   });
 
-  const ringsOpacity = useTransform(scrollYProgress, [0.1, 0.45], [1, 0]);
-  const ringsScale = useTransform(scrollYProgress, [0.1, 0.5], [1, 0.72]);
-  const ringsRotate = useTransform(scrollYProgress, [0, 0.5], [0, 26]);
 
   // Both statements stay readable throughout; emphasis moves between them
   // rather than crossfading two different texts over each other.
   const seasonsTextOpacity = useTransform(scrollYProgress, [0, 0.34, 0.52], [1, 1, 0.28]);
   const semestersTextOpacity = useTransform(scrollYProgress, [0.3, 0.52], [0.28, 1]);
-  const axisOpacity = useTransform(scrollYProgress, [0.36, 0.5], [0, 1]);
 
   return (
     <section ref={ref} className="relative h-[280vh]">
@@ -107,60 +145,20 @@ export function SeasonsSemesters() {
               className="mx-auto h-[42vh] w-full max-w-xl lg:h-[70vh]"
               aria-hidden
             >
-              {/* Seasons — concentric rings */}
-              <motion.g
-                style={
-                  reduced
-                    ? undefined
-                    : {
-                        opacity: ringsOpacity,
-                        scale: ringsScale,
-                        rotate: ringsRotate,
-                        transformOrigin: "300px 300px",
-                      }
-                }
-              >
-                {[210, 168, 126, 84, 44].map((r, i) => (
-                  <circle
-                    key={r}
-                    cx={300}
-                    cy={300}
-                    r={r}
-                    stroke={i % 2 === 0 ? "var(--verdant)" : "var(--ember)"}
-                    strokeWidth={i === 0 ? 2 : 1.4}
-                    opacity={0.85 - i * 0.08}
-                    strokeDasharray={i === 1 || i === 3 ? "3 9" : undefined}
-                  />
-                ))}
-                {[0, 90, 180, 270].map((deg) => {
-                  const rad = (deg * Math.PI) / 180;
-                  return (
-                    <circle
-                      key={deg}
-                      cx={300 + Math.cos(rad) * 210}
-                      cy={300 + Math.sin(rad) * 210}
-                      r={6}
-                      fill="var(--verdant)"
-                    />
-                  );
-                })}
-                <circle cx={300} cy={300} r={10} fill="var(--ember)" />
-              </motion.g>
+              {/* A forest that becomes a city — the arc of the novel,
+                  and the distance between the two clocks beside it. */}
+              {FORMS.map((_, i) => (
+                <Form key={i} progress={scrollYProgress} index={i} reduced={reduced} />
+              ))}
 
-              {/* Semesters — rigid bars */}
-              <g>
-                {Array.from({ length: BAR_COUNT }).map((_, i) => (
-                  <Bar key={i} progress={scrollYProgress} index={i} reduced={reduced} />
-                ))}
-              </g>
               <motion.line
-                x1={70}
-                y1={520}
-                x2={540}
-                y2={520}
+                x1={40}
+                y1={GROUND}
+                x2={568}
+                y2={GROUND}
                 stroke="var(--ink)"
                 strokeWidth={1.5}
-                style={reduced ? undefined : { opacity: axisOpacity }}
+                opacity={0.45}
               />
             </svg>
           </div>

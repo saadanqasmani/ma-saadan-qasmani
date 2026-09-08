@@ -51,8 +51,7 @@ export default function IrisPage() {
       <PageHeader
         eyebrow="The Work · Project"
         title={iris.name}
-        accent={`by ${iris.by}`}
-        accentTone="azure"
+        sub={`by ${iris.by}`}
         lede={iris.lede}
       />
 
