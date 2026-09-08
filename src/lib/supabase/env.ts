@@ -33,12 +33,35 @@ export function statusOf(...names: string[]): EnvStatus {
     }
     return "ok";
   }
+  // Mirror the suffix fallback, so the checklist never contradicts the app.
+  const last = names[names.length - 1];
+  if (last && readSuffix(last)) return "ok";
   return sawBlank ? "empty" : "missing";
 }
 
-export const supabaseUrl = read("NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL");
-export const supabaseAnonKey = read("NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_ANON_KEY");
-export const supabaseServiceRoleKey = read("SUPABASE_SERVICE_ROLE_KEY");
+/**
+ * Last resort: match any variable whose name ends in the expected suffix.
+ *
+ * Hosting integrations often create these under a project-specific prefix
+ * (for example `myproject_SUPABASE_URL`), which no fixed list can predict.
+ * Only non-blank values count, so a placeholder row added by hand does not
+ * shadow the real one.
+ */
+function readSuffix(suffix: string): string | null {
+  for (const [name, value] of Object.entries(process.env)) {
+    if (!name.endsWith(suffix)) continue;
+    const trimmed = value?.trim();
+    if (trimmed) return trimmed;
+  }
+  return null;
+}
+
+export const supabaseUrl =
+  read("NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL") ?? readSuffix("SUPABASE_URL");
+export const supabaseAnonKey =
+  read("NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_ANON_KEY") ?? readSuffix("SUPABASE_ANON_KEY");
+export const supabaseServiceRoleKey =
+  read("SUPABASE_SERVICE_ROLE_KEY") ?? readSuffix("SUPABASE_SERVICE_ROLE_KEY");
 
 /** Public reads and admin sign-in need the anon key. */
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
