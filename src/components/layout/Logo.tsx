@@ -17,6 +17,8 @@ export function Logo({ className = "h-5 w-5" }: { className?: string }) {
         alt=""
         aria-hidden
         className={`${className} object-contain`}
+        width={768}
+        height={642}
       />
     );
   }

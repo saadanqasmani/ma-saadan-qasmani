@@ -15,9 +15,11 @@
  * path here is the only change needed to swap in the real thing.
  */
 export const brand = {
-  // PLACEHOLDER — awaiting the logo file. Put it at /public and name it here,
-  // e.g. "/logo.svg".
-  logo: null as string | null,
+  /**
+   * Saadan's mark, cropped to its ink and sized for the web. The master at
+   * full resolution lives in /assets and is not served.
+   */
+  logo: "/logo.png" as string | null,
 };
 
 export const person = {

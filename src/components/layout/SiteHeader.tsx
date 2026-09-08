@@ -41,7 +41,7 @@ export function SiteHeader() {
             className="group flex items-center gap-2.5"
             aria-label="Saadan Qasmani — home"
           >
-            <Logo className="h-5 w-5" />
+            <Logo className="h-10 w-auto" />
             <span className="font-display text-lg tracking-tight">Saadan Qasmani</span>
           </Link>
 
