@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "motion/react";
 import { navLinks, novelLink } from "@/content/nav";
+import { Logo } from "@/components/layout/Logo";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { MarginaliaIndicator } from "@/components/collect/MarginaliaIndicator";
 import { cn } from "@/lib/utils";
@@ -40,13 +41,7 @@ export function SiteHeader() {
             className="group flex items-center gap-2.5"
             aria-label="Saadan Qasmani — home"
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
-              <path d="M10 19V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M10 11L4 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M10 9.5L16 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <circle cx="16" cy="3" r="2" className="fill-ember" />
-              <circle cx="4" cy="5" r="1.6" className="fill-azure" />
-            </svg>
+            <Logo className="h-5 w-5" />
             <span className="font-display text-lg tracking-tight">Saadan Qasmani</span>
           </Link>
 

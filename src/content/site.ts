@@ -9,6 +9,17 @@
  * unconfirmed facts are left blank or flagged rather than guessed.
  */
 
+/**
+ * Brand assets that live as files rather than as drawings in the code.
+ * A null value means the site falls back to a drawn placeholder; setting a
+ * path here is the only change needed to swap in the real thing.
+ */
+export const brand = {
+  // PLACEHOLDER — awaiting the logo file. Put it at /public and name it here,
+  // e.g. "/logo.svg".
+  logo: null as string | null,
+};
+
 export const person = {
   name: "Saadan Qasmani",
   positioning: "Writer, Researcher, and Strategist",
