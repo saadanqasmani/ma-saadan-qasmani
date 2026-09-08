@@ -19,6 +19,20 @@ export default async function JournalPage() {
         eyebrow="The Journal"
         title="Essays & Notes"
         lede="Writing that sits between the research and the fiction."
+        aside={
+          <Reveal delay={0.3}>
+            {/* Decorative: the page's title already says what this is. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/journal-cover.png"
+              alt=""
+              aria-hidden
+              width={1289}
+              height={802}
+              className="h-auto w-full max-w-xl"
+            />
+          </Reveal>
+        }
       />
 
       <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-24">

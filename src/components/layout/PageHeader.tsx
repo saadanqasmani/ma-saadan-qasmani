@@ -5,14 +5,24 @@ export function PageHeader({
   eyebrow,
   title,
   lede,
+  aside,
 }: {
   eyebrow: string;
   title: string;
   lede?: string;
+  /** Optional art set beside the title. Absent on every page that has none. */
+  aside?: React.ReactNode;
 }) {
   return (
     <header className="border-b border-line pb-14 pt-24 sm:pt-32">
-      <div className="mx-auto max-w-7xl px-6 sm:px-10">
+      <div
+        className={
+          aside
+            ? "mx-auto grid max-w-7xl items-center gap-10 px-6 sm:px-10 lg:grid-cols-[1fr_0.85fr] lg:gap-16"
+            : "mx-auto max-w-7xl px-6 sm:px-10"
+        }
+      >
+        <div>
         <Reveal>
           <p className="eyebrow">
             <span className="inline-block h-px w-8 translate-y-[-4px] bg-ember" /> {eyebrow}
@@ -30,6 +40,8 @@ export function PageHeader({
             </p>
           </Reveal>
         )}
+        </div>
+        {aside}
       </div>
     </header>
   );
