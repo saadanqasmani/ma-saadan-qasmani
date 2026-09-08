@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
-import { supabaseAnonKey, supabaseUrl } from "@/lib/supabase/env";
+import { isAllowlistedEmail, supabaseAnonKey, supabaseUrl } from "@/lib/supabase/env";
 import { getAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -33,9 +33,9 @@ export type AdminUser = { id: string; email: string };
 /**
  * The signed-in admin, or null.
  *
- * Being authenticated is not sufficient: the user's id must also appear in
- * the `admins` allowlist. Anyone who signs up through Supabase without being
- * on that list is treated as a stranger.
+ * Being authenticated is not sufficient. The account must also be allowed:
+ * either its email is listed in ADMIN_EMAILS, or its id appears in the
+ * `admins` table. Anyone else who reaches Supabase is treated as a stranger.
  */
 export async function getAdminUser(): Promise<AdminUser | null> {
   const supabase = await getSessionClient();
@@ -45,6 +45,10 @@ export async function getAdminUser(): Promise<AdminUser | null> {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
+
+  if (isAllowlistedEmail(user.email)) {
+    return { id: user.id, email: user.email ?? "" };
+  }
 
   const admin = getAdminClient();
   if (!admin) return null;

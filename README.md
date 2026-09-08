@@ -55,20 +55,26 @@ Nothing is sent to anyone automatically. Orders and access requests wait for you
 
 1. Create a Supabase project at supabase.com.
 2. In the SQL editor, run `supabase/migrations/0001_init.sql`, then `0002_admin.sql`.
-3. Set these environment variables in your hosting provider:
+3. Set these environment variables in your hosting provider, then redeploy:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY` (server-side only, never expose it to the browser)
-4. In Supabase, go to Authentication and create a user with your email and a password.
-5. In the SQL editor, add that user to the allowlist:
-   ```sql
-   insert into admins (user_id, email)
-   select id, email from auth.users where email = 'you@example.com';
-   ```
-6. Visit `/admin/login` and sign in.
+   - `ADMIN_EMAILS` (comma-separated list of addresses allowed in)
+4. Visit `/admin/login`, enter an address from `ADMIN_EMAILS` and a password of at least eight
+   characters. On first use this creates the account and signs you in; afterwards it is simply
+   your login.
 
-Being signed in is not sufficient on its own: the account must also appear in `admins`. Anyone
-who signs up through Supabase without being on that list is treated as a stranger.
+Authentication alone is never authorisation. An account gets in only if its email is in
+`ADMIN_EMAILS` or its id is in the `admins` table, so a stranger signing up through Supabase
+gets nothing. The first-run account creation is gated by the same list and only fires when no
+account exists, so it can neither overwrite nor guess an existing password.
+
+If you would rather manage admins in the database, the `admins` table still works:
+
+```sql
+insert into admins (user_id, email)
+select id, email from auth.users where email = 'you@example.com';
+```
 
 ### How content resolves
 

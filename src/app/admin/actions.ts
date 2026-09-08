@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { getAdminUser, getSessionClient } from "@/lib/supabase/auth";
+import { isAllowlistedEmail } from "@/lib/supabase/env";
 import { getResource, type Field } from "@/lib/admin/resources";
 
 export type ActionResult = { ok: boolean; message?: string };
@@ -64,6 +65,20 @@ function refresh(paths: string[]) {
 
 // ────────────────────────────── auth ──────────────────────────────
 
+/** Does an account already exist for this email? */
+async function accountExists(email: string): Promise<boolean> {
+  const db = getAdminClient();
+  if (!db) return true; // Can't tell: assume yes and never create one.
+  try {
+    const { data } = await db.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    return (data?.users ?? []).some(
+      (u) => u.email?.trim().toLowerCase() === email.trim().toLowerCase()
+    );
+  } catch {
+    return true;
+  }
+}
+
 export async function signIn(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
   const supabase = await getSessionClient();
   if (!supabase) {
@@ -74,7 +89,28 @@ export async function signIn(_prev: ActionResult, formData: FormData): Promise<A
   const password = String(formData.get("password") ?? "");
   if (!email || !password) return { ok: false, message: "Enter your email and password." };
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  let { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  // First run: an allowlisted email with no account yet sets its password
+  // here, so the dashboard can be opened without visiting Supabase. Only
+  // ever creates an account when none exists, and only for an allowlisted
+  // address, so this cannot overwrite or guess at an existing password.
+  if (error && isAllowlistedEmail(email) && !(await accountExists(email))) {
+    if (password.length < 8) {
+      return { ok: false, message: "Choose a password of at least 8 characters." };
+    }
+    const db = getAdminClient();
+    const { error: createError } = (await db?.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+    })) ?? { error: new Error("Not configured") };
+
+    if (!createError) {
+      ({ error } = await supabase.auth.signInWithPassword({ email, password }));
+    }
+  }
+
   if (error) return { ok: false, message: "Those details were not accepted." };
 
   const user = await getAdminUser();
