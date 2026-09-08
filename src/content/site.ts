@@ -103,6 +103,10 @@ export const booking = {
 export const highestBranch = {
   title: "The Highest Branch",
   genre: "Allegorical literary fiction, told as a fable",
+  /** The line under the title on the cover, in Saadan's own words. */
+  tagline: "Because up is where things fall from.",
+  /** How the author is credited on the cover, which differs from the site's byline. */
+  coverByline: "M. A. Saadan Qasmani",
   wordCount: 144000,
   chapterCount: 29,
   status: "PLACEHOLDER — publication status not yet confirmed (self-published / seeking representation / imprint / target date)",

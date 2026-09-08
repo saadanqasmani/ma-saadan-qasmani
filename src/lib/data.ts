@@ -38,6 +38,7 @@ export type Person = {
 export type Book = {
   title: string;
   genre: string;
+  tagline: string;
   subject: string;
   status: string;
   synopsis: string;
@@ -70,6 +71,7 @@ const fallbackPerson: Person = {
 const fallbackBook: Book = {
   title: staticBook.title,
   genre: staticBook.genre,
+  tagline: staticBook.tagline,
   subject: staticBook.subject,
   status: staticBook.status,
   synopsis: staticBook.synopsis,
@@ -123,6 +125,7 @@ export async function getBook(): Promise<Book> {
   return {
     title: pick(data.title, fallbackBook.title),
     genre: pick(data.genre, fallbackBook.genre),
+    tagline: pick(data.tagline, fallbackBook.tagline),
     subject: pick(data.subject, fallbackBook.subject),
     status: pick(data.status, fallbackBook.status),
     synopsis: pick(data.synopsis, fallbackBook.synopsis),

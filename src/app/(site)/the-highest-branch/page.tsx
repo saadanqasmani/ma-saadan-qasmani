@@ -52,7 +52,13 @@ export default async function HighestBranchPage() {
             <SplitText text="Branch" delay={0.25} className="text-ember" />
           </h1>
 
-          <Reveal delay={0.6}>
+          <Reveal delay={0.5}>
+            <p className="mt-6 max-w-sm font-serif text-xl italic leading-snug text-ink-soft sm:text-2xl">
+              {highestBranch.tagline}
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.65}>
             <p className="mt-8 text-sm uppercase tracking-[0.22em] text-ink-soft">
               {person.name}
             </p>
