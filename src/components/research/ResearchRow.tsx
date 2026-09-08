@@ -152,9 +152,20 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
                           <button
                             type="button"
                             aria-label={`What are IMG and IPI?`}
-                            className="flex h-6 w-6 items-center justify-center rounded-full border border-ink-faint font-serif text-[13px] italic leading-none text-ink-faint transition-colors hover:border-azure hover:text-azure focus-visible:border-azure focus-visible:text-azure"
+                            className="flex h-6 w-6 items-center justify-center rounded-full border border-ink-faint text-ink-faint transition-colors hover:border-azure hover:text-azure focus-visible:border-azure focus-visible:text-azure"
                           >
-                            i
+                            <svg
+                              viewBox="0 0 16 16"
+                              className="h-3.5 w-3.5"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={1.6}
+                              strokeLinecap="round"
+                              aria-hidden
+                            >
+                              <path d="M8 7.2v4" />
+                              <path d="M8 4.6v.5" />
+                            </svg>
                           </button>
                           <span
                             role="tooltip"

@@ -129,9 +129,9 @@ export default async function Home() {
 
               <dl className="mt-12 grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3">
                 {[
-                  { n: 12, suffix: "+", label: "Countries" },
+                  { n: 12, suffix: "", label: "Countries" },
                   { n: 70, suffix: "+", label: "Nationalities" },
-                  { n: 8, suffix: "", label: "Research papers in progress" },
+                  { n: 9, suffix: "", label: "Research papers in progress" },
                 ].map((stat, i) => (
                   <Reveal key={stat.label} delay={i * 0.08}>
                     <div>

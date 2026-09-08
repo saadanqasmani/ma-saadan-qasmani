@@ -59,7 +59,7 @@ export const MARKS: Mark[] = [
     glyph: "manicule",
     hint: "Two things started on a campus",
     title: "Founded at Istanbul Aydın",
-    line: "The campus Model United Nations programme and Spotlight Magazine.",
+    line: "The campus Model United Nations programme and STARLIGHT.",
   },
   {
     id: "branch",

@@ -15,7 +15,7 @@ export const person = {
   location: "Istanbul, Türkiye",
   // PLACEHOLDER — supply a portrait at /public/portrait.jpg (1200×1600 or larger)
   portrait: null as string | null,
-  bio: `Saadan Qasmani is an internationalization professional, researcher, and novelist based in Istanbul. He directs Global Engagement and Brand Strategy at STAR Scholars Network and co-founded IRIS, a SaaS platform for internationalization management. His practitioner work spans recruitment, partnership management, and intercultural competence training delivered across twelve countries to participants from over seventy nationalities, including UNESCO Peace and Diplomacy Programmes, in Türkiye, Pakistan, Nepal, and Iraq. He is pursuing a master's in Political Science and International Relations at Istanbul Aydın University, where he also founded the campus Model United Nations program and Spotlight Magazine. His research centers on the political economy of internationalization, nation branding, and the securitization of international students.`,
+  bio: `Saadan Qasmani is an internationalization professional, researcher, and novelist based in Istanbul. He directs Global Engagement and Brand Strategy at STAR Scholars Network and co-founded IRIS, a SaaS platform for internationalization management. His practitioner work spans recruitment, partnership management, and intercultural competence training delivered across twelve countries to participants from over seventy nationalities, including UNESCO Peace and Diplomacy Programmes, in Türkiye, Pakistan, Nepal, and Iraq. He is pursuing a master's in Political Science and International Relations at Istanbul Aydın University, where he also founded the campus Model United Nations program and STARLIGHT. His research centers on the political economy of internationalization, nation branding, and the securitization of international students.`,
   roles: [
     {
       title: "Director of Global Engagement & Brand Strategy",
@@ -38,7 +38,7 @@ export const person = {
       org: "Istanbul Aydın University",
     },
     {
-      name: "Spotlight Magazine",
+      name: "STARLIGHT",
       org: "Istanbul Aydın University",
     },
   ],
@@ -90,8 +90,16 @@ export const highestBranch = {
  */
 export const orgLinks: Record<string, string | null> = {
   "STAR Scholars Network": "https://starscholars.org",
-  // PLACEHOLDER — awaiting the URL Saadan wants used.
-  "Istanbul Aydın University": null,
+  "Istanbul Aydın University": "https://www.aydin.edu.tr",
+};
+
+/**
+ * Where "Request a demo" should send someone. Until a booking link exists the
+ * request falls back to the contact inbox, so the action always does
+ * something real.
+ */
+export const irisDemo = {
+  url: null as string | null, // PLACEHOLDER — awaiting the demo link
 };
 
 export type WorkCategory =
@@ -148,7 +156,7 @@ export const workItems: WorkItem[] = [
   },
   {
     slug: "mun-spotlight",
-    title: "Model United Nations Program & Spotlight Magazine",
+    title: "Model United Nations Program & STARLIGHT",
     category: "Projects",
     summary:
       "Founded both at Istanbul Aydın University. PLACEHOLDER — full description pending.",
@@ -162,8 +170,9 @@ export const workItems: WorkItem[] = [
  * never a broken promise.
  */
 export const collaborators: Record<string, { profile: string | null }> = {
-  // PLACEHOLDER — awaiting the Academia.edu URL.
-  "Dr. Osman Gultekin": { profile: null },
+  "Dr. Osman Gültekin": {
+    profile: "https://www.researchgate.net/profile/Osman-Gultekin-2",
+  },
 };
 
 /**
@@ -180,7 +189,7 @@ export const instruments = {
 
 /** The through-line of the archive, in Saadan's own framing. */
 export const researchNote =
-  "All research here is in collaboration with Dr. Osman Gultekin, or an expansion of his work.";
+  "All research here is in collaboration with Dr. Osman Gültekin, or an expansion of his work.";
 
 export type ResearchAccess = "open" | "restricted";
 
@@ -215,7 +224,7 @@ export const researchItems: ResearchItem[] = [
     area: "International student experience",
     keywords: ["marginalization", "tokenism", "hope trafficking", "Türkiye"],
     type: "Journal article",
-    coAuthors: ["Dr. Osman Gultekin"],
+    coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
   },
   {
@@ -228,7 +237,7 @@ export const researchItems: ResearchItem[] = [
     area: "Internationalization theory",
     keywords: ["artificial intelligence", "academic relations", "internationalization"],
     type: "Working paper",
-    coAuthors: ["Dr. Osman Gultekin"],
+    coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
     instrument: "img-ipi",
   },
@@ -241,7 +250,7 @@ export const researchItems: ResearchItem[] = [
     area: "Internationalization theory",
     keywords: ["periodization", "infrastructure", "higher education"],
     type: "Journal article",
-    coAuthors: ["Dr. Osman Gultekin"],
+    coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
   },
   {
@@ -254,7 +263,7 @@ export const researchItems: ResearchItem[] = [
     area: "International student experience",
     keywords: ["merit", "scholarships", "hope trafficking", "Türkiye"],
     type: "Working paper",
-    coAuthors: ["Dr. Osman Gultekin"],
+    coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
   },
   {
@@ -280,7 +289,7 @@ export const researchItems: ResearchItem[] = [
     keywords: ["UNESCO", "peace and diplomacy", "intercultural competence"],
     type: "Working paper",
     institution: "UNESCO",
-    coAuthors: ["Dr. Osman Gultekin"],
+    coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
   },
   {
@@ -293,7 +302,7 @@ export const researchItems: ResearchItem[] = [
     area: "Displaced scholars, STEM access",
     keywords: ["WISDOM", "displaced scholars", "women in STEM", "peacebuilding"],
     type: "Working paper",
-    coAuthors: ["Dr. Osman Gultekin"],
+    coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
   },
   {
@@ -305,7 +314,7 @@ export const researchItems: ResearchItem[] = [
     area: "Partnership management",
     keywords: ["MoUs", "partnership activation", "Canada", "Türkiye"],
     type: "Working paper",
-    coAuthors: ["Dr. Alyson E. King", "Dr. Osman Gultekin"],
+    coAuthors: ["Dr. Alyson E. King", "Dr. Osman Gültekin"],
     access: "restricted",
   },
   {
@@ -317,7 +326,7 @@ export const researchItems: ResearchItem[] = [
     area: "Political economy of internationalization",
     keywords: ["Bologna Process", "Ukraine", "Türkiye", "policy formalism"],
     type: "Working paper",
-    coAuthors: ["Dr. Benjamin Kutsyuruba", "Dr. Osman Gultekin"],
+    coAuthors: ["Dr. Benjamin Kutsyuruba", "Dr. Osman Gültekin"],
     access: "restricted",
   },
 ];

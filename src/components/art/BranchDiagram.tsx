@@ -21,44 +21,39 @@ import { motion, useReducedMotion, useSpring, useTransform, useMotionValue } fro
 
 type Segment = { d: string; width: number; depth: number; root?: boolean };
 type Node = { x: number; y: number; r: number; depth: number; tone: number; ring: boolean };
-type Station = {
-  label: string;
-  sub: string;
-  /** Position along the trunk, 0 at the ground line and 1 at the crown. */
-  t: number;
-  /** Which way the limb leaves the trunk. */
-  side: -1 | 1;
-};
-type Root = { label: string; sub: string; angle: number; len: number };
+type Station = { label: string; sub: string };
+type Root = { label: string; sub: string };
 
 /** Bottom of the trunk upward. Order is the point of this diagram. */
 const STATIONS: Station[] = [
-  { label: "Istanbul Aydın University", sub: "Business Administration", t: 0.08, side: -1 },
-  { label: "STARLIGHT", sub: "Türkiye's first international student magazine", t: 0.2, side: 1 },
-  { label: "Model United Nations", sub: "Founded and launched four MUNs", t: 0.31, side: -1 },
-  { label: "UNESCO", sub: "Peace and Diplomacy Programmes", t: 0.42, side: 1 },
+  { label: "Istanbul Aydın University", sub: "Business Administration" },
+  { label: "STARLIGHT", sub: "Türkiye's first international student magazine" },
+  { label: "Model United Nations", sub: "Founded and launched four MUNs" },
+  { label: "UNESCO", sub: "Peace and Diplomacy Programmes" },
   {
     label: "STAR Scholars Network",
     sub: "Director, Global Engagement & Brand Strategy",
-    t: 0.53,
-    side: -1,
   },
-  { label: "International Student Recruitment", sub: "", t: 0.64, side: 1 },
-  { label: "Research Assistant", sub: "Protégé to Dr. Osman Gultekin", t: 0.75, side: -1 },
-  { label: "IRIS", sub: "Co-founder — internationalization platform", t: 0.86, side: 1 },
-  { label: "The Highest Branch", sub: "A novel — forthcoming", t: 1, side: 1 },
+  { label: "International Student Recruitment", sub: "" },
+  { label: "Research Assistant", sub: "Protégé to Dr. Osman Gültekin" },
+  { label: "IRIS", sub: "Co-founder — internationalization platform" },
+  { label: "The Highest Branch", sub: "A novel — forthcoming" },
 ];
 
-/** Below the ground line. 90deg is straight down. */
+/** Below the ground line, left to right. */
 const ROOTS: Root[] = [
-  { label: "Takhaiyyul", sub: "NGO", angle: 161, len: 268 },
-  { label: "WWF", sub: "Internship", angle: 127, len: 196 },
-  { label: "Assistant to Career Advisor", sub: "", angle: 57, len: 214 },
-  { label: "Beaconhouse School System", sub: "A and O Levels", angle: 21, len: 252 },
+  { label: "Takhaiyyul", sub: "NGO" },
+  { label: "WWF", sub: "Internship" },
+  { label: "Assistant to Career Advisor", sub: "" },
+  { label: "Beaconhouse School System", sub: "A and O Levels" },
 ];
 
 const GROUND_Y = 1000;
-const CROWN_Y = 118;
+/** Where the trunk leaves the ground. Roots start from the same point, which
+ *  is the whole reason they read as attached. */
+const BASE_X = 500;
+const MAX_DEPTH = 6;
+const ROOT_DEPTH = 3;
 
 function mulberry32(seed: number) {
   let a = seed;
@@ -71,21 +66,14 @@ function mulberry32(seed: number) {
   };
 }
 
-/**
- * The trunk's centre line. A slow sway that straightens as it rises, so the
- * base reads as grown and the crown as reaching.
- */
-function trunkAt(t: number) {
-  return {
-    x: 500 + Math.sin(t * 2.9 + 0.35) * 58 * (1 - t * 0.4) + t * 26,
-    y: GROUND_Y - t * (GROUND_Y - CROWN_Y),
-  };
-}
+type Junction = { x: number; y: number; depth: number };
 
 function build(seed: number) {
   const rand = mulberry32(seed);
   const segments: Segment[] = [];
   const nodes: Node[] = [];
+  const junctions: Junction[] = [];
+  const rootTips: { x: number; y: number; branch: number; dist: number }[] = [];
   const bounds = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };
 
   const track = (x: number, y: number) => {
@@ -95,142 +83,187 @@ function build(seed: number) {
     if (y > bounds.maxY) bounds.maxY = y;
   };
 
-  const line = (
-    x: number,
-    y: number,
-    x2: number,
-    y2: number,
-    bend: number,
-    width: number,
-    depth: number,
-    root = false
-  ) => {
-    const nx = -(y2 - y);
-    const ny = x2 - x;
-    const l = Math.hypot(nx, ny) || 1;
-    const mx = (x + x2) / 2 + (nx / l) * bend;
-    const my = (y + y2) / 2 + (ny / l) * bend;
+  /**
+   * The original recursive growth, unchanged. Every fork is a real fork and
+   * every limb tapers from the one it left, which is what makes it read as a
+   * tree rather than a diagram of one.
+   */
+  function grow(x: number, y: number, angle: number, len: number, width: number, depth: number) {
+    const rad = (angle * Math.PI) / 180;
+    const x2 = x + Math.cos(rad) * len;
+    const y2 = y + Math.sin(rad) * len;
+
+    const bend = (rand() - 0.5) * len * 0.34;
+    const mx = (x + x2) / 2 + Math.cos(rad + Math.PI / 2) * bend;
+    const my = (y + y2) / 2 + Math.sin(rad + Math.PI / 2) * bend;
+
     track(x, y);
     track(x2, y2);
     track(mx, my);
+
     segments.push({
       d: `M ${x.toFixed(1)} ${y.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`,
       width,
       depth,
-      root,
     });
-  };
 
-  /** Free-growing twig, kept for the texture of the original drawing. */
-  function twig(
+    junctions.push({ x: x2, y: y2, depth });
+
+    if (depth >= MAX_DEPTH) {
+      if (rand() > 0.62) {
+        nodes.push({ x: x2, y: y2, r: 3, depth, tone: Math.floor(rand() * 3), ring: false });
+      }
+      return;
+    }
+
+    if (depth >= 2 && depth <= 4 && rand() > 0.66) {
+      nodes.push({
+        x: x2,
+        y: y2,
+        r: depth <= 3 ? 5 : 4,
+        depth,
+        tone: Math.floor(rand() * 3),
+        ring: depth <= 3 && rand() > 0.55,
+      });
+    }
+
+    const children = depth < 2 ? 2 : rand() > 0.78 ? 3 : 2;
+    const spread = 17 + rand() * 15;
+
+    for (let i = 0; i < children; i++) {
+      const t = i / (children - 1) - 0.5;
+      const offset = t * spread * 2 + (rand() - 0.5) * 8;
+      grow(x2, y2, angle + offset, len * (0.73 + rand() * 0.08), width * 0.68, depth + 1);
+    }
+  }
+
+  /** The same growth, mirrored downward and flattened, so roots spread. */
+  function growRoot(
     x: number,
     y: number,
     angle: number,
     len: number,
     width: number,
     depth: number,
-    maxDepth: number,
-    root = false
+    branch: number
   ) {
     const rad = (angle * Math.PI) / 180;
     const x2 = x + Math.cos(rad) * len;
     const y2 = y + Math.sin(rad) * len;
-    line(x, y, x2, y2, (rand() - 0.5) * len * 0.3, width, depth, root);
 
-    if (depth >= maxDepth) {
-      if (rand() > 0.5) {
+    const bend = (rand() - 0.5) * len * 0.3;
+    const mx = (x + x2) / 2 + Math.cos(rad + Math.PI / 2) * bend;
+    const my = (y + y2) / 2 + Math.sin(rad + Math.PI / 2) * bend;
+
+    track(x, y);
+    track(x2, y2);
+    track(mx, my);
+
+    segments.push({
+      d: `M ${x.toFixed(1)} ${y.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`,
+      width,
+      depth,
+      root: true,
+    });
+
+    if (depth >= ROOT_DEPTH) {
+      rootTips.push({ x: x2, y: y2, branch, dist: Math.hypot(x2 - BASE_X, y2 - GROUND_Y) });
+      if (rand() > 0.55) {
         nodes.push({ x: x2, y: y2, r: 2.6, depth, tone: Math.floor(rand() * 3), ring: false });
       }
       return;
     }
-    if (rand() > 0.72) {
-      nodes.push({ x: x2, y: y2, r: 3.6, depth, tone: Math.floor(rand() * 3), ring: rand() > 0.7 });
-    }
 
-    const children = rand() > 0.72 ? 3 : 2;
-    const spread = 16 + rand() * 16;
+    // Roots splay outward rather than upward, so each fork widens the angle.
+    const children = rand() > 0.55 ? 3 : 2;
+    const spread = 20 + rand() * 14;
     for (let i = 0; i < children; i++) {
       const t = i / (children - 1) - 0.5;
-      twig(
+      growRoot(
         x2,
         y2,
-        angle + t * spread * 2 + (rand() - 0.5) * 9,
-        len * (0.72 + rand() * 0.1),
-        width * 0.68,
+        angle + t * spread * 2 + (rand() - 0.5) * 10,
+        len * (0.7 + rand() * 0.1),
+        width * 0.66,
         depth + 1,
-        maxDepth,
-        root
+        branch
       );
     }
   }
 
-  // ── Trunk ──────────────────────────────────────────────────────────────
-  const TRUNK_STEPS = 18;
-  for (let i = 0; i < TRUNK_STEPS; i++) {
-    const a = trunkAt(i / TRUNK_STEPS);
-    const b = trunkAt((i + 1) / TRUNK_STEPS);
-    line(a.x, a.y, b.x, b.y, 0, 5.4 - (i / TRUNK_STEPS) * 3.4, 0);
-  }
+  grow(BASE_X, GROUND_Y, -90, 268, 4.4, 0);
 
-  // ── Stations ───────────────────────────────────────────────────────────
-  const stations = STATIONS.map((st, i) => {
-    const base = trunkAt(st.t);
+  // Four main roots leaving the same point the trunk rises from.
+  const ROOT_ANGLES = [148, 112, 68, 32];
+  ROOT_ANGLES.forEach((a, i) => growRoot(BASE_X, GROUND_Y, a, 132, 3.5, 0, i));
 
-    // The crown is the trunk's own tip: the highest branch is the trunk.
-    if (st.t >= 1) {
-      const tip = { x: base.x + 18, y: base.y - 62 };
-      line(base.x, base.y, tip.x, tip.y, 8, 2.1, 1);
-      for (let k = 0; k < 3; k++) {
-        twig(tip.x, tip.y, -118 + k * 34 + rand() * 8, 62 + rand() * 22, 1.5, 2, 4);
+  // ── Placing the labels ────────────────────────────────────────────────
+  // The order is the point of the diagram, so the eight lower stations are
+  // taken one per height band, favouring thick limbs well clear of the trunk
+  // where a card has room. The novel takes the highest point in the drawing.
+  //
+  // Bands span the junctions, not the drawing: the trunk below the first fork
+  // has nothing to label, and measuring from the ground line there wastes a
+  // third of the range on bare wood and crowds every station into the canopy.
+  const crown = junctions.reduce((a, b) => (b.y < a.y ? b : a));
+  const usable = junctions.filter((j) => j.depth >= 1 && j.depth <= 4);
+  const yLow = usable.reduce((a, b) => (b.y > a.y ? b : a)).y;
+  const span = yLow - crown.y;
+  const lower = STATIONS.slice(0, -1);
+
+  const picked: Junction[] = [];
+  const taken = new Set<Junction>();
+
+  lower.forEach((_, k) => {
+    const targetY = yLow - (span * 0.9 * k) / (lower.length - 1);
+    const side = k % 2 === 0 ? -1 : 1;
+
+    const eligible = usable.filter(
+      (j) => !taken.has(j) && !picked.some((p) => Math.hypot(p.x - j.x, p.y - j.y) < 120)
+    );
+    if (!eligible.length) return;
+
+    // Inside the band, prefer the requested side, a limb well out from the
+    // trunk, and a thicker branch: all three make the label easier to read.
+    // Outside it, fall back to whatever sits nearest the target height, so a
+    // sparse band never costs a station.
+    const inBand = eligible.filter((j) => Math.abs(j.y - targetY) <= span * 0.075);
+    const pool = inBand.length ? inBand : eligible;
+
+    let best = pool[0];
+    let bestScore = -Infinity;
+    for (const j of pool) {
+      const score =
+        (Math.sign(j.x - BASE_X) === side ? 300 : 0) +
+        Math.abs(j.x - BASE_X) -
+        j.depth * 34 -
+        Math.abs(j.y - targetY) * (inBand.length ? 0 : 2.5);
+      if (score > bestScore) {
+        bestScore = score;
+        best = j;
       }
-      track(tip.x, tip.y - 40);
-      return { ...st, x: tip.x, y: tip.y, index: i };
     }
-
-    // Long and near-level low down, short and steep near the crown.
-    const rise = 0.1 + st.t * 0.72 + (rand() - 0.5) * 0.2;
-    const len = 232 - st.t * 88 + rand() * 54;
-    const tip = { x: base.x + st.side * len, y: base.y - len * rise };
-
-    // An elbow at roughly half way: the limb drops away from the trunk before
-    // it lifts, which is what makes a branch look grown rather than drawn.
-    const jx = base.x + st.side * len * (0.44 + rand() * 0.12);
-    const jy = base.y - len * rise * (0.2 + rand() * 0.2);
-    line(base.x, base.y, jx, jy, st.side * (10 + rand() * 12), 3, 1);
-    line(jx, jy, tip.x, tip.y, st.side * (14 + rand() * 16), 2.2, 1);
-
-    // Two to four twigs off each limb, so a station reads as a real fork.
-    const outward = st.side === 1 ? -32 : -148;
-    const fan = 2 + Math.floor(rand() * 3);
-    for (let k = 0; k < fan; k++) {
-      twig(
-        tip.x,
-        tip.y,
-        outward + (k - (fan - 1) / 2) * (24 + rand() * 18) + (rand() - 0.5) * 16,
-        62 + rand() * 46,
-        1.6,
-        2,
-        4
-      );
-    }
-
-    return { ...st, x: tip.x, y: tip.y, index: i };
+    taken.add(best);
+    picked.push(best);
   });
 
-  // ── Roots ──────────────────────────────────────────────────────────────
+  // Bottom of the trunk upward, so the labels land in the order given.
+  picked.sort((a, b) => b.y - a.y);
+
+  const stations = picked.map((j, i) => ({ ...STATIONS[i], x: j.x, y: j.y, index: i }));
+  stations.push({
+    ...STATIONS[STATIONS.length - 1],
+    x: crown.x,
+    y: crown.y,
+    index: stations.length,
+  });
+
+  // One label per root, at whichever of its tips reaches furthest from the base.
   const roots = ROOTS.map((rt, i) => {
-    const rad = (rt.angle * Math.PI) / 180;
-    const tip = {
-      x: 500 + Math.cos(rad) * rt.len,
-      y: GROUND_Y + Math.sin(rad) * rt.len,
-    };
-    line(500, GROUND_Y, tip.x, tip.y, (i % 2 === 0 ? 1 : -1) * 30, 2.9, 1, true);
-
-    // A root that does not fray does not read as a root.
-    for (let k = 0; k < 2; k++) {
-      twig(tip.x, tip.y, rt.angle + (k === 0 ? -26 : 24) + rand() * 8, 54 + rand() * 26, 1.5, 2, 3, true);
-    }
-
+    const tips = rootTips.filter((t) => t.branch === i);
+    const tip = tips.length
+      ? tips.reduce((a, b) => (b.dist > a.dist ? b : a))
+      : { x: BASE_X, y: GROUND_Y + 120 };
     return { ...rt, x: tip.x, y: tip.y, index: STATIONS.length + i };
   });
 
