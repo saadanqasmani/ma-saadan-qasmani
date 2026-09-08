@@ -103,7 +103,10 @@ export async function getPerson(): Promise<Person> {
     location: pick(data.location, fallbackPerson.location),
     bio: pick(data.bio, fallbackPerson.bio),
     practitionerNote: pick(data.practitioner_note, fallbackPerson.practitionerNote),
-    portrait: data.portrait_path || null,
+    // Same fallback as every other field here. Reading the column directly
+    // meant that connecting the database at all replaced the portrait with
+    // nothing, because the row exists long before anyone fills it in.
+    portrait: pick(data.portrait_path, fallbackPerson.portrait),
     roles: list(data.roles, fallbackPerson.roles),
     founded: list(data.founded, fallbackPerson.founded),
     honors: list(data.honors, fallbackPerson.honors),
@@ -125,8 +128,8 @@ export async function getBook(): Promise<Book> {
     synopsis: pick(data.synopsis, fallbackBook.synopsis),
     wordCount: pick(data.word_count, fallbackBook.wordCount),
     chapterCount: pick(data.chapter_count, fallbackBook.chapterCount),
-    coverImage: data.cover_image_path || null,
-    amazonUrl: data.amazon_url || null,
+    coverImage: pick(data.cover_image_path, fallbackBook.coverImage),
+    amazonUrl: pick(data.amazon_url, fallbackBook.amazonUrl),
     directOrderEnabled: data.direct_order_enabled ?? true,
   };
 }
