@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -39,6 +41,7 @@ export function Figure({
   bare?: boolean;
 }) {
   const reduced = useReducedMotion();
+  const [failed, setFailed] = useState(false);
   const toneVar = `var(--${tone})`;
 
   return (
@@ -50,7 +53,7 @@ export function Figure({
       viewport={{ once: true, margin: "-10% 0px" }}
       transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
     >
-      {src ? (
+      {src && !failed ? (
         <Image
           src={src}
           alt={alt ?? label}
@@ -58,6 +61,7 @@ export function Figure({
           priority={priority}
           className={bare ? "object-contain" : "object-cover"}
           sizes="(max-width: 768px) 100vw, 50vw"
+          onError={() => setFailed(true)}
         />
       ) : (
         <>

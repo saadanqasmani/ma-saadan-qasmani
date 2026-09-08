@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
+import { booking, social } from "@/content/site";
 import { ContactForm } from "@/components/forms/ContactForm";
 
 export const metadata: Metadata = {
@@ -30,9 +31,41 @@ export default function ContactPage() {
               <div>
                 <p className="eyebrow">Appointments</p>
                 <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink-soft">
-                  Scheduled booking will appear here once a calendar provider is connected. Until
-                  then, use the form and a time will be arranged by email.
+                  Booking runs on {booking.provider}. Pick a time that suits you and it lands
+                  directly in the calendar.
                 </p>
+                <a
+                  href={booking.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative mt-5 inline-flex overflow-hidden border border-ink px-6 py-3 text-xs font-medium uppercase tracking-[0.16em]"
+                >
+                  <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
+                  <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
+                    Book a time
+                  </span>
+                </a>
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.16}>
+              <div>
+                <p className="eyebrow">Elsewhere</p>
+                <ul className="mt-3 space-y-1">
+                  {social.map((s) => (
+                    <li key={s.label}>
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group inline-flex items-center gap-2 font-serif text-lg text-ink transition-colors hover:text-ember"
+                      >
+                        <span className="inline-block h-px w-5 bg-current transition-all duration-300 group-hover:w-9" />
+                        {s.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </Reveal>
           </div>

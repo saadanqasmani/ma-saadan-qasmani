@@ -44,7 +44,7 @@ export default async function AboutPage() {
               text={person.bio}
               as="p"
               stagger={0.012}
-              className="max-w-3xl font-serif text-2xl leading-[1.5] sm:text-[1.85rem] sm:leading-[1.45]"
+              className="max-w-2xl text-lg leading-relaxed text-ink-soft"
             />
           </div>
         </div>

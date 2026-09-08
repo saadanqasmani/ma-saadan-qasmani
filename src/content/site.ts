@@ -76,7 +76,25 @@ export const person = {
  * Scholar, ResearchGate, X). An incorrect URL here actively misleads Google,
  * so an empty list is the correct state until they are confirmed.
  */
-export const profiles: readonly string[] = [];
+export const profiles: readonly string[] = [
+  "https://www.linkedin.com/in/m-a-saadan-qasmani-718a46216/",
+  "https://www.instagram.com/saadan.x/",
+];
+
+/** Named links, for the places the site shows them rather than declares them. */
+export const social = [
+  { label: "LinkedIn", url: "https://www.linkedin.com/in/m-a-saadan-qasmani-718a46216/" },
+  { label: "Instagram", url: "https://www.instagram.com/saadan.x/" },
+] as const;
+
+/**
+ * Scheduling. Booking happens on Calendly rather than in a form here, so
+ * nothing on this site holds a calendar or takes a payment.
+ */
+export const booking = {
+  provider: "Calendly",
+  url: "https://calendly.com/qasmanisaadan",
+} as const;
 
 export const highestBranch = {
   title: "The Highest Branch",
