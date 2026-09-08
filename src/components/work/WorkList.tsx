@@ -5,7 +5,9 @@ import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { FloatingGallery } from "@/components/media/FloatingGallery";
 import { getMediaSet } from "@/content/media";
-import { irisDemo } from "@/content/site";
+
+/** Work entries with a page of their own, keyed by slug. */
+const DETAIL_PAGES: Record<string, string> = { iris: "/work/iris" };
 import type { WorkItem } from "@/content/site";
 
 const CATEGORY_TONE: Record<string, string> = {
@@ -28,7 +30,9 @@ export function WorkList({ items }: { items: WorkItem[] }) {
     <>
       <ul className="border-t border-line">
         {items.map((item, i) => {
-          const set = getMediaSet(item.slug);
+          const detail = DETAIL_PAGES[item.slug];
+          // An entry with its own page does not also need a photo gallery.
+          const set = detail ? null : getMediaSet(item.slug);
           return (
             <Reveal key={item.slug} delay={i * 0.05}>
               <li className="group grid gap-3 border-b border-line py-9 transition-colors hover:bg-canvas-light sm:grid-cols-[7rem_1fr_auto] sm:gap-8">
@@ -36,7 +40,13 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                 <div>
                   {/* Only an entry that actually has a gallery becomes a button:
                       a control that opens nothing is worse than plain text. */}
-                  {set ? (
+                  {detail ? (
+                    <Link href={detail} className="block">
+                      <h2 className="font-serif text-2xl leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl">
+                        {item.title}
+                      </h2>
+                    </Link>
+                  ) : set ? (
                     <button
                       type="button"
                       onClick={() => setOpenSlug(item.slug)}
@@ -69,40 +79,15 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                       </button>
                     )}
 
-                    {item.slug === "iris" && irisDemo.explainer && (
-                      <a
-                        href={irisDemo.explainer}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    {detail && (
+                      <Link
+                        href={detail}
                         className="group/e inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ember transition-opacity hover:opacity-70"
                       >
                         <span className="inline-block h-px w-6 bg-current transition-all duration-300 group-hover/e:w-10" />
-                        Watch the explainer
-                      </a>
+                        Look into {item.title.split(" ")[0]}
+                      </Link>
                     )}
-
-                    {item.slug === "iris" &&
-                      (irisDemo.url ? (
-                        <a
-                          href={irisDemo.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-azure transition-opacity hover:opacity-70"
-                        >
-                          <span className="inline-block h-px w-6 bg-current" />
-                          Request a demo
-                        </a>
-                      ) : (
-                        // Until a booking link exists, the request still reaches
-                        // him: through the same reviewed-by-hand contact inbox.
-                        <Link
-                          href="/contact?subject=IRIS%20demo%20request"
-                          className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-azure transition-opacity hover:opacity-70"
-                        >
-                          <span className="inline-block h-px w-6 bg-current" />
-                          Request a demo
-                        </Link>
-                      ))}
                   </div>
                 </div>
 

@@ -232,7 +232,9 @@ export const collaborators: Record<string, { profile: string | null }> = {
 export const instruments = {
   "img-ipi": {
     label: "IMG & IPI calculator",
-    definition: null as string | null, // PLACEHOLDER — awaiting definitions
+    // Taken from the IRIS explainer rather than written here.
+    definition:
+      "Two econometric instruments (Gültekin & Qasmani). IMG measures the size of an institution's internationalization management gap, from information asymmetry, workflow fragmentation and digital infrastructure deficit. IPI measures the capacity to close that gap, from leadership commitment and faculty readiness. Read together they place an institution in one of four profiles." as string | null,
   },
 } as const;
 
