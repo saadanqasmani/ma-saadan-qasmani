@@ -1,5 +1,11 @@
 import { cn } from "@/lib/utils";
 import { humanizeStatus } from "@/lib/admin/resources";
+import {
+  adminEmails,
+  supabaseAnonKey,
+  supabaseServiceRoleKey,
+  supabaseUrl,
+} from "@/lib/supabase/env";
 
 export function AdminHeading({
   eyebrow,
@@ -60,20 +66,76 @@ export function EmptyState({ children }: { children: React.ReactNode }) {
 }
 
 export function NotConnected() {
+  // Names only, never values: this page is reachable before sign-in.
+  const checks = [
+    {
+      label: "NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL",
+      ok: Boolean(supabaseUrl),
+      why: "The address of your Supabase project.",
+    },
+    {
+      label: "NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY",
+      ok: Boolean(supabaseAnonKey),
+      why: "Lets the site read published content and sign you in.",
+    },
+    {
+      label: "SUPABASE_SERVICE_ROLE_KEY",
+      ok: Boolean(supabaseServiceRoleKey),
+      why: "Lets the dashboard save changes. Server-side only.",
+    },
+    {
+      label: "ADMIN_EMAILS",
+      ok: adminEmails.length > 0,
+      why: "Comma-separated list of addresses allowed in here.",
+    },
+  ];
+
+  const missing = checks.filter((c) => !c.ok);
+
   return (
     <div className="mx-auto max-w-2xl px-6 py-24">
       <p className="eyebrow">Backend</p>
-      <h1 className="mt-3 font-display text-4xl">Supabase is not connected yet</h1>
+      <h1 className="mt-3 font-display text-4xl">
+        {missing.length === 0
+          ? "Almost there"
+          : "Supabase is not connected yet"}
+      </h1>
+
       <p className="mt-5 text-base leading-relaxed text-ink-soft">
-        The dashboard is built and waiting. To switch it on, create a Supabase project, run the
-        two files in <code className="text-ink">supabase/migrations</code>, then set{" "}
-        <code className="text-ink">NEXT_PUBLIC_SUPABASE_URL</code>,{" "}
-        <code className="text-ink">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> and{" "}
-        <code className="text-ink">SUPABASE_SERVICE_ROLE_KEY</code> in your hosting environment.
+        {missing.length === 0
+          ? "Every variable is set. If you are still seeing this page, redeploy so the latest build picks them up."
+          : "The dashboard is built and waiting. Here is exactly what it can and cannot see right now."}
       </p>
-      <p className="mt-4 text-sm text-ink-faint">
-        Until then the public site keeps rendering from the content file, exactly as it does now.
-      </p>
+
+      <ul className="mt-8 border-t border-line">
+        {checks.map((c) => (
+          <li key={c.label} className="grid gap-1 border-b border-line py-4 sm:grid-cols-[1.5rem_1fr]">
+            <span className={c.ok ? "text-verdant" : "text-ember"}>{c.ok ? "\u2713" : "\u00d7"}</span>
+            <div>
+              <p className="break-all font-mono text-sm text-ink">{c.label}</p>
+              <p className="mt-0.5 text-sm text-ink-soft">
+                {c.ok ? "Found." : c.why}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-8 space-y-3 text-sm leading-relaxed text-ink-soft">
+        <p>
+          Set anything marked in red in your hosting provider&rsquo;s environment variables, then
+          <strong className="text-ink"> redeploy</strong>. Variables only reach the site on a new
+          build, which is the step most often missed.
+        </p>
+        <p>
+          You also need the tables: run every file in{" "}
+          <code className="text-ink">supabase/migrations</code> in the Supabase SQL editor. They
+          are safe to run more than once.
+        </p>
+        <p className="text-ink-faint">
+          Until this is finished the public site keeps working, rendering from the content file.
+        </p>
+      </div>
     </div>
   );
 }
