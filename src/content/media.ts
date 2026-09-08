@@ -66,7 +66,7 @@ export const mediaSets: Record<string, MediaSet> = {
       {
         kind: "image",
         src: "/award-2.jpg",
-        caption: "Presented at Kathmandu University, Nepal",
+        caption: "With Dr. Osman Gültekin, Kathmandu University, Nepal",
       },
     ],
   },
