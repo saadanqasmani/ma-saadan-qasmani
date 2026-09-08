@@ -26,8 +26,12 @@ export const person = {
   name: "Saadan Qasmani",
   positioning: "Writer, Researcher, and Strategist",
   location: "Istanbul, Türkiye",
-  // PLACEHOLDER — supply a portrait at /public/portrait.jpg (1200×1600 or larger)
-  portrait: null as string | null,
+  /**
+   * A line engraving, converted from white-on-black to the site's ink on
+   * transparency: the drawing carries its tone in line density, so luminance
+   * became opacity. The untouched original is in /assets.
+   */
+  portrait: "/portrait.png" as string | null,
   bio: `Saadan Qasmani is an internationalization professional, researcher, and novelist based in Istanbul. He directs Global Engagement and Brand Strategy at STAR Scholars Network and co-founded IRIS, a SaaS platform for internationalization management. His practitioner work spans recruitment, partnership management, and intercultural competence training delivered across twelve countries to participants from over seventy nationalities, including UNESCO Peace and Diplomacy Programmes, in Türkiye, Pakistan, Nepal, and Iraq. He is pursuing a master's in Political Science and International Relations at Istanbul Aydın University, where he also founded the campus Model United Nations program and STARLIGHT. His research centers on the political economy of internationalization, nation branding, and the securitization of international students.`,
   roles: [
     {

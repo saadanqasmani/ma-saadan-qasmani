@@ -21,6 +21,7 @@ export function Figure({
   className,
   priority = false,
   tone = "verdant",
+  bare = false,
 }: {
   src?: string | null;
   alt?: string;
@@ -30,13 +31,19 @@ export function Figure({
   className?: string;
   priority?: boolean;
   tone?: "verdant" | "azure" | "ember";
+  /**
+   * For an image that carries its own silhouette on transparency. Drops the
+   * plate behind it and fits rather than crops, so nothing is painted behind
+   * the cut-out and no edge of the drawing is lost.
+   */
+  bare?: boolean;
 }) {
   const reduced = useReducedMotion();
   const toneVar = `var(--${tone})`;
 
   return (
     <motion.figure
-      className={cn("relative overflow-hidden bg-canvas-deep", className)}
+      className={cn("relative overflow-hidden", !bare && "bg-canvas-deep", className)}
       style={{ aspectRatio: ratio }}
       initial={reduced ? undefined : { clipPath: "inset(100% 0 0 0)" }}
       whileInView={reduced ? undefined : { clipPath: "inset(0% 0 0 0)" }}
@@ -49,7 +56,7 @@ export function Figure({
           alt={alt ?? label}
           fill
           priority={priority}
-          className="object-cover"
+          className={bare ? "object-contain" : "object-cover"}
           sizes="(max-width: 768px) 100vw, 50vw"
         />
       ) : (

@@ -31,9 +31,10 @@ export default async function AboutPage() {
             </Reveal>
             <Figure
               src={person.portrait}
+              bare
               alt="Saadan Qasmani"
               label="Author portrait"
-              spec="Portrait orientation · 1200 × 1600 px or larger · /public/portrait.jpg"
+              spec="Portrait orientation · 1200 × 1600 px or larger · /public/portrait.png"
               ratio="3 / 4"
               tone="ember"
             />
