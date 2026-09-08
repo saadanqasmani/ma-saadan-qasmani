@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
-import { publications, highestBranch } from "@/content/site";
+import { getPublications, getBook } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Publications",
   description: "Books, articles, and published work.",
 };
 
-export default function PublicationsPage() {
+export default async function PublicationsPage() {
+  const [publications, highestBranch] = await Promise.all([getPublications(), getBook()]);
+
   return (
     <>
       <PageHeader eyebrow="Publications" title="Published Work" />

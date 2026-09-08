@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ResearchArchive } from "@/components/research/ResearchArchive";
-import { researchItems } from "@/content/site";
+import { getResearchItems } from "@/lib/data";
 import { Mark } from "@/components/collect/Mark";
 import { ResearchConstellation } from "@/components/art/ResearchConstellation";
 import { Reveal } from "@/components/ui/Reveal";
@@ -12,7 +12,9 @@ export const metadata: Metadata = {
     "Working papers and academic research on the political economy of internationalization, nation branding, and the securitization of international students.",
 };
 
-export default function ResearchPage() {
+export default async function ResearchPage() {
+  const researchItems = await getResearchItems();
+
   return (
     <>
       <PageHeader

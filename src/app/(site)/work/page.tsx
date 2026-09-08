@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
-import { workItems } from "@/content/site";
+import { getWorkItems } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "The Work",
@@ -14,7 +14,9 @@ const CATEGORY_TONE: Record<string, string> = {
   "International Education": "text-ember",
 };
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const workItems = await getWorkItems();
+
   return (
     <>
       <PageHeader

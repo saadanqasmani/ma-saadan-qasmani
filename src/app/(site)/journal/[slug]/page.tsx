@@ -3,10 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Reveal } from "@/components/ui/Reveal";
 import { SplitText } from "@/components/ui/SplitText";
-import { blogPosts } from "@/content/site";
+import { getBlogPost, getBlogPosts } from "@/lib/data";
 
-export function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }));
+export async function generateStaticParams() {
+  const posts = await getBlogPosts();
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({
@@ -15,7 +16,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = blogPosts.find((p) => p.slug === slug);
+  const post = await getBlogPost(slug);
   if (!post) return {};
   return { title: post.title, description: post.excerpt };
 }
@@ -26,8 +27,11 @@ export default async function JournalPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = blogPosts.find((p) => p.slug === slug);
+  const post = await getBlogPost(slug);
   if (!post) notFound();
+
+  // Blank lines separate paragraphs, which is how the editor writes them.
+  const paragraphs = post.body.split(/\n{2,}/).filter((p) => p.trim());
 
   return (
     <article className="mx-auto max-w-3xl px-6 pb-28 pt-24 sm:px-10 sm:pt-32">
@@ -42,7 +46,7 @@ export default async function JournalPostPage({
       </Reveal>
 
       <p className="eyebrow mt-10">
-        {post.category} · {post.readingTime} · {post.date}
+        {[post.category, post.readingTime, post.date].filter(Boolean).join(" · ")}
       </p>
 
       <SplitText
@@ -59,7 +63,9 @@ export default async function JournalPostPage({
 
       <Reveal delay={0.3}>
         <div className="mt-12 space-y-6 border-t border-line pt-12 font-serif text-xl leading-[1.7] text-ink">
-          <p>{post.body}</p>
+          {paragraphs.map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
         </div>
       </Reveal>
     </article>

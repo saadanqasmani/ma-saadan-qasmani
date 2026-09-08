@@ -3,27 +3,25 @@ import { Reveal } from "@/components/ui/Reveal";
 import { SplitText } from "@/components/ui/SplitText";
 import { Counter } from "@/components/ui/Counter";
 import { Contours } from "@/components/art/Contours";
-import { highestBranch, person } from "@/content/site";
+import { getBook, getPerson } from "@/lib/data";
 import { PurchasePanel } from "@/components/book/PurchasePanel";
 import { Figure } from "@/components/media/Figure";
 import { Mark } from "@/components/collect/Mark";
 
-export const metadata: Metadata = {
-  title: highestBranch.title,
-  description: highestBranch.synopsis,
-  openGraph: {
-    title: `${highestBranch.title} — a novel by ${person.name}`,
-    description: highestBranch.synopsis,
-    type: "book",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${highestBranch.title} — a novel by ${person.name}`,
-    description: highestBranch.synopsis,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [book, person] = await Promise.all([getBook(), getPerson()]);
+  const byline = `${book.title} — a novel by ${person.name}`;
+  return {
+    title: book.title,
+    description: book.synopsis,
+    openGraph: { title: byline, description: book.synopsis, type: "book" },
+    twitter: { card: "summary_large_image", title: byline, description: book.synopsis },
+  };
+}
 
-export default function HighestBranchPage() {
+export default async function HighestBranchPage() {
+  const [highestBranch, person] = await Promise.all([getBook(), getPerson()]);
+
   return (
     <>
       {/* Title sequence */}

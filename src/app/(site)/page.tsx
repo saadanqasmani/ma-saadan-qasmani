@@ -7,7 +7,7 @@ import { BranchDiagram } from "@/components/art/BranchDiagram";
 import { SeasonsSemesters } from "@/components/art/SeasonsSemesters";
 import { GlobeArcs } from "@/components/art/GlobeArcs";
 import { Contours } from "@/components/art/Contours";
-import { person, highestBranch, researchItems } from "@/content/site";
+import { getPerson, getBook, getResearchItems } from "@/lib/data";
 import { Mark } from "@/components/collect/Mark";
 
 const AREA_TONE: Record<string, string> = {
@@ -20,7 +20,13 @@ const AREA_TONE: Record<string, string> = {
   "Displaced scholars, STEM access": "text-verdant",
 };
 
-export default function Home() {
+export default async function Home() {
+  const [person, highestBranch, researchItems] = await Promise.all([
+    getPerson(),
+    getBook(),
+    getResearchItems(),
+  ]);
+
   return (
     <>
       {/* ─────────── Act I — Arrival ─────────── */}

@@ -1,0 +1,235 @@
+import { createClient } from "@supabase/supabase-js";
+import { supabaseAnonKey, supabaseUrl } from "@/lib/supabase/env";
+import {
+  person as staticPerson,
+  highestBranch as staticBook,
+  researchItems as staticResearch,
+  workItems as staticWork,
+  publications as staticPublications,
+  blogPosts as staticPosts,
+  type BlogPost,
+  type Publication,
+  type ResearchItem,
+  type WorkCategory,
+  type WorkItem,
+} from "@/content/site";
+
+/**
+ * Public reads.
+ *
+ * Every getter falls back to the hand-authored content in src/content/site.ts
+ * when the database is unreachable or empty. The site therefore renders
+ * identically with no backend attached, and each field becomes editable the
+ * moment Supabase is connected — without a rebuild of the pages themselves.
+ */
+
+export type Person = {
+  name: string;
+  positioning: string;
+  location: string;
+  bio: string;
+  practitionerNote: string;
+  portrait: string | null;
+  roles: { title: string; org: string }[];
+  founded: { name: string; org: string }[];
+  honors: { title: string; year: string }[];
+};
+
+export type Book = {
+  title: string;
+  genre: string;
+  subject: string;
+  status: string;
+  synopsis: string;
+  wordCount: number;
+  chapterCount: number;
+  coverImage: string | null;
+  amazonUrl: string | null;
+  directOrderEnabled: boolean;
+};
+
+function readClient() {
+  if (!supabaseUrl || !supabaseAnonKey) return null;
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: { persistSession: false },
+  });
+}
+
+const fallbackPerson: Person = {
+  name: staticPerson.name,
+  positioning: staticPerson.positioning,
+  location: staticPerson.location,
+  bio: staticPerson.bio,
+  practitionerNote: staticPerson.practitionerNote,
+  portrait: staticPerson.portrait,
+  roles: staticPerson.roles.map((r) => ({ ...r })),
+  founded: staticPerson.founded.map((f) => ({ ...f })),
+  honors: staticPerson.honors.map((h) => ({ ...h })),
+};
+
+const fallbackBook: Book = {
+  title: staticBook.title,
+  genre: staticBook.genre,
+  subject: staticBook.subject,
+  status: staticBook.status,
+  synopsis: staticBook.synopsis,
+  wordCount: staticBook.wordCount,
+  chapterCount: staticBook.chapterCount,
+  coverImage: staticBook.coverImage,
+  amazonUrl: staticBook.purchase.amazon.url,
+  directOrderEnabled: true,
+};
+
+/** Prefer a stored value, but never let a blank column erase real copy. */
+function pick<T>(value: T | null | undefined, fallback: T): T {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === "string" && value.trim() === "") return fallback;
+  return value;
+}
+
+export async function getPerson(): Promise<Person> {
+  const db = readClient();
+  if (!db) return fallbackPerson;
+
+  const { data, error } = await db.from("site_settings").select("*").maybeSingle();
+  if (error || !data) return fallbackPerson;
+
+  const list = <T,>(value: unknown, fallback: T[]): T[] =>
+    Array.isArray(value) && value.length > 0 ? (value as T[]) : fallback;
+
+  return {
+    name: pick(data.name, fallbackPerson.name),
+    positioning: pick(data.positioning, fallbackPerson.positioning),
+    location: pick(data.location, fallbackPerson.location),
+    bio: pick(data.bio, fallbackPerson.bio),
+    practitionerNote: pick(data.practitioner_note, fallbackPerson.practitionerNote),
+    portrait: data.portrait_path || null,
+    roles: list(data.roles, fallbackPerson.roles),
+    founded: list(data.founded, fallbackPerson.founded),
+    honors: list(data.honors, fallbackPerson.honors),
+  };
+}
+
+export async function getBook(): Promise<Book> {
+  const db = readClient();
+  if (!db) return fallbackBook;
+
+  const { data, error } = await db.from("book_settings").select("*").maybeSingle();
+  if (error || !data) return fallbackBook;
+
+  return {
+    title: pick(data.title, fallbackBook.title),
+    genre: pick(data.genre, fallbackBook.genre),
+    subject: pick(data.subject, fallbackBook.subject),
+    status: pick(data.status, fallbackBook.status),
+    synopsis: pick(data.synopsis, fallbackBook.synopsis),
+    wordCount: pick(data.word_count, fallbackBook.wordCount),
+    chapterCount: pick(data.chapter_count, fallbackBook.chapterCount),
+    coverImage: data.cover_image_path || null,
+    amazonUrl: data.amazon_url || null,
+    directOrderEnabled: data.direct_order_enabled ?? true,
+  };
+}
+
+export async function getResearchItems(): Promise<ResearchItem[]> {
+  const db = readClient();
+  if (!db) return staticResearch;
+
+  const { data, error } = await db
+    .from("research_items")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error || !data || data.length === 0) return staticResearch;
+
+  return data.map((row) => ({
+    slug: row.slug,
+    title: row.title,
+    abstract: row.abstract ?? "",
+    date: row.date ?? "",
+    area: row.area ?? "",
+    keywords: row.keywords ?? [],
+    type: row.type ?? "",
+    coAuthors: row.co_authors ?? [],
+    institution: row.institution ?? undefined,
+    doiOrLink: row.doi_or_link ?? null,
+    access: row.access === "open" ? "open" : "restricted",
+  }));
+}
+
+export async function getWorkItems(): Promise<WorkItem[]> {
+  const db = readClient();
+  if (!db) return staticWork;
+
+  const { data, error } = await db
+    .from("work_items")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error || !data || data.length === 0) return staticWork;
+
+  return data.map((row) => ({
+    slug: row.slug,
+    title: row.title,
+    category: (row.category ?? "Projects") as WorkCategory,
+    summary: row.summary ?? "",
+    date: row.date ?? "",
+  }));
+}
+
+export async function getPublications(): Promise<Publication[]> {
+  const db = readClient();
+  if (!db) return staticPublications;
+
+  const { data, error } = await db
+    .from("publications")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order", { ascending: true });
+
+  if (error || !data) return staticPublications;
+
+  return data.map((row) => ({
+    slug: row.slug,
+    title: row.title,
+    kind: (row.kind ?? "Other") as Publication["kind"],
+    summary: row.summary ?? "",
+    date: row.date ?? "",
+    externalLink: row.external_link ?? null,
+  }));
+}
+
+export async function getBlogPosts(): Promise<BlogPost[]> {
+  const db = readClient();
+  if (!db) return staticPosts;
+
+  const { data, error } = await db
+    .from("blog_posts")
+    .select("*")
+    .eq("published", true)
+    .order("published_at", { ascending: false });
+
+  if (error || !data || data.length === 0) return staticPosts;
+
+  return data.map((row) => ({
+    slug: row.slug,
+    title: row.title,
+    subtitle: row.subtitle ?? undefined,
+    date: (row.published_at ?? row.created_at ?? "").slice(0, 10),
+    category: row.category ?? "Notes",
+    tags: row.tags ?? [],
+    readingTime: row.reading_time ?? "",
+    excerpt: row.excerpt ?? "",
+    body: row.body ?? "",
+    coverImage: row.cover_image_path ?? null,
+  }));
+}
+
+export async function getBlogPost(slug: string): Promise<BlogPost | null> {
+  const posts = await getBlogPosts();
+  return posts.find((p) => p.slug === slug) ?? null;
+}

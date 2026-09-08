@@ -3,16 +3,21 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { SplitText } from "@/components/ui/SplitText";
 import { MagneticLink } from "@/components/ui/MagneticLink";
-import { person } from "@/content/site";
+import { getPerson } from "@/lib/data";
 import { Figure } from "@/components/media/Figure";
 import { Mark } from "@/components/collect/Mark";
 
-export const metadata: Metadata = {
-  title: "The Author",
-  description: `Biography of ${person.name} — ${person.positioning}.`,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const person = await getPerson();
+  return {
+    title: "The Author",
+    description: `Biography of ${person.name}, ${person.positioning.toLowerCase()}.`,
+  };
+}
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const person = await getPerson();
+
   return (
     <>
       <PageHeader eyebrow="The Author" title="The Person" />

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
-import { blogPosts } from "@/content/site";
+import { getBlogPosts } from "@/lib/data";
 import { Figure } from "@/components/media/Figure";
 
 export const metadata: Metadata = {
@@ -10,7 +10,9 @@ export const metadata: Metadata = {
   description: "Essays, reflections, and commentary.",
 };
 
-export default function JournalPage() {
+export default async function JournalPage() {
+  const blogPosts = await getBlogPosts();
+
   return (
     <>
       <PageHeader
