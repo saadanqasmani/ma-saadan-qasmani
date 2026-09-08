@@ -109,7 +109,7 @@ export const highestBranch = {
   coverByline: "M. A. Saadan Qasmani",
   wordCount: 144000,
   chapterCount: 29,
-  status: "PLACEHOLDER — publication status not yet confirmed (self-published / seeking representation / imprint / target date)",
+  status: "Releasing 19 October 2026",
   synopsis:
     "A boy crosses the pass at seventeen, leaving a forest he knows by its seasons for a country that measures time in semesters. What follows is a fable of arrival, the slow architecture of belonging and its costs, told across the years that turn a student into someone his own mother might not recognize.",
   subject:
@@ -143,6 +143,12 @@ export const orgLinks: Record<string, string | null> = {
  */
 export const irisDemo = {
   url: null as string | null, // PLACEHOLDER — awaiting the demo link
+  /**
+   * A self-contained animated explainer. It is a full-bleed film with its
+   * own transport controls, so it opens in its own tab rather than being
+   * squeezed into a modal.
+   */
+  explainer: "/iris-explainer.html",
 };
 
 export type WorkCategory =

@@ -69,6 +69,18 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                       </button>
                     )}
 
+                    {item.slug === "iris" && irisDemo.explainer && (
+                      <a
+                        href={irisDemo.explainer}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group/e inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ember transition-opacity hover:opacity-70"
+                      >
+                        <span className="inline-block h-px w-6 bg-current transition-all duration-300 group-hover/e:w-10" />
+                        Watch the explainer
+                      </a>
+                    )}
+
                     {item.slug === "iris" &&
                       (irisDemo.url ? (
                         <a
