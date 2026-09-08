@@ -50,6 +50,17 @@ export const person = {
   ],
 } as const;
 
+/**
+ * Public profiles that belong to the same person.
+ *
+ * Search engines use these to connect this site to an already-established
+ * identity, which is the fastest route to ranking for a personal name.
+ * PLACEHOLDER — add real, verified URLs only (LinkedIn, ORCID, Google
+ * Scholar, ResearchGate, X). An incorrect URL here actively misleads Google,
+ * so an empty list is the correct state until they are confirmed.
+ */
+export const profiles: readonly string[] = [];
+
 export const highestBranch = {
   title: "The Highest Branch",
   genre: "Allegorical literary fiction, told as a fable",

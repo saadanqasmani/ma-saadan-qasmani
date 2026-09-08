@@ -1,0 +1,104 @@
+/**
+ * Structured data (schema.org, JSON-LD).
+ *
+ * This is how a search engine learns that "Saadan Qasmani" is a person rather
+ * than a phrase, and that The Highest Branch is a book rather than a page
+ * title. It is also the input to Google's knowledge panel.
+ *
+ * Every field below is derived from content that already exists. Nothing is
+ * asserted that the site does not already state in prose: no invented job
+ * titles, dates, identifiers, page counts, or profile links. A value we do
+ * not have is omitted rather than guessed, because structured data that
+ * contradicts the page is worse than no structured data at all.
+ */
+
+import type { Book, Person } from "@/lib/data";
+import { profiles } from "@/content/site";
+import { siteUrl } from "@/lib/siteUrl";
+
+/** Stable node ids, so Book.author can point at the Person rather than repeat it. */
+export const PERSON_ID = `${siteUrl}/#person`;
+const SITE_ID = `${siteUrl}/#website`;
+
+/** Drops empty strings, nulls and empty arrays so no blank keys are emitted. */
+function compact<T extends Record<string, unknown>>(input: T): T {
+  return Object.fromEntries(
+    Object.entries(input).filter(([, v]) => {
+      if (v === null || v === undefined) return false;
+      if (typeof v === "string") return v.trim() !== "";
+      if (Array.isArray(v)) return v.length > 0;
+      return true;
+    })
+  ) as T;
+}
+
+export function personJsonLd(person: Person) {
+  const [primaryRole] = person.roles;
+
+  // Roles double as employer and school. Only the ones naming an
+  // organisation are used, and each is emitted as the plain
+  // Organization/EducationalOrganization it is.
+  const worksFor = person.roles
+    .filter((r) => r.org && !/university|college|school/i.test(r.org))
+    .map((r) => ({ "@type": "Organization", name: r.org }));
+
+  // `affiliation`, deliberately, not `alumniOf`: the MA is in progress, and
+  // alumniOf would assert a completed degree. affiliation is true either way.
+  const affiliation = person.roles
+    .filter((r) => r.org && /university|college|school/i.test(r.org))
+    .map((r) => ({ "@type": "EducationalOrganization", name: r.org }));
+
+  return compact({
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": PERSON_ID,
+    name: person.name,
+    url: siteUrl,
+    description: person.bio,
+    jobTitle: primaryRole?.title,
+    worksFor,
+    affiliation,
+    homeLocation: person.location
+      ? { "@type": "Place", name: person.location }
+      : null,
+    image: person.portrait ? new URL(person.portrait, siteUrl).toString() : null,
+    // The single most valuable field here: it tells Google that this site and
+    // an established profile elsewhere are the same person. Empty until real
+    // URLs are supplied; an invented one would be worse than none.
+    sameAs: [...profiles],
+  });
+}
+
+export function websiteJsonLd(person: Person) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": SITE_ID,
+    url: siteUrl,
+    name: person.name,
+    inLanguage: "en",
+    publisher: { "@id": PERSON_ID },
+  };
+}
+
+export function bookJsonLd(book: Book) {
+  // The status field is free text and may still hold a placeholder, so it is
+  // never mapped to a publication date. Word and chapter counts are real but
+  // have no honest schema.org equivalent (numberOfPages is pages, not words),
+  // so they stay in the page copy where they are already explained.
+  return compact({
+    "@context": "https://schema.org",
+    "@type": "Book",
+    name: book.title,
+    url: `${siteUrl}/the-highest-branch`,
+    description: book.synopsis,
+    genre: book.genre,
+    about: book.subject,
+    author: { "@id": PERSON_ID },
+    image: book.coverImage
+      ? new URL(book.coverImage, siteUrl).toString()
+      : null,
+    // Only present once the book is actually listed somewhere buyable.
+    sameAs: book.amazonUrl ? [book.amazonUrl] : [],
+  });
+}

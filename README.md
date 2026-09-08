@@ -84,6 +84,23 @@ missing, blank, or the database is unreachable. The site therefore renders exact
 today with no backend attached, and each field starts coming from the dashboard the moment you
 fill it in. Saving anything refreshes the affected public pages within seconds.
 
+## Search visibility
+
+- `src/app/sitemap.ts` and `src/app/robots.ts` generate `/sitemap.xml` and `/robots.txt`. Both
+  build their URLs from `NEXT_PUBLIC_SITE_URL`, so that variable must name the real domain or
+  Search Console will reject the sitemap as off-property.
+- `src/lib/seo/jsonLd.ts` emits schema.org `Person`, `WebSite` and `Book` structured data. Every
+  field is derived from existing content; anything unknown is omitted rather than guessed, since
+  structured data that contradicts the page is worse than none.
+- `profiles` in `src/content/site.ts` is the `sameAs` list: the verified URLs of the same person
+  elsewhere (LinkedIn, ORCID, Google Scholar, ResearchGate). This is what connects a new domain to
+  an established identity, and is the highest-value field here. It is empty until real URLs are
+  confirmed.
+- `src/app/opengraph-image.tsx` renders the 1200x630 share card. It fetches the display face and
+  falls back to the built-in font on any failure, so a font outage cannot fail a deployment.
+- `src/app/icon.svg` is the tab icon. `public/google*.html` is Google's ownership proof and must
+  stay reachable for as long as the Search Console property exists.
+
 ## Roadmap
 
 Still open: connecting an email provider so the newsletter can actually send, appointment

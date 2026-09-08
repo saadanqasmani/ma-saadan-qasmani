@@ -7,6 +7,8 @@ import { getBook, getPerson } from "@/lib/data";
 import { PurchasePanel } from "@/components/book/PurchasePanel";
 import { Figure } from "@/components/media/Figure";
 import { Mark } from "@/components/collect/Mark";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { bookJsonLd, personJsonLd } from "@/lib/seo/jsonLd";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [book, person] = await Promise.all([getBook(), getPerson()]);
@@ -24,6 +26,11 @@ export default async function HighestBranchPage() {
 
   return (
     <>
+      {/* The Person node is repeated here so this page stands alone as an
+          entity: search engines index pages, not sites, and Book.author
+          resolves against it by @id. */}
+      <JsonLd data={[bookJsonLd(highestBranch), personJsonLd(person)]} />
+
       {/* Title sequence */}
       <section className="relative flex min-h-[88vh] items-center overflow-hidden border-b border-line">
         <Contours className="pointer-events-none absolute -right-[18%] top-0 h-full w-[110%] opacity-45 lg:-right-[6%] lg:w-[68%] lg:opacity-100" />

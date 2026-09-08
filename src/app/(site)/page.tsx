@@ -9,6 +9,8 @@ import { GlobeArcs } from "@/components/art/GlobeArcs";
 import { Contours } from "@/components/art/Contours";
 import { getPerson, getBook, getResearchItems } from "@/lib/data";
 import { Mark } from "@/components/collect/Mark";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { personJsonLd, websiteJsonLd } from "@/lib/seo/jsonLd";
 
 const AREA_TONE: Record<string, string> = {
   "Political economy of internationalization": "text-azure",
@@ -29,6 +31,8 @@ export default async function Home() {
 
   return (
     <>
+      <JsonLd data={[personJsonLd(person), websiteJsonLd(person)]} />
+
       {/* ─────────── Act I — Arrival ─────────── */}
       <section className="relative min-h-[94vh] overflow-hidden">
         {/* Branch: a full-bleed backdrop on small screens, a right-hand column above lg */}
