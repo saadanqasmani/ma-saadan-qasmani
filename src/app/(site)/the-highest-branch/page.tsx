@@ -17,8 +17,20 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: book.title,
     description: book.synopsis,
-    openGraph: { title: byline, description: book.synopsis, type: "book" },
-    twitter: { card: "summary_large_image", title: byline, description: book.synopsis },
+    openGraph: {
+      title: byline,
+      description: book.synopsis,
+      type: "book",
+      // The cover, not the site-wide card: a link to the novel should
+      // preview as the novel.
+      ...(book.coverImage ? { images: [{ url: book.coverImage }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: byline,
+      description: book.synopsis,
+      ...(book.coverImage ? { images: [book.coverImage] } : {}),
+    },
   };
 }
 
@@ -84,8 +96,8 @@ export default async function HighestBranchPage() {
                 src={highestBranch.coverImage}
                 alt={`Cover of ${highestBranch.title}`}
                 label="Book cover"
-                spec="Cover artwork · 1600 × 2400 px · not yet commissioned"
-                ratio="2 / 3"
+                spec="Cover artwork · 1600 × 2400 px"
+                ratio="529 / 830"
                 tone="ember"
               />
             </div>

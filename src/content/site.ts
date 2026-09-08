@@ -114,7 +114,7 @@ export const highestBranch = {
     "A boy crosses the pass at seventeen, leaving a forest he knows by its seasons for a country that measures time in semesters. What follows is a fable of arrival, the slow architecture of belonging and its costs, told across the years that turn a student into someone his own mother might not recognize.",
   subject:
     "The international student experience, tracked through a protagonist's life from adolescence through a professional and academic arc abroad.",
-  coverImage: null as string | null, // PLACEHOLDER — no cover exists yet; requires artwork approval per art direction protocol
+  coverImage: "/book-cover.png" as string | null,
   purchase: {
     amazon: {
       url: null as string | null, // PLACEHOLDER — awaiting real Amazon link
