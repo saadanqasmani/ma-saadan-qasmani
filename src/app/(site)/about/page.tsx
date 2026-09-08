@@ -6,6 +6,7 @@ import { MagneticLink } from "@/components/ui/MagneticLink";
 import { getPerson } from "@/lib/data";
 import { Figure } from "@/components/media/Figure";
 import { Mark } from "@/components/collect/Mark";
+import { orgLinks } from "@/content/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const person = await getPerson();
@@ -63,7 +64,18 @@ export default async function AboutPage() {
                     <Reveal key={role.title} delay={i * 0.06}>
                       <li className="grid gap-1 border-b border-line py-6 sm:grid-cols-[1fr_auto] sm:items-baseline sm:gap-8">
                         <span className="font-serif text-xl text-ink">{role.title}</span>
-                        <span className="text-sm text-ink-soft">{role.org}</span>
+                        {orgLinks[role.org] ? (
+                          <a
+                            href={orgLinks[role.org]!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-ink-soft underline decoration-ember decoration-1 underline-offset-4 transition-colors hover:text-ember"
+                          >
+                            {role.org}
+                          </a>
+                        ) : (
+                          <span className="text-sm text-ink-soft">{role.org}</span>
+                        )}
                       </li>
                     </Reveal>
                   ))}

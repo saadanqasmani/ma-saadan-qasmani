@@ -5,6 +5,7 @@ import { getResearchItems } from "@/lib/data";
 import { Mark } from "@/components/collect/Mark";
 import { ResearchConstellation } from "@/components/art/ResearchConstellation";
 import { Reveal } from "@/components/ui/Reveal";
+import { researchNote } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Research",
@@ -30,7 +31,7 @@ export default async function ResearchPage() {
             </Reveal>
             <Reveal delay={0.1}>
               <h2 className="mt-4 font-display text-3xl leading-tight sm:text-4xl">
-                Eight papers, seven fields, one question.
+                Nine papers, one question.
               </h2>
               <p className="mt-5 max-w-sm text-sm leading-relaxed text-ink-soft">
                 How institutions say one thing about international students and do another —
@@ -45,6 +46,9 @@ export default async function ResearchPage() {
       </section>
 
       <div className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-20">
+        <p className="mb-4 max-w-2xl border-l-2 border-ember pl-5 font-serif text-lg italic leading-relaxed text-ink-soft">
+          {researchNote}
+        </p>
         <p className="mb-8 flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint">
           Three of these belong to one set
           <Mark id="trilogy" className="-my-2" />

@@ -27,11 +27,16 @@ function project(lonDeg: number, latDeg: number) {
   return { x, y, visible: cosC > 0 };
 }
 
-const HOME = { name: "Istanbul", lon: 28.98, lat: 41.01 };
+// Istanbul is the base the work runs from; Türkiye is also one of the four
+// countries the training was delivered in, so the home point carries both.
+const HOME = { name: "Türkiye", lon: 28.98, lat: 41.01 };
 
+// Countries, plotted at their capitals. The label names the country, because
+// that is the claim being made: training was delivered there.
 const DESTINATIONS = [
-  { name: "Kathmandu", lon: 85.32, lat: 27.7, note: "UNESCO Peace and Diplomacy Programme" },
-  { name: "Baghdad", lon: 44.36, lat: 33.31, note: "UNESCO Peace and Diplomacy Programme" },
+  { name: "Pakistan", lon: 73.06, lat: 33.69, note: "Training delivered" },
+  { name: "Nepal", lon: 85.32, lat: 27.7, note: "UNESCO Peace and Diplomacy Programme" },
+  { name: "Iraq", lon: 44.36, lat: 33.31, note: "UNESCO Peace and Diplomacy Programme" },
 ];
 
 // Unlabelled reach — decorative, no claim about specific cities.
@@ -68,7 +73,7 @@ export function GlobeArcs() {
   return (
     <div className="relative">
       <svg viewBox="150 175 620 400" fill="none" className="h-auto w-full" role="img"
-        aria-label="A hemisphere with routes from Istanbul to Kathmandu and Baghdad">
+        aria-label="A hemisphere with routes from Türkiye to Pakistan, Nepal and Iraq">
         {/* Globe body */}
         <circle cx={CX} cy={CY} r={R} fill="var(--canvas-light)" opacity={0.7} />
         <circle cx={CX} cy={CY} r={R} stroke="var(--line-strong)" strokeWidth={1.2} />

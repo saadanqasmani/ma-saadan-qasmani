@@ -15,7 +15,7 @@ export const person = {
   location: "Istanbul, Türkiye",
   // PLACEHOLDER — supply a portrait at /public/portrait.jpg (1200×1600 or larger)
   portrait: null as string | null,
-  bio: `Saadan Qasmani is an internationalization professional, researcher, and novelist based in Istanbul. He directs Global Engagement and Brand Strategy at STAR Scholars Network and co-founded IRIS, a SaaS platform for internationalization management. His practitioner work spans recruitment, partnership management, and intercultural competence training delivered across twelve countries to participants from over seventy nationalities, including UNESCO Peace and Diplomacy Programmes in Istanbul, Kathmandu, and Baghdad. He is pursuing a master's in Political Science and International Relations at Istanbul Aydın University, where he also founded the campus Model United Nations program and Spotlight Magazine. His research centers on the political economy of internationalization, nation branding, and the securitization of international students.`,
+  bio: `Saadan Qasmani is an internationalization professional, researcher, and novelist based in Istanbul. He directs Global Engagement and Brand Strategy at STAR Scholars Network and co-founded IRIS, a SaaS platform for internationalization management. His practitioner work spans recruitment, partnership management, and intercultural competence training delivered across twelve countries to participants from over seventy nationalities, including UNESCO Peace and Diplomacy Programmes, in Türkiye, Pakistan, Nepal, and Iraq. He is pursuing a master's in Political Science and International Relations at Istanbul Aydın University, where he also founded the campus Model United Nations program and Spotlight Magazine. His research centers on the political economy of internationalization, nation branding, and the securitization of international students.`,
   roles: [
     {
       title: "Director of Global Engagement & Brand Strategy",
@@ -31,7 +31,7 @@ export const person = {
     },
   ],
   practitionerNote:
-    "Practitioner work in recruitment, partnership management, and intercultural competence development (ICD) training delivered across 12+ countries to participants from 70+ nationalities, including UNESCO Peace and Diplomacy Programmes in Istanbul, Kathmandu, and Baghdad.",
+    "Practitioner work in recruitment, partnership management, and intercultural competence development (ICD) training delivered across 12 countries to participants from 70+ nationalities, including UNESCO Peace and Diplomacy Programmes, in Türkiye, Pakistan, Nepal, and Iraq.",
   founded: [
     {
       name: "Model United Nations Program",
@@ -84,6 +84,16 @@ export const highestBranch = {
   },
 } as const;
 
+/**
+ * Organisations that have a public home worth sending a reader to. Same rule
+ * as collaborators: a null entry renders as plain text, never a dead link.
+ */
+export const orgLinks: Record<string, string | null> = {
+  "STAR Scholars Network": "https://starscholars.org",
+  // PLACEHOLDER — awaiting the URL Saadan wants used.
+  "Istanbul Aydın University": null,
+};
+
 export type WorkCategory =
   | "Academic"
   | "Research"
@@ -113,6 +123,14 @@ export const workItems: WorkItem[] = [
     date: "2024",
   },
   {
+    slug: "international-student-recruitment",
+    title: "International Student Recruitment",
+    category: "International Education",
+    summary:
+      "Recruitment practice across Türkiye, Pakistan, Nepal, and Iraq. PLACEHOLDER — full description pending.",
+    date: "2021",
+  },
+  {
     slug: "star-scholars-global-engagement",
     title: "Global Engagement & Brand Strategy",
     category: "Global Engagement",
@@ -125,7 +143,7 @@ export const workItems: WorkItem[] = [
     title: "UNESCO Peace and Diplomacy Programmes",
     category: "International Education",
     summary:
-      "Intercultural competence development (ICD) training delivered in Istanbul, Kathmandu, and Baghdad. PLACEHOLDER — full description pending.",
+      "Intercultural competence development (ICD) training delivered in Türkiye, Pakistan, Nepal, and Iraq. PLACEHOLDER — full description pending.",
     date: "2022",
   },
   {
@@ -138,11 +156,39 @@ export const workItems: WorkItem[] = [
   },
 ];
 
+/**
+ * People the work is credited to, and where a reader can go to read more.
+ * A null profile renders as plain text rather than a dead link, so a name is
+ * never a broken promise.
+ */
+export const collaborators: Record<string, { profile: string | null }> = {
+  // PLACEHOLDER — awaiting the Academia.edu URL.
+  "Dr. Osman Gultekin": { profile: null },
+};
+
+/**
+ * Instruments a reader can ask to use. The definition is shown verbatim in a
+ * tooltip; it stays null until Saadan supplies the wording, because guessing
+ * at what a measure means is exactly the kind of invention this site avoids.
+ */
+export const instruments = {
+  "img-ipi": {
+    label: "IMG & IPI calculator",
+    definition: null as string | null, // PLACEHOLDER — awaiting definitions
+  },
+} as const;
+
+/** The through-line of the archive, in Saadan's own framing. */
+export const researchNote =
+  "All research here is in collaboration with Dr. Osman Gultekin, or an expansion of his work.";
+
 export type ResearchAccess = "open" | "restricted";
 
 export type ResearchItem = {
   slug: string;
   title: string;
+  /** The part after the colon. Kept separate so listings can set it smaller. */
+  subtitle?: string;
   abstract: string;
   date: string;
   area: string;
@@ -152,99 +198,126 @@ export type ResearchItem = {
   institution?: string;
   doiOrLink?: string | null;
   access: ResearchAccess;
+  /**
+   * Marks a paper that ships an instrument readers can ask to use. Currently
+   * only the IMG and IPI calculator.
+   */
+  instrument?: "img-ipi";
 };
 
 export const researchItems: ResearchItem[] = [
   {
-    slug: "bologna-instrument-adoption",
-    title:
-      "Bologna Without Substance: Instrument Adoption in Ukraine–Türkiye Higher Education Cooperation",
-    abstract:
-      "PLACEHOLDER — abstract pending. Co-authored with Benjamin Kutsyuruba.",
-    date: "In progress",
-    area: "Political economy of internationalization",
-    keywords: ["Bologna Process", "Ukraine", "Türkiye", "higher education policy"],
-    type: "Working paper",
-    coAuthors: ["Benjamin Kutsyuruba"],
-    access: "restricted",
-  },
-  {
-    slug: "mou-activation-canada-turkiye",
-    title: "Partnership Theatre: MoU Activation Between Canada and Türkiye",
-    abstract: "PLACEHOLDER — abstract pending. Co-authored with Alyson King.",
-    date: "In progress",
-    area: "Partnership management",
-    keywords: ["MoUs", "Canada", "Türkiye", "internationalization"],
-    type: "Working paper",
-    coAuthors: ["Alyson King"],
-    access: "restricted",
-  },
-  {
-    slug: "marginalization-n580",
-    title: "Marginalization Among International Students (n = 580)",
-    abstract:
-      "PLACEHOLDER — abstract pending. Resubmitted to JUMP. First paper of a corruption trilogy.",
-    date: "Resubmitted",
+    slug: "structural-marginalization-turkish-universities",
+    title: "Structural Marginalization of International Students in Turkish Universities",
+    subtitle: "Tokenism and Hope Trafficking as Mechanisms of Institutional Failure",
+    abstract: "PLACEHOLDER — abstract pending.",
+    date: "Upcoming — submitted to JUMP",
     area: "International student experience",
-    keywords: ["marginalization", "international students", "corruption"],
-    type: "Journal article — resubmitted to JUMP",
+    keywords: ["marginalization", "tokenism", "hope trafficking", "Türkiye"],
+    type: "Journal article",
+    coAuthors: ["Dr. Osman Gultekin"],
+    access: "restricted",
+  },
+  {
+    slug: "ai-international-academic-relations",
+    title:
+      "The Role of Artificial Intelligence in International Academic Relations and the Internationalization of Higher Education Institutions",
+    subtitle: "An Empirical Analysis from an Emerging Comprehensive University",
+    abstract: "PLACEHOLDER — abstract pending.",
+    date: "In progress",
+    area: "Internationalization theory",
+    keywords: ["artificial intelligence", "academic relations", "internationalization"],
+    type: "Working paper",
+    coAuthors: ["Dr. Osman Gultekin"],
+    access: "restricted",
+    instrument: "img-ipi",
+  },
+  {
+    slug: "six-eras-internationalization",
+    title: "Six Eras of Internationalization in Higher Education",
+    subtitle: "Infrastructure, Adaptation, and the Cost of Delay",
+    abstract: "PLACEHOLDER — abstract pending.",
+    date: "Upcoming — submitted for review",
+    area: "Internationalization theory",
+    keywords: ["periodization", "infrastructure", "higher education"],
+    type: "Journal article",
+    coAuthors: ["Dr. Osman Gultekin"],
     access: "restricted",
   },
   {
     slug: "selling-merit",
     title: "Selling Merit",
-    abstract:
-      "PLACEHOLDER — abstract pending. Third paper of the corruption trilogy.",
+    subtitle:
+      "Scholarship Capture, Hope Trafficking, and the Architecture of Self-Congratulatory Banality in the Internationalisation of Turkish Higher Education",
+    abstract: "PLACEHOLDER — abstract pending.",
     date: "In progress",
     area: "International student experience",
-    keywords: ["merit", "recruitment", "corruption"],
+    keywords: ["merit", "scholarships", "hope trafficking", "Türkiye"],
     type: "Working paper",
-    access: "restricted",
-  },
-  {
-    slug: "six-eras",
-    title: "Six Eras",
-    abstract:
-      "PLACEHOLDER — abstract pending. Theoretical paper, in preparation for Frontiers in Education.",
-    date: "In preparation",
-    area: "Internationalization theory",
-    keywords: ["internationalization", "higher education", "periodization"],
-    type: "Theoretical paper — in prep for Frontiers in Education",
+    coAuthors: ["Dr. Osman Gultekin"],
     access: "restricted",
   },
   {
     slug: "security-sovereignty-international-student",
     title: "Security, Sovereignty, and the International Student",
-    abstract:
-      "PLACEHOLDER — abstract pending. Co-authored with Ragıp Kutay Karaca.",
+    subtitle: "Commercial Dependence and the Governance of Cross-Border Mobility",
+    abstract: "PLACEHOLDER — abstract pending.",
     date: "In progress",
     area: "Securitization of international students",
-    keywords: ["securitization", "sovereignty", "international students"],
+    keywords: ["securitization", "sovereignty", "cross-border mobility"],
     type: "Working paper",
     coAuthors: ["Ragıp Kutay Karaca"],
     access: "restricted",
   },
   {
-    slug: "unesco-icd-peace-diplomacy",
-    title: "Intercultural Competence Development in UNESCO Peace and Diplomacy Programmes",
+    slug: "unesco-short-term-programmes-icd",
+    title:
+      "The Role of UNESCO Short-Term Programmes in Students’ Intercultural Competence Development",
+    subtitle: "Evidence from the UNESCO Chair Peace and Diplomacy Programmes",
     abstract: "PLACEHOLDER — abstract pending.",
     date: "In progress",
     area: "Intercultural competence development",
-    keywords: ["UNESCO", "peace and diplomacy", "ICD"],
+    keywords: ["UNESCO", "peace and diplomacy", "intercultural competence"],
     type: "Working paper",
     institution: "UNESCO",
+    coAuthors: ["Dr. Osman Gultekin"],
     access: "restricted",
   },
   {
-    slug: "wisdom-programme-displaced-women-stem",
-    title: "The WISDOM Programme: Displaced Women in STEM",
-    abstract:
-      "PLACEHOLDER — abstract pending. Istanbul Aydın University × OWSD.",
+    slug: "from-survival-to-contribution",
+    title: "From Survival to Contribution",
+    subtitle:
+      "The WISDOM Programme, Displaced Women in STEM, and the Peacebuilding Function of Higher Education",
+    abstract: "PLACEHOLDER — abstract pending.",
     date: "In progress",
     area: "Displaced scholars, STEM access",
-    keywords: ["WISDOM", "displaced women", "STEM", "OWSD"],
+    keywords: ["WISDOM", "displaced scholars", "women in STEM", "peacebuilding"],
     type: "Working paper",
-    institution: "Istanbul Aydın University × OWSD",
+    coAuthors: ["Dr. Osman Gultekin"],
+    access: "restricted",
+  },
+  {
+    slug: "when-the-mou-is-the-outcome",
+    title: "When the MoU Is the Outcome",
+    subtitle: "Measuring Partnership Activation in Canadian and Turkish Higher Education",
+    abstract: "PLACEHOLDER — abstract pending.",
+    date: "In progress",
+    area: "Partnership management",
+    keywords: ["MoUs", "partnership activation", "Canada", "Türkiye"],
+    type: "Working paper",
+    coAuthors: ["Dr. Alyson E. King", "Dr. Osman Gultekin"],
+    access: "restricted",
+  },
+  {
+    slug: "borrowed-instruments-unbuilt-systems",
+    title: "Borrowed Instruments, Unbuilt Systems",
+    subtitle: "Bologna Compliance and the Formalism Inheritance in Ukraine and Türkiye",
+    abstract: "PLACEHOLDER — abstract pending.",
+    date: "In progress",
+    area: "Political economy of internationalization",
+    keywords: ["Bologna Process", "Ukraine", "Türkiye", "policy formalism"],
+    type: "Working paper",
+    coAuthors: ["Dr. Benjamin Kutsyuruba", "Dr. Osman Gultekin"],
     access: "restricted",
   },
 ];

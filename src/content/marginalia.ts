@@ -43,8 +43,8 @@ export const MARKS: Mark[] = [
   {
     id: "unesco",
     glyph: "star",
-    hint: "Three cities, one programme",
-    title: "Istanbul, Kathmandu, Baghdad",
+    hint: "Four countries, one programme",
+    title: "Türkiye, Pakistan, Nepal, Iraq",
     line: "UNESCO Peace and Diplomacy Programmes.",
   },
   {
