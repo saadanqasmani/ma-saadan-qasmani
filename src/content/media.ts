@@ -60,15 +60,13 @@ export const mediaSets: Record<string, MediaSet> = {
     items: [
       {
         kind: "image",
-        src: null,
+        src: "/award-1.jpg",
         caption: "The award, 2024 STAR Global Conference",
-        awaiting: "Photograph of the plaque",
       },
       {
         kind: "image",
-        src: null,
+        src: "/award-2.jpg",
         caption: "Presented at Kathmandu University, Nepal",
-        awaiting: "Photograph from the ceremony",
       },
     ],
   },
