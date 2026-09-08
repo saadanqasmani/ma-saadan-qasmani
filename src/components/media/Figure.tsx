@@ -62,6 +62,10 @@ export function Figure({
           className={bare ? "object-contain" : "object-cover"}
           sizes="(max-width: 768px) 100vw, 50vw"
           onError={() => setFailed(true)}
+          // A cut-out is already small and must not be re-encoded: the
+          // optimizer is the one step between the repo and the page that
+          // cannot be checked from here, so it is taken out of the path.
+          unoptimized={bare}
         />
       ) : (
         <>
