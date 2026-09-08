@@ -9,8 +9,14 @@ import { createServerClient } from "@supabase/ssr";
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next({ request });
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  // Accept both the public names and the ones the Vercel/Supabase
+  // integration injects, so the gate works whichever way the project was set
+  // up. Read inline rather than imported: middleware runs on the edge.
+  const url =
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || process.env.SUPABASE_URL?.trim();
+  const key =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ||
+    process.env.SUPABASE_ANON_KEY?.trim();
 
   // Not configured: let the page render its own "not connected" notice.
   if (!url || !key) return response;
