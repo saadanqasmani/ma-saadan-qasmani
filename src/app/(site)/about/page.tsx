@@ -5,6 +5,7 @@ import { SplitText } from "@/components/ui/SplitText";
 import { MagneticLink } from "@/components/ui/MagneticLink";
 import { getPerson } from "@/lib/data";
 import { Figure } from "@/components/media/Figure";
+import { GalleryTrigger } from "@/components/media/GalleryTrigger";
 import { Mark } from "@/components/collect/Mark";
 import { orgLinks } from "@/content/site";
 
@@ -118,8 +119,11 @@ export default async function AboutPage() {
                     <ul className="mt-5 space-y-4">
                       {person.honors.map((h) => (
                         <li key={h.title}>
-                          <p className="font-serif text-lg text-ink">{h.title}</p>
-                          <p className="text-sm text-ink-faint">{h.year}</p>
+                          <GalleryTrigger mediaKey={h.media} label={h.title}>
+                            <p className="font-serif text-lg text-ink">{h.title}</p>
+                            {h.org && <p className="mt-0.5 text-sm text-ink-soft">{h.org}</p>}
+                            <p className="text-sm text-ink-faint">{h.year}</p>
+                          </GalleryTrigger>
                         </li>
                       ))}
                     </ul>

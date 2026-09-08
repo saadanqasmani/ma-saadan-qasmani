@@ -56,8 +56,21 @@ export const mediaSets: Record<string, MediaSet> = {
     items: [{ kind: "image", src: null, caption: "Recruitment work", awaiting: "Photograph" }],
   },
   award: {
-    title: "STAR Scholars Presidential Medal of Service and Excellence",
-    items: [{ kind: "image", src: null, caption: "The medal", awaiting: "Photograph" }],
+    title: "Presidential Award of Service and Excellence",
+    items: [
+      {
+        kind: "image",
+        src: null,
+        caption: "The award, 2024 STAR Global Conference",
+        awaiting: "Photograph of the plaque",
+      },
+      {
+        kind: "image",
+        src: null,
+        caption: "Presented at Kathmandu University, Nepal",
+        awaiting: "Photograph from the ceremony",
+      },
+    ],
   },
   mun: {
     title: "Model United Nations",

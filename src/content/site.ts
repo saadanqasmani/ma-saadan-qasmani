@@ -61,8 +61,12 @@ export const person = {
   ],
   honors: [
     {
-      title: "STAR Scholars Presidential Medal of Service and Excellence",
+      // Corrected from the plaque itself: "Award", not "Medal".
+      title: "Presidential Award of Service and Excellence",
+      org: "2024 STAR Global Conference, Kathmandu University, Nepal",
       year: "2024",
+      /** Key into mediaSets, so the entry opens its own gallery. */
+      media: "award",
     },
   ],
 } as const;

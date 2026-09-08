@@ -9,6 +9,7 @@ import { GlobeArcs } from "@/components/art/GlobeArcs";
 import { Contours } from "@/components/art/Contours";
 import { getPerson, getBook, getResearchItems } from "@/lib/data";
 import { Mark } from "@/components/collect/Mark";
+import { Figure } from "@/components/media/Figure";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { personJsonLd, websiteJsonLd } from "@/lib/seo/jsonLd";
 
@@ -88,18 +89,28 @@ export default async function Home() {
             <Reveal>
               <p className="eyebrow lg:sticky lg:top-32">The Author</p>
             </Reveal>
-            <div>
-              <SplitText
-                text={person.bio}
-                as="p"
-                stagger={0.012}
-                className="max-w-4xl font-serif text-2xl leading-[1.5] text-ink sm:text-[2rem] sm:leading-[1.45]"
+            <div className="grid gap-10 sm:grid-cols-[minmax(0,15rem)_1fr] sm:gap-12">
+              <Figure
+                src={person.portrait}
+                bare
+                ratio="3/4"
+                label="Author portrait"
+                spec="Portrait orientation · /public/portrait.png"
+                className="w-full max-w-[15rem]"
               />
-              <Reveal delay={0.2}>
-                <div className="mt-10">
-                  <MagneticLink href="/about">Read the biography</MagneticLink>
-                </div>
-              </Reveal>
+              <div>
+                <SplitText
+                  text={person.bio}
+                  as="p"
+                  stagger={0.012}
+                  className="max-w-2xl text-lg leading-relaxed text-ink-soft"
+                />
+                <Reveal delay={0.2}>
+                  <div className="mt-10">
+                    <MagneticLink href="/about">Read the biography</MagneticLink>
+                  </div>
+                </Reveal>
+              </div>
             </div>
           </div>
         </div>

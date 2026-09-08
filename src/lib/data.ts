@@ -32,7 +32,7 @@ export type Person = {
   portrait: string | null;
   roles: { title: string; org: string }[];
   founded: { name: string; org: string }[];
-  honors: { title: string; year: string }[];
+  honors: { title: string; year: string; org?: string; media?: string }[];
 };
 
 export type Book = {
