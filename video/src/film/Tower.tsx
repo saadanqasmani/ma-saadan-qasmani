@@ -2,7 +2,7 @@ import React from "react";
 import { PAPER } from "../paper/palette";
 import { Ell, Piece, Poly, Rect } from "../paper/Paper";
 import { cutPath, mulberry32 } from "../paper/cut";
-import { OttoClipping } from "../paper/Otto";
+import { Otto } from "../paper/Otto";
 import { BAND, FOREST_BANDS, TOWER, bandTop } from "./world";
 
 /**
@@ -176,13 +176,11 @@ export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
         ))}
       </Room>
 
-      {/* ── Floor 7: Otto. The one photograph in a film of drawings. */}
+      {/* ── Floor 7: Otto. A drawn room, a drawn Sultan, and one man in it
+              who is a photograph from the neck up. */}
       <Room top={bandTop(7)} seed={690} glow="#e7dcc4">
-        {/* Clear of the climber's line, which runs up at 0.42 of the facade:
-            the first pass put the clipping dead centre and he went up over
-            Otto's face. */}
-        <OttoClipping x={FX + 118} y={bandTop(7) + 292} w={266} rotate={-3.5} hasPhoto={hasOttoPhoto} />
-        <Figure x={FX + 730} y={bandTop(7) + 680} h={300} seed={695} fill={PAPER.slateDark} />
+        <Otto x={FX + 300} y={bandTop(7) + 700} h={470} hasFace={hasOttoPhoto} phase={frame / 40} />
+        <Figure x={FX + 760} y={bandTop(7) + 700} h={300} seed={695} fill={PAPER.slateDark} />
       </Room>
 
       {/* ── Floor 8: the paper. A desk, a lamp, and pages that keep coming. */}

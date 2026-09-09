@@ -1,9 +1,9 @@
 import React from "react";
 import { AbsoluteFill, Audio, staticFile, useCurrentFrame } from "remotion";
 import { PaperDefs, Rect } from "../paper/Paper";
-import { OttoClipDef } from "../paper/Otto";
 import { PAPER } from "../paper/palette";
 import { Sultan } from "../paper/Sultan";
+import { Ransom } from "../paper/Ransom";
 import { ForestBands } from "./Forest";
 import { TowerBands } from "./Tower";
 import { DURATION, FOREST_BANDS, FPS, GROUND, ROOF, TOWER, W, WORLD_H, bandTop, camera } from "./world";
@@ -57,7 +57,6 @@ export const Film: React.FC = () => {
       <svg viewBox={`${vx} ${vy} ${vw} ${vh}`} width="100%" height="100%">
         <PaperDefs />
         <defs>
-          <OttoClipDef w={266} />
           <linearGradient id="air" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={PAPER.night2} />
             <stop offset="42%" stopColor={PAPER.blue} />
@@ -81,6 +80,7 @@ export const Film: React.FC = () => {
 
         <TowerBands frame={frame} hasOttoPhoto={HAS_OTTO_PHOTO} />
         <ForestBands frame={frame} />
+        <Labels camY={cam.y} vh={vh} />
 
         {/* Him, on the outside of all of it. */}
         {climbing && (
@@ -151,51 +151,79 @@ export const Film: React.FC = () => {
 };
 
 /**
+ * What each floor is called.
+ *
+ * Cut lettering, laid into the world beside the floor it names, so a label
+ * arrives and leaves with its floor rather than sitting over the picture.
+ * They are what gives the climb a beat: something new lands every few
+ * seconds, which is most of what makes a cut-out film feel quick.
+ */
+const LABELS: { band: number; text: string; size: number; side: -1 | 1 }[] = [
+  { band: 0, text: "HANG", size: 130, side: -1 },
+  { band: 1, text: "THE UPRIGHT", size: 96, side: 1 },
+  { band: 2, text: "LEAVE", size: 124, side: -1 },
+  { band: 3, text: "STONE TREES", size: 92, side: 1 },
+  { band: 4, text: "FRIENDS", size: 108, side: -1 },
+  { band: 5, text: "HIGH", size: 132, side: 1 },
+  { band: 6, text: "CROSSING", size: 100, side: -1 },
+  { band: 7, text: "OTTO", size: 134, side: 1 },
+  { band: 8, text: "THE PAPER", size: 104, side: -1 },
+  { band: 9, text: "FLAGGED", size: 112, side: 1 },
+  { band: 10, text: "02:11", size: 128, side: -1 },
+  { band: 11, text: "THE SHAVING", size: 92, side: 1 },
+];
+
+const Labels: React.FC<{ camY: number; vh: number }> = ({ camY, vh }) => (
+  <>
+    {LABELS.map((l) => {
+      const y = bandTop(l.band) + 120;
+      // Only the labels near the camera are drawn at all, and each lays
+      // itself down as the camera comes level with it.
+      const d = (camY - y) / vh;
+      if (d < -0.85 || d > 0.95) return null;
+      const reveal = Math.max(0, Math.min(1, (d + 0.8) / 0.5));
+      return (
+        <Ransom
+          key={l.band}
+          text={l.text}
+          /*
+           * Inside the frame, not beside the tower. The view is only about
+           * 860 world units wide at climb zoom while the facade is 980, so a
+           * label parked at the tower's edge was off-screen entirely; the one
+           * that showed was clipped in half.
+           */
+          x={TOWER.x + TOWER.w / 2 + l.side * 250}
+          y={y}
+          size={l.size}
+          seed={l.band * 31 + 3}
+          reveal={reveal}
+          rotate={l.side * -2.5}
+        />
+      );
+    })}
+  </>
+);
+
+/**
  * The title, cut out and laid down a letter at a time.
  *
- * Cut letters do not fade in. They are placed, and each one lands slightly
- * off true, because a hand does not set type.
+ * Its own svg over the scene, in screen coordinates, because the scene's
+ * viewBox is out in the world and moving. Each letter is its own scrap of its
+ * own paper in its own typeface, which is what a cut-out film does with a
+ * word.
  */
 const Title: React.FC<{ frame: number }> = ({ frame }) => {
-  const start = DURATION - 3.6 * FPS;
-  const k = (frame - start) / (2.2 * FPS);
+  const start = DURATION - 4.2 * FPS;
+  const k = (frame - start) / (2.6 * FPS);
   if (k < 0) return null;
 
-  const words = ["THE", "HIGHEST", "BRANCH"];
-  const letters = words.join(" ").split("");
-
   return (
-    <AbsoluteFill
-      style={{
-        alignItems: "center",
-        justifyContent: "center",
-        fontFamily: "Georgia, 'Times New Roman', serif",
-      }}
-    >
-      <div style={{ display: "flex", gap: 1, marginBottom: 340 }}>
-        {letters.map((ch, i) => {
-          const at = (i / letters.length) * 0.7;
-          const p = Math.max(0, Math.min(1, (k - at) / 0.3));
-          const tilt = ((i * 37) % 7) - 3;
-          return (
-            <span
-              key={i}
-              style={{
-                display: "inline-block",
-                width: ch === " " ? 26 : undefined,
-                fontSize: 92,
-                letterSpacing: 2,
-                color: PAPER.paperWhite,
-                transform: `translateY(${(1 - p) * 70}px) rotate(${tilt * (1 - p * 0.6)}deg)`,
-                opacity: p,
-                filter: "drop-shadow(3px 6px 5px rgba(0,0,0,0.5))",
-              }}
-            >
-              {ch === " " ? " " : ch}
-            </span>
-          );
-        })}
-      </div>
+    <AbsoluteFill style={{ pointerEvents: "none" }}>
+      <svg viewBox="0 0 1920 1080" width="100%" height="100%">
+        <PaperDefs />
+        <Ransom text="THE HIGHEST" x={960} y={300} size={140} seed={5} reveal={k} rotate={-1.4} />
+        <Ransom text="BRANCH" x={960} y={470} size={158} seed={19} reveal={k - 0.22} rotate={1.1} />
+      </svg>
     </AbsoluteFill>
   );
 };

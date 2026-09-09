@@ -2,97 +2,196 @@ import React from "react";
 import { staticFile } from "remotion";
 import { PAPER } from "./palette";
 import { Piece } from "./Paper";
-import { cutPath, mulberry32 } from "./cut";
+import { cutEllipse, cutPath } from "./cut";
 
 /**
- * Otto, as a clipping.
+ * Otto.
  *
- * Everyone else in this film is drawn. Otto is a photograph, screened into
- * newsprint and torn out of a page, because that is what he is to Sultan by
- * the time they meet: a name that arrived in print before the man did.
+ * Everyone else in the film is drawn. Otto is a collage: a tall man cut from
+ * paper, with a photographed face scissored out of a page and pasted onto the
+ * head. That is the right way round for him — the body belongs to the film's
+ * material, and the face is the one thing in it that is real.
  *
- * The photograph is Dr. Osman Gültekin, at Saadan's request. It goes in
- * public/otto.jpg. Until that file exists the clipping renders as an empty
- * torn frame rather than a stand-in face, so nothing is invented here.
+ * The face is public/otto-face.png, built by score/ottoface.py: a screened
+ * head with a hand-cut alpha edge, so it arrives already scissored and needs
+ * no clip path here.
+ *
+ * The photograph is Dr. Osman Gültekin, used with his consent.
  */
 
-/** A torn edge, which is not a cut edge: it is rougher and it has fibre. */
-function tornRect(w: number, h: number, seed: number) {
-  const rand = mulberry32(seed);
-  const pts: [number, number][] = [];
-  const step = 14;
-  const jag = () => (rand() - 0.5) * 9;
-  for (let x = 0; x <= w; x += step) pts.push([x, jag()]);
-  for (let y = 0; y <= h; y += step) pts.push([w + jag(), y]);
-  for (let x = w; x >= 0; x -= step) pts.push([x, h + jag()]);
-  for (let y = h; y >= 0; y -= step) pts.push([jag(), y]);
-  return cutPath(pts, seed + 1, 1.1, 999);
-}
-
-export const OttoClipping: React.FC<{
+export const Otto: React.FC<{
   x: number;
   y: number;
-  w?: number;
-  scale?: number;
+  /** Height from the sole to the crown, in world units. */
+  h?: number;
   rotate?: number;
-  hasPhoto?: boolean;
-}> = ({ x, y, w = 260, scale = 1, rotate = -3, hasPhoto = true }) => {
-  const h = w * 1.24;
-  const photoH = h * 0.66;
+  hasFace?: boolean;
+  /** A slow shift of weight, so he is standing rather than pinned. */
+  phase?: number;
+}> = ({ x, y, h = 520, rotate = 0, hasFace = true, phase = 0 }) => {
+  // He is the tall one. Proportions are stretched a little past a real man's,
+  // which is what a cut-out does with a person everyone describes as tall.
+  const headR = h * 0.11;
+  const shoulder = h * 0.245;
+  const hip = h * 0.55;
+  const halfW = h * 0.115;
+
+  const lean = Math.sin(phase) * 1.1;
 
   return (
-    <g transform={`translate(${x} ${y}) rotate(${rotate}) scale(${scale})`}>
-      {/* The paper of the page */}
-      <g filter="url(#liftDeep)">
-        <path d={tornRect(w, h, 909)} fill={PAPER.ledger} filter="url(#grain)" />
-      </g>
+    <g transform={`translate(${x} ${y}) rotate(${rotate + lean})`}>
+      {/* Legs, cut as one piece each so the trouser reads as cloth */}
+      <Piece
+        d={cutPath(
+          [
+            [-halfW * 0.82, -hip],
+            [-halfW * 0.12, -hip],
+            [-halfW * 0.2, 0],
+            [-halfW * 0.9, 0],
+          ],
+          931,
+          1.3
+        )}
+        fill={PAPER.slateDark}
+      />
+      <Piece
+        d={cutPath(
+          [
+            [halfW * 0.12, -hip],
+            [halfW * 0.82, -hip],
+            [halfW * 0.9, 0],
+            [halfW * 0.2, 0],
+          ],
+          932,
+          1.3
+        )}
+        fill={PAPER.slate}
+      />
+      {/* Shoes: blunt, and shod, which is the first thing the forest notices */}
+      <Piece d={cutEllipse(-halfW * 0.5, 2, halfW * 0.62, h * 0.022, 933, 1)} fill="#15110f" lift="soft" />
+      <Piece d={cutEllipse(halfW * 0.5, 2, halfW * 0.62, h * 0.022, 934, 1)} fill="#15110f" lift="soft" />
 
-      {hasPhoto ? (
-        <g clipPath="url(#otto-clip)">
-          {/* An SVG image element rather than Remotion's Img: this lives
-              inside the scene's svg, where an HTML img cannot be placed. */}
+      {/* The coat: shoulders wider than the hips, and long */}
+      <Piece
+        d={cutPath(
+          [
+            [-halfW * 1.16, -shoulder],
+            [halfW * 1.16, -shoulder],
+            [halfW * 0.98, -hip * 0.42],
+            [halfW * 0.86, -hip * 0.05],
+            [-halfW * 0.86, -hip * 0.05],
+            [-halfW * 0.98, -hip * 0.42],
+          ],
+          935,
+          1.5
+        )}
+        fill={PAPER.slateDark}
+        lift="normal"
+      />
+      {/* A shirt showing in the opening */}
+      <Piece
+        d={cutPath(
+          [
+            [-halfW * 0.2, -shoulder + 4],
+            [halfW * 0.2, -shoulder + 4],
+            [halfW * 0.13, -hip * 0.5],
+            [-halfW * 0.13, -hip * 0.5],
+          ],
+          936,
+          0.9
+        )}
+        fill={PAPER.paperWhite}
+        lift="none"
+      />
+      {/* Lapels */}
+      <Piece
+        d={cutPath(
+          [
+            [-halfW * 1.1, -shoulder],
+            [-halfW * 0.1, -shoulder + 8],
+            [-halfW * 0.3, -hip * 0.46],
+            [-halfW * 0.98, -hip * 0.52],
+          ],
+          937,
+          1
+        )}
+        fill={PAPER.slate}
+        lift="soft"
+      />
+      <Piece
+        d={cutPath(
+          [
+            [halfW * 1.1, -shoulder],
+            [halfW * 0.1, -shoulder + 8],
+            [halfW * 0.3, -hip * 0.46],
+            [halfW * 0.98, -hip * 0.52],
+          ],
+          938,
+          1
+        )}
+        fill={PAPER.slate}
+        lift="soft"
+      />
+
+      {/* Arms, hanging */}
+      <Piece
+        d={cutPath(
+          [
+            [-halfW * 1.14, -shoulder + 4],
+            [-halfW * 0.74, -shoulder + 4],
+            [-halfW * 0.86, -hip * 0.24],
+            [-halfW * 1.22, -hip * 0.26],
+          ],
+          939,
+          1.2
+        )}
+        fill={PAPER.slateDark}
+      />
+      <Piece
+        d={cutPath(
+          [
+            [halfW * 0.74, -shoulder + 4],
+            [halfW * 1.14, -shoulder + 4],
+            [halfW * 1.22, -hip * 0.26],
+            [halfW * 0.86, -hip * 0.24],
+          ],
+          940,
+          1.2
+        )}
+        fill={PAPER.slateDark}
+      />
+
+      {/* Neck, then the pasted face over it */}
+      <Piece
+        d={cutPath(
+          [
+            [-headR * 0.34, -shoulder - 2],
+            [headR * 0.34, -shoulder - 2],
+            [headR * 0.3, -shoulder - headR * 0.7],
+            [-headR * 0.3, -shoulder - headR * 0.7],
+          ],
+          941,
+          0.8
+        )}
+        fill="#c9a887"
+        lift="none"
+      />
+      {hasFace ? (
+        <g filter="url(#lift)" transform={`rotate(-2.5 0 ${-shoulder - headR})`}>
+          {/* Already scissored in the asset: no clip path, and no filter, so
+              the screen stays the size it was printed at. */}
           <image
-            href={staticFile("otto.png")}
-            x={12}
-            y={14}
-            width={w - 24}
-            height={photoH}
-            preserveAspectRatio="xMidYMid slice"
+            href={staticFile("otto-face.png")}
+            x={-headR * 1.02}
+            y={-shoulder - headR * 2.24}
+            width={headR * 2.04}
+            height={headR * 2.2}
+            preserveAspectRatio="xMidYMid meet"
           />
         </g>
       ) : (
-        <rect x={12} y={14} width={w - 24} height={photoH} fill="#cfc6b0" />
+        <Piece d={cutEllipse(0, -shoulder - headR, headR, headR * 1.08, 942, 1.4)} fill="#c9b299" />
       )}
-
-      {/* Column rules under the photograph. A clipping is mostly type, and at
-          this size type is texture, so it is drawn as rules rather than set. */}
-      {Array.from({ length: 9 }, (_, i) => (
-        <rect
-          key={i}
-          x={14}
-          y={photoH + 30 + i * 11}
-          width={(w - 30) * (i === 8 ? 0.52 : 0.94 - (i % 3) * 0.04)}
-          height={3.4}
-          fill="#8d8574"
-          opacity={0.75}
-        />
-      ))}
     </g>
   );
 };
-
-/** The clip path the photograph is trimmed to. Declared once, near the defs. */
-export const OttoClipDef: React.FC<{ w?: number }> = ({ w = 260 }) => (
-  <clipPath id="otto-clip">
-    <path d={cutPath(
-      [
-        [12, 14],
-        [w - 12, 14],
-        [w - 12, 14 + w * 1.24 * 0.66],
-        [12, 14 + w * 1.24 * 0.66],
-      ],
-      77,
-      2.2
-    )} />
-  </clipPath>
-);

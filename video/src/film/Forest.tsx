@@ -163,15 +163,22 @@ export const ForestBands: React.FC<{ frame: number }> = ({ frame }) => {
             pose={{
               x: x - 300 + k * 150,
               y: b0 + 560 + 34,
-              scale: 1.15,
+              scale: 1.32,
               roll: 180 + sway + k * 2,
               torso: 4 + k * 3,
-              head: -12,
-              armNear: [26, 18],
-              armFar: [-18, 14],
-              legNear: [6, -4],
-              legFar: [-8, 6],
-              tail: [162, 34],
+              head: -22 + k * 6,
+              /*
+               * Body space has 0 pointing down, and the whole puppet is
+               * rolled 180, so a limb at 0 ends up pointing up in the world.
+               * The feet want to be up, on the wood; the arms want to hang.
+               * The first pass had both near 0, so the arms reached for the
+               * branch as well and they read as hanging from a bar.
+               */
+              armNear: [174 + k * 6, 12],
+              armFar: [188 - k * 5, -9],
+              legNear: [7, -5],
+              legFar: [-9, 7],
+              tail: [8, 26],
             }}
           />
         ))}
