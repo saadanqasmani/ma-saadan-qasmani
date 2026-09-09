@@ -17,7 +17,22 @@ import INDEX from "../../public/letters/index.json";
  */
 
 type Glyph = { file: string; w: number; h: number };
-const GLYPHS = INDEX as Record<string, Glyph[]>;
+
+/**
+ * One sheet, not all of them.
+ *
+ * The first sheet's letters are dark and heavily distressed, and against the
+ * film's night sky they simply disappear. This one is high contrast on
+ * saturated tiles and holds up on any ground in the film.
+ */
+const SHEET = "b";
+const ALL = INDEX as Record<string, Glyph[]>;
+const GLYPHS: Record<string, Glyph[]> = Object.fromEntries(
+  Object.entries(ALL).map(([ch, list]) => {
+    const preferred = list.filter((g) => g.file.startsWith(`${SHEET}-`));
+    return [ch, preferred.length ? preferred : list];
+  })
+);
 
 const FALLBACK_STOCK = [
   { paper: "#f0e9d8", ink: "#1b1710" },
@@ -36,6 +51,11 @@ export type RansomProps = {
   /** 0 to 1. Letters are laid down in order as this rises. */
   reveal?: number;
   rotate?: number;
+  /**
+   * Sets the first letter of every word full size and the rest smaller, so a
+   * word reads as Title Case even though the sheet only carries capitals.
+   */
+  titleCase?: boolean;
 };
 
 export const Ransom: React.FC<RansomProps> = ({
@@ -46,17 +66,29 @@ export const Ransom: React.FC<RansomProps> = ({
   seed = 1,
   reveal = 1,
   rotate = 0,
+  titleCase = false,
 }) => {
   const laid = React.useMemo(() => {
     const rand = mulberry32(seed);
     const chars = text.toUpperCase().split("");
+    const starts = new Set<number>();
+    let atWordStart = true;
+    chars.forEach((c, i) => {
+      if (c === " ") {
+        atWordStart = true;
+        return;
+      }
+      if (atWordStart) starts.add(i);
+      atWordStart = false;
+    });
     let cursor = 0;
 
     const items = chars.map((ch, i) => {
       const variants = GLYPHS[ch];
       // Letters are not all the same size on the sheet, and they should not
       // be: a word cut from a magazine has letters that disagree.
-      const s = size * (0.86 + rand() * 0.3);
+      const cap = titleCase && !starts.has(i) ? 0.72 : 1;
+      const s = size * cap * (0.9 + rand() * 0.22);
 
       if (ch === " ") {
         const w = size * 0.36;
@@ -102,7 +134,7 @@ export const Ransom: React.FC<RansomProps> = ({
     });
 
     return { items, total: cursor, count: chars.length };
-  }, [text, seed, size]);
+  }, [text, seed, size, titleCase]);
 
   return (
     <g

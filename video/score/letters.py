@@ -93,6 +93,35 @@ for path, tag in SHEETS:
         print(f"{tag}: nothing found")
         continue
 
+    # Merge boxes that sit inside or across one another.
+    #
+    # A letter printed light on its own tile can come back as the tile and the
+    # letter separately, or as a tile plus the counter of an O; both are boxes
+    # contained in, or heavily overlapping, another. Left alone they inflate
+    # the count past twenty-six and every letter after them is named wrong.
+    def overlap(a, b):
+        iy = min(a[2], b[2]) - max(a[1], b[1])
+        ix = min(a[4], b[4]) - max(a[3], b[3])
+        if iy <= 0 or ix <= 0:
+            return 0.0
+        inter = iy * ix
+        small = min((a[2] - a[1]) * (a[4] - a[3]), (b[2] - b[1]) * (b[4] - b[3]))
+        return inter / max(1, small)
+
+    merged: list[list] = []
+    for b in sorted(boxes, key=lambda z: -((z[2] - z[1]) * (z[4] - z[3]))):
+        for m in merged:
+            if overlap(m, b) > 0.42:
+                m[1] = min(m[1], b[1])
+                m[2] = max(m[2], b[2])
+                m[3] = min(m[3], b[3])
+                m[4] = max(m[4], b[4])
+                m[5].append(b[0])
+                break
+        else:
+            merged.append([b[0], b[1], b[2], b[3], b[4], [b[0]]])
+    boxes = [(m[0], m[1], m[2], m[3], m[4], m[5]) for m in merged]
+
     # Reading order: group into rows by vertical overlap, then sort each row
     # left to right. The sheets are laid out A-Z in rows.
     boxes.sort(key=lambda b: b[1])
@@ -122,10 +151,11 @@ for path, tag in SHEETS:
         print(f"{tag}: found {len(ordered)} blobs, expected {len(names)} - skipped")
         continue
 
-    for k, (i, y0, y1, x0, x1) in enumerate(ordered[: len(names)]):
+    for k, (i, y0, y1, x0, x1, parts) in enumerate(ordered[: len(names)]):
         ch = names[k]
         crop = rgb[y0:y1, x0:x1]
-        mask = (lab[y0:y1, x0:x1] == i).astype(np.uint8) * 255
+        sub = lab[y0:y1, x0:x1]
+        mask = np.isin(sub, parts).astype(np.uint8) * 255
         # A one-pixel feather, so the cut edge is not aliased hard against
         # whatever it is laid on in the film.
         alpha = Image.fromarray(mask).filter(

@@ -1,36 +1,51 @@
 """
 Otto's head.
 
-Otto is not a newspaper page in the film, he is a figure: a tall man cut from
-paper with a photographed face scissored out and pasted onto the head. So what
-this makes is the pasted piece — a head-shaped cut with a real edge and
-nothing outside it.
+Otto is a collage: a tall man cut from paper with a photographed face pasted
+onto the head. Saadan cut the face out himself, so this follows his cut rather
+than imposing one — the alpha is simply wherever the page is not white, very
+lightly feathered.
 
-The face keeps a magazine screen on it, coarser than a broadsheet's because a
-magazine is printed better and the cut is smaller, so the dots read as texture
-rather than as pattern.
+The screen is a magazine's rather than a broadsheet's: finer, and angled off
+the horizontal so the dots read as texture and not as a grid.
 
 Source: a photograph of Dr. Osman Gültekin, used with his consent.
 Run: python3 score/ottoface.py  ->  public/otto-face.png
 """
 
 import numpy as np
+import pymupdf
 from PIL import Image, ImageEnhance, ImageFilter
 
-SRC = "/tmp/claude-0/otto-src-0-0.png"
-# Head only: brow to chin, ear to ear, with a little of the collar.
-CROP = (168, 2, 348, 196)
-OUT_W = 900
-CELL = 4.6
+SRC = "/root/.claude/uploads/70379a78-53df-5489-8836-71c3a5e391ce/358940df-642bc4036c5d489d86ece6f3ab24c264.pdf"
+CELL = 3.1
 ANGLE = 15.0
 
-img = Image.open(SRC).convert("L").crop(CROP)
-img = img.resize((OUT_W, int(img.height * OUT_W / img.width)), Image.LANCZOS)
-img = ImageEnhance.Contrast(img).enhance(1.28)
-img = ImageEnhance.Brightness(img).enhance(1.1)
-img = img.filter(ImageFilter.UnsharpMask(radius=3, percent=130, threshold=2))
+doc = pymupdf.open(SRC)
+# 150dpi, not 400. The photograph inside this pdf is only 442px wide, so a
+# 400dpi render is a four-times upscale of soft data, and screening soft data
+# plugs every midtone into mud. This is close to the real detail.
+pm = doc[0].get_pixmap(dpi=150)
+page = Image.frombytes("RGB", (pm.width, pm.height), pm.samples)
 
-a = np.asarray(img, dtype=np.float64) / 255.0
+# His cut is the silhouette: everything that is not the white of the page.
+arr = np.asarray(page).astype(np.float64)
+ink = arr.min(axis=2) < 233
+ys, xs = np.where(ink)
+if len(ys) == 0:
+    raise SystemExit("nothing on the page")
+pad = 8
+y0, y1 = max(0, ys.min() - pad), min(page.height, ys.max() + pad)
+x0, x1 = max(0, xs.min() - pad), min(page.width, xs.max() + pad)
+
+face = page.crop((x0, y0, x1, y1))
+mask = Image.fromarray((ink[y0:y1, x0:x1] * 255).astype(np.uint8))
+
+grey = ImageEnhance.Contrast(face.convert("L")).enhance(1.18)
+grey = ImageEnhance.Brightness(grey).enhance(1.08)
+grey = grey.filter(ImageFilter.UnsharpMask(radius=2, percent=150, threshold=2))
+
+a = np.asarray(grey, dtype=np.float64) / 255.0
 h, w = a.shape
 
 yy, xx = np.mgrid[0:h, 0:w].astype(np.float64)
@@ -44,34 +59,24 @@ cx = np.clip((cu * CELL * np.cos(th) - cv * CELL * np.sin(th)).astype(int), 0, w
 cy = np.clip((cu * CELL * np.sin(th) + cv * CELL * np.cos(th)).astype(int), 0, h - 1)
 tone = a[cy, cx]
 
-ink = dist < np.sqrt(np.clip(1.0 - tone, 0, 1)) * 0.60
-screen = np.where(ink, 0.12, 0.95)
+# Smaller maximum dot: the midtones have to stay open or the face closes up.
+dots = dist < np.sqrt(np.clip(1.0 - tone, 0, 1)) * 0.56
+screen = np.where(dots, 0.14, 0.965)
 screen = (
     np.asarray(
-        Image.fromarray((screen * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.55)),
+        Image.fromarray((screen * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.5)),
         dtype=np.float64,
     )
     / 255.0
 )
 
 rng = np.random.default_rng(23)
-sheet = np.clip(screen + rng.normal(0, 0.02, (h, w)), 0, 1)
-rgb = np.stack([sheet * 236, sheet * 230, sheet * 212], axis=-1).astype(np.uint8)
+sheet = np.clip(screen + rng.normal(0, 0.018, (h, w)), 0, 1)
+rgb = np.stack([sheet * 238, sheet * 232, sheet * 214], axis=-1).astype(np.uint8)
 
-# The cut. A head scissored out of a page is an oval that the hand did not
-# quite hold: it wanders, and it leaves a sliver of the page all round.
-cxm, cym = w * 0.5, h * 0.52
-rx, ry = w * 0.455, h * 0.485
-ang = np.arctan2(yy - cym, xx - cxm)
-wobble = (
-    1.0
-    + 0.030 * np.sin(ang * 5 + 0.7)
-    + 0.022 * np.sin(ang * 9 + 2.1)
-    + 0.014 * np.sin(ang * 14 + 4.3)
-)
-r = np.hypot((xx - cxm) / (rx * wobble), (yy - cym) / (ry * wobble))
-alpha = np.clip((1.0 - r) * 26 + 0.5, 0, 1)
+# A hair of feather so the cut edge is not aliased against the paper it is
+# laid on, and nothing more: the shape of the cut is his.
+alpha = np.asarray(mask.filter(ImageFilter.GaussianBlur(1.1)), dtype=np.uint8)
 
-out = np.dstack([rgb, (alpha * 255).astype(np.uint8)])
-Image.fromarray(out, mode="RGBA").save("public/otto-face.png")
+Image.fromarray(np.dstack([rgb, alpha]), mode="RGBA").save("public/otto-face.png")
 print(f"public/otto-face.png  {w}x{h}  cell {CELL}px @ {ANGLE:.0f}deg")

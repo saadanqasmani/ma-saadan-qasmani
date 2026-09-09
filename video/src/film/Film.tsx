@@ -151,32 +151,30 @@ export const Film: React.FC = () => {
 };
 
 /**
- * What each floor is called.
+ * The only words in the film.
  *
- * Cut lettering, laid into the world beside the floor it names, so a label
- * arrives and leaves with its floor rather than sitting over the picture.
- * They are what gives the climb a beat: something new lands every few
- * seconds, which is most of what makes a cut-out film feel quick.
+ * An earlier pass captioned every floor, which turned the film into an
+ * illustrated contents page. Saadan wants six words in the whole thing and
+ * nothing else named: him, Otto, the two worlds, what happens between them,
+ * and the title at the end. Everything else has to be carried by the picture,
+ * which is the right way round.
  */
 const LABELS: { band: number; text: string; size: number; side: -1 | 1 }[] = [
-  { band: 0, text: "HANG", size: 130, side: -1 },
-  { band: 1, text: "THE UPRIGHT", size: 96, side: 1 },
-  { band: 2, text: "LEAVE", size: 124, side: -1 },
-  { band: 3, text: "STONE TREES", size: 92, side: 1 },
-  { band: 4, text: "FRIENDS", size: 108, side: -1 },
-  { band: 5, text: "HIGH", size: 132, side: 1 },
-  { band: 6, text: "CROSSING", size: 100, side: -1 },
-  { band: 7, text: "OTTO", size: 134, side: 1 },
-  { band: 8, text: "THE PAPER", size: 104, side: -1 },
-  { band: 9, text: "FLAGGED", size: 112, side: 1 },
-  { band: 10, text: "02:11", size: 128, side: -1 },
-  { band: 11, text: "THE SHAVING", size: 92, side: 1 },
+  { band: 0, text: "Sultan", size: 120, side: -1 },
+  { band: 1, text: "Forest", size: 116, side: 1 },
+  { band: 3, text: "Concrete Jungle", size: 84, side: -1 },
+  { band: 6, text: "Learning", size: 104, side: 1 },
+  { band: 7, text: "Otto", size: 128, side: -1 },
 ];
 
 const Labels: React.FC<{ camY: number; vh: number }> = ({ camY, vh }) => (
   <>
     {LABELS.map((l) => {
-      const y = bandTop(l.band) + 120;
+      // The middle of the band, not its top edge. The camera crosses a band
+      // from its bottom to its top, so a label pinned at the top is above the
+      // frame for almost the whole crossing and clips through the ceiling on
+      // its way out.
+      const y = bandTop(l.band) + 480;
       // Only the labels near the camera are drawn at all, and each lays
       // itself down as the camera comes level with it.
       const d = (camY - y) / vh;
@@ -198,6 +196,7 @@ const Labels: React.FC<{ camY: number; vh: number }> = ({ camY, vh }) => (
           seed={l.band * 31 + 3}
           reveal={reveal}
           rotate={l.side * -2.5}
+          titleCase
         />
       );
     })}
@@ -221,8 +220,8 @@ const Title: React.FC<{ frame: number }> = ({ frame }) => {
     <AbsoluteFill style={{ pointerEvents: "none" }}>
       <svg viewBox="0 0 1920 1080" width="100%" height="100%">
         <PaperDefs />
-        <Ransom text="THE HIGHEST" x={960} y={300} size={140} seed={5} reveal={k} rotate={-1.4} />
-        <Ransom text="BRANCH" x={960} y={470} size={158} seed={19} reveal={k - 0.22} rotate={1.1} />
+        <Ransom text="The Highest" x={960} y={300} size={150} seed={5} reveal={k} rotate={-1.4} titleCase />
+        <Ransom text="Branch" x={960} y={480} size={168} seed={19} reveal={k - 0.22} rotate={1.1} titleCase />
       </svg>
     </AbsoluteFill>
   );
