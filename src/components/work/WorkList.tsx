@@ -5,18 +5,27 @@ import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { FloatingGallery } from "@/components/media/FloatingGallery";
 import { getMediaSet } from "@/content/media";
+import type { WorkItem } from "@/content/site";
 
 /**
- * Work entries with a page of their own. Each row borrows that page's theme,
- * so the list previews where the link goes rather than looking uniform.
+ * A row's colours, and a row's destination, are two different things.
+ *
+ * They used to be one map, which meant a row could only be coloured if it
+ * linked to a page of its own. UNESCO links outward rather than inward, so
+ * under that rule it could never carry a theme.
  */
-const DETAIL_PAGES: Record<
-  string,
-  { href: string; label: string; theme: string; ground: string; groundHover: string; line: string; ink: string; inkSoft: string; accent: string }
-> = {
+type RowTheme = {
+  theme: string;
+  ground: string;
+  groundHover: string;
+  line: string;
+  ink: string;
+  inkSoft: string;
+  accent: string;
+};
+
+const ROW_THEMES: Record<string, RowTheme> = {
   iris: {
-    href: "/work/iris",
-    label: "IRIS",
     theme: "iris-theme",
     ground: "bg-[var(--iris-ground)]",
     groundHover: "hover:bg-[var(--iris-ground-deep)]",
@@ -25,20 +34,7 @@ const DETAIL_PAGES: Record<
     inkSoft: "text-[var(--iris-navy-soft)]",
     accent: "text-[var(--iris-blue)]",
   },
-  "international-student-recruitment": {
-    href: "/work/recruitment",
-    label: "recruitment",
-    theme: "rec-theme",
-    ground: "bg-[var(--rec-ground)]",
-    groundHover: "hover:bg-[var(--rec-ground-deep)]",
-    line: "border-[var(--rec-pale)]",
-    ink: "text-[var(--rec-ink)]",
-    inkSoft: "text-[var(--rec-ink-soft)]",
-    accent: "text-[var(--rec-orange)]",
-  },
   icd: {
-    href: "/work/icd",
-    label: "ICD",
     theme: "icd-theme",
     ground: "bg-[var(--icd-ground)]",
     groundHover: "hover:bg-[var(--icd-ground-deep)]",
@@ -47,9 +43,37 @@ const DETAIL_PAGES: Record<
     inkSoft: "text-[var(--icd-ink-soft)]",
     accent: "text-[var(--icd-green)]",
   },
+  "international-student-recruitment": {
+    theme: "rec-theme",
+    ground: "bg-[var(--rec-ground)]",
+    groundHover: "hover:bg-[var(--rec-ground-deep)]",
+    line: "border-[var(--rec-pale)]",
+    ink: "text-[var(--rec-ink)]",
+    inkSoft: "text-[var(--rec-ink-soft)]",
+    accent: "text-[var(--rec-orange)]",
+  },
+  "unesco-peace-diplomacy": {
+    theme: "unesco-theme",
+    ground: "bg-[var(--un-ground)]",
+    groundHover: "hover:bg-[var(--un-ground-deep)]",
+    line: "border-[var(--un-pale)]",
+    ink: "text-[var(--un-ink)]",
+    inkSoft: "text-[var(--un-ink-soft)]",
+    accent: "text-[var(--un-blue)]",
+  },
 };
-import type { WorkItem } from "@/content/site";
 
+/** Entries with a page of their own on this site. */
+const DETAIL_PAGES: Record<string, { href: string; label: string }> = {
+  iris: { href: "/work/iris", label: "IRIS" },
+  icd: { href: "/work/icd", label: "ICD" },
+  "international-student-recruitment": {
+    href: "/work/recruitment",
+    label: "recruitment",
+  },
+};
+
+/** Tone for the rows that carry no theme of their own. */
 const CATEGORY_TONE: Record<string, string> = {
   Academic: "text-azure",
   Research: "text-azure",
@@ -71,6 +95,7 @@ export function WorkList({ items }: { items: WorkItem[] }) {
       <ul className="border-t border-line">
         {items.map((item, i) => {
           const detail = DETAIL_PAGES[item.slug];
+          const skin = ROW_THEMES[item.slug];
           /*
            * A gallery wherever there are photographs to show.
            *
@@ -85,10 +110,10 @@ export function WorkList({ items }: { items: WorkItem[] }) {
             <Reveal key={item.slug} delay={i * 0.05}>
               <li
                 className={`group grid gap-3 border-b py-9 transition-colors sm:grid-cols-[1fr_auto] sm:gap-8 ${
-                  detail
-                    ? // An entry with a page of its own carries that page's
-                      // colours, so the row reads as a door into it.
-                      `${detail.theme} -mx-6 px-6 sm:-mx-8 sm:px-8 ${detail.line} ${detail.ground} ${detail.groundHover}`
+                  skin
+                    ? // A themed row reads as a door into wherever it goes,
+                      // whether that is a page here or a site elsewhere.
+                      `${skin.theme} -mx-6 px-6 sm:-mx-8 sm:px-8 ${skin.line} ${skin.ground} ${skin.groundHover}`
                     : "border-line hover:bg-canvas-light"
                 }`}
               >
@@ -97,7 +122,7 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                       a control that opens nothing is worse than plain text. */}
                   {detail ? (
                     <Link href={detail.href} className="block">
-                      <h2 className={`font-serif text-2xl leading-snug ${detail.ink} transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl`}>
+                      <h2 className={`font-serif text-2xl leading-snug ${skin ? skin.ink : "text-ink"} transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl`}>
                         {item.title}
                       </h2>
                     </Link>
@@ -120,7 +145,7 @@ export function WorkList({ items }: { items: WorkItem[] }) {
 
                   <p
                     className={`mt-2 max-w-2xl text-sm leading-relaxed ${
-                      detail ? detail.inkSoft : "text-ink-soft"
+                      skin ? skin.inkSoft : "text-ink-soft"
                     }`}
                   >
                     {item.summary}
@@ -153,7 +178,7 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                     {detail && (
                       <Link
                         href={detail.href}
-                        className={`group/e mt-1 inline-flex items-center gap-2 border px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] transition-opacity hover:opacity-60 ${detail.line} ${detail.accent}`}
+                        className={`group/e mt-1 inline-flex items-center gap-2 border px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] transition-opacity hover:opacity-60 ${skin ? `${skin.line} ${skin.accent}` : "border-ink text-ink"}`}
                       >
                         <span className="inline-block h-px w-6 bg-current transition-all duration-300 group-hover/e:w-10" />
                         Look into {detail.label}
@@ -164,8 +189,8 @@ export function WorkList({ items }: { items: WorkItem[] }) {
 
                 <span
                   className={`text-xs uppercase tracking-[0.12em] sm:text-right ${
-                    detail
-                      ? detail.accent
+                    skin
+                      ? skin.accent
                       : (CATEGORY_TONE[item.category] ?? "text-ink-faint")
                   }`}
                 >

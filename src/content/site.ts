@@ -185,12 +185,12 @@ export const workItems: WorkItem[] = [
     date: "2024",
   },
   {
-    slug: "international-student-recruitment",
-    title: "International Student Recruitment",
+    slug: "icd",
+    title: "Intercultural Competence Development",
     category: "International Education",
     summary:
-      "Recruitment across Türkiye, Pakistan, Nepal and Iraq, run on a tiered partnership framework: agents move from prospecting to high-value on consistent conversion, responsive communication and referral quality, each tier carrying its own incentives and review cycle.",
-    date: "2021",
+      "Training for students, faculty and administration, designed around the finding that intercultural competence is an institutional property rather than an individual one. Delivered in Türkiye, Pakistan, Iraq, Nepal and Germany.",
+    date: "2022",
   },
   {
     slug: "star-scholars-global-engagement",
@@ -202,12 +202,12 @@ export const workItems: WorkItem[] = [
     link: { label: "Visit STAR Scholars", url: "https://starscholars.org" },
   },
   {
-    slug: "icd",
-    title: "Intercultural Competence Development",
+    slug: "international-student-recruitment",
+    title: "International Student Recruitment",
     category: "International Education",
     summary:
-      "Training for students, faculty and administration, designed around the finding that intercultural competence is an institutional property rather than an individual one. Delivered in Türkiye, Pakistan, Iraq, Nepal and Germany.",
-    date: "2022",
+      "Recruitment across Türkiye, Pakistan, Nepal and Iraq, run on a tiered partnership framework: agents move from prospecting to high-value on consistent conversion, responsive communication and referral quality, each tier carrying its own incentives and review cycle.",
+    date: "2021",
   },
   {
     slug: "unesco-peace-diplomacy",

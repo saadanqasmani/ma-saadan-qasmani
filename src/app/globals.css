@@ -219,3 +219,19 @@ body {
     transform: none !important;
   }
 }
+
+/*
+ * The UNESCO row runs white.
+ *
+ * The other themed rows borrow the colour of the page they open into. This
+ * one opens outward, to the Chair's own site, so it takes UNESCO's own key
+ * instead: white, with the blue kept for the line and the accent.
+ */
+.unesco-theme {
+  --un-ground: #ffffff;
+  --un-ground-deep: #f1f5fa;
+  --un-blue: #0b5cab;
+  --un-pale: #d5e0ee;
+  --un-ink: #16202e;
+  --un-ink-soft: #4a5768;
+}

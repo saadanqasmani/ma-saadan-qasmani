@@ -64,7 +64,7 @@ export function DirectOrderForm() {
   if (status === "done") {
     return (
       <FormNotice tone="success">
-        Your order has been received. Saadan reviews every order personally — you will receive
+        Your order has been received. Our team reviews every order personally — you will receive
         payment and shipping instructions by email once it is confirmed. No payment is required
         yet.
       </FormNotice>
@@ -145,7 +145,7 @@ export function DirectOrderForm() {
       </div>
 
       <p className="text-xs text-ink-soft">
-        This form does not collect payment or banking details. Saadan reviews every order
+        This form does not collect payment or banking details. Our team reviews every order
         personally and sends payment instructions directly once your order is confirmed.
       </p>
 

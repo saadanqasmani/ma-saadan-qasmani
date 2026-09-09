@@ -198,7 +198,7 @@ export async function getWorkItems(): Promise<WorkItem[]> {
   // the content file by slug rather than lost the moment a row exists.
   const links = new Map(staticWork.map((w) => [w.slug, w.link]));
 
-  return data.map((row) => ({
+  const rows = data.map((row) => ({
     slug: row.slug,
     title: row.title,
     category: (row.category ?? "Projects") as WorkCategory,
@@ -206,6 +206,22 @@ export async function getWorkItems(): Promise<WorkItem[]> {
     date: row.date ?? "",
     link: links.get(row.slug),
   }));
+
+  /*
+   * The content file decides the running order, not the table.
+   *
+   * The order of this list is an editorial decision, and it is made in
+   * src/content/site.ts. Left to the table's sort_order it would depend on
+   * whatever the rows happened to be written with, so reordering the file
+   * would silently do nothing wherever the database is connected. Anything
+   * the file does not know about keeps its position at the end.
+   */
+  const authored = new Map(staticWork.map((w, i) => [w.slug, i]));
+  return rows.sort(
+    (a, b) =>
+      (authored.get(a.slug) ?? Number.MAX_SAFE_INTEGER) -
+      (authored.get(b.slug) ?? Number.MAX_SAFE_INTEGER)
+  );
 }
 
 export async function getPublications(): Promise<Publication[]> {
