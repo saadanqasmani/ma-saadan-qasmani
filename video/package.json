@@ -1,0 +1,21 @@
+{
+  "name": "highest-branch-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Remotion compositions for The Highest Branch. Renders the title sequence to video so the page can play it instead of animating SVG in the browser.",
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render",
+    "still": "remotion still"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.418",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.418"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "typescript": "5.9.3"
+  }
+}

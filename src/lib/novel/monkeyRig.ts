@@ -342,7 +342,7 @@ export function buildFigure(p: Pose): Figure {
     torso: ribbon(torsoPts, torsoW),
     chestLight: ribbon(
       [place(waist), place(ribs), place(chest)],
-      [7.5 * s, 9.4 * s, 8.6 * s]
+      [1.2 * s, 9.4 * s, 7.6 * s]
     ),
 
     armNear: ribbon(armNearPts, armW),
