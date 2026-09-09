@@ -1,14 +1,21 @@
 /**
- * A rhesus macaque, rigged for the intro sequence on The Highest Branch.
+ * The figure for the title sequence on The Highest Branch.
  *
  * Forward kinematics over a small skeleton: every joint is an angle in
  * degrees measured from the +x axis with +y pointing down, so 0 is right and
  * 90 is straight down. Poses are plain numbers, which means two poses can be
  * blended with a lerp and a gait can be added on top as an offset.
  *
- * Drawn as tapered strokes rather than filled outlines: the sequence is meant
- * to read as an illustration in the same ink as the rest of the site, and a
- * line keeps its character at every size the viewport might be.
+ * The first version drew the skeleton directly, as tapered strokes. It was
+ * legible and it was a stick figure. This one resolves the same skeleton into
+ * filled, tapering volumes: every limb is a ribbon whose half-width falls
+ * from shoulder to wrist, the torso is a closed body rather than a line, and
+ * the hands, feet and face are their own shapes. The skeleton is unchanged,
+ * so every pose and every beat of the sequence still holds.
+ *
+ * The anatomy follows the novel: four grasping hands rather than two hands
+ * and two feet, long feet that fold over a branch, and a tail that carries
+ * its own weight.
  */
 
 export type Pose = {
@@ -31,17 +38,25 @@ export type Pose = {
   dressed: number;
 };
 
+/**
+ * Macaque proportions, not human ones.
+ *
+ * The first pass carried a long spine over long thin limbs and the result
+ * read as an anteater. A macaque is compact: the trunk is barely longer than
+ * the thigh, the head is large against the body, and the forearm is shorter
+ * than the upper arm rather than equal to it.
+ */
 const L = {
-  spine: 58,
-  neck: 20,
-  skull: 26,
-  upperArm: 40,
-  foreArm: 38,
+  spine: 46,
+  neck: 13,
+  skull: 24,
+  upperArm: 34,
+  foreArm: 29,
   hand: 12,
-  thigh: 40,
-  shin: 36,
-  foot: 16,
-  tail: 76,
+  thigh: 35,
+  shin: 30,
+  foot: 17,
+  tail: 74,
 };
 
 const rad = (d: number) => (d * Math.PI) / 180;
@@ -80,121 +95,293 @@ export function lerpPose(a: Pose, b: Pose, t: number): Pose {
   };
 }
 
-export type Limb = { d: string; w: number; far: boolean };
+// ── Geometry helpers ───────────────────────────────────────────────────────
+
+const f1 = (n: number) => n.toFixed(1);
+
+/** A smooth polyline: quadratics through the midpoints of each segment. */
+function smooth(pts: P[]): string {
+  if (pts.length < 2) return "";
+  let d = `M ${f1(pts[0].x)} ${f1(pts[0].y)}`;
+  for (let i = 1; i < pts.length - 1; i += 1) {
+    const mx = (pts[i].x + pts[i + 1].x) / 2;
+    const my = (pts[i].y + pts[i + 1].y) / 2;
+    d += ` Q ${f1(pts[i].x)} ${f1(pts[i].y)} ${f1(mx)} ${f1(my)}`;
+  }
+  const last = pts[pts.length - 1];
+  return `${d} L ${f1(last.x)} ${f1(last.y)}`;
+}
+
+/**
+ * A limb, as a closed shape rather than a stroke.
+ *
+ * The spine of the limb is offset either side by a half-width that tapers
+ * along its length, and the two edges are joined by a round cap at each end.
+ * A stroke of varying width would need one path per segment and would show
+ * every joint as a step; this is one path and reads as one arm.
+ */
+function ribbon(pts: P[], widths: number[]): string {
+  const n = pts.length;
+  const left: P[] = [];
+  const right: P[] = [];
+
+  for (let i = 0; i < n; i += 1) {
+    const a = pts[Math.max(0, i - 1)];
+    const b = pts[Math.min(n - 1, i + 1)];
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len;
+    const ny = dx / len;
+    const w = widths[i];
+    left.push({ x: pts[i].x + nx * w, y: pts[i].y + ny * w });
+    right.push({ x: pts[i].x - nx * w, y: pts[i].y - ny * w });
+  }
+
+  const capEnd = `A ${f1(widths[n - 1])} ${f1(widths[n - 1])} 0 0 1 ${f1(right[n - 1].x)} ${f1(right[n - 1].y)}`;
+  const capStart = `A ${f1(widths[0])} ${f1(widths[0])} 0 0 1 ${f1(left[0].x)} ${f1(left[0].y)}`;
+
+  return `${smooth(left)} ${capEnd} ${smooth(right.slice().reverse()).replace(/^M/, "L")} ${capStart} Z`;
+}
+
+/** A closed blob: an ellipse through four points, for hands, feet and ears. */
+function blob(c: P, rx: number, ry: number, deg: number): string {
+  const r = rad(deg);
+  const cs = Math.cos(r);
+  const sn = Math.sin(r);
+  const at = (u: number, v: number): P => ({
+    x: c.x + u * rx * cs - v * ry * sn,
+    y: c.y + u * rx * sn + v * ry * cs,
+  });
+  const k = 0.5523;
+  const p0 = at(-1, 0);
+  const p1 = at(0, -1);
+  const p2 = at(1, 0);
+  const p3 = at(0, 1);
+  const h = (a: P, b: P, ux: number, uy: number, vx: number, vy: number) =>
+    `C ${f1(a.x + ux)} ${f1(a.y + uy)} ${f1(b.x + vx)} ${f1(b.y + vy)} ${f1(b.x)} ${f1(b.y)}`;
+  const ex = rx * k * cs;
+  const ey = rx * k * sn;
+  const fx = -ry * k * sn;
+  const fy = ry * k * cs;
+  return [
+    `M ${f1(p0.x)} ${f1(p0.y)}`,
+    h(p0, p1, -fx, -fy, -ex, -ey),
+    h(p1, p2, ex, ey, -fx, -fy),
+    h(p2, p3, fx, fy, ex, ey),
+    h(p3, p0, -ex, -ey, fx, fy),
+    "Z",
+  ].join(" ");
+}
+
+// ── The figure ─────────────────────────────────────────────────────────────
+
 export type Figure = {
-  limbs: Limb[];
-  torso: string;
-  neck: string;
-  head: { d: string; muzzle: string; eye: P; ear: P; brow: string };
+  /** Drawn behind the body, dimmed, so the figure reads with depth. */
   tail: string;
-  /** Clothing, drawn only when `dressed` is above zero. */
-  suit: { jacket: string; lapel: string; trouserN: string; trouserF: string; shoes: string[] };
+  armFar: string;
+  legFar: string;
+  handFar: string;
+  footFar: string;
+  /** The body itself. */
+  torso: string;
+  chestLight: string;
+  /** Drawn in front. */
+  armNear: string;
+  legNear: string;
+  handNear: string;
+  footNear: string;
+  head: {
+    skull: string;
+    face: string;
+    ear: string;
+    earInner: string;
+    brow: string;
+    eye: P;
+    eyeR: number;
+    glint: P;
+    nostril: string;
+    mouth: string;
+  };
+  /** Clothing. Painted at `dressed` opacity over the same limbs. */
+  suit: {
+    jacket: string;
+    lapel: string;
+    collar: string;
+    sleeveNear: string;
+    sleeveFar: string;
+    trouserNear: string;
+    trouserFar: string;
+    shoeNear: string;
+    shoeFar: string;
+  };
   dressed: number;
+  scale: number;
   /** Where the figure actually occupies space, for occlusion tests. */
   bounds: { x: number; y: number };
 };
 
-/** Resolves a pose into the paths that draw it. */
+/** Resolves a pose into the shapes that draw it. */
 export function buildFigure(p: Pose): Figure {
   const s = p.scale;
   const R = rad(p.roll);
   const cos = Math.cos(R);
   const sin = Math.sin(R);
 
-  // Everything is built in body space, then rolled and placed. Doing the roll
-  // here rather than with an SVG transform keeps the stroke widths honest.
+  // Everything is built in body space, then rolled and placed, so the widths
+  // below are body units and scale with the figure rather than with the view.
   const place = (q: P): P => ({
     x: p.x + (q.x * cos - q.y * sin) * s,
     y: p.y + (q.x * sin + q.y * cos) * s,
   });
-  const path = (pts: P[]) =>
-    pts.map((q, i) => `${i ? "L" : "M"} ${q.x.toFixed(1)} ${q.y.toFixed(1)}`).join(" ");
-  const curve = (a: P, b: P, c: P) =>
-    `M ${a.x.toFixed(1)} ${a.y.toFixed(1)} Q ${b.x.toFixed(1)} ${b.y.toFixed(1)} ${c.x.toFixed(1)} ${c.y.toFixed(1)}`;
 
   const pelvis: P = { x: 0, y: 0 };
   const chest = step(pelvis, p.spine, L.spine);
   const neck = step(chest, p.neck, L.neck);
   const skull = step(neck, p.head, L.skull);
 
-  const arm = (a: [number, number]) => {
-    const elbow = step(chest, a[0], L.upperArm);
+  const armChain = (a: [number, number]) => {
+    const shoulder = step(chest, p.spine + 180, 4);
+    const elbow = step(shoulder, a[0], L.upperArm);
     const wrist = step(elbow, a[1], L.foreArm);
-    const hand = step(wrist, a[1] + 18, L.hand);
-    return [chest, elbow, wrist, hand].map(place);
+    return { pts: [shoulder, elbow, wrist], hand: step(wrist, a[1] + 18, L.hand * 0.6), dir: a[1] };
   };
-  const leg = (a: [number, number, number]) => {
-    const knee = step(pelvis, a[0], L.thigh);
+  const legChain = (a: [number, number, number]) => {
+    const hip = step(pelvis, p.spine + 180, 3);
+    const knee = step(hip, a[0], L.thigh);
     const ankle = step(knee, a[1], L.shin);
-    const toe = step(ankle, a[2], L.foot);
-    return [pelvis, knee, ankle, toe].map(place);
+    return { pts: [hip, knee, ankle], foot: step(ankle, a[2], L.foot * 0.55), dir: a[2] };
   };
 
-  const armNear = arm(p.armN);
-  const armFar = arm(p.armF);
-  const legNear = leg(p.legN);
-  const legFar = leg(p.legF);
+  const aN = armChain(p.armN);
+  const aF = armChain(p.armF);
+  const lN = legChain(p.legN);
+  const lF = legChain(p.legF);
+
+  // Half-widths, shoulder to wrist and hip to ankle. A limb that keeps one
+  // width is a tube; the taper is most of what makes it read as an arm.
+  const armW = [10, 7.6, 5.4].map((w) => w * s);
+  const armWFar = [9, 6.8, 4.9].map((w) => w * s);
+  const legW = [12.6, 9, 6].map((w) => w * s);
+  const legWFar = [11.4, 8.1, 5.4].map((w) => w * s);
+
+  const armNearPts = aN.pts.map(place);
+  const armFarPts = aF.pts.map(place);
+  const legNearPts = lN.pts.map(place);
+  const legFarPts = lF.pts.map(place);
+
+  // The torso is a body, not a line: narrow at the waist, wide at the chest,
+  // with the shoulders carried above the ribs.
+  const waist = step(pelvis, p.spine, L.spine * 0.34);
+  const ribs = step(pelvis, p.spine, L.spine * 0.74);
+  // The last point is inside the skull, not at the neck: a torso that stops
+  // at the neck leaves a gap the head appears to float above.
+  const collar = step(neck, p.head, L.skull * 0.55);
+  const torsoPts = [pelvis, waist, ribs, chest, neck, collar].map(place);
+  const torsoW = [15.5, 13.6, 16.4, 16.2, 10.4, 9].map((w) => w * s);
 
   const tailMid = step(pelvis, p.tail[0], L.tail * 0.6);
   const tailEnd = step(tailMid, p.tail[0] + p.tail[1], L.tail * 0.7);
+  const tailPts = [pelvis, tailMid, tailEnd].map(place);
+  const tailW = [6.4, 4, 1.8].map((w) => w * s);
 
-  const cP = place(chest);
-  const pP = place(pelvis);
-
-  // The muzzle is what makes it a macaque rather than a generic ape: a long
-  // low snout carried ahead of a flat brow. The outline is built as a ring of
-  // points around the skull so it stays attached at every head angle; an
-  // earlier version anchored it to the neck and the head floated free.
-  const around = (deg: number, len: number) => place(step(skull, p.head + deg, len));
-  const ring = [
-    around(180, 13), // back of skull
-    around(-118, 13), // crown
-    around(-52, 15), // brow
-    around(-16, 24), // bridge
-    around(2, 27), // muzzle tip
-    around(30, 18), // lip
-    around(64, 13), // chin
-    around(132, 12), // throat
+  // The head is built as a ring of points around the skull so it stays
+  // attached at every angle; an earlier version anchored it to the neck and
+  // the head floated free at the extremes of the flip.
+  const around = (deg: number, len: number) => place(step(skull, p.head + deg, len * s));
+  // A macaque skull is not an egg. The brow steps out over the eye, the
+  // muzzle is short and low, and the cranium is round behind it. Those three
+  // are what stop the head reading as a generic animal.
+  const skullRing = [
+    around(178, 18),
+    around(-146, 19),
+    around(-104, 19.5),
+    around(-72, 19),
+    around(-54, 20.5), // brow shelf
+    around(-34, 19),
+    around(-12, 22),
+    around(4, 24), // muzzle tip
+    around(28, 19),
+    around(58, 16),
+    around(102, 16),
+    around(146, 17),
+  ];
+  const faceRing = [
+    around(-36, 13),
+    around(-12, 19),
+    around(4, 21),
+    around(28, 16.5),
+    around(52, 12),
+    around(14, 11),
   ];
 
-  const eye = around(-34, 9);
-  const ear = around(158, 11);
-  const browA = around(-74, 13);
-  const browB = around(-26, 17);
-  const napeP = around(150, 9);
+  const eye = around(-46, 12.5);
+  const glint = around(-52, 14);
+  const earC = around(160, 16.5);
+  const brow = smooth([around(-82, 16), around(-56, 19.5), around(-30, 20)]);
+  const nostril = blob(around(0, 20), 2 * s, 1.4 * s, p.head + 90);
+  const mouth = smooth([around(20, 18), around(30, 16), around(42, 12.5)]);
 
-  const hipN = legNear[0];
-  const kneeN = legNear[1];
-  const kneeF = legFar[1];
+  // Clothing rides the same chains, a little thicker, and stops short of the
+  // hands and feet so the skin still shows at the cuff.
+  // Cloth sits just off the body rather than ballooning: a jacket that is a
+  // third wider than the arm inside it reads as a sack.
+  const sleeve = (pts: P[], w: number[]) => ribbon(pts, w.map((v) => v * 1.16));
+  const shoe = (ankle: P, foot: P) => ribbon([ankle, foot], [5.6 * s, 7.2 * s]);
+  // The jacket carries a shoulder line the torso does not have.
+  const shoulderL = step(chest, p.spine + 90, 15);
+  const shoulderR = step(chest, p.spine - 90, 15);
 
   return {
-    limbs: [
-      { d: path(armFar), w: 4.6 * s, far: true },
-      { d: path(legFar), w: 5.2 * s, far: true },
-      { d: path(armNear), w: 5.4 * s, far: false },
-      { d: path(legNear), w: 6 * s, far: false },
-    ],
-    torso: path([pP, cP]),
-    // Drawn under the head so the join is never a visible seam.
-    neck: path([cP, napeP]),
+    tail: ribbon(tailPts, tailW),
+    armFar: ribbon(armFarPts, armWFar),
+    legFar: ribbon(legFarPts, legWFar),
+    handFar: blob(place(aF.hand), 8 * s, 6 * s, aF.dir + p.roll),
+    footFar: blob(place(lF.foot), 10.5 * s, 5.8 * s, lF.dir + p.roll),
+
+    torso: ribbon(torsoPts, torsoW),
+    chestLight: ribbon(
+      [place(waist), place(ribs), place(chest)],
+      [7.5 * s, 9.4 * s, 8.6 * s]
+    ),
+
+    armNear: ribbon(armNearPts, armW),
+    legNear: ribbon(legNearPts, legW),
+    handNear: blob(place(aN.hand), 8.6 * s, 6.4 * s, aN.dir + p.roll),
+    footNear: blob(place(lN.foot), 11.2 * s, 6.2 * s, lN.dir + p.roll),
+
     head: {
-      d: `${path(ring)} Z`,
-      muzzle: curve(around(-30, 10), around(-6, 20), around(24, 12)),
+      skull: `${smooth(skullRing)} Z`,
+      face: `${smooth(faceRing)} Z`,
+      ear: blob(earC, 6.6 * s, 8 * s, p.head),
+      earInner: blob(earC, 3.5 * s, 4.4 * s, p.head),
+      brow,
       eye,
-      ear,
-      brow: path([browA, browB]),
+      eyeR: 3.4 * s,
+      glint,
+      nostril,
+      mouth,
     },
-    tail: curve(pP, place(tailMid), place(tailEnd)),
+
     suit: {
-      // A jacket is a torso shape; trousers are the legs thickened; shoes are
-      // a wedge on the toe. Nothing here needs its own rig.
-      jacket: `${path([cP, pP])}`,
-      lapel: `${path([cP, place(step(chest, p.spine + 150, 22))])}`,
-      trouserN: path([hipN, kneeN]),
-      trouserF: path([legFar[0], kneeF]),
-      shoes: [path([legNear[2], legNear[3]]), path([legFar[2], legFar[3]])],
+      jacket: `${ribbon(torsoPts.slice(0, 5), [17.5, 16, 19.5, 20.5, 12].map((w) => w * s))} ${ribbon([place(shoulderL), place(chest), place(shoulderR)], [7 * s, 12 * s, 7 * s])}`,
+      // The shirt: a narrow wedge from the collar down to the button line, so
+      // the jacket has something to be open over.
+      lapel: `${smooth([place(step(neck, p.neck + 180, 6)), place(step(chest, p.spine, 4)), place(step(ribs, p.spine + 180, 3))])}`,
+      collar: ribbon(
+        [place(neck), place(step(neck, p.neck + 180, 9))],
+        [8.4 * s, 6 * s]
+      ),
+      sleeveNear: sleeve(armNearPts.slice(0, 2), armW.slice(0, 2)),
+      sleeveFar: sleeve(armFarPts.slice(0, 2), armWFar.slice(0, 2)),
+      trouserNear: sleeve(legNearPts, legW),
+      trouserFar: sleeve(legFarPts, legWFar),
+      shoeNear: shoe(legNearPts[2], place(lN.foot)),
+      shoeFar: shoe(legFarPts[2], place(lF.foot)),
     },
+
     dressed: p.dressed,
+    scale: s,
     bounds: { x: p.x, y: p.y },
   };
 }

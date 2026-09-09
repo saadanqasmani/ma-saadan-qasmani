@@ -16,7 +16,7 @@ export const CROWD = { from: 1810, to: 2380 };
 export const BUILDING = { x: 2560, w: 620, top: -520 };
 
 /** The visible window on the world, in world units. 16:9. */
-export const VIEW = { w: 760, h: 428 };
+export const VIEW = { w: 780, h: 439 };
 
 /** The limb he hangs from, drawn explicitly so the grip always lands. */
 export const HANG_BRANCH = { x1: TREE_X - 10, x2: TREE_X + 150, y: BRANCH_Y };
@@ -41,8 +41,14 @@ const pose = (o: Partial<Pose>): Pose => ({ ...base, ...o });
 
 /** Hanging by both feet, head down, arms loose. */
 const HANG = pose({
-  x: TREE_X + 40,
-  y: BRANCH_Y + 96,
+  x: TREE_X + 46,
+  /*
+   * The root is the pelvis, and at roll 180 the leg chain resolves about 70
+   * units below it in world space, which is where the feet are. The original
+   * put the pelvis below the branch and the feet a further 148 units under
+   * that, so the grip closed on air. This puts the feet on the wood.
+   */
+  y: BRANCH_Y - 68,
   roll: 180,
   spine: -90,
   neck: -92,
@@ -193,6 +199,13 @@ export type Frame = {
   inCrowd: boolean;
   /** 0 to 1, fades the whole scene out at the end. */
   fade: number;
+  /**
+   * Where the sequence is in its own light. The novel's refrain is that the
+   * light goes orange, then blue, then gone; this drives that, held on the
+   * forest a little longer than the clock would give it so the hang is warm
+   * the whole time it lasts.
+   */
+  light: number;
 };
 
 export function frameAt(t: number): Frame {
@@ -255,12 +268,16 @@ export function frameAt(t: number): Frame {
   // tree, and is stopped from dropping below the ground line.
   const camX = Math.max(0, p.x - VIEW.w * 0.42);
   const camY = Math.min(p.y - VIEW.h * 0.55, WORLD.ground + 60 - VIEW.h);
-  const z = 1 + clamp01(span(t, BEATS.exit)) * 0.35;
+  // Tight on the hang, opening as he crosses the ground, pulling back again
+  // as he leaves the top of the frame.
+  const open = clamp01(span(t, [0, BEATS.crawl[0]] as const));
+  const z = 0.72 + open * 0.28 + clamp01(span(t, BEATS.exit)) * 0.35;
 
   return {
     figure: buildFigure(p),
     cam: { x: camX, y: camY, z },
     inCrowd: p.x > CROWD.from - 40 && p.x < CROWD.to + 40,
     fade: 1 - clamp01(span(t, BEATS.exit)),
+    light: clamp01((t - BEATS.drop[0]) / (1 - BEATS.drop[0])),
   };
 }
