@@ -1,39 +1,28 @@
 import React from "react";
-import { PAPER } from "./palette";
+import { staticFile } from "remotion";
 import { cutPath, mulberry32 } from "./cut";
+import INDEX from "../../public/letters/index.json";
 
 /**
  * Cut lettering.
  *
- * Every letter is its own scrap: its own paper, its own ink, its own
- * typeface, cut out and laid down at whatever angle the hand left it. That is
- * how a word gets made in a cut-out film, and it is the one place the film is
- * allowed to be loud.
+ * The letters are real: Saadan supplied ransom-alphabet sheets, and
+ * score/letters.py cuts each glyph off its sheet into its own transparent
+ * png, keeping the paper tile it was printed on. So a word here is genuinely
+ * assembled out of separate scraps rather than typeset and distressed.
  *
- * The scraps are generated rather than lifted from real magazines. A film
- * that will be published cannot carry pieces of someone else's printed page,
- * and it does not need to: what makes the look is the disagreement between
- * the letters, not the provenance of the paper.
+ * Anything the alphabet does not carry — a colon, a digit — falls back to a
+ * plain cut scrap with the character set on it, so a label can say 02:11
+ * without needing a second sheet.
  */
 
-/** Stocks a letter might have been cut from. */
-const STOCKS = [
-  { paper: "#f0e9d8", ink: "#1b1710" }, // newsprint
-  { paper: "#e6dcc4", ink: "#241d14" }, // aged newsprint
-  { paper: "#1b1710", ink: "#f2ece0" }, // reversed out of a headline
-  { paper: "#c2430f", ink: "#fdf3e3" }, // a colour page
-  { paper: "#2f4f86", ink: "#f4efe2" },
-  { paper: "#e8a552", ink: "#20180f" },
-  { paper: "#f7f2e6", ink: "#7a2907" },
-] as const;
+type Glyph = { file: string; w: number; h: number };
+const GLYPHS = INDEX as Record<string, Glyph[]>;
 
-const FACES = [
-  "Georgia, serif",
-  "'Times New Roman', serif",
-  "Impact, 'Arial Black', sans-serif",
-  "'Courier New', monospace",
-  "Verdana, sans-serif",
-  "'Arial Black', sans-serif",
+const FALLBACK_STOCK = [
+  { paper: "#f0e9d8", ink: "#1b1710" },
+  { paper: "#1b1710", ink: "#f2ece0" },
+  { paper: "#c2430f", ink: "#fdf3e3" },
 ] as const;
 
 export type RansomProps = {
@@ -41,6 +30,7 @@ export type RansomProps = {
   /** Centre of the word, in world units. */
   x: number;
   y: number;
+  /** Cap height the letters are scaled to. */
   size?: number;
   seed?: number;
   /** 0 to 1. Letters are laid down in order as this rises. */
@@ -57,54 +47,105 @@ export const Ransom: React.FC<RansomProps> = ({
   reveal = 1,
   rotate = 0,
 }) => {
-  const chars = text.split("");
-
-  // Widths are guessed rather than measured: measuring text in SVG needs the
-  // DOM, and a cut-out word does not want even spacing anyway.
-  const letters = React.useMemo(() => {
+  const laid = React.useMemo(() => {
     const rand = mulberry32(seed);
+    const chars = text.toUpperCase().split("");
     let cursor = 0;
-    const out = chars.map((ch, i) => {
-      const stock = STOCKS[Math.floor(rand() * STOCKS.length)];
-      const face = FACES[Math.floor(rand() * FACES.length)];
-      const s = size * (0.82 + rand() * 0.36);
-      const w = ch === " " ? size * 0.34 : s * (0.62 + rand() * 0.16);
+
+    const items = chars.map((ch, i) => {
+      const variants = GLYPHS[ch];
+      // Letters are not all the same size on the sheet, and they should not
+      // be: a word cut from a magazine has letters that disagree.
+      const s = size * (0.86 + rand() * 0.3);
+
+      if (ch === " ") {
+        const w = size * 0.36;
+        const item = { kind: "space" as const, i, w, cx: cursor + w / 2 };
+        cursor += w;
+        return item;
+      }
+
+      if (variants && variants.length) {
+        const g = variants[Math.floor(rand() * variants.length)];
+        const h = s;
+        const w = (g.w / g.h) * h;
+        const item = {
+          kind: "glyph" as const,
+          i,
+          file: g.file,
+          w,
+          h,
+          cx: cursor + w / 2,
+          tilt: (rand() - 0.5) * 12,
+          dy: (rand() - 0.5) * size * 0.15,
+        };
+        cursor += w + size * 0.03;
+        return item;
+      }
+
+      const stock = FALLBACK_STOCK[Math.floor(rand() * FALLBACK_STOCK.length)];
+      const w = s * 0.56;
       const item = {
-        ch,
+        kind: "set" as const,
         i,
+        ch,
         stock,
-        face,
         s,
         w,
         cx: cursor + w / 2,
-        tilt: (rand() - 0.5) * 13,
-        dy: (rand() - 0.5) * size * 0.16,
-        padX: s * (0.1 + rand() * 0.1),
-        padY: s * (0.09 + rand() * 0.09),
-        seed: seed * 97 + i * 13,
+        tilt: (rand() - 0.5) * 12,
+        dy: (rand() - 0.5) * size * 0.15,
+        seed: seed * 71 + i,
       };
-      cursor += w + size * 0.045;
+      cursor += w + size * 0.03;
       return item;
     });
-    return { out, total: cursor };
-  }, [chars, seed, size]);
+
+    return { items, total: cursor, count: chars.length };
+  }, [text, seed, size]);
 
   return (
-    <g transform={`translate(${x - letters.total / 2} ${y}) rotate(${rotate} ${letters.total / 2} 0)`}>
-      {letters.out.map((l) => {
-        if (l.ch === " ") return null;
+    <g
+      transform={`translate(${x - laid.total / 2} ${y}) rotate(${rotate} ${laid.total / 2} 0)`}
+    >
+      {laid.items.map((it) => {
+        if (it.kind === "space") return null;
+
         // Each letter lands in turn, dropping the last of the way in.
-        const at = (l.i / Math.max(1, chars.length)) * 0.72;
+        const at = (it.i / Math.max(1, laid.count)) * 0.72;
         const p = Math.max(0, Math.min(1, (reveal - at) / 0.26));
         if (p <= 0) return null;
 
-        const hw = l.w / 2 + l.padX;
-        const hh = l.s * 0.5 + l.padY;
+        const drop = (1 - p) * -size * 0.55;
+        const spin = it.tilt * (0.4 + (1 - p) * 1.8);
 
+        if (it.kind === "glyph") {
+          return (
+            <g
+              key={it.i}
+              transform={`translate(${it.cx} ${it.dy + drop}) rotate(${spin})`}
+              opacity={p}
+            >
+              <g filter="url(#lift)">
+                <image
+                  href={staticFile(`letters/${it.file}`)}
+                  x={-it.w / 2}
+                  y={-it.h / 2}
+                  width={it.w}
+                  height={it.h}
+                  preserveAspectRatio="xMidYMid meet"
+                />
+              </g>
+            </g>
+          );
+        }
+
+        const hw = it.w / 2 + it.s * 0.12;
+        const hh = it.s * 0.5 + it.s * 0.1;
         return (
           <g
-            key={l.i}
-            transform={`translate(${l.cx} ${l.dy + (1 - p) * -size * 0.5}) rotate(${l.tilt * (0.4 + (1 - p) * 1.6)})`}
+            key={it.i}
+            transform={`translate(${it.cx} ${it.dy + drop}) rotate(${spin})`}
             opacity={p}
           >
             <g filter="url(#lift)">
@@ -116,23 +157,23 @@ export const Ransom: React.FC<RansomProps> = ({
                     [hw, hh],
                     [-hw, hh],
                   ],
-                  l.seed,
+                  it.seed,
                   2.4
                 )}
-                fill={l.stock.paper}
+                fill={it.stock.paper}
                 filter="url(#grain)"
               />
             </g>
             <text
               x={0}
-              y={l.s * 0.35}
+              y={it.s * 0.34}
               textAnchor="middle"
-              fontFamily={l.face}
-              fontSize={l.s}
+              fontFamily="Georgia, 'Times New Roman', serif"
+              fontSize={it.s}
               fontWeight={700}
-              fill={l.stock.ink}
+              fill={it.stock.ink}
             >
-              {l.ch}
+              {it.ch}
             </text>
           </g>
         );
