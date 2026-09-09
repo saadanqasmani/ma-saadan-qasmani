@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { Mark } from "@/components/collect/Mark";
@@ -7,6 +8,8 @@ import { FloatCard } from "@/components/ui/FloatCard";
 import { iris } from "@/content/iris";
 import { irisDemo } from "@/content/site";
 import { IrisEye } from "@/components/novel/IrisEye";
+import { IrisLock } from "@/components/work/IrisLock";
+import { IRIS_COOKIE, tokenIsValid } from "@/lib/irisGate";
 
 /**
  * The IRIS project page.
@@ -44,7 +47,31 @@ function DemoLink({ className = "" }: { className?: string }) {
   );
 }
 
-export default function IrisPage() {
+/**
+ * Stands in for a locked section's content: it keeps the page's shape
+ * legible without putting any of the section in the document.
+ */
+function Withheld({ line }: { line: string }) {
+  return (
+    <Reveal delay={0.08}>
+      <div className="mt-8 max-w-2xl border-l-2 border-ember pl-6">
+        <p className="font-serif text-xl italic leading-snug text-[var(--iris-navy)]">{line}</p>
+        <a
+          href="#film"
+          className="mt-4 inline-flex text-xs uppercase tracking-[0.16em] text-[var(--iris-blue)] underline underline-offset-4"
+        >
+          Enter the access code
+        </a>
+      </div>
+    </Reveal>
+  );
+}
+
+export default async function IrisPage() {
+  // Read on the server: a locked visitor is never sent the film, the module
+  // list or the architecture, so there is nothing in the page to reveal.
+  const unlocked = await tokenIsValid((await cookies()).get(IRIS_COOKIE)?.value);
+
   return (
     <div className="iris-theme bg-[var(--iris-ground)]">
       <IrisEye />
@@ -63,17 +90,29 @@ export default function IrisPage() {
         <Reveal delay={0.1}>
           <div className="mt-8 flex flex-wrap gap-4">
             <DemoLink />
-            <a
-              href={irisDemo.explainer}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative inline-flex overflow-hidden border border-ink px-6 py-3 text-xs font-medium uppercase tracking-[0.16em]"
-            >
-              <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
-              <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-                Open the film full screen
-              </span>
-            </a>
+            {unlocked ? (
+              <a
+                href={irisDemo.explainer}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative inline-flex overflow-hidden border border-ink px-6 py-3 text-xs font-medium uppercase tracking-[0.16em]"
+              >
+                <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
+                <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
+                  Open the film full screen
+                </span>
+              </a>
+            ) : (
+              <a
+                href="#film"
+                className="group relative inline-flex overflow-hidden border border-ink px-6 py-3 text-xs font-medium uppercase tracking-[0.16em]"
+              >
+                <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
+                <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
+                  Unlock the film
+                </span>
+              </a>
+            )}
           </div>
         </Reveal>
       </section>
@@ -256,7 +295,10 @@ export default function IrisPage() {
       </section>
 
       {/* ─────────── The film ─────────── */}
-      <section className="border-y border-[var(--iris-blue-pale)] bg-[var(--iris-navy)] py-20 sm:py-28">
+      <section
+        id="film"
+        className="scroll-mt-24 border-y border-[var(--iris-blue-pale)] bg-[var(--iris-navy)] py-20 sm:py-28"
+      >
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
             <p className="eyebrow">03 — The film</p>
@@ -266,24 +308,35 @@ export default function IrisPage() {
               Three and a half minutes, <span className="text-ember">end to end</span>.
             </h2>
           </Reveal>
-          <Reveal delay={0.14}>
-            {/* Sandboxed: it is a self-contained page, and nothing on it needs
-                access to this one. */}
-            <FloatCard tone="mixed" className="mt-10" innerClassName="overflow-hidden bg-canvas">
-              <iframe
-                src={irisDemo.explainer}
-                title="IRIS — the explainer film"
-                loading="lazy"
-                sandbox="allow-scripts"
-                className="aspect-video h-full w-full"
-              />
-            </FloatCard>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="mt-4 text-sm text-canvas-light/60">
-              Sound is off until you turn it on, inside the film.
-            </p>
-          </Reveal>
+
+          {unlocked ? (
+            <>
+              <Reveal delay={0.14}>
+                {/* Sandboxed: it is a self-contained page, and nothing on it needs
+                    access to this one. */}
+                <FloatCard tone="mixed" className="mt-10" innerClassName="overflow-hidden bg-canvas">
+                  <iframe
+                    src={irisDemo.explainer}
+                    title="IRIS — the explainer film"
+                    loading="lazy"
+                    sandbox="allow-scripts"
+                    className="aspect-video h-full w-full"
+                  />
+                </FloatCard>
+              </Reveal>
+              <Reveal delay={0.2}>
+                <p className="mt-4 text-sm text-canvas-light/60">
+                  Sound is off until you turn it on, inside the film.
+                </p>
+              </Reveal>
+            </>
+          ) : (
+            <Reveal delay={0.14}>
+              <div className="mt-10">
+                <IrisLock />
+              </div>
+            </Reveal>
+          )}
         </div>
       </section>
 
@@ -293,6 +346,10 @@ export default function IrisPage() {
           <Reveal>
             <p className="eyebrow">04 — What it does</p>
           </Reveal>
+          {!unlocked && (
+            <Withheld line="The eight modules IRIS runs are held with the film." />
+          )}
+          {unlocked && (
           <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {iris.modules.map((m, i) => (
               <Reveal key={m.name} delay={i * 0.04}>
@@ -316,6 +373,7 @@ export default function IrisPage() {
               </Reveal>
             ))}
           </ul>
+          )}
         </div>
       </section>
 
@@ -325,6 +383,11 @@ export default function IrisPage() {
           <Reveal>
             <p className="eyebrow">05 — The architecture</p>
           </Reveal>
+          {!unlocked && (
+            <Withheld line="How IRIS is built, end to end, is held with the film." />
+          )}
+          {unlocked && (
+          <>
           <Reveal delay={0.08}>
             <h2 className="mt-6 max-w-3xl font-display text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[var(--iris-navy)]">
               {iris.engine.heading}
@@ -365,6 +428,8 @@ export default function IrisPage() {
               {iris.engine.library}
             </p>
           </Reveal>
+          </>
+          )}
         </div>
       </section>
 

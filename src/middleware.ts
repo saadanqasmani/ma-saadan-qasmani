@@ -1,12 +1,40 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { IRIS_COOKIE, tokenIsValid } from "@/lib/irisGate";
 
 /**
- * Keeps the admin session cookie fresh and turns away anonymous visitors
- * before a dashboard page renders. The layout checks the admins allowlist as
- * well: this is the cheap first gate, not the only one.
+ * Two gates, on two unrelated paths.
+ *
+ * The admin one keeps the session cookie fresh and turns away anonymous
+ * visitors before a dashboard page renders; the layout checks the admins
+ * allowlist as well, so this is the cheap first gate rather than the only
+ * one.
+ *
+ * The IRIS one refuses the explainer film to anyone who has not entered the
+ * access code. It has to live here because the film is a file in public/,
+ * and a page cannot guard a file it does not serve.
  */
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (pathname === "/iris-explainer.html") return irisGate(request);
+
+  return adminGate(request);
+}
+
+/** Sends an uncoded visitor back to the page that asks for the code. */
+async function irisGate(request: NextRequest) {
+  const unlocked = await tokenIsValid(request.cookies.get(IRIS_COOKIE)?.value);
+  if (unlocked) return NextResponse.next();
+
+  const redirectUrl = request.nextUrl.clone();
+  redirectUrl.pathname = "/work/iris";
+  redirectUrl.search = "";
+  redirectUrl.hash = "film";
+  return NextResponse.redirect(redirectUrl);
+}
+
+async function adminGate(request: NextRequest) {
   const response = NextResponse.next({ request });
 
   // Accept both the public names and the ones the Vercel/Supabase
@@ -34,8 +62,7 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
-  const isLogin = pathname.startsWith("/admin/login");
+  const isLogin = request.nextUrl.pathname.startsWith("/admin/login");
 
   if (!user && !isLogin) {
     const redirectUrl = request.nextUrl.clone();
@@ -47,5 +74,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/iris-explainer.html"],
 };
