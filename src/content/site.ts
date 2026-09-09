@@ -206,7 +206,7 @@ export const workItems: WorkItem[] = [
     title: "Intercultural Competence Development",
     category: "International Education",
     summary:
-      "Training for students, faculty and administration, designed around the finding that intercultural competence is an institutional property rather than an individual one. Delivered in Türkiye, Iraq, Nepal and Germany.",
+      "Training for students, faculty and administration, designed around the finding that intercultural competence is an institutional property rather than an individual one. Delivered in Türkiye, Pakistan, Iraq, Nepal and Germany.",
     date: "2022",
   },
   {

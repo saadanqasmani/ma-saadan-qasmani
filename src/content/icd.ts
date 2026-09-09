@@ -85,7 +85,7 @@ export const icd = {
   ],
 
   /** Where it has run. A subset of the countries Saadan has worked in. */
-  delivered: ["Türkiye", "Iraq", "Nepal", "Germany"],
+  delivered: ["Türkiye", "Pakistan", "Iraq", "Nepal", "Germany"],
 
   /** Why the lowest-scoring items shape the curriculum. */
   priority: {
