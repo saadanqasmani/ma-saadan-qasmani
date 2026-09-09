@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { ResearchItem } from "@/content/site";
 import { collaborators, instruments } from "@/content/site";
@@ -15,6 +15,20 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
       ? `${item.title} — ${instrument.label}`
       : item.title;
   const [expanded, setExpanded] = useState(false);
+  const [reading, setReading] = useState(false);
+
+  // Rows alternate between the two accent colours, so a page of open
+  // abstracts reads as one set rather than a row of identical boxes.
+  const accent = index % 2 === 0 ? "azure" : "ember";
+
+  useEffect(() => {
+    if (!reading) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setReading(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [reading]);
 
   return (
     <article id={item.slug} className="scroll-mt-28 border-b border-line">
@@ -63,7 +77,22 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
             <div className="grid gap-6 pb-9 sm:grid-cols-[auto_1fr] sm:gap-8">
               <span className="hidden w-[1.5rem] sm:block" />
               <div className="max-w-2xl">
-                <p className="text-base leading-relaxed text-ink-soft">{item.abstract}</p>
+                <button
+                  type="button"
+                  onClick={() => setReading(true)}
+                  className={`group relative inline-flex overflow-hidden border px-6 py-3 text-xs font-medium uppercase tracking-[0.16em] ${
+                    accent === "azure" ? "border-azure text-azure" : "border-ember text-ember"
+                  }`}
+                >
+                  <span
+                    className={`absolute inset-0 -translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 ${
+                      accent === "azure" ? "bg-azure" : "bg-ember"
+                    }`}
+                  />
+                  <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
+                    Read abstract
+                  </span>
+                </button>
 
                 {item.institution && (
                   <p className="mt-3 text-sm text-ink-faint">{item.institution}</p>
@@ -180,6 +209,72 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
                 </div>
               </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* The abstract, lifted out of the row into a white sheet. */}
+      <AnimatePresence>
+        {reading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/40 p-4 backdrop-blur-sm sm:p-8"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Abstract — ${item.title}`}
+            onClick={() => setReading(false)}
+          >
+            <motion.div
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 16, opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              className={`relative flex max-h-[86vh] w-full max-w-2xl flex-col border-2 bg-white shadow-[0_40px_90px_-40px_rgba(21,32,60,0.6)] ${
+                accent === "azure" ? "border-azure" : "border-ember"
+              }`}
+            >
+              <button
+                type="button"
+                onClick={() => setReading(false)}
+                aria-label="Close"
+                className="absolute right-5 top-4 z-10 text-2xl leading-none text-ink-faint transition-colors hover:text-ink"
+              >
+                ×
+              </button>
+
+              <div className="overflow-y-auto px-8 py-9 sm:px-12 sm:py-11">
+                <p
+                  className={`text-xs uppercase tracking-[0.16em] ${
+                    accent === "azure" ? "text-azure" : "text-ember"
+                  }`}
+                >
+                  Abstract
+                </p>
+                <h3 className="mt-4 pr-8 font-serif text-2xl leading-snug text-ink sm:text-3xl">
+                  {item.title}
+                </h3>
+                {item.subtitle && (
+                  <p className="mt-2 font-serif text-lg italic leading-snug text-ink-soft">
+                    {item.subtitle}
+                  </p>
+                )}
+                <p className="mt-4 text-xs uppercase tracking-[0.12em] text-ink-faint">
+                  {item.type} · {item.date}
+                  {item.coAuthors?.length ? ` · with ${item.coAuthors.join(", ")}` : ""}
+                </p>
+
+                <hr
+                  className={`mt-7 border-0 border-t ${
+                    accent === "azure" ? "border-azure/30" : "border-ember/30"
+                  }`}
+                />
+
+                <p className="mt-7 text-base leading-[1.75] text-ink-soft">{item.abstract}</p>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

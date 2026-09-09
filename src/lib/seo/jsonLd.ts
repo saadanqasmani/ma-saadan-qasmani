@@ -13,6 +13,7 @@
  */
 
 import type { Book, Person } from "@/lib/data";
+import type { ResearchItem } from "@/content/site";
 import { profiles } from "@/content/site";
 import { siteUrl } from "@/lib/siteUrl";
 
@@ -101,4 +102,36 @@ export function bookJsonLd(book: Book) {
     // Only present once the book is actually listed somewhere buyable.
     sameAs: book.amazonUrl ? [book.amazonUrl] : [],
   });
+}
+
+/**
+ * Each research entry as a ScholarlyArticle.
+ *
+ * The abstracts open in a panel rather than sitting in the page, so this is
+ * how a crawler reads them. Only what the entry already states is emitted:
+ * no DOI is invented, and the free-text date field is never mapped to a
+ * publication date because it usually says "In progress".
+ */
+export function researchJsonLd(items: ResearchItem[], person: Person) {
+  return items.map((item) =>
+    compact({
+      "@context": "https://schema.org",
+      "@type": "ScholarlyArticle",
+      name: item.subtitle ? `${item.title}: ${item.subtitle}` : item.title,
+      headline: item.title,
+      abstract: item.abstract,
+      url: `${siteUrl}/research#${item.slug}`,
+      about: item.area,
+      keywords: item.keywords,
+      inLanguage: "en",
+      author: [
+        { "@id": PERSON_ID, "@type": "Person", name: person.name },
+        ...(item.coAuthors ?? []).map((name) => ({ "@type": "Person", name })),
+      ],
+      sourceOrganization: item.institution
+        ? { "@type": "Organization", name: item.institution }
+        : null,
+      isAccessibleForFree: item.access === "open",
+    })
+  );
 }

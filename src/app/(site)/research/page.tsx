@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ResearchArchive } from "@/components/research/ResearchArchive";
-import { getResearchItems } from "@/lib/data";
+import { getPerson, getResearchItems } from "@/lib/data";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { researchJsonLd } from "@/lib/seo/jsonLd";
 import { Mark } from "@/components/collect/Mark";
 import { ResearchConstellation } from "@/components/art/ResearchConstellation";
 import { Reveal } from "@/components/ui/Reveal";
@@ -14,13 +16,14 @@ export const metadata: Metadata = {
 };
 
 export default async function ResearchPage() {
-  const researchItems = await getResearchItems();
+  const [researchItems, person] = await Promise.all([getResearchItems(), getPerson()]);
   // LinkedIn when Saadan sends it; his ResearchGate profile until then.
   const collaborator = collaborators[researchNote.name];
   const noteProfile = collaborator?.linkedin ?? collaborator?.profile ?? null;
 
   return (
     <>
+      <JsonLd data={researchJsonLd(researchItems, person)} />
       <PageHeader
         eyebrow="The Archive"
         title="Research"

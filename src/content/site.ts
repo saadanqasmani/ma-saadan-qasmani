@@ -239,9 +239,7 @@ export const collaborators: Record<
 > = {
   "Dr. Osman Gültekin": {
     profile: "https://www.researchgate.net/profile/Osman-Gultekin-2",
-    // PLACEHOLDER — LinkedIn URL pending from Saadan. Until it arrives the
-    // name in the research note falls back to the ResearchGate profile.
-    linkedin: null,
+    linkedin: "https://tr.linkedin.com/in/osmangultekin",
   },
 };
 
