@@ -34,7 +34,7 @@ const DETAIL_PAGES: Record<
     line: "border-[var(--rec-pale)]",
     ink: "text-[var(--rec-ink)]",
     inkSoft: "text-[var(--rec-ink-soft)]",
-    accent: "text-[var(--rec-amber)]",
+    accent: "text-[var(--rec-orange)]",
   },
   icd: {
     href: "/work/icd",

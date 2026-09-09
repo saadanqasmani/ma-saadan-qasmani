@@ -40,7 +40,7 @@ export default function RecruitmentPage() {
                 <p className="eyebrow">01 — What it answers</p>
               </Reveal>
               <Reveal delay={0.08}>
-                <figure className="mt-8 border-l-[3px] border-[var(--rec-amber)] pl-7">
+                <figure className="mt-8 border-l-[3px] border-[var(--rec-orange)] pl-7">
                   <blockquote className="font-serif text-xl italic leading-snug text-[var(--rec-ink)] sm:text-2xl">
                     “{recruitment.problem.quote}”
                   </blockquote>
@@ -72,7 +72,7 @@ export default function RecruitmentPage() {
             {recruitment.problem.figures.map((f, i) => (
               <Reveal key={f.note} delay={0.1 + i * 0.07}>
                 <FloatCard tone="ember" index={i} innerClassName="px-7 pb-7 pt-6">
-                  <dt className="font-display text-5xl leading-none text-[var(--rec-amber)]">
+                  <dt className="font-display text-5xl leading-none text-[var(--rec-orange)]">
                     {f.value}
                     {"label" in f && f.label && (
                       <span className="ml-2 font-sans text-sm uppercase tracking-[0.14em] text-[var(--rec-ink-soft)]">
@@ -116,9 +116,9 @@ export default function RecruitmentPage() {
             <div className="grid gap-5">
               {recruitment.tiers.map((t, i) => (
                 <Reveal key={t.n} delay={0.16 + i * 0.07}>
-                  <FloatCard tone={i === 0 ? "ember" : "mixed"} index={i} innerClassName="p-6">
+                  <FloatCard tone="ember" index={i} innerClassName="p-6">
                     <div className="flex flex-wrap items-baseline gap-3">
-                      <span className="bg-[var(--rec-amber)] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-white">
+                      <span className="bg-[var(--rec-orange)] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-white">
                         {t.n}
                       </span>
                       <h3 className="font-serif text-xl text-[var(--rec-ink)]">{t.name}</h3>
@@ -131,7 +131,7 @@ export default function RecruitmentPage() {
                         ["Meetings", t.meetings],
                       ].map(([k, v]) => (
                         <div key={k}>
-                          <dt className="text-[10px] uppercase tracking-[0.14em] text-[var(--rec-amber)]">
+                          <dt className="text-[10px] uppercase tracking-[0.14em] text-[var(--rec-orange)]">
                             {k}
                           </dt>
                           <dd className="mt-1 text-sm leading-snug text-[var(--rec-ink-soft)]">
@@ -186,11 +186,11 @@ export default function RecruitmentPage() {
             {recruitment.intelligence.groups.map((g, i) => (
               <Reveal key={g.n} delay={0.14 + i * 0.07}>
                 <FloatCard
-                  tone={i === 1 ? "mixed" : i === 2 ? "ember" : "blue"}
+                  tone={i === 1 ? "mixed" : "ember"}
                   index={i}
                   innerClassName="flex h-full flex-col p-7 sm:p-8"
                 >
-                  <span className="font-mono text-sm text-[var(--rec-amber)]">{g.n}</span>
+                  <span className="font-mono text-sm text-[var(--rec-orange)]">{g.n}</span>
                   <h3 className="mt-3 font-serif text-xl leading-snug text-[var(--rec-ink)]">
                     {g.name}
                   </h3>
@@ -213,7 +213,7 @@ export default function RecruitmentPage() {
           </div>
 
           <Reveal delay={0.34}>
-            <p className="mt-12 max-w-3xl border-l-[3px] border-[var(--rec-amber)] pl-6 font-serif text-lg italic leading-relaxed text-[var(--rec-ink)]">
+            <p className="mt-12 max-w-3xl border-l-[3px] border-[var(--rec-orange)] pl-6 font-serif text-lg italic leading-relaxed text-[var(--rec-ink)]">
               {recruitment.intelligence.risk}
             </p>
           </Reveal>
@@ -250,16 +250,16 @@ export default function RecruitmentPage() {
                 href={booking.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative inline-flex overflow-hidden border-2 border-[var(--rec-amber)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--rec-amber)]"
+                className="group relative inline-flex overflow-hidden border-2 border-[var(--rec-orange)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--rec-orange)]"
               >
-                <span className="absolute inset-0 -translate-y-full bg-[var(--rec-amber)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
+                <span className="absolute inset-0 -translate-y-full bg-[var(--rec-orange)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                 <span className="relative transition-colors duration-300 group-hover:text-white">
                   Schedule a consultation
                 </span>
               </a>
               <Link
                 href="/contact?subject=Recruitment%20consultation"
-                className="inline-flex items-center gap-2 border border-[var(--rec-pale)] px-7 py-3.5 text-xs uppercase tracking-[0.16em] text-[var(--rec-ink-soft)] transition-colors hover:border-[var(--rec-amber)] hover:text-[var(--rec-amber)]"
+                className="inline-flex items-center gap-2 border border-[var(--rec-pale)] px-7 py-3.5 text-xs uppercase tracking-[0.16em] text-[var(--rec-ink-soft)] transition-colors hover:border-[var(--rec-orange)] hover:text-[var(--rec-orange)]"
               >
                 Send a message instead
               </Link>

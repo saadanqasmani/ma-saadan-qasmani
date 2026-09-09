@@ -12,8 +12,19 @@ import { recruitment } from "@/content/recruitment";
  * students pass through, which is not something this site knows.
  */
 
-const AMBER = "var(--rec-amber)";
-const DEEP = "var(--rec-amber-deep)";
+const ORANGE = "var(--rec-orange)";
+const DEEP = "var(--rec-orange-deep)";
+
+/**
+ * The funnel deepens toward the end rather than sitting flat until the last
+ * stage: the further a student travels, the more of the institution's colour
+ * they carry. It is a tint ramp, not a quantity, so it asserts nothing about
+ * how many survive each step.
+ */
+function stageFill(i: number, count: number) {
+  const t = count > 1 ? i / (count - 1) : 1;
+  return `color-mix(in oklab, var(--rec-orange) ${Math.round(18 + t * 82)}%, var(--rec-pale))`;
+}
 
 /** The stages, narrowing left to right, drawn as they come into view. */
 export function Pipeline() {
@@ -42,7 +53,7 @@ export function Pipeline() {
               y={y}
               width={bw}
               height={h}
-              fill={i === stages.length - 1 ? AMBER : "var(--rec-pale)"}
+              fill={stageFill(i, stages.length)}
               initial={reduced ? undefined : { scaleY: 0, opacity: 0 }}
               animate={reduced || inView ? { scaleY: 1, opacity: 1 } : undefined}
               transition={{ duration: 0.55, delay: 0.1 + i * 0.11, ease: [0.22, 1, 0.36, 1] }}
@@ -60,7 +71,7 @@ export function Pipeline() {
             {i < stages.length - 1 && (
               <motion.path
                 d={`M ${x + bw + 1.5} ${86} l 5 0 m -2 -3 l 3 3 l -3 3`}
-                stroke={AMBER}
+                stroke={ORANGE}
                 strokeWidth={1.4}
                 fill="none"
                 initial={reduced ? undefined : { opacity: 0 }}
@@ -99,8 +110,8 @@ export function TierLadder() {
         return (
           <g key={t.n}>
             <rect x={20} y={y} width={width} height={rowH} fill="#ffffff" stroke="var(--rec-pale)" />
-            <rect x={20} y={y} width={5} height={rowH} fill={i === 0 ? AMBER : "var(--rec-pale)"} />
-            <text x={40} y={y + 31} fontSize={13} letterSpacing="2" className="fill-[var(--rec-amber)] font-sans">
+            <rect x={20} y={y} width={5} height={rowH} fill={i === 0 ? ORANGE : "var(--rec-pale)"} />
+            <text x={40} y={y + 31} fontSize={13} letterSpacing="2" className="fill-[var(--rec-orange)] font-sans">
               {t.n.toUpperCase()}
             </text>
             <text x={40} y={y + 56} fontSize={19} className="fill-[var(--rec-ink)] font-serif">

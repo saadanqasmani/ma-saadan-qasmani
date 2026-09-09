@@ -176,17 +176,21 @@ body {
 }
 
 /*
- * The recruitment page runs warm: this is the one part of the work that is
- * commercial, and it should not look like the research pages.
+ * The recruitment page runs orange, as IRIS runs blue and ICD runs green.
+ * The primary is the site's own ember rather than a new orange, so the page
+ * reads as this site in one key instead of a separate brand; the ground is
+ * white warmed toward it, and the ink is a warm near-black rather than the
+ * site's neutral, so nothing on the page falls out of the key.
  */
 .rec-theme {
-  --rec-ground: #faf5ed;
-  --rec-ground-deep: #f2e7d6;
-  --rec-amber: #b4560f;
-  --rec-amber-deep: #6d3208;
-  --rec-pale: #e3d2b8;
-  --rec-ink: #2a1c11;
-  --rec-ink-soft: #56463a;
+  --rec-ground: #fff7f0;
+  --rec-ground-deep: #ffe9da;
+  --rec-orange: #c2430f;
+  --rec-orange-bright: #f2701c;
+  --rec-orange-deep: #7a2907;
+  --rec-pale: #f8ccad;
+  --rec-ink: #2b1508;
+  --rec-ink-soft: #5c3d2c;
 }
 
 /* The token climbing the tier ladder. */
