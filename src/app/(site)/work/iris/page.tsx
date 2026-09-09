@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { Mark } from "@/components/collect/Mark";
+import { FloatCard } from "@/components/ui/FloatCard";
 import { iris } from "@/content/iris";
 import { irisDemo } from "@/content/site";
 import { IrisEye } from "@/components/novel/IrisEye";
@@ -94,7 +95,7 @@ export default function IrisPage() {
           <dl className="mt-16 grid gap-10 sm:grid-cols-3">
             {iris.problem.figures.map((f, i) => (
               <Reveal key={f.note} delay={0.1 + i * 0.08}>
-                <div className="border-t-2 border-ember bg-canvas-light px-6 pb-6 pt-5">
+                <FloatCard tone="ember" index={i} innerClassName="px-7 pb-7 pt-6">
                   <dt className="font-display text-5xl leading-none text-ember sm:text-6xl">
                     {f.value}
                     {f.unit && (
@@ -104,7 +105,7 @@ export default function IrisPage() {
                     )}
                   </dt>
                   <dd className="mt-3 text-sm leading-relaxed text-[var(--iris-navy-soft)]">{f.note}</dd>
-                </div>
+                </FloatCard>
               </Reveal>
             ))}
           </dl>
@@ -114,7 +115,7 @@ export default function IrisPage() {
               {iris.problem.frictions.map((f) => (
                 <li
                   key={f}
-                  className="border border-[var(--iris-blue-pale)] bg-canvas-light px-3 py-1.5 text-[11px] uppercase tracking-[0.1em] text-[var(--iris-navy-soft)]"
+                  className="bg-white px-3.5 py-2 text-[11px] uppercase tracking-[0.1em] text-[var(--iris-navy-soft)] shadow-[0_6px_16px_-12px_rgba(21,32,60,0.6)]"
                 >
                   {f}
                 </li>
@@ -158,10 +159,10 @@ export default function IrisPage() {
           <div className="mt-16 grid gap-14 lg:grid-cols-2">
             {[iris.instruments.img, iris.instruments.ipi].map((inst, idx) => (
               <Reveal key={inst.key} delay={0.15 + idx * 0.1}>
-                <div
-                  className={`border-t-[3px] pt-7 ${
-                    idx === 0 ? "border-ember" : "border-[var(--iris-blue)]"
-                  }`}
+                <FloatCard
+                  tone={idx === 0 ? "ember" : "blue"}
+                  index={idx}
+                  innerClassName="p-8 sm:p-9"
                 >
                   <div className="flex flex-wrap items-baseline gap-4">
                     <h3
@@ -175,7 +176,7 @@ export default function IrisPage() {
                       {inst.role}
                     </p>
                   </div>
-                  <p className="mt-5 border border-[var(--iris-blue-pale)] bg-canvas-light px-4 py-3 font-mono text-sm text-[var(--iris-navy)]">
+                  <p className="mt-5 bg-[var(--iris-ground)] px-4 py-3 font-mono text-sm text-[var(--iris-navy)]">
                     {inst.formula}
                   </p>
                   <dl className="mt-8 space-y-7">
@@ -201,7 +202,7 @@ export default function IrisPage() {
                       </div>
                     ))}
                   </dl>
-                </div>
+                </FloatCard>
               </Reveal>
             ))}
           </div>
@@ -216,33 +217,25 @@ export default function IrisPage() {
               <p className="eyebrow">{iris.profiles.heading}</p>
               <p className="mt-2 text-sm text-ink-faint">{iris.profiles.note}</p>
             </Reveal>
-            <div className="mt-8 grid gap-px bg-[var(--iris-blue-pale)] sm:grid-cols-2">
+            <div className="mt-8 grid gap-6 sm:grid-cols-2">
               {iris.profiles.items.map((p, i) => {
                 // Deploy and advance are the go-signals; the other two are
                 // holds. Colour carries that rather than the words alone.
                 const go = i === 0 || i === 1;
                 return (
                   <Reveal key={p.condition} delay={i * 0.06}>
-                    <div
-                      className={`h-full p-8 ${
-                        go ? "bg-[var(--iris-blue)] text-canvas-light" : "bg-canvas-light"
-                      }`}
-                    >
-                      <p
-                        className={`text-xs uppercase tracking-[0.12em] ${
-                          go ? "text-canvas-light/70" : "text-[var(--iris-navy-soft)]"
-                        }`}
-                      >
+                    <FloatCard tone={go ? "blue" : "ember"} index={i} innerClassName="p-8">
+                      <p className="text-xs uppercase tracking-[0.12em] text-[var(--iris-navy-soft)]">
                         {p.condition}
                       </p>
                       <p
                         className={`mt-3 font-display text-3xl ${
-                          go ? "text-canvas-light" : "text-ember"
+                          go ? "text-[var(--iris-blue)]" : "text-ember"
                         }`}
                       >
                         {p.action}
                       </p>
-                    </div>
+                    </FloatCard>
                   </Reveal>
                 );
               })}
@@ -276,7 +269,7 @@ export default function IrisPage() {
           <Reveal delay={0.14}>
             {/* Sandboxed: it is a self-contained page, and nothing on it needs
                 access to this one. */}
-            <div className="mt-10 overflow-hidden border border-[var(--iris-blue)] bg-canvas shadow-[0_30px_80px_-40px_rgba(21,32,60,0.8)]">
+            <FloatCard tone="mixed" className="mt-10" innerClassName="overflow-hidden bg-canvas">
               <iframe
                 src={irisDemo.explainer}
                 title="IRIS — the explainer film"
@@ -284,7 +277,7 @@ export default function IrisPage() {
                 sandbox="allow-scripts"
                 className="aspect-video h-full w-full"
               />
-            </div>
+            </FloatCard>
           </Reveal>
           <Reveal delay={0.2}>
             <p className="mt-4 text-sm text-canvas-light/60">
@@ -300,17 +293,25 @@ export default function IrisPage() {
           <Reveal>
             <p className="eyebrow">04 — What it does</p>
           </Reveal>
-          <ul className="mt-12 border-t-2 border-[var(--iris-blue)]">
+          <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {iris.modules.map((m, i) => (
               <Reveal key={m.name} delay={i * 0.04}>
-                <li className="grid gap-2 border-b border-[var(--iris-blue-pale)] py-7 transition-colors hover:bg-canvas-light sm:grid-cols-[4rem_14rem_1fr] sm:gap-8">
-                  <span className="font-mono text-sm font-semibold text-[var(--iris-blue)]">
-                    {m.n}
-                  </span>
-                  <span className="font-serif text-xl text-[var(--iris-navy)]">{m.name}</span>
-                  <span className="text-base leading-relaxed text-[var(--iris-navy-soft)]">
-                    {m.line}
-                  </span>
+                <li>
+                  <FloatCard
+                    tone={i % 3 === 2 ? "ember" : "blue"}
+                    index={i}
+                    innerClassName="flex h-full flex-col p-7"
+                  >
+                    <span className="font-mono text-sm font-semibold text-[var(--iris-blue)]">
+                      {m.n}
+                    </span>
+                    <span className="mt-3 font-serif text-xl text-[var(--iris-navy)]">
+                      {m.name}
+                    </span>
+                    <span className="mt-2 text-sm leading-relaxed text-[var(--iris-navy-soft)]">
+                      {m.line}
+                    </span>
+                  </FloatCard>
                 </li>
               </Reveal>
             ))}
@@ -332,21 +333,24 @@ export default function IrisPage() {
 
           <div className="mt-14 grid gap-10 lg:grid-cols-3">
             {[
-              { label: "Sources", items: iris.engine.inputs, bg: "bg-canvas-light", fg: "text-[var(--iris-blue)]", body: "text-[var(--iris-navy)]" },
-              { label: "Engine", items: iris.engine.core, bg: "bg-[var(--iris-blue)]", fg: "text-canvas-light/70", body: "text-canvas-light" },
-              { label: "Outputs", items: iris.engine.outputs, bg: "bg-canvas-light", fg: "text-ember", body: "text-[var(--iris-navy)]" },
+              { label: "Sources", items: iris.engine.inputs, tone: "blue" as const, fg: "text-[var(--iris-blue)]" },
+              { label: "Engine", items: iris.engine.core, tone: "mixed" as const, fg: "text-[var(--iris-blue)]" },
+              { label: "Outputs", items: iris.engine.outputs, tone: "ember" as const, fg: "text-ember" },
             ].map((col, i) => (
               <Reveal key={col.label} delay={0.1 + i * 0.08}>
-                <div className={`h-full border border-[var(--iris-blue-pale)] p-7 ${col.bg}`}>
+                <FloatCard tone={col.tone} index={i} innerClassName="p-8">
                   <p className={`text-xs uppercase tracking-[0.16em] ${col.fg}`}>{col.label}</p>
                   <ul className="mt-5 space-y-2">
                     {col.items.map((it) => (
-                      <li key={it} className={`font-serif text-lg leading-snug ${col.body}`}>
+                      <li
+                        key={it}
+                        className="font-serif text-lg leading-snug text-[var(--iris-navy)]"
+                      >
                         {it}
                       </li>
                     ))}
                   </ul>
-                </div>
+                </FloatCard>
               </Reveal>
             ))}
           </div>

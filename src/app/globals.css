@@ -144,3 +144,33 @@ body {
   --icd-ink: #14261d;
   --icd-ink-soft: #3f5548;
 }
+
+/*
+ * Floating cards.
+ *
+ * The drift is a CSS animation rather than a JS one: a page can hold twenty
+ * of these, and twenty animations on the main-thread frame loop is a cost
+ * paid on every frame for a nine-pixel movement. Each card carries its own
+ * delay and duration so the group never moves in unison.
+ */
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+.float-card {
+  animation: float-soft var(--float-dur, 7s) ease-in-out infinite;
+  animation-delay: var(--float-delay, 0s);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-card {
+    animation: none;
+  }
+}
