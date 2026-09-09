@@ -129,3 +129,18 @@ body {
   --iris-navy: #15203c;
   --iris-navy-soft: #3d4a68;
 }
+
+/*
+ * The ICD page runs green: the training is about growth in an institution,
+ * and the site's verdant is already its colour on the homepage tree. Orange
+ * and blue stay as accents, white as the card ground.
+ */
+.icd-theme {
+  --icd-ground: #f1f6f0;
+  --icd-ground-deep: #e3eee1;
+  --icd-green: #0f6b42;
+  --icd-green-deep: #0a3d27;
+  --icd-green-pale: #c2dac9;
+  --icd-ink: #14261d;
+  --icd-ink-soft: #3f5548;
+}

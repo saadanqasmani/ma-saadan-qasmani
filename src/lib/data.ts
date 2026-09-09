@@ -178,12 +178,17 @@ export async function getWorkItems(): Promise<WorkItem[]> {
 
   if (error || !data || data.length === 0) return staticWork;
 
+  // The table has no column for an outward link, so it is carried over from
+  // the content file by slug rather than lost the moment a row exists.
+  const links = new Map(staticWork.map((w) => [w.slug, w.link]));
+
   return data.map((row) => ({
     slug: row.slug,
     title: row.title,
     category: (row.category ?? "Projects") as WorkCategory,
     summary: row.summary ?? "",
     date: row.date ?? "",
+    link: links.get(row.slug),
   }));
 }
 

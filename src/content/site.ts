@@ -171,6 +171,8 @@ export type WorkItem = {
   category: WorkCategory;
   summary: string;
   date: string; // ISO — approximate where exact date unknown
+  /** An outward link, where the work has a home of its own. */
+  link?: { label: string; url: string };
 };
 
 export const workItems: WorkItem[] = [
@@ -187,7 +189,7 @@ export const workItems: WorkItem[] = [
     title: "International Student Recruitment",
     category: "International Education",
     summary:
-      "Recruitment practice across Türkiye, Pakistan, Nepal, and Iraq. PLACEHOLDER — full description pending.",
+      "Recruitment across Türkiye, Pakistan, Nepal and Iraq, run on a tiered partnership framework: agents move from prospecting to high-value on consistent conversion, responsive communication and referral quality, each tier carrying its own incentives and review cycle.",
     date: "2021",
   },
   {
@@ -195,23 +197,33 @@ export const workItems: WorkItem[] = [
     title: "Global Engagement & Brand Strategy",
     category: "Global Engagement",
     summary:
-      "Directs global engagement and brand strategy at STAR Scholars Network. PLACEHOLDER — full description pending.",
+      "Directing global engagement and brand strategy for a network spanning 115 countries, 2,353 universities and more than 20,000 scholars.",
     date: "2023",
+    link: { label: "Visit STAR Scholars", url: "https://starscholars.org" },
+  },
+  {
+    slug: "icd",
+    title: "Intercultural Competence Development",
+    category: "International Education",
+    summary:
+      "Training for students, faculty and administration, designed around the finding that intercultural competence is an institutional property rather than an individual one. Delivered in Türkiye, Iraq, Nepal and Germany.",
+    date: "2022",
   },
   {
     slug: "unesco-peace-diplomacy",
     title: "UNESCO Peace and Diplomacy Programmes",
     category: "International Education",
     summary:
-      "Intercultural competence development (ICD) training delivered in Türkiye, Pakistan, Nepal, and Iraq. PLACEHOLDER — full description pending.",
+      "Short-term international programmes run under the UNESCO Chair, with intercultural competence development at their centre.",
     date: "2022",
+    link: { label: "Visit the programme site", url: "https://unesco.aydin.edu.tr" },
   },
   {
     slug: "mun-spotlight",
     title: "Model United Nations Program & STARLIGHT",
     category: "Projects",
     summary:
-      "Founded both at Istanbul Aydın University. PLACEHOLDER — full description pending.",
+      "Founded both at Istanbul Aydın University: the campus Model United Nations programme, which has launched four conferences, and STARLIGHT, Türkiye's first international student magazine. Both are treated as intercultural competence infrastructure rather than activities.",
     date: "2021",
   },
 ];
@@ -273,7 +285,8 @@ export const researchItems: ResearchItem[] = [
     slug: "structural-marginalization-turkish-universities",
     title: "Structural Marginalization of International Students in Turkish Universities",
     subtitle: "Tokenism and Hope Trafficking as Mechanisms of Institutional Failure",
-    abstract: "PLACEHOLDER — abstract pending.",
+    abstract:
+      "Universities across the Global South have expanded international student recruitment considerably faster than the institutional infrastructure required to support it, yet marginalization in these settings remains largely undefined and unmeasured. This study examines the multidimensional experiences of international students in Turkish universities, focusing on structural marginalization, discriminatory practices, and the gap between institutional promises and lived realities. Drawing on cross-sectional survey data from 580 international students representing 70 nationalities, the research evaluates seven thematic dimensions: marginalization, discrimination, intercultural competence, tokenism, expectation versus reality alignment (operationalized here as hope trafficking), psychological impact, and institutional trust. Results indicate weak institutional support systems, widespread stereotyping, emotional exhaustion, and social isolation. Marginalization and hope trafficking are each significantly associated with psychological stress, and intercultural competence shows the strongest association with marginalization. Drawing on Deardorff's (2006) Pyramid Model of Intercultural Competence, Gültekin's (2020a) educational soft power framework, and Pham and Tran's (2015) intercultural capital model, the paper argues that marginalization is best understood as a systemic rather than an individual failure, and introduces tokenism and hope trafficking as mid-level theoretical tools linking institutional practice to macro-political consequence. Because the design is cross-sectional and relies on self-report, the associations reported here describe patterns of co-occurrence rather than causal effects, and the two proposed frameworks require validation in other host-country contexts.",
     date: "Upcoming — submitted to JUMP",
     area: "International student experience",
     keywords: ["marginalization", "tokenism", "hope trafficking", "Türkiye"],

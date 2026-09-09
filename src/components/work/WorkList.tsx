@@ -6,8 +6,37 @@ import { Reveal } from "@/components/ui/Reveal";
 import { FloatingGallery } from "@/components/media/FloatingGallery";
 import { getMediaSet } from "@/content/media";
 
-/** Work entries with a page of their own, keyed by slug. */
-const DETAIL_PAGES: Record<string, string> = { iris: "/work/iris" };
+/**
+ * Work entries with a page of their own. Each row borrows that page's theme,
+ * so the list previews where the link goes rather than looking uniform.
+ */
+const DETAIL_PAGES: Record<
+  string,
+  { href: string; label: string; theme: string; ground: string; groundHover: string; line: string; ink: string; inkSoft: string; accent: string }
+> = {
+  iris: {
+    href: "/work/iris",
+    label: "IRIS",
+    theme: "iris-theme",
+    ground: "bg-[var(--iris-ground)]",
+    groundHover: "hover:bg-[var(--iris-ground-deep)]",
+    line: "border-[var(--iris-blue-pale)]",
+    ink: "text-[var(--iris-navy)]",
+    inkSoft: "text-[var(--iris-navy-soft)]",
+    accent: "text-[var(--iris-blue)]",
+  },
+  icd: {
+    href: "/work/icd",
+    label: "ICD",
+    theme: "icd-theme",
+    ground: "bg-[var(--icd-ground)]",
+    groundHover: "hover:bg-[var(--icd-ground-deep)]",
+    line: "border-[var(--icd-green-pale)]",
+    ink: "text-[var(--icd-ink)]",
+    inkSoft: "text-[var(--icd-ink-soft)]",
+    accent: "text-[var(--icd-green)]",
+  },
+};
 import type { WorkItem } from "@/content/site";
 
 const CATEGORY_TONE: Record<string, string> = {
@@ -40,13 +69,13 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                   detail
                     ? // An entry with a page of its own carries that page's
                       // colours, so the row reads as a door into it.
-                      "iris-theme -mx-6 border-[var(--iris-blue-pale)] bg-[var(--iris-ground)] px-6 hover:bg-[var(--iris-ground-deep)] sm:-mx-8 sm:px-8"
+                      `${detail.theme} -mx-6 px-6 sm:-mx-8 sm:px-8 ${detail.line} ${detail.ground} ${detail.groundHover}`
                     : "border-line hover:bg-canvas-light"
                 }`}
               >
                 <span
                   className={`font-sans text-sm tabular-nums ${
-                    detail ? "text-[var(--iris-blue)]" : "text-ink-faint"
+                    detail ? detail.accent : "text-ink-faint"
                   }`}
                 >
                   {item.date}
@@ -55,8 +84,8 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                   {/* Only an entry that actually has a gallery becomes a button:
                       a control that opens nothing is worse than plain text. */}
                   {detail ? (
-                    <Link href={detail} className="block">
-                      <h2 className="font-serif text-2xl leading-snug text-[var(--iris-navy)] transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl">
+                    <Link href={detail.href} className="block">
+                      <h2 className={`font-serif text-2xl leading-snug ${detail.ink} transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl`}>
                         {item.title}
                       </h2>
                     </Link>
@@ -79,7 +108,7 @@ export function WorkList({ items }: { items: WorkItem[] }) {
 
                   <p
                     className={`mt-2 max-w-2xl text-sm leading-relaxed ${
-                      detail ? "text-[var(--iris-navy-soft)]" : "text-ink-soft"
+                      detail ? detail.inkSoft : "text-ink-soft"
                     }`}
                   >
                     {item.summary}
@@ -97,13 +126,25 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                       </button>
                     )}
 
+                    {item.link && (
+                      <a
+                        href={item.link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group/l inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-azure transition-opacity hover:opacity-70"
+                      >
+                        <span className="inline-block h-px w-6 bg-current transition-all duration-300 group-hover/l:w-10" />
+                        {item.link.label}
+                      </a>
+                    )}
+
                     {detail && (
                       <Link
-                        href={detail}
-                        className="group/e mt-1 inline-flex items-center gap-2 border border-[var(--iris-blue)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--iris-blue)] transition-colors hover:bg-[var(--iris-blue)] hover:text-canvas-light"
+                        href={detail.href}
+                        className={`group/e mt-1 inline-flex items-center gap-2 border px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] transition-opacity hover:opacity-60 ${detail.line} ${detail.accent}`}
                       >
                         <span className="inline-block h-px w-6 bg-current transition-all duration-300 group-hover/e:w-10" />
-                        Look into {item.title.split(" ")[0]}
+                        Look into {detail.label}
                       </Link>
                     )}
                   </div>
@@ -112,7 +153,7 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                 <span
                   className={`text-xs uppercase tracking-[0.12em] sm:text-right ${
                     detail
-                      ? "text-[var(--iris-blue)]"
+                      ? detail.accent
                       : (CATEGORY_TONE[item.category] ?? "text-ink-faint")
                   }`}
                 >
