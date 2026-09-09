@@ -27,13 +27,6 @@ export type MediaSet = {
 
 /** Keyed by work item slug, plus a few standalone sets used on The Author. */
 export const mediaSets: Record<string, MediaSet> = {
-  iris: {
-    title: "IRIS",
-    items: [
-      { kind: "video", src: null, caption: "IRIS product walkthrough", awaiting: "Demo video" },
-      { kind: "image", src: null, caption: "IRIS interface", awaiting: "Screenshot" },
-    ],
-  },
   "star-scholars-global-engagement": {
     title: "Global Engagement & Brand Strategy",
     items: [

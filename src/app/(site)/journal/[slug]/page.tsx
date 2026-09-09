@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { Reveal } from "@/components/ui/Reveal";
 import { SplitText } from "@/components/ui/SplitText";
 import { getBlogPost, getBlogPosts } from "@/lib/data";
+import { cookies } from "next/headers";
+import { JOURNAL_COOKIE, tokenIsValid } from "@/lib/journalGate";
+import { JournalGate } from "@/components/journal/JournalGate";
 
 export async function generateStaticParams() {
   const posts = await getBlogPosts();
@@ -29,6 +32,33 @@ export default async function JournalPostPage({
   const { slug } = await params;
   const post = await getBlogPost(slug);
   if (!post) notFound();
+
+  /*
+   * A post is subscribers-only too, not just the list.
+   *
+   * Gating only the index would be theatre: the posts are statically
+   * generated and their urls are in the sitemap, so anyone could read one by
+   * going straight to it.
+   */
+  const unlocked = await tokenIsValid((await cookies()).get(JOURNAL_COOKIE)?.value);
+  if (!unlocked) {
+    return (
+      <div className="mx-auto max-w-3xl px-6 pb-28 pt-24 sm:px-10 sm:pt-32">
+        <Reveal>
+          <Link
+            href="/journal"
+            className="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
+          >
+            <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span>
+            The Journal
+          </Link>
+        </Reveal>
+        <div className="mt-10">
+          <JournalGate />
+        </div>
+      </div>
+    );
+  }
 
   // Blank lines separate paragraphs, which is how the editor writes them.
   const paragraphs = post.body.split(/\n{2,}/).filter((p) => p.trim());

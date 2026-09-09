@@ -5,6 +5,9 @@ import { Reveal } from "@/components/ui/Reveal";
 import { getBlogPosts } from "@/lib/data";
 import { Figure } from "@/components/media/Figure";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
+import { JournalGate } from "@/components/journal/JournalGate";
+import { cookies } from "next/headers";
+import { JOURNAL_COOKIE, tokenIsValid } from "@/lib/journalGate";
 
 export const metadata: Metadata = {
   title: "The Journal",
@@ -13,6 +16,8 @@ export const metadata: Metadata = {
 
 export default async function JournalPage() {
   const blogPosts = await getBlogPosts();
+  // Read on the server, so a locked reader is never sent the writing.
+  const unlocked = await tokenIsValid((await cookies()).get(JOURNAL_COOKIE)?.value);
 
   return (
     <>
@@ -39,7 +44,13 @@ export default async function JournalPage() {
       />
 
       <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-24">
-        {blogPosts.length === 0 && (
+        {!unlocked && (
+          <Reveal>
+            <JournalGate />
+          </Reveal>
+        )}
+
+        {unlocked && blogPosts.length === 0 && (
           <Reveal>
             <div className="max-w-2xl border-t border-line pt-10">
               <p className="eyebrow">Coming soon</p>
@@ -47,10 +58,8 @@ export default async function JournalPage() {
                 The first essays are still being written.
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-ink-soft">
-                This is where the writing between the research and the fiction will live:
-                notes from the archive, arguments still forming, and the occasional piece
-                that belongs to neither. Subscribe and each one reaches you as it is
-                published.
+                You are on the list, so each one reaches you as it is published. This is
+                where the writing between the research and the fiction will live.
               </p>
               <div className="mt-9 max-w-md">
                 <NewsletterForm />
@@ -60,7 +69,8 @@ export default async function JournalPage() {
         )}
 
         <div className="border-t border-line">
-          {blogPosts.map((post, i) => (
+          {unlocked &&
+            blogPosts.map((post, i) => (
             <Reveal key={post.slug} delay={i * 0.05}>
               <Link
                 href={`/journal/${post.slug}`}

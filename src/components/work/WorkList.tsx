@@ -71,12 +71,20 @@ export function WorkList({ items }: { items: WorkItem[] }) {
       <ul className="border-t border-line">
         {items.map((item, i) => {
           const detail = DETAIL_PAGES[item.slug];
-          // An entry with its own page does not also need a photo gallery.
-          const set = detail ? null : getMediaSet(item.slug);
+          /*
+           * A gallery wherever there are photographs to show.
+           *
+           * This used to be suppressed for any entry with its own page, on the
+           * grounds that the page could carry them. But an entry can want both,
+           * and an empty set is the thing worth hiding, not a set that happens
+           * to sit beside a link.
+           */
+          const candidate = getMediaSet(item.slug);
+          const set = candidate?.items.some((m) => m.src) ? candidate : null;
           return (
             <Reveal key={item.slug} delay={i * 0.05}>
               <li
-                className={`group grid gap-3 border-b py-9 transition-colors sm:grid-cols-[7rem_1fr_auto] sm:gap-8 ${
+                className={`group grid gap-3 border-b py-9 transition-colors sm:grid-cols-[1fr_auto] sm:gap-8 ${
                   detail
                     ? // An entry with a page of its own carries that page's
                       // colours, so the row reads as a door into it.
@@ -84,13 +92,6 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                     : "border-line hover:bg-canvas-light"
                 }`}
               >
-                <span
-                  className={`font-sans text-sm tabular-nums ${
-                    detail ? detail.accent : "text-ink-faint"
-                  }`}
-                >
-                  {item.date}
-                </span>
                 <div>
                   {/* Only an entry that actually has a gallery becomes a button:
                       a control that opens nothing is worse than plain text. */}
