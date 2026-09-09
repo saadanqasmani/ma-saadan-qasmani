@@ -45,7 +45,7 @@ export const mediaSets: Record<string, MediaSet> = {
     title: "UNESCO Peace and Diplomacy Programmes",
     items: [
       { kind: "image", src: "/unesco.png.jpeg", caption: "Leading a session" },
-      { kind: "image", src: "/unesco3.png.jpeg", caption: "Participants in session" },
+      { kind: "image", src: "/unesco3.png.jpeg", caption: "With the UNESCO programme team" },
       { kind: "image", src: "/unesco2.png.jpeg", caption: "With the host institution" },
       { kind: "image", src: "/unesco4.png.jpeg", caption: "Outside the venue" },
     ],
