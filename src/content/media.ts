@@ -65,7 +65,7 @@ export const mediaSets: Record<string, MediaSet> = {
       { kind: "image", src: "/icd2.png.jpeg", caption: "A session in progress" },
       { kind: "image", src: "/icd6.png.jpeg", caption: "Presenting on the marginalization of the international student community" },
       { kind: "image", src: "/icd4.png.jpeg", caption: "The full cohort" },
-      { kind: "image", src: "/icd5.png.jpeg", caption: "Certificates at the close of a session" },
+      { kind: "image", src: "/icd5.png.jpeg", caption: "ICD in Higher Education workshop, Kathmandu, Nepal" },
       { kind: "image", src: "/icd3.png.jpeg", caption: "Participants between sessions" },
     ],
   },
