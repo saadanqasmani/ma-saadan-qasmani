@@ -35,14 +35,28 @@ export function WorkList({ items }: { items: WorkItem[] }) {
           const set = detail ? null : getMediaSet(item.slug);
           return (
             <Reveal key={item.slug} delay={i * 0.05}>
-              <li className="group grid gap-3 border-b border-line py-9 transition-colors hover:bg-canvas-light sm:grid-cols-[7rem_1fr_auto] sm:gap-8">
-                <span className="font-sans text-sm tabular-nums text-ink-faint">{item.date}</span>
+              <li
+                className={`group grid gap-3 border-b py-9 transition-colors sm:grid-cols-[7rem_1fr_auto] sm:gap-8 ${
+                  detail
+                    ? // An entry with a page of its own carries that page's
+                      // colours, so the row reads as a door into it.
+                      "iris-theme -mx-6 border-[var(--iris-blue-pale)] bg-[var(--iris-ground)] px-6 hover:bg-[var(--iris-ground-deep)] sm:-mx-8 sm:px-8"
+                    : "border-line hover:bg-canvas-light"
+                }`}
+              >
+                <span
+                  className={`font-sans text-sm tabular-nums ${
+                    detail ? "text-[var(--iris-blue)]" : "text-ink-faint"
+                  }`}
+                >
+                  {item.date}
+                </span>
                 <div>
                   {/* Only an entry that actually has a gallery becomes a button:
                       a control that opens nothing is worse than plain text. */}
                   {detail ? (
                     <Link href={detail} className="block">
-                      <h2 className="font-serif text-2xl leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl">
+                      <h2 className="font-serif text-2xl leading-snug text-[var(--iris-navy)] transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl">
                         {item.title}
                       </h2>
                     </Link>
@@ -63,7 +77,11 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                     </h2>
                   )}
 
-                  <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-soft">
+                  <p
+                    className={`mt-2 max-w-2xl text-sm leading-relaxed ${
+                      detail ? "text-[var(--iris-navy-soft)]" : "text-ink-soft"
+                    }`}
+                  >
                     {item.summary}
                   </p>
 
@@ -82,7 +100,7 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                     {detail && (
                       <Link
                         href={detail}
-                        className="group/e inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ember transition-opacity hover:opacity-70"
+                        className="group/e mt-1 inline-flex items-center gap-2 border border-[var(--iris-blue)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--iris-blue)] transition-colors hover:bg-[var(--iris-blue)] hover:text-canvas-light"
                       >
                         <span className="inline-block h-px w-6 bg-current transition-all duration-300 group-hover/e:w-10" />
                         Look into {item.title.split(" ")[0]}
@@ -93,7 +111,9 @@ export function WorkList({ items }: { items: WorkItem[] }) {
 
                 <span
                   className={`text-xs uppercase tracking-[0.12em] sm:text-right ${
-                    CATEGORY_TONE[item.category] ?? "text-ink-faint"
+                    detail
+                      ? "text-[var(--iris-blue)]"
+                      : (CATEGORY_TONE[item.category] ?? "text-ink-faint")
                   }`}
                 >
                   {item.category}

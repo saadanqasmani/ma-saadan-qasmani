@@ -176,10 +176,10 @@ export type WorkItem = {
 export const workItems: WorkItem[] = [
   {
     slug: "iris",
-    title: "IRIS — Internationalization Management Platform",
+    title: "IRIS — International Relations Intelligent System",
     category: "Projects",
     summary:
-      "Co-founded SaaS platform for internationalization management. PLACEHOLDER — full description pending.",
+      "Co-founded with EduYork. Internationalization, transformed from an administrative process into a strategic, measurable, data-driven function, on the IMG and IPI econometric frameworks.",
     date: "2024",
   },
   {
