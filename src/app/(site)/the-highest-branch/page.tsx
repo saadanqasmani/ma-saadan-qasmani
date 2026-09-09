@@ -7,7 +7,6 @@ import { getBook, getPerson } from "@/lib/data";
 import { PurchasePanel } from "@/components/book/PurchasePanel";
 import { Figure } from "@/components/media/Figure";
 import { Mark } from "@/components/collect/Mark";
-import { MonkeyIntro } from "@/components/novel/MonkeyIntro";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { bookJsonLd, personJsonLd } from "@/lib/seo/jsonLd";
 
@@ -43,8 +42,6 @@ export default async function HighestBranchPage() {
           entity: search engines index pages, not sites, and Book.author
           resolves against it by @id. */}
       <JsonLd data={[bookJsonLd(highestBranch), personJsonLd(person)]} />
-
-      <MonkeyIntro />
 
       {/* Title sequence */}
       <section className="relative flex min-h-[88vh] items-center overflow-hidden border-b border-line">
