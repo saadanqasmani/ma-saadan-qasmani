@@ -53,9 +53,9 @@ export const mediaSets: Record<string, MediaSet> = {
   "international-student-recruitment": {
     title: "International Student Recruitment",
     items: [
-      { kind: "image", src: null, caption: "At a recruitment fair", awaiting: "Photograph" },
-      { kind: "image", src: null, caption: "With partner agencies", awaiting: "Photograph" },
-      { kind: "image", src: null, caption: "In market", awaiting: "Photograph" },
+      { kind: "image", src: "/recruitment1.png.jpeg", caption: "At the fair, İstanbul Nişantaşı University stand" },
+      { kind: "image", src: "/recruitment2.png.jpeg", caption: "Talking a prospective student through the offer" },
+      { kind: "image", src: "/recruitment3.png.jpeg", caption: "On the stand" },
     ],
   },
   icd: {
