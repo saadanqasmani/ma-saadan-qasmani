@@ -25,6 +25,17 @@ const DETAIL_PAGES: Record<
     inkSoft: "text-[var(--iris-navy-soft)]",
     accent: "text-[var(--iris-blue)]",
   },
+  "international-student-recruitment": {
+    href: "/work/recruitment",
+    label: "recruitment",
+    theme: "rec-theme",
+    ground: "bg-[var(--rec-ground)]",
+    groundHover: "hover:bg-[var(--rec-ground-deep)]",
+    line: "border-[var(--rec-pale)]",
+    ink: "text-[var(--rec-ink)]",
+    inkSoft: "text-[var(--rec-ink-soft)]",
+    accent: "text-[var(--rec-amber)]",
+  },
   icd: {
     href: "/work/icd",
     label: "ICD",

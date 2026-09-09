@@ -174,3 +174,33 @@ body {
     animation: none;
   }
 }
+
+/*
+ * The recruitment page runs warm: this is the one part of the work that is
+ * commercial, and it should not look like the research pages.
+ */
+.rec-theme {
+  --rec-ground: #faf5ed;
+  --rec-ground-deep: #f2e7d6;
+  --rec-amber: #b4560f;
+  --rec-amber-deep: #6d3208;
+  --rec-pale: #e3d2b8;
+  --rec-ink: #2a1c11;
+  --rec-ink-soft: #56463a;
+}
+
+/* The token climbing the tier ladder. */
+@keyframes climb-tier {
+  0%, 10% { transform: translateY(0); }
+  30%, 43% { transform: translateY(calc(var(--tier-step) * -1)); }
+  63%, 76% { transform: translateY(calc(var(--tier-step) * -2)); }
+  96%, 100% { transform: translateY(0); }
+}
+
+.tier-token {
+  animation: climb-tier 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tier-token { animation: none; }
+}

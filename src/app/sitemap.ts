@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/work",
     "/work/iris",
     "/work/icd",
+    "/work/recruitment",
     "/research",
     "/journal",
     "/the-highest-branch",
