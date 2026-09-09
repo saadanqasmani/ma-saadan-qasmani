@@ -57,7 +57,7 @@ export const Film: React.FC = () => {
       <svg viewBox={`${vx} ${vy} ${vw} ${vh}`} width="100%" height="100%">
         <PaperDefs />
         <defs>
-          <OttoClipDef w={420} />
+          <OttoClipDef w={266} />
           <linearGradient id="air" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={PAPER.night2} />
             <stop offset="42%" stopColor={PAPER.blue} />
