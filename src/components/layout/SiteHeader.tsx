@@ -31,7 +31,7 @@ export function SiteHeader() {
       <header
         className={cn(
           "sticky top-0 z-[65] transition-all duration-500",
-          scrolled ? "border-b border-line bg-canvas/85 backdrop-blur-md" : "border-b border-transparent"
+          scrolled ? "border-b border-line/70 bg-canvas/60 backdrop-blur-xl" : "border-b border-transparent"
         )}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 sm:px-10">

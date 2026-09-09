@@ -112,3 +112,20 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/*
+ * The IRIS page runs on the explainer film's own palette rather than the
+ * site's bone and ink: a pale blue ground, a strong blue, navy text. Scoped
+ * to the page so nothing else shifts, and expressed as tokens so the page's
+ * markup reads the same as every other page's.
+ */
+.iris-theme {
+  --iris-ground: #f4f7fc;
+  --iris-ground-deep: #e9eef8;
+  --iris-blue: #1d4ed8;
+  --iris-blue-bright: #3b82f6;
+  --iris-blue-pale: #c8d4ea;
+  --iris-navy: #15203c;
+  --iris-navy-soft: #3d4a68;
+}
