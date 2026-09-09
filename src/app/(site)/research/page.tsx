@@ -5,7 +5,7 @@ import { getResearchItems } from "@/lib/data";
 import { Mark } from "@/components/collect/Mark";
 import { ResearchConstellation } from "@/components/art/ResearchConstellation";
 import { Reveal } from "@/components/ui/Reveal";
-import { researchNote } from "@/content/site";
+import { collaborators, researchNote } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Research",
@@ -15,6 +15,9 @@ export const metadata: Metadata = {
 
 export default async function ResearchPage() {
   const researchItems = await getResearchItems();
+  // LinkedIn when Saadan sends it; his ResearchGate profile until then.
+  const collaborator = collaborators[researchNote.name];
+  const noteProfile = collaborator?.linkedin ?? collaborator?.profile ?? null;
 
   return (
     <>
@@ -49,7 +52,20 @@ export default async function ResearchPage() {
 
       <div className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-20">
         <p className="mb-4 max-w-2xl border-l-2 border-ember pl-5 font-serif text-lg italic leading-relaxed text-ink-soft">
-          {researchNote}
+          {researchNote.before}
+          {noteProfile ? (
+            <a
+              href={noteProfile}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-ember decoration-1 underline-offset-4 transition-colors hover:text-ember"
+            >
+              {researchNote.name}
+            </a>
+          ) : (
+            researchNote.name
+          )}
+          {researchNote.after}
         </p>
         <p className="mb-8 flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint">
           Three of these belong to one set

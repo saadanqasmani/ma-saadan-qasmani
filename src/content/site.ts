@@ -233,9 +233,15 @@ export const workItems: WorkItem[] = [
  * A null profile renders as plain text rather than a dead link, so a name is
  * never a broken promise.
  */
-export const collaborators: Record<string, { profile: string | null }> = {
+export const collaborators: Record<
+  string,
+  { profile: string | null; linkedin?: string | null }
+> = {
   "Dr. Osman Gültekin": {
     profile: "https://www.researchgate.net/profile/Osman-Gultekin-2",
+    // PLACEHOLDER — LinkedIn URL pending from Saadan. Until it arrives the
+    // name in the research note falls back to the ResearchGate profile.
+    linkedin: null,
   },
 };
 
@@ -253,9 +259,15 @@ export const instruments = {
   },
 } as const;
 
-/** The through-line of the archive, in Saadan's own framing. */
-export const researchNote =
-  "All research here is in collaboration with Dr. Osman Gültekin, or an expansion of his work.";
+/**
+ * The through-line of the archive, in Saadan's own framing. Split around the
+ * name so the name itself can carry a link to his profile.
+ */
+export const researchNote = {
+  before: "All research here is in collaboration with ",
+  name: "Dr. Osman Gültekin",
+  after: ", or an expansion of his work.",
+};
 
 export type ResearchAccess = "open" | "restricted";
 
@@ -289,7 +301,7 @@ export const researchItems: ResearchItem[] = [
       "Universities across the Global South have expanded international student recruitment considerably faster than the institutional infrastructure required to support it, yet marginalization in these settings remains largely undefined and unmeasured. This study examines the multidimensional experiences of international students in Turkish universities, focusing on structural marginalization, discriminatory practices, and the gap between institutional promises and lived realities. Drawing on cross-sectional survey data from 580 international students representing 70 nationalities, the research evaluates seven thematic dimensions: marginalization, discrimination, intercultural competence, tokenism, expectation versus reality alignment (operationalized here as hope trafficking), psychological impact, and institutional trust. Results indicate weak institutional support systems, widespread stereotyping, emotional exhaustion, and social isolation. Marginalization and hope trafficking are each significantly associated with psychological stress, and intercultural competence shows the strongest association with marginalization. Drawing on Deardorff's (2006) Pyramid Model of Intercultural Competence, Gültekin's (2020a) educational soft power framework, and Pham and Tran's (2015) intercultural capital model, the paper argues that marginalization is best understood as a systemic rather than an individual failure, and introduces tokenism and hope trafficking as mid-level theoretical tools linking institutional practice to macro-political consequence. Because the design is cross-sectional and relies on self-report, the associations reported here describe patterns of co-occurrence rather than causal effects, and the two proposed frameworks require validation in other host-country contexts.",
     date: "Upcoming — submitted to JUMP",
     area: "International student experience",
-    keywords: ["marginalization", "tokenism", "hope trafficking", "Türkiye"],
+    keywords: ["marginalization", "tokenism", "hope trafficking", "intercultural competence", "international higher education", "international relations"],
     type: "Journal article",
     coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
@@ -299,10 +311,11 @@ export const researchItems: ResearchItem[] = [
     title:
       "The Role of Artificial Intelligence in International Academic Relations and the Internationalization of Higher Education Institutions",
     subtitle: "An Empirical Analysis from an Emerging Comprehensive University",
-    abstract: "PLACEHOLDER — abstract pending.",
+    abstract:
+      "The internationalization of higher education has become a defining marker of institutional legitimacy, yet the administrative infrastructure supporting it remains remarkably underdeveloped. International offices across the Global North and Global South continue to manage complex multi-institutional relationships through email, spreadsheets, and manual approval chains, generating what this paper conceptualizes as the Internationalization Management Gap (IMG): the structural disjuncture between an institution's stated internationalization ambitions and its capacity to realize them. Drawing on qualitative data from two structured focus groups and fifteen to twenty semi-structured interviews with faculty members and international office professionals, this paper examines three questions: what barriers prevent faculty from engaging in international academic activities; what tools would meaningfully enhance that engagement; and what AI-driven institutional solutions could address these barriers systemically. The paper introduces a dual-equation framework comprising the IMG, a composite index measuring the severity of the gap across three dimensions (Information Asymmetry, Workflow Fragmentation, and Digital Infrastructure Deficit), with empirically justified equal weighting, and the Internationalization Potential Index (IPI), which measures institutional readiness to close that gap through leadership commitment and faculty readiness. There is an obvious need for automated internationalization management infrastructure within higher education institutions that is not regionally specific: it is a structural condition of twenty-first century higher education globally. The paper highlights the fact that AI-powered internationalization management systems represent the most viable structural response to IMG, and evaluates the conditions under which such systems are most likely to produce meaningful and equitable outcomes.",
     date: "In progress",
     area: "Internationalization theory",
-    keywords: ["artificial intelligence", "academic relations", "internationalization"],
+    keywords: ["artificial intelligence", "internationalization", "international academic relations", "Internationalization Management Gap", "Internationalization Potential Index", "faculty engagement", "MOU automation", "digital infrastructure", "workflow fragmentation", "Global South", "Global North", "institutional capacity", "composite index"],
     type: "Working paper",
     coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
@@ -312,10 +325,11 @@ export const researchItems: ResearchItem[] = [
     slug: "six-eras-internationalization",
     title: "Six Eras of Internationalization in Higher Education",
     subtitle: "Infrastructure, Adaptation, and the Cost of Delay",
-    abstract: "PLACEHOLDER — abstract pending.",
+    abstract:
+      "The history of higher education internationalization is not a story of linear progress. It is a story of discontinuous leaps; moments at which the rules of international academic engagement were fundamentally rewritten, and at which institutions that recognized the shift early built structural advantages that compounded over decades, while those that delayed were rendered progressively obsolete. Universities are, by profession, the world's experts on knowledge and change. They are, by institutional habit, among the world's most consistent late adopters of it. Drawing on a structured review and qualitative content analysis of the internationalization literature, this paper proposes a periodization of higher education internationalization into six analytically distinct eras: the Diplomatic Era (1950s–1970s); the Agreement Era (1980s–2000); the Commercialization Era (1995–2005); the Rankings Era (2004–2015); the Digital Era (2012–2023); and the AI Era (2024 onwards). Building on a staged adaptation reading of Gültekin's phase-based classification (Gültekin, 2021, 2025), infrastructure theory (Star & Ruhleder, 1996; Bowker & Star, 1999), and the internationalization literature (Knight, 2004; Kehm & Teichler, 2007), the paper introduces three original theoretical contributions: i) the Invisible Threshold: the observation that each era's defining capability was only recognized as decisive after the window for first-mover advantage had closed; ii) Paper Internationalization: the structural tendency for institutions to perform each era's capability without building it; and iii) the Leapfrog Illusion: the fallacy that institutions can skip foundational infrastructure layers and arrive at the capabilities of the current era. The paper identifies four cross-era patterns: the compounding advantage thesis, the non-recovery pattern, the acceleration of each successive era, and the era-skipping problem. It concludes with a forward-looking analysis of the AI era; including the risk that AI, if confined to academic output generation rather than management infrastructure, may entrench existing hierarchies rather than disrupt them. Era 6 is the first era whose Invisible Threshold has been named in real time. The question is whether institutions will act on it before it closes.",
     date: "Upcoming — submitted for review",
     area: "Internationalization theory",
-    keywords: ["periodization", "infrastructure", "higher education"],
+    keywords: ["higher education internationalization", "periodization", "AI era", "international politics", "Paper Internationalization", "Leapfrog Illusion", "Invisible Threshold"],
     type: "Journal article",
     coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
@@ -325,10 +339,11 @@ export const researchItems: ResearchItem[] = [
     title: "Selling Merit",
     subtitle:
       "Scholarship Capture, Hope Trafficking, and the Architecture of Self-Congratulatory Banality in the Internationalisation of Turkish Higher Education",
-    abstract: "PLACEHOLDER — abstract pending.",
+    abstract:
+      "Türkiye's emergence as a leading destination for international students (a roughly ninefold rise in a decade to more than 356,000 students, an estimated US$3 billion in annual revenue, and a state target of 500,000 by 2028) is narrated officially as a triumph of internationalisation and soft power. This paper documents a corruption architecture operating beneath that narrative, which it terms scholarship capture: the diversion of institutional scholarship allocations, mandated as instruments of merit, into a commercial channel in which they function as commission paid in kind to recruitment agencies and are then retailed to self-financing families as discounted tuition misdescribed as merit. Drawing on insider ethnography within the recruitment sector, a corpus of public agency advertising, and official enrolment statistics, the paper reconstructs the mechanism across three converging evidentiary scales. It advances a primary theoretical contribution: self-congratulatory banality, which is an extension of Arendt's account of administrative thoughtlessness in which the functionary is not fearful and obedient but proud and entrepreneurial, experiencing participation in harm as competence. It further argues that hope trafficking, the systematic mis-marketing of opportunity that generates the student volume which earns the scholarship reward, and the post-arrival abandonment of students into conditions of racialised marginalisation are not separate phenomena but the entry and exit wounds of a single incentive, within which the student is neither client nor beneficiary but a bearer instrument whose delivery triggers payment. The analysis is situated within academic capitalism, the sociology of corruption, and the political economy of credential systems, mobilising Marx, Weber, Durkheim, Bourdieu, Fanon, and Akerlof alongside contemporary scholarship. It concludes that the corruption has no orchestrating author; only a drift, structurally generated and ideologically pre-absolved, and proposes a registry-licensing-escrow architecture directed at the design rather than the personnel of the market.",
     date: "In progress",
     area: "International student experience",
-    keywords: ["merit", "scholarships", "hope trafficking", "Türkiye"],
+    keywords: ["internationalisation of higher education", "corruption", "education agents", "scholarships", "Türkiye", "academic capitalism", "banality of evil", "soft power"],
     type: "Working paper",
     coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
@@ -337,7 +352,8 @@ export const researchItems: ResearchItem[] = [
     slug: "security-sovereignty-international-student",
     title: "Security, Sovereignty, and the International Student",
     subtitle: "Commercial Dependence and the Governance of Cross-Border Mobility",
-    abstract: "PLACEHOLDER — abstract pending.",
+    abstract:
+      "States once recruited international students as instruments of influence; increasingly, they recruit them as sources of revenue. This paper argues that the commercialisation of international higher education has generated a structural security problem that the dominant soft-power framework is unable to perceive. As universities in many states have come to depend on international tuition for a substantial share of their income, frequently concentrated in students from a single, sometimes rival, state, this financial dependence has become a vulnerability of national sovereignty: a form of leverage, a source of systemic fragility, and an erosion of state control over a critical knowledge infrastructure. Drawing on the international dependency tradition and securitisation theory, this paper conceptualises the resulting dynamic as the securitisation of commercial dependence, and illustrates it through three cases (the United Kingdom, China, and Türkiye). It further argues that the influence rationale still invoked to justify open mobility rests on a causal mechanism, exposure producing affinity, whose conditions of efficacy have substantially eroded. The international student is thus positioned at the intersection of three state imperatives, revenue, influence, and security, that no longer cohere. The paper concludes that the governance of cross-border mobility has become the management of a contradiction that states created and cannot resolve.",
     date: "In progress",
     area: "Securitization of international students",
     keywords: ["securitization", "sovereignty", "cross-border mobility"],
@@ -350,13 +366,14 @@ export const researchItems: ResearchItem[] = [
     title:
       "The Role of UNESCO Short-Term Programmes in Students’ Intercultural Competence Development",
     subtitle: "Evidence from the UNESCO Chair Peace and Diplomacy Programmes",
-    abstract: "PLACEHOLDER — abstract pending.",
+    abstract:
+      "Short-term mobility programmes have become a principal mechanism through which universities extend international experience to students for whom semester-length mobility is financially or academically inaccessible. Their contribution to intercultural competence development, however, remains unevenly evidenced, and the programmes delivered under the UNESCO Chairs and UNITWIN Programme have been almost entirely absent from this literature despite training and capacity-building forming an explicit component of the Chair mandate. This study evaluates intercultural competence outcomes across [N] participants from [N] countries who took part in the UNESCO Peace and Diplomacy Programmes delivered by the UNESCO Chair on Cultural Diplomacy, Governance and Education at Istanbul Aydın University between [year] and [year]. Employing a pre-programme and post-programme design supplemented by qualitative participant accounts, the study measures change across knowledge, attitude and application dimensions of intercultural competence as specified in Deardorff's process model, and examines the contribution of the programme's Model United Nations component as an applied pedagogical element. Findings indicate [results summary]. The study establishes that short-term programmes delivered under an institutional peace and diplomacy mandate produce measurable intercultural competence gains, that the Chair structure provides a replicable and portable delivery model of demonstrated international reach, and that the integration of simulation-based practice addresses a structural limitation in how compressed programmes pursue behavioural outcomes. We argue for the expansion of this model across the UNITWIN network and for the adoption of participant-level outcome measurement as standard practice within it.",
     date: "In progress",
     area: "Intercultural competence development",
-    keywords: ["UNESCO", "peace and diplomacy", "intercultural competence"],
+    keywords: ["intercultural competence development", "UNESCO Chairs", "UNITWIN", "short-term mobility", "Model United Nations", "peace education", "internationalisation of higher education"],
     type: "Working paper",
     institution: "UNESCO",
-    coAuthors: ["Dr. Osman Gültekin"],
+    coAuthors: ["Dr. Osman Gültekin", "Yaren Sude Fadir", "Pragya Upreti"],
     access: "restricted",
   },
   {
@@ -364,10 +381,11 @@ export const researchItems: ResearchItem[] = [
     title: "From Survival to Contribution",
     subtitle:
       "The WISDOM Programme, Displaced Women in STEM, and the Peacebuilding Function of Higher Education",
-    abstract: "PLACEHOLDER — abstract pending.",
+    abstract:
+      "Higher education is routinely described as a route out of displacement, but the mechanism by which a scholarship becomes something more than material relief is rarely specified. This article examines the Women in Science Displacement Outreach Master's (WISDOM) Programme, a partnership between Istanbul Aydın University (IAU) and the Organization for Women in Science for the Developing World (OWSD), which has supported a cohort of displaced women in STEM master's programmes in Istanbul since September 2024. Drawing on a census survey of the full cohort (N = 13) and semi-structured interviews with [n] participants, the study uses a retrospective pre-post design to examine change across four domains: perceived structural barriers, academic self-efficacy, social and professional integration, and future orientation. Findings indicate [direction and magnitude to be inserted after analysis]. We argue that the programme's distinctive contribution is not access itself but the conversion of access into agency: participants moved from a survival horizon, in which education is instrumental to immediate security, toward a contribution horizon, in which education is instrumental to reconstruction of their countries of origin. We situate this within Türkiye's own history of absorbing displaced scholars, and argue that the 1933 University Reform offers both a precedent and a warning, since the women among those émigrés were largely written out of the record. The article maps the programme against the Sustainable Development Goals and proposes a replicable framework for gender-responsive scholarship design. Limitations arising from cohort size, self-report, and the authors' administrative relationship to the programme are addressed directly.",
     date: "In progress",
     area: "Displaced scholars, STEM access",
-    keywords: ["WISDOM", "displaced scholars", "women in STEM", "peacebuilding"],
+    keywords: ["refugee higher education", "women in STEM", "displacement", "peacebuilding", "Sustainable Development Goals", "educational diplomacy", "Türkiye"],
     type: "Working paper",
     coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
@@ -376,7 +394,8 @@ export const researchItems: ResearchItem[] = [
     slug: "when-the-mou-is-the-outcome",
     title: "When the MoU Is the Outcome",
     subtitle: "Measuring Partnership Activation in Canadian and Turkish Higher Education",
-    abstract: "PLACEHOLDER — abstract pending.",
+    abstract:
+      "Internationalization strategies in both mature and emerging higher education systems increasingly report partnership counts as evidence of global engagement. This article asks what those counts measure. Drawing on neo-institutional accounts of ceremonial conformity and decoupling, and on critiques of partnership asymmetry developed within community-engaged research, we treat the memorandum of understanding as a ceremonial instrument whose signing is frequently the terminal act rather than the initiating one. We construct a comparative dataset of announced institutional partnerships at Canadian and Turkish universities and test each against observable activation within a five-year window, measured through indexed co-authorship, recorded student and staff mobility, jointly delivered programmes, doctoral co-supervision and jointly held external funding. We introduce the partnership activation rate as a diagnostic, together with a measure of agreement half-life, and report substantial non-activation in both systems reached by different routes: legitimacy maintenance under enrolment constraint in the Canadian case, capacity substitution under a national growth target in the Turkish case. The pattern recalls the interwar proliferation of bilateral instruments whose density was mistaken for the condition they were intended to produce. We argue that partnership announcement operates as institutional performance, that it is sustained by ranking, accreditation and reporting regimes which count agreements rather than audit them, and that the reform implication is not fewer partnerships but mandatory disclosure of activation. We close by proposing a reporting standard for institutional partnership portfolios.",
     date: "In progress",
     area: "Partnership management",
     keywords: ["MoUs", "partnership activation", "Canada", "Türkiye"],
@@ -388,7 +407,8 @@ export const researchItems: ResearchItem[] = [
     slug: "borrowed-instruments-unbuilt-systems",
     title: "Borrowed Instruments, Unbuilt Systems",
     subtitle: "Bologna Compliance and the Formalism Inheritance in Ukraine and Türkiye",
-    abstract: "PLACEHOLDER — abstract pending.",
+    abstract:
+      "Ukraine and Turkiye are both peripheral adopters of the Bologna Process, and both display near-complete formal compliance: three-cycle structures, credit transfer, diploma supplements, qualifications frameworks and national quality assurance agencies. Both also display persistent gaps between instrument and function, including credit recognition that does not travel, learning outcomes generated retrospectively, and quality assurance that audits documentation rather than provision. This article asks why two systems with dissimilar institutional histories converge on the same pattern of hollow adoption. Drawing on policy borrowing scholarship and on the literature on trust and moral agency in educational institutions, we argue that each system carries a distinct inheritance of administrative formalism: in the Turkish case, a Tanzimat-era pattern in which the importation of European institutional form is treated as the acquisition of the institution itself; in the Ukrainian case, a post-Soviet reporting culture in which the produced record substitutes for the activity reported. Using national implementation reports, quality assurance agency documentation, legislative texts and mobility and recognition data, supplemented by expert interviews in both countries, we trace how each inheritance shapes which Bologna instruments are activated and which remain ceremonial. We introduce instrument activation as a diagnostic and formalism inheritance as an explanatory construct. We argue that the principal cost of hollow compliance is not administrative inefficiency but the erosion of institutional trust, and that this erosion is self-reinforcing: once academics and students learn to read institutional documents as performances, subsequent substantive reform arrives already discredited.",
     date: "In progress",
     area: "Political economy of internationalization",
     keywords: ["Bologna Process", "Ukraine", "Türkiye", "policy formalism"],

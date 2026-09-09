@@ -150,19 +150,29 @@ export async function getResearchItems(): Promise<ResearchItem[]> {
 
   if (error || !data || data.length === 0) return staticResearch;
 
-  return data.map((row) => ({
-    slug: row.slug,
-    title: row.title,
-    abstract: row.abstract ?? "",
-    date: row.date ?? "",
-    area: row.area ?? "",
-    keywords: row.keywords ?? [],
-    type: row.type ?? "",
-    coAuthors: row.co_authors ?? [],
-    institution: row.institution ?? undefined,
-    doiOrLink: row.doi_or_link ?? null,
-    access: row.access === "open" ? "open" : "restricted",
-  }));
+  // The table has no column for a subtitle or for the instrument badge, and
+  // an empty cell should not blank a field the content file fills. Both are
+  // carried over from the content file by slug, the way the work links are.
+  const authored = new Map(staticResearch.map((r) => [r.slug, r]));
+
+  return data.map((row) => {
+    const base = authored.get(row.slug);
+    return {
+      slug: row.slug,
+      title: pick(row.title, base?.title ?? row.slug),
+      subtitle: base?.subtitle,
+      abstract: pick(row.abstract, base?.abstract ?? ""),
+      date: pick(row.date, base?.date ?? ""),
+      area: pick(row.area, base?.area ?? ""),
+      keywords: row.keywords?.length ? row.keywords : (base?.keywords ?? []),
+      type: pick(row.type, base?.type ?? ""),
+      coAuthors: row.co_authors?.length ? row.co_authors : (base?.coAuthors ?? []),
+      institution: row.institution ?? base?.institution,
+      doiOrLink: row.doi_or_link ?? base?.doiOrLink ?? null,
+      access: row.access === "open" ? "open" : "restricted",
+      instrument: base?.instrument,
+    };
+  });
 }
 
 export async function getWorkItems(): Promise<WorkItem[]> {
