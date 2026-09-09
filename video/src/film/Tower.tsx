@@ -178,8 +178,8 @@ export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
 
       {/* ── Floor 7: Otto. The one photograph in a film of drawings. */}
       <Room top={bandTop(7)} seed={690} glow="#e7dcc4">
-        <OttoClipping x={FX + 300} y={bandTop(7) + 250} w={300} rotate={-4} hasPhoto={hasOttoPhoto} />
-        <Figure x={FX + 760} y={bandTop(7) + 640} h={230} seed={695} fill={PAPER.slateDark} />
+        <OttoClipping x={FX + 180} y={bandTop(7) + 300} w={420} rotate={-3.5} hasPhoto={hasOttoPhoto} />
+        <Figure x={FX + 800} y={bandTop(7) + 660} h={280} seed={695} fill={PAPER.slateDark} />
       </Room>
 
       {/* ── Floor 8: the paper. A desk, a lamp, and pages that keep coming. */}

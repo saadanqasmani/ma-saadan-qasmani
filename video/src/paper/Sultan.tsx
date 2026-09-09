@@ -38,12 +38,12 @@ export type SultanPose = {
 };
 
 const D = {
-  torso: 52,
+  torso: 54,
   head: 30,
-  upper: 30,
-  fore: 27,
-  thigh: 30,
-  shin: 27,
+  upper: 34,
+  fore: 31,
+  thigh: 33,
+  shin: 29,
   tail: 40,
 };
 
@@ -86,6 +86,31 @@ function Segment({
   return (
     <g transform={`translate(${x} ${y}) rotate(${angle})`}>
       <Piece d={d} fill={fill} lift={lift} />
+    </g>
+  );
+}
+
+/** A hand or a foot: one more piece, pinned at the end of the limb. */
+function Extremity({
+  x,
+  y,
+  angle,
+  rx,
+  ry,
+  fill,
+  seed,
+}: {
+  x: number;
+  y: number;
+  angle: number;
+  rx: number;
+  ry: number;
+  fill: string;
+  seed: number;
+}) {
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${angle})`}>
+      <Piece d={cutEllipse(0, ry * 0.55, rx, ry, seed, 1)} fill={fill} lift="soft" />
     </g>
   );
 }
@@ -136,16 +161,39 @@ export const Sultan: React.FC<{ pose: SultanPose; seed?: number }> = ({ pose, se
     l2: number,
     w: number,
     fill: string,
-    s: number
+    s: number,
+    end?: { fill: string; rx: number; ry: number }
   ) => {
     const [mx, my] = tip(px, py, a[0], l1);
+    const [ex, ey] = tip(mx, my, a[0] + a[1], l2);
     return (
       <>
-        <Segment x={px} y={py} angle={a[0]} len={l1} w1={w} w2={w * 0.82} fill={fill} seed={s} />
-        <Segment x={mx} y={my} angle={a[0] + a[1]} len={l2} w1={w * 0.82} w2={w * 0.62} fill={fill} seed={s + 1} />
+        <Segment x={px} y={py} angle={a[0]} len={l1} w1={w} w2={w * 0.84} fill={fill} seed={s} />
+        <Segment x={mx} y={my} angle={a[0] + a[1]} len={l2} w1={w * 0.84} w2={w * 0.66} fill={fill} seed={s + 1} />
+        {end && (
+          <Extremity
+            x={ex}
+            y={ey}
+            angle={a[0] + a[1]}
+            rx={end.rx}
+            ry={end.ry}
+            fill={end.fill}
+            seed={s + 2}
+          />
+        )}
       </>
     );
   };
+
+  // Four grasping hands, which is what the novel gives him, and long feet
+  // that fold over a branch. The shoe only ever covers the near foot,
+  // because a cut-out puppet is only ever dressed on the side you can see.
+  const handSkin = shaved > 0.5 ? "#c99a72" : PAPER.skin;
+  const shoeFill = "#221a17";
+  const nearHand = { fill: handSkin, rx: 7.5, ry: 6 };
+  const farHand = { fill: shaved > 0.5 ? "#a8724c" : "#b8825a", rx: 6.8, ry: 5.4 };
+  const nearFoot = dressed > 0.5 ? { fill: shoeFill, rx: 11, ry: 6.4 } : { fill: handSkin, rx: 10, ry: 6 };
+  const farFoot = dressed > 0.5 ? { fill: "#181211", rx: 10, ry: 5.8 } : { fill: farHand.fill, rx: 9, ry: 5.4 };
 
   const [tmx, tmy] = tip(0, 0, tail[0], D.tail);
 
@@ -153,8 +201,8 @@ export const Sultan: React.FC<{ pose: SultanPose; seed?: number }> = ({ pose, se
     <g transform={`translate(${x} ${y}) rotate(${roll}) scale(${(flip ? -scale : scale)} ${scale})`}>
       {/* Far side */}
       <g opacity={0.92}>
-        {seg(cx, cy, armFar, D.upper, D.fore, 7, farFill, seed + 10)}
-        {seg(0, 0, legFar, D.thigh, D.shin, 8.5, farFill, seed + 20)}
+        {seg(cx, cy, armFar, D.upper, D.fore, 7.6, farFill, seed + 10, farHand)}
+        {seg(0, 0, legFar, D.thigh, D.shin, 9.2, farFill, seed + 20, farFoot)}
       </g>
 
       {/* Tail: two pieces, pinned at the base and again halfway. */}
@@ -166,17 +214,35 @@ export const Sultan: React.FC<{ pose: SultanPose; seed?: number }> = ({ pose, se
         <Piece
           d={cutPath(
             [
-              [-13, 4],
-              [13, 4],
-              [16, -D.torso * 0.55],
-              [13, -D.torso],
-              [-13, -D.torso],
-              [-16, -D.torso * 0.55],
+              [-12, 6],
+              [12, 6],
+              [17, -D.torso * 0.5],
+              [19, -D.torso + 6],
+              [11, -D.torso],
+              [-11, -D.torso],
+              [-19, -D.torso + 6],
+              [-17, -D.torso * 0.5],
             ],
             seed,
             1.4
           )}
           fill={dressed > 0.5 ? suit : coat}
+        />
+        <Piece
+          d={cutPath(
+            [
+              [6, 4],
+              [12, 6],
+              [17, -D.torso * 0.5],
+              [11, -D.torso],
+              [4, -D.torso],
+            ],
+            seed + 90,
+            1.1
+          )}
+          fill={dressed > 0.5 ? suitDark : coatDark}
+          lift="none"
+          opacity={0.55}
         />
         {dressed > 0.5 && (
           <>
@@ -201,8 +267,8 @@ export const Sultan: React.FC<{ pose: SultanPose; seed?: number }> = ({ pose, se
       </g>
 
       {/* Near side */}
-      {seg(cx, cy, armNear, D.upper, D.fore, 7.5, nearFill, seed + 40)}
-      {seg(0, 0, legNear, D.thigh, D.shin, 9, nearFill, seed + 50)}
+      {seg(cx, cy, armNear, D.upper, D.fore, 8.2, nearFill, seed + 40, nearHand)}
+      {seg(0, 0, legNear, D.thigh, D.shin, 9.8, nearFill, seed + 50, nearFoot)}
 
       {/* Head, pinned at the neck */}
       <g transform={`translate(${hx} ${hy}) rotate(${head})`}>

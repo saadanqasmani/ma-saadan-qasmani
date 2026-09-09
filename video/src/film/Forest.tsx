@@ -53,36 +53,37 @@ function ReckoningTree() {
     <g>
       <Poly
         points={[
-          [x - 96, GROUND + 40],
-          [x - 54, top - 200],
-          [x + 54, top - 200],
-          [x + 104, GROUND + 40],
+          [x - 74, GROUND + 40],
+          [x - 40, top - 200],
+          [x + 40, top - 200],
+          [x + 80, GROUND + 40],
         ]}
         seed={11}
         fill={PAPER.bark}
         lift="deep"
       />
-      {/* Two limbs: the one the family hangs from, and one below it. */}
-      <Poly
-        points={[
-          [x - 60, bandTop(2) + 300],
-          [x - 470, bandTop(2) + 250],
-          [x - 470, bandTop(2) + 292],
-          [x - 60, bandTop(2) + 356],
-        ]}
-        seed={12}
-        fill={PAPER.barkDark}
-      />
-      <Poly
-        points={[
-          [x + 60, bandTop(2) + 330],
-          [x + 470, bandTop(2) + 286],
-          [x + 470, bandTop(2) + 328],
-          [x + 60, bandTop(2) + 386],
-        ]}
-        seed={13}
-        fill={PAPER.barkDark}
-      />
+      {/* Limbs, in the bands that need them. The family hangs from the one
+          in the prayer band; the rest carry the canopy. */}
+      {[
+        { b: 0, y: 560, dir: -1, len: 620 },
+        { b: 0, y: 470, dir: 1, len: 540 },
+        { b: 1, y: 380, dir: -1, len: 500 },
+        { b: 2, y: 300, dir: 1, len: 470 },
+        { b: 2, y: 430, dir: -1, len: 430 },
+      ].map((l, i) => (
+        <Poly
+          key={i}
+          points={[
+            [x + l.dir * 46, bandTop(l.b) + l.y],
+            [x + l.dir * l.len, bandTop(l.b) + l.y - 60],
+            [x + l.dir * l.len, bandTop(l.b) + l.y - 18],
+            [x + l.dir * 46, bandTop(l.b) + l.y + 54],
+          ]}
+          seed={12 + i}
+          fill={PAPER.barkDark}
+          lift="normal"
+        />
+      ))}
     </g>
   );
 }
@@ -160,8 +161,8 @@ export const ForestBands: React.FC<{ frame: number }> = ({ frame }) => {
             key={k}
             seed={41 + k * 7}
             pose={{
-              x: x - 250 + k * 165,
-              y: b0 + 300 + 292,
+              x: x - 300 + k * 150,
+              y: b0 + 560 + 34,
               scale: 1.15,
               roll: 180 + sway + k * 2,
               torso: 4 + k * 3,
@@ -175,7 +176,8 @@ export const ForestBands: React.FC<{ frame: number }> = ({ frame }) => {
           />
         ))}
       </g>
-      <Canopy y={b0 + 40} />
+      <Canopy y={b0 + 130} />
+      <Canopy y={b0 + 900} spread={0.4} />
 
       {/* Band 1 — the Upright cross the clearing. Three of them, on two legs
           the whole way, and the small one carries the ledger. */}

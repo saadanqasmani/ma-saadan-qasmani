@@ -52,13 +52,12 @@ export const OttoClipping: React.FC<{
           {/* An SVG image element rather than Remotion's Img: this lives
               inside the scene's svg, where an HTML img cannot be placed. */}
           <image
-            href={staticFile("otto.jpg")}
+            href={staticFile("otto.png")}
             x={12}
             y={14}
             width={w - 24}
             height={photoH}
-            preserveAspectRatio="xMidYMin slice"
-            filter="url(#newsprint)"
+            preserveAspectRatio="xMidYMid slice"
           />
         </g>
       ) : (

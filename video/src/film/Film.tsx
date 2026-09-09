@@ -6,7 +6,7 @@ import { PAPER } from "../paper/palette";
 import { Sultan } from "../paper/Sultan";
 import { ForestBands } from "./Forest";
 import { TowerBands } from "./Tower";
-import { DURATION, FPS, GROUND, ROOF, TOWER, W, WORLD_H, camera } from "./world";
+import { DURATION, FOREST_BANDS, FPS, GROUND, ROOF, TOWER, W, WORLD_H, bandTop, camera } from "./world";
 
 /**
  * The Highest Branch, in cut paper.
@@ -15,10 +15,9 @@ import { DURATION, FPS, GROUND, ROOF, TOWER, W, WORLD_H, camera } from "./world"
  * under it, and the camera rises past his whole life without stopping on any
  * of it, because that is how he lived it.
  *
- * Set `hasOttoPhoto` once public/otto.jpg exists. Until then the clipping on
- * floor seven renders as an empty torn frame rather than an invented face.
+ * Floor seven carries the one photograph in a film of drawings.
  */
-const HAS_OTTO_PHOTO = false;
+const HAS_OTTO_PHOTO = true;
 
 export const Film: React.FC = () => {
   const frame = useCurrentFrame();
@@ -34,7 +33,16 @@ export const Film: React.FC = () => {
   // Hand over hand, four points of contact, the way he does it at ten years
   // old in the crown of his father's tree and again at the end.
   const reach = frame * 0.42;
-  const climbing = cam.out < 0.6;
+  /*
+   * He only exists on the facade once there is a facade.
+   *
+   * The first pass drew the climber wherever the camera was, so during the
+   * prayer a suited adult was climbing the trunk beside his own family while
+   * they hung from the branch above him. He belongs to the tower; the forest
+   * bands have their own Sultan in them.
+   */
+  const onTower = cam.climbY < bandTop(FOREST_BANDS - 1) + 120;
+  const climbing = cam.out < 0.6 && onTower;
 
   return (
     <AbsoluteFill style={{ backgroundColor: PAPER.night3 }}>
@@ -49,7 +57,7 @@ export const Film: React.FC = () => {
       <svg viewBox={`${vx} ${vy} ${vw} ${vh}`} width="100%" height="100%">
         <PaperDefs />
         <defs>
-          <OttoClipDef w={300} />
+          <OttoClipDef w={420} />
           <linearGradient id="air" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={PAPER.night2} />
             <stop offset="42%" stopColor={PAPER.blue} />
@@ -116,6 +124,26 @@ export const Film: React.FC = () => {
           />
         )}
       </svg>
+
+      {/* The sheet the whole film is on. A cut-out film is photographed, and
+          what it is photographed through is another piece of paper: grain
+          across everything, and the corners falling off a touch. */}
+      <AbsoluteFill
+        style={{
+          pointerEvents: "none",
+          backgroundImage:
+            "radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.34) 100%)",
+        }}
+      />
+      <AbsoluteFill
+        style={{
+          pointerEvents: "none",
+          opacity: 0.06,
+          mixBlendMode: "multiply",
+          backgroundImage:
+            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>\")",
+        }}
+      />
 
       <Title frame={frame} />
     </AbsoluteFill>
