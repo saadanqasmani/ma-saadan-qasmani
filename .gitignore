@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# The Remotion film lives on its own branch (film/highest-branch).
+# Its build output and dependencies never belong in git.
+/video/
