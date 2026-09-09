@@ -32,7 +32,7 @@ export const person = {
    * became opacity. The untouched original is in /assets.
    */
   portrait: "/portrait.png" as string | null,
-  bio: `Saadan Qasmani is an internationalization professional, researcher, and novelist based in Istanbul. He directs Global Engagement and Brand Strategy at STAR Scholars Network and co-founded IRIS, a SaaS platform for internationalization management. His practitioner work spans recruitment, partnership management, and intercultural competence training delivered across twelve countries to participants from over seventy nationalities, including UNESCO Peace and Diplomacy Programmes, in Türkiye, Pakistan, Nepal, and Iraq. He is pursuing a master's in Political Science and International Relations at Istanbul Aydın University, where he also founded the campus Model United Nations program and STARLIGHT. His research centers on the political economy of internationalization, nation branding, and the securitization of international students.`,
+  bio: `Saadan Qasmani is an internationalization professional, researcher, and novelist based in Istanbul. He is a Global Engagement and Brand Strategist and co-founded IRIS, a SaaS platform for internationalization management. His practitioner work spans recruitment, partnership management, and intercultural competence training delivered across twelve countries to participants from over seventy nationalities, including UNESCO Peace and Diplomacy Programmes, in Türkiye, Pakistan, Nepal, and Iraq. He is pursuing a master's in Political Science and International Relations at Istanbul Aydın University, where he also founded the campus Model United Nations program and STARLIGHT. His research centers on the political economy of internationalization, nation branding, and the securitization of international students.`,
   roles: [
     {
       title: "Director of Global Engagement & Brand Strategy",
@@ -218,14 +218,6 @@ export const workItems: WorkItem[] = [
     date: "2022",
     link: { label: "Visit the programme site", url: "https://unesco.aydin.edu.tr" },
   },
-  {
-    slug: "mun-spotlight",
-    title: "Model United Nations Program & STARLIGHT",
-    category: "Projects",
-    summary:
-      "Founded both at Istanbul Aydın University: the campus Model United Nations programme, which has launched four conferences, and STARLIGHT, Türkiye's first international student magazine. Both are treated as intercultural competence infrastructure rather than activities.",
-    date: "2021",
-  },
 ];
 
 /**
@@ -279,6 +271,12 @@ export type ResearchItem = {
   area: string;
   keywords: string[];
   type: string;
+  /**
+   * The full byline in the order the paper itself states, Saadan included.
+   * `coAuthors` drives the "with ..." line in the archive; this drives the
+   * detail page and the structured data, where author order is a claim.
+   */
+  authors?: string[];
   coAuthors?: string[];
   institution?: string;
   doiOrLink?: string | null;
@@ -300,6 +298,7 @@ export const researchItems: ResearchItem[] = [
     date: "Upcoming — submitted to JUMP",
     area: "International student experience",
     keywords: ["marginalization", "tokenism", "hope trafficking", "intercultural competence", "international higher education", "international relations"],
+    authors: ["Osman Gültekin", "Muhammad Ahmed Saadan Qasmani"],
     type: "Journal article",
     coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
@@ -314,6 +313,7 @@ export const researchItems: ResearchItem[] = [
     date: "In progress",
     area: "Internationalization theory",
     keywords: ["artificial intelligence", "internationalization", "international academic relations", "Internationalization Management Gap", "Internationalization Potential Index", "faculty engagement", "MOU automation", "digital infrastructure", "workflow fragmentation", "Global South", "Global North", "institutional capacity", "composite index"],
+    authors: ["Osman Gültekin", "Muhammad Ahmed Saadan Qasmani"],
     type: "Working paper",
     coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
@@ -328,6 +328,7 @@ export const researchItems: ResearchItem[] = [
     date: "Upcoming — submitted for review",
     area: "Internationalization theory",
     keywords: ["higher education internationalization", "periodization", "AI era", "international politics", "Paper Internationalization", "Leapfrog Illusion", "Invisible Threshold"],
+    authors: ["Osman Gültekin", "Muhammad Ahmed Saadan Qasmani"],
     type: "Journal article",
     coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
@@ -342,6 +343,7 @@ export const researchItems: ResearchItem[] = [
     date: "In progress",
     area: "International student experience",
     keywords: ["internationalisation of higher education", "corruption", "education agents", "scholarships", "Türkiye", "academic capitalism", "banality of evil", "soft power"],
+    authors: ["Muhammad Ahmed Saadan Qasmani", "Osman Gültekin"],
     type: "Working paper",
     coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
@@ -355,6 +357,7 @@ export const researchItems: ResearchItem[] = [
     date: "In progress",
     area: "Securitization of international students",
     keywords: ["securitization", "sovereignty", "cross-border mobility"],
+    authors: ["M. A. Saadan Qasmani", "R. Kutay Karaca"],
     type: "Working paper",
     coAuthors: ["Ragıp Kutay Karaca"],
     access: "restricted",
@@ -369,6 +372,7 @@ export const researchItems: ResearchItem[] = [
     date: "In progress",
     area: "Intercultural competence development",
     keywords: ["intercultural competence development", "UNESCO Chairs", "UNITWIN", "short-term mobility", "Model United Nations", "peace education", "internationalisation of higher education"],
+    authors: ["Osman Gültekin", "Yaren Sude Fadir", "M. A. Saadan Qasmani", "Pragya Upreti"],
     type: "Working paper",
     institution: "UNESCO",
     coAuthors: ["Dr. Osman Gültekin", "Yaren Sude Fadir", "Pragya Upreti"],
@@ -384,6 +388,7 @@ export const researchItems: ResearchItem[] = [
     date: "In progress",
     area: "Displaced scholars, STEM access",
     keywords: ["refugee higher education", "women in STEM", "displacement", "peacebuilding", "Sustainable Development Goals", "educational diplomacy", "Türkiye"],
+    authors: ["Osman Gültekin", "Muhammad Ahmed Saadan Qasmani"],
     type: "Working paper",
     coAuthors: ["Dr. Osman Gültekin"],
     access: "restricted",
@@ -397,6 +402,7 @@ export const researchItems: ResearchItem[] = [
     date: "In progress",
     area: "Partnership management",
     keywords: ["MoUs", "partnership activation", "Canada", "Türkiye"],
+    authors: ["Alyson E. King", "Osman Gültekin", "M. A. Saadan Qasmani"],
     type: "Working paper",
     coAuthors: ["Dr. Alyson E. King", "Dr. Osman Gültekin"],
     access: "restricted",
@@ -410,6 +416,7 @@ export const researchItems: ResearchItem[] = [
     date: "In progress",
     area: "Political economy of internationalization",
     keywords: ["Bologna Process", "Ukraine", "Türkiye", "policy formalism"],
+    authors: ["Benjamin Kutsyuruba", "Osman Gültekin", "M. A. Saadan Qasmani"],
     type: "Working paper",
     coAuthors: ["Dr. Benjamin Kutsyuruba", "Dr. Osman Gültekin"],
     access: "restricted",

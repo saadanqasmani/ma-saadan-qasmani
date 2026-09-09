@@ -65,7 +65,59 @@ export const recruitment = {
 
   progression: ["Consistent conversion", "Responsive communication", "Quality referrals"],
 
-  markets: ["Türkiye", "Pakistan", "Nepal", "Iraq"],
+  /**
+   * How a market is chosen.
+   *
+   * The three groups are the ones the sector reads in this order: whether a
+   * market sends students at all, whether it sends them to you, and whether
+   * those applications survive the journey to enrolment. Written from
+   * published practice (British Council market intelligence, ICEF Monitor,
+   * AIRC), not from any one institution's internal numbers.
+   */
+  intelligence: {
+    heading: "A market is a decision, not a destination.",
+    body:
+      "Most recruitment failure is a targeting failure that happened months before anyone processed an application. A market is read on three questions before it is entered, and left when it stops answering them, whatever the volume looks like.",
+    groups: [
+      {
+        n: "01",
+        name: "Does it send students",
+        line: "Demand fundamentals, read before anything else.",
+        signals: [
+          "Youth population and middle-class growth",
+          "Whether domestic provision can absorb its own demand",
+          "Affordability against household income, and the exchange rate",
+          "Economic and geopolitical pressure to leave",
+        ],
+      },
+      {
+        n: "02",
+        name: "Does it send them here",
+        line: "Fit, which decides whether interest becomes an application.",
+        signals: [
+          "Programme match against what the market actually wants to study",
+          "Tuition and living cost against what a family can carry",
+          "Graduate outcomes and post-study work rights",
+          "Diaspora, safety, language of instruction",
+          "Competitor share and how saturated the agent network already is",
+        ],
+      },
+      {
+        n: "03",
+        name: "Does it convert",
+        line: "Deliverability, and the part most portfolios never measure.",
+        signals: [
+          "Visa approval rate for that nationality, not the national average",
+          "Document integrity, and the verification burden it creates",
+          "Offer to enrolment yield, by market and by programme",
+          "Cost per enrolment against the tuition it returns",
+          "Retention past the first year",
+        ],
+      },
+    ],
+    risk:
+      "One market above roughly a third of intake is a concentration risk, not a strength: a visa rule, a currency move or a policy change in a single capital can take a year's plan with it. The portfolio is managed for spread as deliberately as it is for volume.",
+  },
 
   cta: {
     heading: "Bring this to your institution.",

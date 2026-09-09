@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import type { ResearchItem } from "@/content/site";
 import { collaborators, instruments } from "@/content/site";
@@ -93,6 +94,15 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
                     Read abstract
                   </span>
                 </button>
+                {/* The paper's own page: where the abstract is published as
+                    text, and the only version a search engine ever sees. */}
+                <Link
+                  href={`/research/${item.slug}`}
+                  className="ml-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
+                >
+                  Full entry
+                  <span aria-hidden>→</span>
+                </Link>
 
                 {item.institution && (
                   <p className="mt-3 text-sm text-ink-faint">{item.institution}</p>
@@ -273,6 +283,14 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
                 />
 
                 <p className="mt-7 text-base leading-[1.75] text-ink-soft">{item.abstract}</p>
+
+                <Link
+                  href={`/research/${item.slug}`}
+                  className="mt-8 inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
+                >
+                  Open the full entry
+                  <span aria-hidden>→</span>
+                </Link>
               </div>
             </motion.div>
           </motion.div>

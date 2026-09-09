@@ -204,3 +204,14 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .tier-token { animation: none; }
 }
+
+/*
+  A masked word reveal must never be able to hide its own heading. If motion
+  is reduced the words sit where they belong, whatever the animation library
+  decided to do about the transform.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .split-word {
+    transform: none !important;
+  }
+}

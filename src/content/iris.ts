@@ -38,7 +38,7 @@ export const iris = {
 
   instruments: {
     heading: "It starts with two econometric instruments.",
-    attribution: "IMG · IPI — Gültekin & Qasmani",
+    attribution: "IMG · IPI — © Gültekin & Qasmani, 2026",
     img: {
       key: "IMG",
       role: "The size of the gap.",

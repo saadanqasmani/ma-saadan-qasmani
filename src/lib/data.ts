@@ -166,6 +166,7 @@ export async function getResearchItems(): Promise<ResearchItem[]> {
       area: pick(row.area, base?.area ?? ""),
       keywords: row.keywords?.length ? row.keywords : (base?.keywords ?? []),
       type: pick(row.type, base?.type ?? ""),
+      authors: base?.authors,
       coAuthors: row.co_authors?.length ? row.co_authors : (base?.coAuthors ?? []),
       institution: row.institution ?? base?.institution,
       doiOrLink: row.doi_or_link ?? base?.doiOrLink ?? null,
@@ -173,6 +174,11 @@ export async function getResearchItems(): Promise<ResearchItem[]> {
       instrument: base?.instrument,
     };
   });
+}
+
+export async function getResearchItem(slug: string): Promise<ResearchItem | null> {
+  const items = await getResearchItems();
+  return items.find((i) => i.slug === slug) ?? null;
 }
 
 export async function getWorkItems(): Promise<WorkItem[]> {

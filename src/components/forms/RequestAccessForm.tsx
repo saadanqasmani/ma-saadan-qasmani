@@ -33,7 +33,8 @@ export function RequestAccessForm({
 }: {
   researchSlug: string;
   researchTitle: string;
-  onClose: () => void;
+  /** Omitted when the form is embedded in a page rather than a dialog. */
+  onClose?: () => void;
 }) {
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [serverError, setServerError] = useState<string | null>(null);
@@ -72,13 +73,15 @@ export function RequestAccessForm({
           Your request for &ldquo;{researchTitle}&rdquo; has been received. Every request is
           reviewed individually — you will hear back if it is approved.
         </FormNotice>
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-xs uppercase tracking-[0.16em] text-ink-soft hover:text-ink"
-        >
-          Close
-        </button>
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-xs uppercase tracking-[0.16em] text-ink-soft hover:text-ink"
+          >
+            Close
+          </button>
+        )}
       </div>
     );
   }
@@ -148,13 +151,15 @@ export function RequestAccessForm({
         <button type="submit" disabled={status === "loading"} className={submitButtonClass}>
           <SubmitLabel>{status === "loading" ? "Sending…" : "Submit Request"}</SubmitLabel>
         </button>
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-xs uppercase tracking-[0.16em] text-ink-faint transition-colors hover:text-ink"
-        >
-          Cancel
-        </button>
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-xs uppercase tracking-[0.16em] text-ink-faint transition-colors hover:text-ink"
+          >
+            Cancel
+          </button>
+        )}
       </div>
     </form>
   );

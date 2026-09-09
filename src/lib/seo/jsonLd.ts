@@ -120,14 +120,21 @@ export function researchJsonLd(items: ResearchItem[], person: Person) {
       name: item.subtitle ? `${item.title}: ${item.subtitle}` : item.title,
       headline: item.title,
       abstract: item.abstract,
-      url: `${siteUrl}/research#${item.slug}`,
+      url: `${siteUrl}/research/${item.slug}`,
       about: item.area,
       keywords: item.keywords,
       inLanguage: "en",
-      author: [
-        { "@id": PERSON_ID, "@type": "Person", name: person.name },
-        ...(item.coAuthors ?? []).map((name) => ({ "@type": "Person", name })),
-      ],
+      // Author order is a claim in academic work, so the paper's own byline
+      // is used where the entry states one. Saadan's node is linked by id so
+      // a search engine ties the paper to the person, not to a bare string.
+      author: (item.authors?.length
+        ? item.authors
+        : [person.name, ...(item.coAuthors ?? [])]
+      ).map((name) =>
+        name.includes("Saadan Qasmani")
+          ? { "@id": PERSON_ID, "@type": "Person", name }
+          : { "@type": "Person", name }
+      ),
       sourceOrganization: item.institution
         ? { "@type": "Organization", name: item.institution }
         : null,

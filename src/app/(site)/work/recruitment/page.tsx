@@ -165,25 +165,66 @@ export default function RecruitmentPage() {
       </section>
 
       {/* ─────────── Markets and photographs ─────────── */}
-      <section className="border-b border-[var(--rec-pale)] py-16 sm:py-20">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-8 px-6 sm:px-10">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-[10px] uppercase tracking-[0.16em] text-[var(--rec-ink-soft)]">
-              Markets
-            </span>
-            {recruitment.markets.map((m) => (
-              <span
-                key={m}
-                className="rounded-full bg-[var(--rec-amber-deep)] px-4 py-1.5 text-sm font-medium text-white"
-              >
-                {m}
-              </span>
+      {/* ─────────── Market intelligence ─────────── */}
+      <section className="border-b border-[var(--rec-pale)] bg-[var(--rec-ground-deep)] py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-6 sm:px-10">
+          <Reveal>
+            <p className="eyebrow">Market intelligence</p>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <h2 className="mt-6 max-w-3xl font-display text-[clamp(1.7rem,3.6vw,2.8rem)] leading-tight text-[var(--rec-ink)]">
+              {recruitment.intelligence.heading}
+            </h2>
+          </Reveal>
+          <Reveal delay={0.12}>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-[var(--rec-ink-soft)]">
+              {recruitment.intelligence.body}
+            </p>
+          </Reveal>
+
+          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+            {recruitment.intelligence.groups.map((g, i) => (
+              <Reveal key={g.n} delay={0.14 + i * 0.07}>
+                <FloatCard
+                  tone={i === 1 ? "mixed" : i === 2 ? "ember" : "blue"}
+                  index={i}
+                  innerClassName="flex h-full flex-col p-7 sm:p-8"
+                >
+                  <span className="font-mono text-sm text-[var(--rec-amber)]">{g.n}</span>
+                  <h3 className="mt-3 font-serif text-xl leading-snug text-[var(--rec-ink)]">
+                    {g.name}
+                  </h3>
+                  <p className="mt-2 text-sm italic leading-snug text-[var(--rec-ink-soft)]">
+                    {g.line}
+                  </p>
+                  <ul className="mt-5 space-y-2.5 border-t border-[var(--rec-pale)] pt-5">
+                    {g.signals.map((sig) => (
+                      <li
+                        key={sig}
+                        className="text-sm leading-relaxed text-[var(--rec-ink-soft)]"
+                      >
+                        · {sig}
+                      </li>
+                    ))}
+                  </ul>
+                </FloatCard>
+              </Reveal>
             ))}
           </div>
 
-          <GalleryTrigger mediaKey="international-student-recruitment" label="recruitment work">
-            <p className="font-serif text-xl text-[var(--rec-ink)]">From the field</p>
-          </GalleryTrigger>
+          <Reveal delay={0.34}>
+            <p className="mt-12 max-w-3xl border-l-[3px] border-[var(--rec-amber)] pl-6 font-serif text-lg italic leading-relaxed text-[var(--rec-ink)]">
+              {recruitment.intelligence.risk}
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.38}>
+            <div className="mt-14 border-t border-[var(--rec-pale)] pt-10">
+              <GalleryTrigger mediaKey="international-student-recruitment" label="recruitment work">
+                <p className="font-serif text-xl text-[var(--rec-ink)]">From the field</p>
+              </GalleryTrigger>
+            </div>
+          </Reveal>
         </div>
       </section>
 

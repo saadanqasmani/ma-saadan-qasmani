@@ -44,13 +44,6 @@ export const mediaSets: Record<string, MediaSet> = {
       { kind: "image", src: null, caption: "UNESCO programme session", awaiting: "Photograph" },
     ],
   },
-  "mun-spotlight": {
-    title: "Model United Nations & STARLIGHT",
-    items: [
-      { kind: "image", src: null, caption: "Model United Nations conference", awaiting: "Photograph" },
-      { kind: "image", src: null, caption: "STARLIGHT issue", awaiting: "Cover or spread" },
-    ],
-  },
   "international-student-recruitment": {
     title: "International Student Recruitment",
     items: [

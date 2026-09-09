@@ -13,6 +13,14 @@ import { cn } from "@/lib/utils";
  * the mask room and the negative margin gives the space back, so the line
  * spacing is unchanged; the hidden state starts further down to stay hidden
  * behind the taller box.
+ *
+ * Reduced motion is handled twice, on purpose. The hook below is the clean
+ * path, but it reported false in a browser whose matchMedia said otherwise,
+ * while the library still declined to animate the transform, which left every
+ * word parked below its mask and the heading invisible. A heading that does
+ * not render is a worse failure than one that does not animate, so
+ * .split-word is also pinned to translateY(0) in the stylesheet, where no
+ * hydration timing can reach it.
  */
 export function SplitText({
   text,
@@ -49,7 +57,7 @@ export function SplitText({
             aria-hidden
           >
             <motion.span
-              className="inline-block will-change-transform"
+              className="split-word inline-block will-change-transform"
               initial={{ y: "165%" }}
               animate={inView ? { y: "0%" } : { y: "165%" }}
               transition={{
