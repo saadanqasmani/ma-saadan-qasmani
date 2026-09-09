@@ -111,11 +111,13 @@ export const icd = {
     items: [
       {
         name: "Model United Nations",
+        media: "mun",
         line: "Founded the campus programme and launched four conferences.",
         why: "A delegate holds a position, negotiates it, and is held to it. The competence is exercised rather than described.",
       },
       {
         name: "STARLIGHT",
+        media: "starlight",
         line: "Türkiye's first international student magazine.",
         why: "An editorial platform students run gives them the authorship that a promotional photograph takes.",
       },

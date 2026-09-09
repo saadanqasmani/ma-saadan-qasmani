@@ -231,12 +231,20 @@ export default function IcdPage() {
           <div className="mt-14 grid gap-6 lg:grid-cols-2">
             {icd.structures.items.map((s, i) => (
               <Reveal key={s.name} delay={0.18 + i * 0.08}>
-                <div className="h-full border border-white/25 p-8">
+                <div className="flex h-full flex-col border border-white/25 p-8">
                   <h3 className="font-display text-3xl text-white">{s.name}</h3>
                   <p className="mt-3 text-base text-white/70">{s.line}</p>
                   <p className="mt-6 border-t border-white/20 pt-6 font-serif text-lg italic leading-snug text-ember">
                     {s.why}
                   </p>
+                  {/* Both structures have their own photographs. They were
+                      orphaned when the Work entry that used to open them moved
+                      here, so the galleries hang off the cards instead. */}
+                  <div className="mt-6 pt-2">
+                    <GalleryTrigger mediaKey={s.media} label={s.name}>
+                      <span className="text-sm text-white/70">Photographs</span>
+                    </GalleryTrigger>
+                  </div>
                 </div>
               </Reveal>
             ))}

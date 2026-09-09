@@ -36,12 +36,25 @@ export const mediaSets: Record<string, MediaSet> = {
   },
   "star-scholars-global-engagement": {
     title: "Global Engagement & Brand Strategy",
-    items: [{ kind: "image", src: null, caption: "Global engagement work", awaiting: "Photograph" }],
+    items: [
+      { kind: "image", src: "/star1.png.jpeg", caption: "At the STAR Scholars Network stand" },
+      { kind: "image", src: "/star3.png.jpeg", caption: "2024 STAR Global Conference, Kathmandu University" },
+      { kind: "image", src: "/star5.png.jpeg", caption: "At the conference backdrop" },
+      { kind: "image", src: "/star2.png.jpeg", caption: "In front of the conference programme" },
+      { kind: "image", src: "/star6.png.jpeg", caption: "The STAR Scholars Network stand" },
+      { kind: "image", src: "/star4.png.jpeg", caption: "Delegates at the 2024 STAR Global Conference" },
+      { kind: "image", src: "/star8.png.jpeg", caption: "Delegates outside the venue" },
+      { kind: "image", src: "/star7.png.jpeg", caption: "With a colleague at the conference" },
+      { kind: "image", src: "/star9.png.jpeg", caption: "Kathmandu University, 2024 STAR Global Conference" },
+    ],
   },
   "unesco-peace-diplomacy": {
     title: "UNESCO Peace and Diplomacy Programmes",
     items: [
-      { kind: "image", src: null, caption: "UNESCO programme session", awaiting: "Photograph" },
+      { kind: "image", src: "/unesco.png.jpeg", caption: "Leading a session" },
+      { kind: "image", src: "/unesco3.png.jpeg", caption: "Participants in session" },
+      { kind: "image", src: "/unesco2.png.jpeg", caption: "With the host institution" },
+      { kind: "image", src: "/unesco4.png.jpeg", caption: "Outside the venue" },
     ],
   },
   "international-student-recruitment": {
@@ -55,9 +68,12 @@ export const mediaSets: Record<string, MediaSet> = {
   icd: {
     title: "ICD training",
     items: [
-      { kind: "image", src: null, caption: "A session in progress", awaiting: "Photograph" },
-      { kind: "image", src: null, caption: "Faculty workshop", awaiting: "Photograph" },
-      { kind: "image", src: null, caption: "Participants", awaiting: "Photograph" },
+      { kind: "image", src: "/icd1.png.jpeg", caption: "Leading a session" },
+      { kind: "image", src: "/icd2.png.jpeg", caption: "A session in progress" },
+      { kind: "image", src: "/icd6.png.jpeg", caption: "Presenting on the marginalization of the international student community" },
+      { kind: "image", src: "/icd4.png.jpeg", caption: "The full cohort" },
+      { kind: "image", src: "/icd5.png.jpeg", caption: "Certificates at the close of a session" },
+      { kind: "image", src: "/icd3.png.jpeg", caption: "Participants between sessions" },
     ],
   },
   award: {
@@ -77,11 +93,22 @@ export const mediaSets: Record<string, MediaSet> = {
   },
   mun: {
     title: "Model United Nations",
-    items: [{ kind: "image", src: null, caption: "MUN programmes", awaiting: "Photographs" }],
+    items: [
+      { kind: "image", src: "/mun4.png.jpeg", caption: "On stage at IAUMUN" },
+      { kind: "image", src: "/mun2.png.jpeg", caption: "Delegates and organisers, Istanbul Aydın University" },
+      { kind: "image", src: "/mun3.png.jpeg", caption: "The opening session" },
+      { kind: "image", src: "/mun5.png.jpeg", caption: "A committee in session" },
+      { kind: "image", src: "/mun1.png.jpeg", caption: "Receiving a certificate at the conference" },
+      { kind: "image", src: "/mun10.png.jpeg", caption: "A committee room" },
+      { kind: "image", src: "/mun11.png.jpeg", caption: "Committee work" },
+    ],
   },
   starlight: {
     title: "STARLIGHT",
-    items: [{ kind: "image", src: null, caption: "STARLIGHT", awaiting: "Cover or spread" }],
+    items: [
+      { kind: "image", src: "/starlight2.png.jpeg", caption: "A STARLIGHT cover" },
+      { kind: "image", src: "/starlight1.png.jpeg", caption: "With copies of the magazine" },
+    ],
   },
 };
 
