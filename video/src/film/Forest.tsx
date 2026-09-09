@@ -134,7 +134,10 @@ function Roots() {
   );
 }
 
-export const ForestBands: React.FC<{ frame: number }> = ({ frame }) => {
+export const ForestBands: React.FC<{ frame: number; lag?: number }> = ({
+  frame,
+  lag = 0,
+}) => {
   const x = TOWER.x + TOWER.w * 0.5;
   const b0 = bandTop(0);
   const b1 = bandTop(1);
@@ -184,13 +187,15 @@ export const ForestBands: React.FC<{ frame: number }> = ({ frame }) => {
         ))}
       </g>
       <Canopy y={b0 + 130} />
-      <Canopy y={b0 + 900} spread={0.4} />
+      <g transform={`translate(0 ${lag})`}>
+        <Canopy y={b0 + 900} spread={0.4} />
+      </g>
 
       {/* Band 1 — the Upright cross the clearing. Three of them, on two legs
           the whole way, and the small one carries the ledger. */}
       <g>
         {[0, 1, 2].map((i) => (
-          <g key={i} transform={`translate(${340 + i * 250} ${b1 + 720}) scale(1.9)`}>
+          <g key={i} transform={`translate(${330 + i * 255} ${b1 + 660}) scale(1.85)`}>
             <Poly
               points={[
                 [-26, 0],
@@ -211,7 +216,9 @@ export const ForestBands: React.FC<{ frame: number }> = ({ frame }) => {
             )}
           </g>
         ))}
-        <Canopy y={b1 + 20} spread={0.7} />
+          <g transform={`translate(0 ${lag})`}>
+          <Canopy y={b1 + 20} spread={0.7} />
+        </g>
       </g>
 
       {/* Band 2 — the leaving. He is on the last limb, facing out, and the

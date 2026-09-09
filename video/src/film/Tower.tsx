@@ -24,10 +24,19 @@ const Room: React.FC<{
   children?: React.ReactNode;
   seed: number;
 }> = ({ top, glow = PAPER.glassWarm, children, seed }) => {
-  const x = FX + 110;
-  const y = top + 190;
-  const w = FW - 220;
-  const h = BAND - 420;
+  /*
+   * A room fills its floor.
+   *
+   * It used to occupy 580 units of a 1000-unit band, which left four hundred
+   * units of blank facade between every floor. The camera crosses that at the
+   * same rate as everything else, so something like half the film was spent
+   * on empty wall — which read as slow pacing but was really a spacing
+   * mistake.
+   */
+  const x = FX + 70;
+  const y = top + 70;
+  const w = FW - 140;
+  const h = BAND - 150;
   return (
     <g>
       <Rect x={x} y={y} w={w} h={h} seed={seed} fill={glow} lift="deep" />
@@ -68,10 +77,12 @@ const Figure: React.FC<{
   </g>
 );
 
-export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
-  frame,
-  hasOttoPhoto,
-}) => {
+export const TowerBands: React.FC<{
+  frame: number;
+  hasOttoPhoto: boolean;
+  /** Vertical offset applied to the far layers, for multiplane depth. */
+  lag?: number;
+}> = ({ frame, hasOttoPhoto, lag = 0 }) => {
   const facadeTop = bandTop(11) - 140;
   /*
    * The tower stops where the forest starts.
@@ -98,6 +109,7 @@ export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
     <g>
       {/* Neighbouring stone trees, with the air between them the novel makes
           so much of: unfilled, unclimbable, with nothing in it at all. */}
+      <g transform={`translate(0 ${lag})`}>
       {[
         { x: -140, w: 380, top: bandTop(9) },
         { x: 1620, w: 420, top: bandTop(8) + 300 },
@@ -108,6 +120,7 @@ export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
           <Rect x={t.x} y={t.top} w={t.w} h={facadeBottom - t.top} seed={600 + i} fill={PAPER.concreteDark} lift="deep" />
         </g>
       ))}
+      </g>
 
       {/* The facade itself. It begins where the canopy stops. */}
       <Rect x={FX} y={facadeTop} w={FW} h={facadeBottom - facadeTop} seed={500} fill={PAPER.concrete} lift="deep" />
@@ -130,11 +143,11 @@ export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
 
       {/* ── Floor 4: friends. A table, and people around it who stayed. */}
       <Room top={bandTop(4)} seed={640} glow="#f0cf94">
-        <Rect x={FX + 260} y={bandTop(4) + 470} w={FW - 520} h={22} seed={641} fill={PAPER.bark} />
-        <Rect x={FX + 300} y={bandTop(4) + 492} w={26} h={110} seed={642} fill={PAPER.barkDark} />
-        <Rect x={FX + FW - 330} y={bandTop(4) + 492} w={26} h={110} seed={643} fill={PAPER.barkDark} />
+        <Rect x={FX + 260} y={bandTop(4) + 700} w={FW - 520} h={22} seed={641} fill={PAPER.bark} />
+        <Rect x={FX + 300} y={bandTop(4) + 722} w={26} h={110} seed={642} fill={PAPER.barkDark} />
+        <Rect x={FX + FW - 330} y={bandTop(4) + 722} w={26} h={110} seed={643} fill={PAPER.barkDark} />
         {[0, 1, 2, 3].map((i) => (
-          <Figure key={i} x={FX + 250 + i * 160} y={bandTop(4) + 470} h={190} seed={650 + i * 3} fill={i % 2 ? PAPER.slate : "#6a5a7d"} />
+          <Figure key={i} x={FX + 250 + i * 160} y={bandTop(4) + 700} h={280} seed={650 + i * 3} fill={i % 2 ? PAPER.slate : "#6a5a7d"} />
         ))}
       </Room>
 
@@ -147,7 +160,7 @@ export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
             <Ell
               key={i}
               cx={FX + 160 + r() * (FW - 320) + Math.sin(a) * 26}
-              cy={bandTop(5) + 250 + r() * 340 + Math.cos(a * 0.7) * 20}
+              cy={bandTop(5) + 180 + r() * 340 + Math.cos(a * 0.7) * 20}
               rx={10 + r() * 20}
               ry={10 + r() * 20}
               seed={710 + i}
@@ -161,14 +174,14 @@ export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
 
       {/* ── Floor 6: the crossing. A window with somewhere else in it. */}
       <Room top={bandTop(6)} seed={670} glow="#9fc0d8">
-        <Rect x={FX + 110} y={bandTop(6) + 470} w={FW - 220} h={220} seed={671} fill="#5b7fa6" lift="none" />
+        <Rect x={FX + 110} y={bandTop(6) + 700} w={FW - 220} h={220} seed={671} fill="#5b7fa6" lift="none" />
         {[0, 1, 2].map((i) => (
           <Poly
             key={i}
             points={[
-              [FX + 200 + i * 240, bandTop(6) + 470],
-              [FX + 320 + i * 240, bandTop(6) + 300],
-              [FX + 440 + i * 240, bandTop(6) + 470],
+              [FX + 200 + i * 240, bandTop(6) + 700],
+              [FX + 320 + i * 240, bandTop(6) + 430],
+              [FX + 440 + i * 240, bandTop(6) + 700],
             ]}
             seed={680 + i}
             fill={i === 1 ? "#e8eef3" : "#7d93ab"}
@@ -179,19 +192,20 @@ export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
       {/* ── Floor 7: Otto. A drawn room, a drawn Sultan, and one man in it
               who is a photograph from the neck up. */}
       <Room top={bandTop(7)} seed={690} glow="#e7dcc4">
-        <Otto x={FX + 300} y={bandTop(7) + 700} h={470} hasFace={hasOttoPhoto} phase={frame / 40} />
-        <Figure x={FX + 760} y={bandTop(7) + 700} h={300} seed={695} fill={PAPER.slateDark} />
+        {/* Left of the climber's line, and left of where his name lands. */}
+        <Otto x={FX + 235} y={bandTop(7) + 880} h={640} hasFace={hasOttoPhoto} phase={frame / 40} />
+        <Figure x={FX + 860} y={bandTop(7) + 880} h={300} seed={695} fill={PAPER.slateDark} />
       </Room>
 
       {/* ── Floor 8: the paper. A desk, a lamp, and pages that keep coming. */}
       <Room top={bandTop(8)} seed={700} glow="#efd9a6">
-        <Rect x={FX + 220} y={bandTop(8) + 520} w={FW - 440} h={20} seed={701} fill={PAPER.bark} />
+        <Rect x={FX + 220} y={bandTop(8) + 740} w={FW - 440} h={20} seed={701} fill={PAPER.bark} />
         <Poly
           points={[
-            [FX + 300, bandTop(8) + 520],
-            [FX + 360, bandTop(8) + 380],
-            [FX + 430, bandTop(8) + 380],
-            [FX + 380, bandTop(8) + 520],
+            [FX + 300, bandTop(8) + 740],
+            [FX + 360, bandTop(8) + 560],
+            [FX + 430, bandTop(8) + 560],
+            [FX + 380, bandTop(8) + 740],
           ]}
           seed={702}
           fill={PAPER.sun}
@@ -201,7 +215,7 @@ export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
           <Rect
             key={i}
             x={FX + 500 + (i % 3) * 90}
-            y={bandTop(8) + 470 - Math.floor(i / 3) * 26}
+            y={bandTop(8) + 690 - Math.floor(i / 3) * 26}
             w={78}
             h={56}
             seed={710 + i}
@@ -213,27 +227,27 @@ export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
 
       {/* ── Floor 9: the police. Headlights, and two of them getting out. */}
       <Room top={bandTop(9)} seed={720} glow="#232c3d">
-        <Ell cx={FX + 300} cy={bandTop(9) + 480} rx={190} ry={130} seed={721} fill="#f2e3b8" lift="none" opacity={0.5} />
-        <Ell cx={FX + 300} cy={bandTop(9) + 480} rx={80} ry={58} seed={722} fill="#fdf6df" lift="none" opacity={0.85} />
-        <Figure x={FX + 620} y={bandTop(9) + 660} h={250} seed={730} fill="#0d121c" hat />
-        <Figure x={FX + 760} y={bandTop(9) + 660} h={240} seed={734} fill="#0d121c" hat />
+        <Ell cx={FX + 300} cy={bandTop(9) + 560} rx={250} ry={175} seed={721} fill="#f2e3b8" lift="none" opacity={0.5} />
+        <Ell cx={FX + 300} cy={bandTop(9) + 560} rx={105} ry={76} seed={722} fill="#fdf6df" lift="none" opacity={0.85} />
+        <Figure x={FX + 620} y={bandTop(9) + 860} h={250} seed={730} fill="#0d121c" hat />
+        <Figure x={FX + 760} y={bandTop(9) + 860} h={240} seed={734} fill="#0d121c" hat />
       </Room>
 
       {/* ── Floor 10: the airport. A room, a chair, and a clock that moves.
               The novel gives this scene in timestamps, so the film does too:
               the hand is the only thing in the room that changes. */}
       <Room top={bandTop(10)} seed={740} glow="#cfd6df">
-        <Rect x={FX + 640} y={bandTop(10) + 480} w={120} h={140} seed={741} fill={PAPER.slateDark} />
-        <Rect x={FX + 640} y={bandTop(10) + 460} w={120} h={26} seed={742} fill="#2f3646" lift="soft" />
-        <Ell cx={FX + 330} cy={bandTop(10) + 400} rx={86} ry={86} seed={743} fill={PAPER.paperWhite} />
+        <Rect x={FX + 640} y={bandTop(10) + 640} w={120} h={140} seed={741} fill={PAPER.slateDark} />
+        <Rect x={FX + 640} y={bandTop(10) + 620} w={120} h={26} seed={742} fill="#2f3646" lift="soft" />
+        <Ell cx={FX + 330} cy={bandTop(10) + 480} rx={112} ry={112} seed={743} fill={PAPER.paperWhite} />
         {(() => {
           const a = (frame / 14) % (Math.PI * 2);
           return (
             <line
               x1={FX + 330}
-              y1={bandTop(10) + 400}
+              y1={bandTop(10) + 480}
               x2={FX + 330 + Math.sin(a) * 62}
-              y2={bandTop(10) + 400 - Math.cos(a) * 62}
+              y2={bandTop(10) + 480 - Math.cos(a) * 62}
               stroke="#1b2230"
               strokeWidth={7}
               strokeLinecap="round"
@@ -245,8 +259,8 @@ export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
       {/* ── Floor 11: the shaving. A mirror, and what comes off him falling
               through the room as paper does, which is slowly. */}
       <Room top={bandTop(11)} seed={760} glow="#dfe4ea">
-        <Rect x={FX + 250} y={bandTop(11) + 260} w={320} h={400} seed={761} fill="#aeb9c6" lift="deep" />
-        <Rect x={FX + 268} y={bandTop(11) + 278} w={284} h={364} seed={762} fill="#e9eef3" lift="none" />
+        <Rect x={FX + 250} y={bandTop(11) + 220} w={430} h={540} seed={761} fill="#aeb9c6" lift="deep" />
+        <Rect x={FX + 268} y={bandTop(11) + 238} w={392} h={500} seed={762} fill="#e9eef3" lift="none" />
         {Array.from({ length: 22 }, (_, i) => {
           const r = mulberry32(800 + i);
           const drift = ((frame * 0.9 + i * 40) % 460);
@@ -271,7 +285,7 @@ export const TowerBands: React.FC<{ frame: number; hasOttoPhoto: boolean }> = ({
           return (
             <g
               key={i}
-              transform={`translate(${FX + 300 + r() * 520} ${bandTop(11) + 250 + drift}) rotate(${drift * 1.6})`}
+              transform={`translate(${FX + 300 + r() * 520} ${bandTop(11) + 210 + drift}) rotate(${drift * 1.6})`}
             >
               {el}
             </g>

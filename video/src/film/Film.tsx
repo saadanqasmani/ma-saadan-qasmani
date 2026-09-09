@@ -6,7 +6,20 @@ import { Sultan } from "../paper/Sultan";
 import { Ransom } from "../paper/Ransom";
 import { ForestBands } from "./Forest";
 import { TowerBands } from "./Tower";
-import { DURATION, FOREST_BANDS, FPS, GROUND, ROOF, TOWER, W, WORLD_H, bandTop, camera } from "./world";
+import {
+  DURATION,
+  FOREST_BANDS,
+  FPS,
+  GROUND,
+  ROOF,
+  TOWER,
+  W,
+  WORLD_H,
+  bandTop,
+  boil,
+  camera,
+  held,
+} from "./world";
 
 /**
  * The Highest Branch, in cut paper.
@@ -20,8 +33,12 @@ import { DURATION, FOREST_BANDS, FPS, GROUND, ROOF, TOWER, W, WORLD_H, bandTop, 
 const HAS_OTTO_PHOTO = true;
 
 export const Film: React.FC = () => {
-  const frame = useCurrentFrame();
+  const live = useCurrentFrame();
+  // Everything below, the camera included, runs on twos.
+  const frame = held(live);
   const cam = camera(frame);
+  // How far the back sheets fall behind the front ones.
+  const lag = (cam.y - GROUND) * 0.085;
 
   // The visible window, in world units. Held tight for the climb, opened all
   // the way out at the end.
@@ -69,6 +86,14 @@ export const Film: React.FC = () => {
             as he climbs rather than cutting between day and night. */}
         <rect x={-2000} y={-2000} width={W + 4000} height={WORLD_H + 4000} fill="url(#air)" />
 
+        {/*
+          Multiplane.
+          Reiniger's rig held the background sheets further from the lens than
+          the puppets, so they crossed the frame more slowly. Here the far
+          layers are pushed back by moving them with a fraction of the camera,
+          which is the same effect and the reason a flat film gets depth.
+        */}
+
         {/* The gap: the one place the roof failed, and the only light in the
             film that falls rather than glows. */}
         <path
@@ -78,12 +103,17 @@ export const Film: React.FC = () => {
           opacity={0.28}
         />
 
-        <TowerBands frame={frame} hasOttoPhoto={HAS_OTTO_PHOTO} />
-        <ForestBands frame={frame} />
-        <Labels camY={cam.y} vh={vh} />
+        {/* The lag is the distance: a background sheet crosses the frame more
+            slowly than the puppets in front of it. Each scene applies it to
+            its own far layers, which is cheaper and more truthful than
+            drawing the whole set twice. */}
+        <TowerBands frame={frame} hasOttoPhoto={HAS_OTTO_PHOTO} lag={lag} />
+        <ForestBands frame={frame} lag={lag} />
+        <Labels camY={cam.y} vh={vh} frameForBoil={frame} />
 
         {/* Him, on the outside of all of it. */}
         {climbing && (
+          <Boil seed={3} frame={frame}>
           <Sultan
             seed={9}
             pose={{
@@ -101,6 +131,7 @@ export const Film: React.FC = () => {
               shaved: cam.t > 0.8 ? 1 : 0,
             }}
           />
+          </Boil>
         )}
 
         {/* The top. He arrives, and stops, and the camera keeps going. */}
@@ -150,6 +181,16 @@ export const Film: React.FC = () => {
   );
 };
 
+/** Wraps a group in the shift a piece of paper makes between exposures. */
+const Boil: React.FC<{ seed: number; frame: number; children: React.ReactNode }> = ({
+  seed,
+  frame,
+  children,
+}) => {
+  const b = boil(seed, frame);
+  return <g transform={`translate(${b.dx} ${b.dy}) rotate(${b.rot})`}>{children}</g>;
+};
+
 /**
  * The only words in the film.
  *
@@ -160,14 +201,21 @@ export const Film: React.FC = () => {
  * which is the right way round.
  */
 const LABELS: { band: number; text: string; size: number; side: -1 | 1 }[] = [
-  { band: 0, text: "Sultan", size: 120, side: -1 },
-  { band: 1, text: "Forest", size: 116, side: 1 },
-  { band: 3, text: "Concrete Jungle", size: 84, side: -1 },
+  // Named on the branch he leaves from, where he is the only one in frame.
+  // Naming him during the prayer put his name over three identical figures
+  // and read as a label for all of them.
+  { band: 0, text: "Forest", size: 118, side: 1 },
+  { band: 2, text: "Sultan", size: 124, side: -1 },
+  { band: 3, text: "Concrete Jungle", size: 70, side: -1 },
   { band: 6, text: "Learning", size: 104, side: 1 },
-  { band: 7, text: "Otto", size: 128, side: -1 },
+  { band: 7, text: "Otto", size: 128, side: 1 },
 ];
 
-const Labels: React.FC<{ camY: number; vh: number }> = ({ camY, vh }) => (
+const Labels: React.FC<{ camY: number; vh: number; frameForBoil: number }> = ({
+  camY,
+  vh,
+  frameForBoil,
+}) => (
   <>
     {LABELS.map((l) => {
       // The middle of the band, not its top edge. The camera crosses a band
@@ -181,8 +229,8 @@ const Labels: React.FC<{ camY: number; vh: number }> = ({ camY, vh }) => (
       if (d < -0.85 || d > 0.95) return null;
       const reveal = Math.max(0, Math.min(1, (d + 0.8) / 0.5));
       return (
+        <Boil key={l.band} seed={l.band * 7 + 1} frame={frameForBoil}>
         <Ransom
-          key={l.band}
           text={l.text}
           /*
            * Inside the frame, not beside the tower. The view is only about
@@ -190,7 +238,7 @@ const Labels: React.FC<{ camY: number; vh: number }> = ({ camY, vh }) => (
            * label parked at the tower's edge was off-screen entirely; the one
            * that showed was clipped in half.
            */
-          x={TOWER.x + TOWER.w / 2 + l.side * 250}
+          x={TOWER.x + TOWER.w / 2 + l.side * 190}
           y={y}
           size={l.size}
           seed={l.band * 31 + 3}
@@ -198,6 +246,7 @@ const Labels: React.FC<{ camY: number; vh: number }> = ({ camY, vh }) => (
           rotate={l.side * -2.5}
           titleCase
         />
+        </Boil>
       );
     })}
   </>

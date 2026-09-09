@@ -54,6 +54,39 @@ export const GROUND = bandTop(0) + BAND;
 /** The top of the tower, which is also the highest floor. */
 export const ROOF = bandTop(SCENES.length - 1) - 120;
 
+/**
+ * Hold every pose for two frames.
+ *
+ * This is the single biggest thing separating a cut-out film from the same
+ * artwork moved smoothly by a computer. A stop-motion animator exposes each
+ * arrangement of paper twice, so the picture changes fifteen times a second,
+ * not thirty, and the eye reads the difference immediately: motion on twos
+ * has a staccato to it that no amount of paper texture will fake.
+ *
+ * Everything derived from time goes through here, the camera included. A
+ * camera gliding on ones over puppets moving on twos is worse than either,
+ * because the mismatch is what gives it away.
+ */
+export const STEP = 2;
+export const held = (frame: number) => Math.floor(frame / STEP) * STEP;
+
+/**
+ * The boil.
+ *
+ * Paper laid under a camera never goes back down in exactly the same place.
+ * Between exposures every piece shifts a fraction of a millimetre and the
+ * whole image quietly seethes. Without it the shapes look printed on; with
+ * it they look placed by hand, which is what they are.
+ */
+export function boil(seed: number, frame: number) {
+  const t = held(frame);
+  const n = (k: number) => {
+    const x = Math.sin(seed * 12.9898 + t * 0.7 + k * 78.233) * 43758.5453;
+    return (x - Math.floor(x)) * 2 - 1;
+  };
+  return { dx: n(1) * 0.9, dy: n(2) * 0.9, rot: n(3) * 0.32 };
+}
+
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 

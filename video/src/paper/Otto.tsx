@@ -31,8 +31,8 @@ export const Otto: React.FC<{
 }> = ({ x, y, h = 520, rotate = 0, hasFace = true, phase = 0 }) => {
   // He is the tall one. Proportions are stretched a little past a real man's,
   // which is what a cut-out does with a person everyone describes as tall.
-  const headR = h * 0.11;
-  const shoulder = h * 0.245;
+  const headR = h * 0.135;
+  const shoulder = h * 0.27;
   const hip = h * 0.55;
   const halfW = h * 0.115;
 
