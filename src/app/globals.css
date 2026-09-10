@@ -388,3 +388,168 @@ body {
     transition: none;
   }
 }
+
+/* ------------------------------------------------------------------------
+ * The journal sheet
+ *
+ * A note is a page out of a pad, so it is drawn as one: stock lighter than
+ * the site's own paper, light falling unevenly across a sheet that has been
+ * folded and flattened again, grain, ruled lines, a margin, and the rings
+ * somebody's cup left on it.
+ *
+ * Everything is painted, not photographed. A paper texture is a large image
+ * on a page whose whole job is text, and it would have to arrive before the
+ * note could be read.
+ *
+ * The rules are the constraint everything else bends to. Text has to sit on
+ * them, which means one line box is exactly one rule tall and every gap
+ * between paragraphs is a whole number of them. Change a line-height here
+ * without moving the rule and the writing walks off its lines a few
+ * paragraphs down.
+ * ------------------------------------------------------------------------ */
+.notepad {
+  --rule: 30px;
+  position: relative;
+  isolation: isolate;
+  /* Stains belong on the paper, not floating past its edge and over the
+     header above it. */
+  overflow: hidden;
+  padding: 2rem 1.5rem 2.75rem;
+  color: var(--ink);
+  background-color: #fcf8ee;
+  background-image:
+    /* Folds. Broad and soft, several of them crossing: a crease drawn as a
+       hard line reads as a scratch, but a dozen faint ones read as a sheet
+       that spent time in somebody's pocket. */
+    linear-gradient(101deg, transparent 12%, rgba(21, 20, 15, 0.055) 21%, rgba(255, 255, 255, 0.75) 24%, transparent 34%),
+    linear-gradient(258deg, transparent 30%, rgba(21, 20, 15, 0.05) 41%, rgba(255, 255, 255, 0.6) 44%, transparent 55%),
+    linear-gradient(172deg, transparent 44%, rgba(21, 20, 15, 0.06) 52%, rgba(255, 255, 255, 0.7) 55%, transparent 65%),
+    linear-gradient(14deg, transparent 60%, rgba(21, 20, 15, 0.045) 69%, rgba(255, 255, 255, 0.55) 72%, transparent 82%),
+    linear-gradient(292deg, transparent 66%, rgba(21, 20, 15, 0.05) 76%, rgba(255, 255, 255, 0.6) 79%, transparent 88%),
+    radial-gradient(120% 55% at 14% 6%, rgba(255, 255, 255, 0.75), transparent 60%),
+    radial-gradient(85% 45% at 88% 30%, rgba(21, 20, 15, 0.06), transparent 66%),
+    radial-gradient(75% 40% at 24% 82%, rgba(21, 20, 15, 0.055), transparent 68%),
+    /* The edges of a sheet catch less light than its middle. */
+    radial-gradient(115% 90% at 50% 45%, transparent 55%, rgba(21, 20, 15, 0.07) 100%),
+    /* Grain. Turbulence rather than a photograph: a few hundred bytes. */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)' opacity='0.55'/%3E%3C/svg%3E");
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 0 0 1px rgba(21, 20, 15, 0.06),
+    0 26px 50px -30px rgba(21, 20, 15, 0.6),
+    0 3px 8px -4px rgba(21, 20, 15, 0.22);
+}
+
+/* Where the cup stood, and the fainter ring from where it was set down
+   first. Multiply, so they soak into the paper instead of sitting on it. */
+.notepad::before,
+.notepad::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.notepad::before {
+  top: 3.25rem;
+  right: -30px;
+  width: 118px;
+  height: 118px;
+  transform: rotate(-9deg) scaleY(0.9);
+  background: radial-gradient(
+    circle,
+    rgba(126, 72, 26, 0.05) 0 55%,
+    rgba(126, 72, 26, 0.3) 55% 63%,
+    rgba(126, 72, 26, 0.17) 63% 72%,
+    rgba(126, 72, 26, 0.06) 72% 79%,
+    transparent 80%
+  );
+}
+
+.notepad::after {
+  bottom: 12%;
+  left: -40px;
+  width: 138px;
+  height: 138px;
+  transform: rotate(15deg) scaleY(0.84);
+  background: radial-gradient(
+    circle,
+    rgba(126, 72, 26, 0.03) 0 58%,
+    rgba(126, 72, 26, 0.18) 58% 66%,
+    rgba(126, 72, 26, 0.09) 66% 74%,
+    transparent 76%
+  );
+}
+
+/* The ruled area, and the margin down its side. */
+.notepad-rules {
+  position: relative;
+  padding-inline-start: 2.25rem;
+  font-family: var(--stack-serif);
+  font-size: 1.0625rem;
+  line-height: var(--rule);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 calc(var(--rule) - 1px),
+    rgba(38, 66, 124, 0.22) calc(var(--rule) - 1px) var(--rule)
+  );
+}
+
+.notepad-rules::before {
+  content: "";
+  position: absolute;
+  inset-block: calc(var(--rule) * -1) 0;
+  inset-inline-start: 1.4rem;
+  width: 1px;
+  background: rgba(194, 67, 15, 0.4);
+}
+
+/* Whole rules, or the writing walks off its lines. */
+.notepad-rules p {
+  margin: 0;
+  line-height: var(--rule);
+}
+
+.notepad-rules p + p {
+  margin-top: var(--rule);
+}
+
+/* Urdu and Arabic open their leading up everywhere else on the site. Here
+   the rule spacing already is the leading, so it has to win. */
+.script-urdu .notepad-rules,
+.script-arabic .notepad-rules,
+.script-urdu .notepad-rules p,
+.script-arabic .notepad-rules p {
+  line-height: var(--rule);
+}
+
+@media (min-width: 640px) {
+  .notepad {
+    --rule: 34px;
+    padding: 3.25rem 3rem 4rem;
+  }
+
+  .notepad-rules {
+    padding-inline-start: 3.25rem;
+    font-size: 1.1875rem;
+  }
+
+  .notepad-rules::before {
+    inset-inline-start: 2.1rem;
+  }
+
+  .notepad::before {
+    top: 2.5rem;
+    right: -46px;
+    width: 190px;
+    height: 190px;
+  }
+
+  .notepad::after {
+    left: -58px;
+    width: 220px;
+    height: 220px;
+  }
+}

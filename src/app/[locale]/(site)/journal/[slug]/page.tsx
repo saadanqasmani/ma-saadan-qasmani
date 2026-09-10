@@ -71,7 +71,7 @@ export default async function JournalPostPage({ params }: Params) {
   const paragraphs = post.body.split(/\n{2,}/).filter((p) => p.trim());
 
   return (
-    <article className="mx-auto max-w-3xl px-6 pb-28 pt-24 sm:px-10 sm:pt-32">
+    <article className="mx-auto max-w-3xl px-4 pb-28 pt-24 sm:px-10 sm:pt-32">
       <Reveal>
         <LocaleLink
           href="/journal"
@@ -82,27 +82,32 @@ export default async function JournalPostPage({ params }: Params) {
         </LocaleLink>
       </Reveal>
 
-      <p className="eyebrow mt-10">
-        {[post.category, post.readingTime, post.date].filter(Boolean).join(" · ")}
-      </p>
+      {/* The note as what it is: a page out of a pad. The chrome above stays
+          on the site's own paper, so the sheet reads as an object lying on
+          it rather than as the page itself. */}
+      <Reveal delay={0.15}>
+        <div className="notepad mt-10">
+          <p className="eyebrow">
+            {[post.category, post.readingTime, post.date].filter(Boolean).join(" · ")}
+          </p>
 
-      <SplitText
-        text={post.title}
-        as="h1"
-        className="mt-5 font-display text-5xl leading-[0.95] sm:text-7xl"
-      />
+          <SplitText
+            text={post.title}
+            as="h1"
+            className="mt-4 font-display text-4xl leading-[1] sm:text-6xl"
+          />
 
-      {post.subtitle && (
-        <Reveal delay={0.2}>
-          <p className="mt-5 font-serif text-2xl italic text-ink-faint">{post.subtitle}</p>
-        </Reveal>
-      )}
+          {post.subtitle && (
+            <p className="mt-3 font-serif text-xl italic text-ink-faint sm:text-2xl">
+              {post.subtitle}
+            </p>
+          )}
 
-      <Reveal delay={0.3}>
-        <div dir="auto" className="mt-12 space-y-6 whitespace-pre-line border-t border-line pt-12 font-serif text-xl leading-[1.7] text-ink">
-          {paragraphs.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
+          <div dir="auto" className="notepad-rules mt-9 whitespace-pre-line text-ink">
+            {paragraphs.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </div>
         </div>
       </Reveal>
     </article>
