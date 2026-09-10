@@ -345,3 +345,21 @@ body {
 .script-urdu li[class*="leading-"] {
   line-height: 2.1;
 }
+
+/*
+ * Mixed direction, handled per paragraph.
+ *
+ * A right-to-left page will always carry some Latin: a name, an acronym, a
+ * title that has no translation, and — while a language is still being
+ * finished — a sentence that has not been translated yet. Left alone, the
+ * bidi algorithm reorders that sentence's own punctuation, so a line reads
+ * "Strategist and ,Researcher ,Writer".
+ *
+ * `plaintext` gives each block its direction from its own first strong
+ * character, so an English sentence reads as English and an Arabic one as
+ * Arabic, on the same page, with the punctuation where its author put it.
+ */
+.script-arabic :is(p, h1, h2, h3, h4, li, dd, dt, blockquote, figcaption),
+.script-urdu :is(p, h1, h2, h3, h4, li, dd, dt, blockquote, figcaption) {
+  unicode-bidi: plaintext;
+}
