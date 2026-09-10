@@ -57,10 +57,15 @@ Nothing is sent to anyone automatically. Orders and access requests wait for you
 2. In the SQL editor, run every file in `supabase/migrations` in order. They are written
    to be safely re-runnable, so running one twice is harmless.
 3. Set these environment variables in your hosting provider, then redeploy:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY` (server-side only, never expose it to the browser)
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY` (bypasses every security rule; never expose it)
    - `ADMIN_EMAILS` (comma-separated list of addresses allowed in)
+
+   None of these takes a `NEXT_PUBLIC_` prefix. Every reader of them runs on the
+   server, so nothing here needs to reach a browser, and Vercel will warn you if
+   you add the prefix anyway. The prefixed spellings are still accepted for a
+   project already configured that way.
 4. Visit `/admin/login`, enter an address from `ADMIN_EMAILS` and a password of at least eight
    characters. On first use this creates the account and signs you in; afterwards it is simply
    your login.
