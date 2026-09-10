@@ -267,3 +267,81 @@ body {
   --un-ink: #16202e;
   --un-ink-soft: #4a5768;
 }
+
+/* The novel's announcement panel.
+   A native <dialog>, so it needs its own centring and its own way in; the
+   browser gives it focus handling and Escape for free. */
+.announcement-dialog {
+  margin: auto;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  animation: announcement-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.announcement-dialog::backdrop {
+  background: rgba(21, 20, 15, 0.62);
+  backdrop-filter: blur(3px);
+  animation: announcement-veil 0.45s ease both;
+}
+
+@keyframes announcement-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes announcement-veil {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .announcement-dialog,
+  .announcement-dialog::backdrop {
+    animation: none;
+  }
+}
+
+/*
+ * Arabic and Urdu do not have upper case, and the wide letter-spacing the
+ * Latin labels are set in breaks the joins between letters — a word set in
+ * tracked-out Naskh reads as a row of unrelated shapes. So both are undone
+ * wherever the script needs them undone, without touching the Latin pages.
+ */
+.script-arabic .eyebrow,
+.script-urdu .eyebrow,
+.script-arabic .uppercase,
+.script-urdu .uppercase,
+.script-arabic [class*="tracking-"],
+.script-urdu [class*="tracking-"] {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/*
+ * Nastaliq is a steeply sloped script: its ascenders and descenders reach
+ * far past the line, and the tight leading the Latin headings are set in
+ * makes them collide. Urdu gets room instead.
+ */
+.script-urdu {
+  line-height: 2;
+}
+
+.script-urdu :is(h1, h2, h3, h4)[class*="leading-"],
+.script-urdu :is(h1, h2, h3, h4) {
+  line-height: 1.7;
+}
+
+.script-urdu p[class*="leading-"],
+.script-urdu li[class*="leading-"] {
+  line-height: 2.1;
+}

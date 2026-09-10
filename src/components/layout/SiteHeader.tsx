@@ -8,7 +8,7 @@ import { Logo } from "@/components/layout/Logo";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { MarginaliaIndicator } from "@/components/collect/MarginaliaIndicator";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
-import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
+import { LocaleChoices, LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import type { Dictionary } from "@/content/i18n/en";
 import { stripLocale } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
@@ -43,8 +43,13 @@ export function SiteHeader({
       <ScrollProgress />
       <header
         className={cn(
-          "sticky top-0 z-[65] transition-all duration-500",
-          scrolled ? "border-b border-line/70 bg-canvas/60 backdrop-blur-xl" : "border-b border-transparent"
+          "sticky top-0 transition-all duration-500",
+          // Above the phone menu while it is open, or the panel covers the
+          // only control that closes it and a reader is stuck inside it.
+          open ? "z-[85]" : "z-[65]",
+          scrolled && !open
+            ? "border-b border-line/70 bg-canvas/60 backdrop-blur-xl"
+            : "border-b border-transparent"
         )}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 sm:px-10">
@@ -90,28 +95,43 @@ export function SiteHeader({
             </LocaleLink>
           </nav>
 
-          <div className="flex items-center gap-4 lg:hidden">
+          {/* The phone's only way in.
+              It used to be two hairlines with no label, on a paper texture,
+              which readers did not recognise as a control at all: they saw
+              the homepage and had no idea there was anything else. So it
+              says what it is, sits inside a border, and is a full 44px
+              target. */}
+          <div className="flex items-center gap-3 lg:hidden">
             <MarginaliaIndicator />
-            <LocaleSwitcher />
             <button
-            type="button"
-            aria-label={open ? chrome.closeMenu : chrome.openMenu}
-            aria-expanded={open}
-            className="relative z-[80] flex h-9 w-9 flex-col items-center justify-center gap-[5px] lg:hidden"
-            onClick={() => setOpen((v) => !v)}
-          >
-            <span
-              className={cn(
-                "h-px w-6 bg-ink transition-transform duration-300",
-                open && "translate-y-[3px] rotate-45"
-              )}
-            />
-            <span
-              className={cn(
-                "h-px w-6 bg-ink transition-transform duration-300",
-                open && "-translate-y-[3px] -rotate-45"
-              )}
-            />
+              type="button"
+              aria-label={open ? chrome.closeMenu : chrome.openMenu}
+              aria-expanded={open}
+              aria-controls="phone-menu"
+              className="relative z-[80] flex h-11 items-center gap-2.5 border border-ink px-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink"
+              onClick={() => setOpen((v) => !v)}
+            >
+              <span className="flex h-3.5 w-5 flex-col justify-between">
+                <span
+                  className={cn(
+                    "block h-[1.5px] w-full bg-ink transition-transform duration-300",
+                    open && "translate-y-[6px] rotate-45"
+                  )}
+                />
+                <span
+                  className={cn(
+                    "block h-[1.5px] w-full bg-ink transition-opacity duration-200",
+                    open && "opacity-0"
+                  )}
+                />
+                <span
+                  className={cn(
+                    "block h-[1.5px] w-full bg-ink transition-transform duration-300",
+                    open && "-translate-y-[6px] -rotate-45"
+                  )}
+                />
+              </span>
+              {open ? chrome.closeMenu : chrome.menu}
             </button>
           </div>
         </div>
@@ -124,25 +144,66 @@ export function SiteHeader({
             animate={{ clipPath: "inset(0 0 0% 0)" }}
             exit={{ clipPath: "inset(0 0 100% 0)" }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-[75] bg-canvas lg:hidden"
+            id="phone-menu"
+            className="fixed inset-0 z-[75] overflow-y-auto bg-canvas lg:hidden"
           >
-            <nav className="flex h-full flex-col justify-center gap-1 px-8">
-              {[...navLinks, novelLink].map((link, i) => (
-                <motion.div
-                  key={link.href}
-                  initial={{ y: 30, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.15 + i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <LocaleLink
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="block py-3 font-display text-4xl text-ink"
+            <nav className="flex min-h-full flex-col px-6 pb-12 pt-28">
+              <p className="eyebrow">{chrome.browse}</p>
+
+              <ul className="mt-4 border-t border-line">
+                {navLinks.map((link, i) => (
+                  <motion.li
+                    key={link.href}
+                    initial={{ y: 24, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.12 + i * 0.05, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                    className="border-b border-line"
                   >
-                    {nav[link.key]}
-                  </LocaleLink>
-                </motion.div>
-              ))}
+                    <LocaleLink
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      aria-current={here === link.href ? "page" : undefined}
+                      className="flex items-baseline justify-between gap-4 py-5 font-display text-[2rem] leading-tight text-ink"
+                    >
+                      <span>{nav[link.key]}</span>
+                      <span
+                        className={cn(
+                          "font-sans text-[10px] tracking-[0.2em]",
+                          here === link.href ? "text-ember" : "text-ink-faint"
+                        )}
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </LocaleLink>
+                  </motion.li>
+                ))}
+              </ul>
+
+              <motion.div
+                initial={{ y: 24, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.42, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-8"
+              >
+                <LocaleLink
+                  href={novelLink.href}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between gap-4 bg-ember px-5 py-4 text-canvas-light"
+                >
+                  <span className="font-display text-2xl leading-tight">{nav.novelTitle}</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em]">{nav.novel}</span>
+                </LocaleLink>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.45 }}
+                className="mt-auto pt-12"
+              >
+                <p className="eyebrow mb-3">{chrome.language}</p>
+                <LocaleChoices onNavigate={() => setOpen(false)} />
+              </motion.div>
             </nav>
           </motion.div>
         )}

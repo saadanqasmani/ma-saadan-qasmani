@@ -28,11 +28,38 @@ export const en = {
 
   header: {
     home: "Saadan Qasmani — home",
+    menu: "Menu",
     openMenu: "Open menu",
     closeMenu: "Close menu",
     skipToContent: "Skip to content",
     language: "Language",
     chooseLanguage: "Choose a language",
+    /** The heading above the links inside the phone menu. */
+    browse: "Browse",
+  },
+
+  /** The panel that opens once, on a first visit, about the novel. */
+  announcement: {
+    eyebrow: "Out 19 October 2026",
+    heading: "The Highest Branch",
+    body: "A boy crosses the pass at seventeen, leaving a forest he knows by its seasons for a country that measures time in semesters.",
+    ask: "Leave an address and you will hear the day it is out. Nothing else.",
+    placeholder: "you@example.com",
+    submit: "Tell me when it is out",
+    sending: "Sending",
+    done: "You will hear from me on the day.",
+    readMore: "Read about the novel",
+    dismiss: "Close",
+    later: "Not now",
+  },
+
+  newsletter: {
+    emailLabel: "Email address",
+    placeholder: "your@email.com",
+    subscribe: "Subscribe",
+    sending: "Sending",
+    done: "You have entered the correspondence.",
+    failed: "Something went wrong. Please try again.",
   },
 
   footer: {
@@ -57,6 +84,6 @@ export const en = {
     hideOriginal: "Hide the English original",
     originalHeading: "The English original",
   },
-} as const;
+};
 
 export type Dictionary = typeof en;

@@ -3,6 +3,8 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { CollectionProvider } from "@/components/collect/CollectionProvider";
 import { MarginaliaPanel } from "@/components/collect/MarginaliaPanel";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { BookAnnouncement } from "@/components/book/BookAnnouncement";
+import { getBook } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import { isLocale, defaultLocale } from "@/lib/i18n/config";
 
@@ -16,7 +18,7 @@ export default async function SiteLayout({
 }) {
   const { locale: raw } = await params;
   const locale = isLocale(raw) ? raw : defaultLocale;
-  const dict = await getDictionary(locale);
+  const [dict, book] = await Promise.all([getDictionary(locale), getBook()]);
 
   return (
     <LocaleProvider locale={locale}>
@@ -32,8 +34,13 @@ export default async function SiteLayout({
           <main id="main-content" className="flex-1">
             {children}
           </main>
-          <SiteFooter nav={dict.nav} footer={dict.footer} />
+          <SiteFooter nav={dict.nav} footer={dict.footer} newsletter={dict.newsletter} />
           <MarginaliaPanel />
+          <BookAnnouncement
+            copy={dict.announcement}
+            newsletter={dict.newsletter}
+            cover={book.coverImage ?? null}
+          />
         </CollectionProvider>
       </div>
     </LocaleProvider>

@@ -1,14 +1,18 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
+  animate,
   motion,
+  useInView,
+  useMotionValue,
   useReducedMotion,
   useScroll,
   useTransform,
   type MotionValue,
 } from "motion/react";
 import { Mark } from "@/components/collect/Mark";
+import { useIsDesktop } from "@/lib/hooks/useMediaQuery";
 import { FORMS, GROUND, leaves, morphPath, windows } from "@/lib/art/skyline";
 
 /**
@@ -86,23 +90,56 @@ function Form({
   );
 }
 
+/**
+ * The forest becoming a city, driven two different ways.
+ *
+ * On a wide screen the section pins and the morph is tied to the scrollbar,
+ * which is the whole idea: you turn the forest into the city yourself, at
+ * your own speed.
+ *
+ * On a phone that reads as the page having ended. The frame stops moving,
+ * the art is small enough that the change in it is easy to miss, and a
+ * thumb-flick gives none of the fine control the effect was built for — so
+ * people stop scrolling and leave, believing they have reached the bottom.
+ * There the section is an ordinary one that scrolls past like any other, and
+ * the morph plays itself once when it comes into view.
+ */
 export function SeasonsSemesters() {
   const reduced = useReducedMotion();
+  const isDesktop = useIsDesktop();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
   });
 
+  // The phone's version of the same value: time rather than scroll position.
+  const played = useMotionValue(0);
+  const inView = useInView(ref, { once: true, amount: 0.4 });
+
+  useEffect(() => {
+    if (isDesktop || !inView) return;
+    if (reduced) {
+      played.set(1);
+      return;
+    }
+    const run = animate(played, 1, { duration: 2.6, ease: [0.4, 0, 0.2, 1] });
+    return () => run.stop();
+  }, [isDesktop, inView, reduced, played]);
+
+  const progress = isDesktop ? scrollYProgress : played;
 
   // Both statements stay readable throughout; emphasis moves between them
-  // rather than crossfading two different texts over each other.
+  // rather than crossfading two different texts over each other. Only where
+  // the reader controls the progress — dimming a paragraph on a phone just
+  // makes it harder to read, with nothing gained.
   const seasonsTextOpacity = useTransform(scrollYProgress, [0, 0.34, 0.52], [1, 1, 0.28]);
   const semestersTextOpacity = useTransform(scrollYProgress, [0.3, 0.52], [0.28, 1]);
+  const dim = isDesktop && !reduced;
 
   return (
-    <section ref={ref} className="relative h-[280vh]">
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
+    <section ref={ref} className="relative py-20 sm:py-24 lg:h-[220vh] lg:py-0">
+      <div className="lg:sticky lg:top-0 lg:flex lg:h-screen lg:items-center lg:overflow-hidden">
         <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-6 sm:px-10 lg:grid-cols-2">
           {/* Text side */}
           <div className="relative order-2 lg:order-1">
@@ -116,14 +153,14 @@ export function SeasonsSemesters() {
 
             <div className="mt-8 max-w-md space-y-5">
               <motion.p
-                style={reduced ? undefined : { opacity: seasonsTextOpacity }}
+                style={dim ? { opacity: seasonsTextOpacity } : undefined}
                 className="font-serif text-lg leading-relaxed text-ink-soft sm:text-xl"
               >
                 <span className="text-verdant">A forest he knows by its seasons</span> — time
                 that returns, circles, and forgives. Growth measured in rings, not results.
               </motion.p>
               <motion.p
-                style={reduced ? undefined : { opacity: semestersTextOpacity }}
+                style={dim ? { opacity: semestersTextOpacity } : undefined}
                 className="font-serif text-lg leading-relaxed text-ink-soft sm:text-xl"
               >
                 <span className="text-azure">A country that measures time in semesters</span> —
@@ -148,7 +185,7 @@ export function SeasonsSemesters() {
               {/* A forest that becomes a city — the arc of the novel,
                   and the distance between the two clocks beside it. */}
               {FORMS.map((_, i) => (
-                <Form key={i} progress={scrollYProgress} index={i} reduced={reduced} />
+                <Form key={i} progress={progress} index={i} reduced={reduced} />
               ))}
 
               <motion.line
@@ -161,6 +198,26 @@ export function SeasonsSemesters() {
                 opacity={0.45}
               />
             </svg>
+          </div>
+        </div>
+
+        {/* Proof that the page is still moving.
+            While the section is pinned the scrollbar is the only thing that
+            changes, and on a tall screen it is easy to miss. This fills as
+            the morph runs, so a reader can see that scrolling is doing
+            something and that there is more underneath. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-8 hidden justify-center lg:flex">
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] uppercase tracking-[0.22em] text-ink-faint">
+              Forest
+            </span>
+            <span className="relative block h-px w-40 bg-[var(--line-strong)]">
+              <motion.span
+                className="absolute inset-y-0 start-0 block w-full bg-ember"
+                style={{ scaleX: progress, transformOrigin: "left" }}
+              />
+            </span>
+            <span className="text-[10px] uppercase tracking-[0.22em] text-ink-faint">City</span>
           </div>
         </div>
       </div>

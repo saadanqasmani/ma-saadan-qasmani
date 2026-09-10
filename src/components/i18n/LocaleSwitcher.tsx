@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { locales, localeMeta, localePath, stripLocale, type Locale } from "@/lib/i18n/config";
+import { locales, localeMeta, localePath, stripLocale } from "@/lib/i18n/config";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/utils";
 
@@ -44,9 +44,6 @@ export function LocaleSwitcher({ tone = "dark" }: { tone?: "dark" | "light" }) {
       document.removeEventListener("keydown", onKey);
     };
   }, [open]);
-
-  // The page moved: whatever was open belongs to the page that is gone.
-  useEffect(() => setOpen(false), [pathname]);
 
   const label = tone === "light" ? "text-canvas-light/80 hover:text-canvas-light" : "text-ink-soft hover:text-ink";
 
@@ -115,4 +112,39 @@ function Tick() {
   );
 }
 
-export type { Locale };
+/**
+ * The same choice, laid out flat.
+ *
+ * Inside the phone menu there is room to show every language at once, and a
+ * dropdown inside a panel that is itself a dropdown is one layer too many.
+ */
+export function LocaleChoices({ onNavigate }: { onNavigate?: () => void }) {
+  const current = useLocale();
+  const pathname = usePathname();
+  const here = stripLocale(pathname || "/");
+
+  return (
+    <ul className="flex flex-wrap gap-2">
+      {locales.map((locale) => (
+        <li key={locale}>
+          <Link
+            href={localePath(here, locale)}
+            hrefLang={localeMeta[locale].tag}
+            lang={localeMeta[locale].tag}
+            dir={localeMeta[locale].dir}
+            onClick={onNavigate}
+            aria-current={locale === current ? "true" : undefined}
+            className={cn(
+              "block border px-3.5 py-2 text-sm transition-colors",
+              locale === current
+                ? "border-ink bg-ink text-canvas-light"
+                : "border-line text-ink-soft hover:border-ink hover:text-ink"
+            )}
+          >
+            {localeMeta[locale].label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}

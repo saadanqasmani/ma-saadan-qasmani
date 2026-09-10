@@ -7,9 +7,11 @@ import type { Dictionary } from "@/content/i18n/en";
 export function SiteFooter({
   nav,
   footer,
+  newsletter,
 }: {
   nav: Dictionary["nav"];
   footer: Dictionary["footer"];
+  newsletter: Dictionary["newsletter"];
 }) {
   return (
     <footer className="relative overflow-hidden border-t border-line bg-canvas-deep">
@@ -43,7 +45,7 @@ export function SiteFooter({
               {footer.lettersBodyAfter}
             </p>
             <div className="mt-7 max-w-md">
-              <NewsletterForm />
+              <NewsletterForm copy={newsletter} />
             </div>
           </div>
 
