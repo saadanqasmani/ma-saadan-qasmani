@@ -52,7 +52,7 @@ export async function subscribe(
 
   if (!firstTime || !mailIsConfigured()) return { ok: true, welcomed: false };
 
-  const letter = welcomeEmail(locale);
+  const letter = await welcomeEmail(locale);
   const sent = await sendMail({
     to: address,
     subject: letter.subject,

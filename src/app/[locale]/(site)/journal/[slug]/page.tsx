@@ -99,7 +99,7 @@ export default async function JournalPostPage({ params }: Params) {
       )}
 
       <Reveal delay={0.3}>
-        <div dir="auto" className="mt-12 space-y-6 border-t border-line pt-12 font-serif text-xl leading-[1.7] text-ink">
+        <div dir="auto" className="mt-12 space-y-6 whitespace-pre-line border-t border-line pt-12 font-serif text-xl leading-[1.7] text-ink">
           {paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}
