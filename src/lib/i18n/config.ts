@@ -11,7 +11,12 @@
  * language they asked for in the URL is the language they get.
  */
 
-export const locales = ["en", "ar", "ru", "ur", "de", "tr"] as const;
+/**
+ * The order they are offered in, which is the order they appear in the
+ * switcher: English first as the source, then the languages of the places
+ * the work actually happens.
+ */
+export const locales = ["en", "tr", "de", "ru", "ar", "ur"] as const;
 
 export type Locale = (typeof locales)[number];
 
@@ -29,15 +34,26 @@ type LocaleMeta = {
   dir: "ltr" | "rtl";
   /** BCP 47 tag for <html lang> and hreflang. */
   tag: string;
+  /**
+   * A flag shown beside the language in the switcher.
+   *
+   * Flags name countries, not languages, so every one of these is a
+   * shorthand rather than a fact: English is not only Britain's, German is
+   * spoken in Austria and Switzerland, and Arabic belongs to more than
+   * twenty countries at once. They are here because a reader scanning a
+   * list finds a flag faster than a word in a script they cannot read.
+   * Changing one is a single character.
+   */
+  flag: string;
 };
 
 export const localeMeta: Record<Locale, LocaleMeta> = {
-  en: { label: "English", english: "English", dir: "ltr", tag: "en" },
-  ar: { label: "العربية", english: "Arabic", dir: "rtl", tag: "ar" },
-  ru: { label: "Русский", english: "Russian", dir: "ltr", tag: "ru" },
-  ur: { label: "اردو", english: "Urdu", dir: "rtl", tag: "ur" },
-  de: { label: "Deutsch", english: "German", dir: "ltr", tag: "de" },
-  tr: { label: "Türkçe", english: "Turkish", dir: "ltr", tag: "tr" },
+  en: { label: "English", english: "English", dir: "ltr", tag: "en", flag: "🇬🇧" },
+  tr: { label: "Türkçe", english: "Turkish", dir: "ltr", tag: "tr", flag: "🇹🇷" },
+  de: { label: "Deutsch", english: "German", dir: "ltr", tag: "de", flag: "🇩🇪" },
+  ru: { label: "Русский", english: "Russian", dir: "ltr", tag: "ru", flag: "🇷🇺" },
+  ar: { label: "العربية", english: "Arabic", dir: "rtl", tag: "ar", flag: "🇸🇦" },
+  ur: { label: "اردو", english: "Urdu", dir: "rtl", tag: "ur", flag: "🇵🇰" },
 };
 
 export function isLocale(value: string | undefined): value is Locale {

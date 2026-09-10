@@ -74,15 +74,26 @@ export function LocaleSwitcher({ tone = "dark" }: { tone?: "dark" | "light" }) {
               <Link
                 href={localePath(here, locale)}
                 hrefLang={localeMeta[locale].tag}
-                lang={localeMeta[locale].tag}
-                dir={localeMeta[locale].dir}
                 onClick={() => setOpen(false)}
                 className={cn(
                   "flex items-center justify-between gap-4 px-4 py-2 text-sm transition-colors hover:bg-canvas-deep",
                   locale === current ? "text-ink" : "text-ink-soft"
                 )}
               >
-                <span>{localeMeta[locale].label}</span>
+                <span className="flex items-center gap-2.5">
+                  {/* Decorative. A screen reader should say the language,
+                      not the name of a country it is only shorthand for. */}
+                  <span aria-hidden className="text-base leading-none">
+                    {localeMeta[locale].flag}
+                  </span>
+                  {/* Only the name changes direction. Flipping the whole row
+                      sends the flag to the far side and the list goes
+                      ragged, since the list itself is in the page's
+                      language, not in the one it is offering. */}
+                  <span lang={localeMeta[locale].tag} dir={localeMeta[locale].dir}>
+                    {localeMeta[locale].label}
+                  </span>
+                </span>
                 {locale === current && <Tick />}
               </Link>
             </li>
@@ -130,18 +141,21 @@ export function LocaleChoices({ onNavigate }: { onNavigate?: () => void }) {
           <Link
             href={localePath(here, locale)}
             hrefLang={localeMeta[locale].tag}
-            lang={localeMeta[locale].tag}
-            dir={localeMeta[locale].dir}
             onClick={onNavigate}
             aria-current={locale === current ? "true" : undefined}
             className={cn(
-              "block border px-3.5 py-2 text-sm transition-colors",
+              "flex items-center gap-2 border px-3.5 py-2 text-sm transition-colors",
               locale === current
                 ? "border-ink bg-ink text-canvas-light"
                 : "border-line text-ink-soft hover:border-ink hover:text-ink"
             )}
           >
-            {localeMeta[locale].label}
+            <span aria-hidden className="text-base leading-none">
+              {localeMeta[locale].flag}
+            </span>
+            <span lang={localeMeta[locale].tag} dir={localeMeta[locale].dir}>
+              {localeMeta[locale].label}
+            </span>
           </Link>
         </li>
       ))}
