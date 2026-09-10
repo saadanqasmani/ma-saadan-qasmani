@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import {
   subscribeAndUnlock,
   unlockWithCode,
@@ -24,6 +25,7 @@ export function JournalGate({ copy }: { copy: Dictionary["journal"]["gate"] }) {
     initial
   );
   const [codeState, codeAction, checking] = useActionState(unlockWithCode, initial);
+  const locale = useLocale();
 
   return (
     <div className="max-w-3xl border-t border-line pt-10">
@@ -34,6 +36,7 @@ export function JournalGate({ copy }: { copy: Dictionary["journal"]["gate"] }) {
       <div className="mt-10 grid gap-10 sm:grid-cols-2">
         {/* Subscribe, and go straight in. */}
         <form action={subscribeAction}>
+          <input type="hidden" name="locale" value={locale} />
           <label
             htmlFor="gate-email"
             className="block text-xs uppercase tracking-[0.16em] text-ink-faint"

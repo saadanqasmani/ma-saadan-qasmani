@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import type { Dictionary } from "@/content/i18n/en";
 import { en } from "@/content/i18n/en";
 
@@ -15,6 +16,8 @@ export function NewsletterForm({
   // Unique per instance: the footer and the pop-up can both be mounted, and
   // two inputs sharing an id would send every label to the first one.
   const id = useId();
+  // Sent along so the welcome letter arrives in the language on screen.
+  const locale = useLocale();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +31,7 @@ export function NewsletterForm({
       const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, locale }),
       });
       const data = await res.json();
       if (!res.ok) {

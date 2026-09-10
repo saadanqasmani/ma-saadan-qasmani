@@ -2,13 +2,14 @@
 
 import { cookies } from "next/headers";
 import { z } from "zod";
+import { defaultLocale, isLocale } from "@/lib/i18n/config";
 import {
   JOURNAL_COOKIE,
   JOURNAL_COOKIE_MAX_AGE,
   codeIsCorrect,
   journalToken,
 } from "@/lib/journalGate";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { subscribe } from "@/lib/subscribe";
 
 /**
  * What went wrong, as a name rather than a sentence.
@@ -62,17 +63,14 @@ export async function subscribeAndUnlock(
     return { error: "badEmail" };
   }
 
-  const supabase = getSupabaseServerClient();
-  if (!supabase) {
-    return { error: "notConnected" };
-  }
+  // The form carries it, so the welcome letter goes out in the language the
+  // reader was reading rather than in mine.
+  const sent = String(formData.get("locale") ?? "");
+  const locale = isLocale(sent) ? sent : defaultLocale;
 
-  const { error } = await supabase
-    .from("subscribers")
-    .upsert({ email, status: "active" }, { onConflict: "email" });
-
-  if (error) {
-    return { error: "failed" };
+  const result = await subscribe(email, locale);
+  if (!result.ok) {
+    return { error: result.reason === "not-connected" ? "notConnected" : "failed" };
   }
 
   await letThemIn();
