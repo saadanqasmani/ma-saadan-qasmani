@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { SplitText } from "@/components/ui/SplitText";
 import { Counter } from "@/components/ui/Counter";
@@ -13,6 +12,10 @@ import { Figure } from "@/components/media/Figure";
 import { SocialRow } from "@/components/layout/SocialRow";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { personJsonLd, websiteJsonLd } from "@/lib/seo/jsonLd";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
+import { getContent } from "@/lib/i18n/content";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { defaultLocale, isLocale } from "@/lib/i18n/config";
 
 const AREA_TONE: Record<string, string> = {
   "Political economy of internationalization": "text-azure",
@@ -24,12 +27,27 @@ const AREA_TONE: Record<string, string> = {
   "Displaced scholars, STEM access": "text-verdant",
 };
 
-export default async function Home() {
-  const [person, highestBranch, researchItems] = await Promise.all([
+export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+
+  const [person, highestBranch, researchItems, dict, content] = await Promise.all([
     getPerson(),
     getBook(),
     getResearchItems(),
+    getDictionary(locale),
+    getContent(locale),
   ]);
+
+  const t = dict.home;
+  const said = content.person(person);
+  const book = content.book(highestBranch);
+  // The area tone is keyed by the English name, so it is looked up on the
+  // record as written rather than on its translation.
+  const papers = content.research(researchItems).map((item, i) => ({
+    ...item,
+    tone: AREA_TONE[researchItems[i].area] ?? "text-ink-faint",
+  }));
 
   return (
     <>
@@ -44,7 +62,7 @@ export default async function Home() {
         <div className="pointer-events-none relative mx-auto flex min-h-[94vh] max-w-7xl items-center px-6 sm:px-10">
           <div className="pointer-events-auto relative z-10 w-full py-28 lg:max-w-[52%]">
             <p className="eyebrow flex items-center gap-1">
-              <span className="inline-block h-px w-8 bg-ember" /> Istanbul
+              <span className="inline-block h-px w-8 bg-ember" /> {t.location}
               <Mark id="istanbul" className="-my-2 ml-1" />
             </p>
 
@@ -55,7 +73,7 @@ export default async function Home() {
             </h1>
 
             <SplitText
-              text={person.positioning}
+              text={said.positioning}
               as="p"
               delay={0.55}
               className="mt-8 font-sans text-sm uppercase tracking-[0.2em] text-ink-soft"
@@ -65,18 +83,18 @@ export default async function Home() {
             <Reveal delay={1}>
               <p className="mt-10 hidden items-center gap-3 text-sm text-ink-faint lg:flex">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-ember" />
-                Hover the marked junctions to trace the work
+                {t.hoverHint}
               </p>
             </Reveal>
           </div>
         </div>
 
-        <div className="absolute bottom-8 left-6 z-10 sm:left-10">
+        <div className="absolute bottom-8 start-6 z-10 sm:start-10">
           <Reveal delay={1.3}>
             <div className="flex items-center gap-3">
               <span className="h-px w-10 bg-ink-faint" />
               <span className="text-[10px] uppercase tracking-[0.25em] text-ink-faint">
-                Scroll
+                {t.scroll}
               </span>
             </div>
           </Reveal>
@@ -88,7 +106,7 @@ export default async function Home() {
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <div className="grid gap-12 lg:grid-cols-[0.32fr_1fr]">
             <Reveal>
-              <p className="eyebrow lg:sticky lg:top-32">The Author</p>
+              <p className="eyebrow lg:sticky lg:top-32">{t.author}</p>
             </Reveal>
             <div className="grid gap-10 sm:grid-cols-[minmax(0,15rem)_1fr] sm:gap-12">
               <div className="space-y-5">
@@ -96,7 +114,7 @@ export default async function Home() {
                   src={person.portrait}
                   bare
                   ratio="3/4"
-                  label="Author portrait"
+                  label={t.portraitLabel}
                   spec="Portrait orientation · /public/portrait.png"
                   className="w-full max-w-[15rem]"
                 />
@@ -105,14 +123,14 @@ export default async function Home() {
 
               <div>
                 <SplitText
-                  text={person.bio}
+                  text={said.bio}
                   as="p"
                   stagger={0.012}
                   className="max-w-2xl text-lg leading-relaxed text-ink-soft"
                 />
                 <Reveal delay={0.2}>
                   <div className="mt-10">
-                    <MagneticLink href="/about">Read the biography</MagneticLink>
+                    <MagneticLink href="/about">{t.readBiography}</MagneticLink>
                   </div>
                 </Reveal>
               </div>
@@ -122,7 +140,7 @@ export default async function Home() {
       </section>
 
       {/* ─────────── Act III — Seasons / Semesters ─────────── */}
-      <SeasonsSemesters />
+      <SeasonsSemesters copy={dict.seasons} />
 
       {/* ─────────── Act IV — The reach ─────────── */}
       <section className="border-t border-line bg-canvas-light py-24 sm:py-32">
@@ -130,35 +148,33 @@ export default async function Home() {
           <div className="grid items-center gap-16 lg:grid-cols-[1fr_0.9fr]">
             <div>
               <Reveal>
-                <p className="eyebrow">The Practice</p>
+                <p className="eyebrow">{t.practice}</p>
               </Reveal>
               <SplitText
-                text="Training delivered where the questions are hardest."
+                text={t.practiceHeading}
                 as="h2"
                 className="mt-5 max-w-xl font-display text-4xl leading-[1.05] sm:text-6xl"
               />
               <Reveal delay={0.15}>
                 <p className="mt-7 max-w-lg text-base leading-relaxed text-ink-soft">
-                  {person.practitionerNote}
+                  {said.practitionerNote}
                 </p>
               </Reveal>
 
               <dl className="mt-12 grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3">
                 {[
-                  { n: 12, suffix: "", label: "Countries", tone: "text-azure" },
-                  { n: 70, suffix: "+", label: "Nationalities", tone: "text-ember" },
-                  { n: 9, suffix: "", label: "Research papers in progress", tone: "text-verdant" },
+                  { n: 12, suffix: "", label: t.countries, tone: "text-azure", mark: false },
+                  { n: 70, suffix: "+", label: t.nationalities, tone: "text-ember", mark: true },
+                  { n: 9, suffix: "", label: t.papersInProgress, tone: "text-verdant", mark: false },
                 ].map((stat, i) => (
-                  <Reveal key={stat.label} delay={i * 0.08}>
+                  <Reveal key={stat.tone} delay={i * 0.08}>
                     <div>
                       <dt className={`font-display text-5xl sm:text-6xl ${stat.tone}`}>
                         <Counter to={stat.n} suffix={stat.suffix} />
                       </dt>
                       <dd className="mt-2 flex items-center gap-1 text-xs uppercase tracking-[0.14em] text-ink-faint">
                         {stat.label}
-                        {stat.label === "Nationalities" && (
-                          <Mark id="nationalities" className="-my-2" />
-                        )}
+                        {stat.mark && <Mark id="nationalities" className="-my-2" />}
                       </dd>
                     </div>
                   </Reveal>
@@ -179,30 +195,30 @@ export default async function Home() {
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
               <Reveal>
-                <p className="eyebrow">The Archive</p>
+                <p className="eyebrow">{t.archive}</p>
               </Reveal>
               <SplitText
-                text="Research in progress"
+                text={t.researchInProgress}
                 as="h2"
                 className="mt-5 font-display text-4xl leading-none sm:text-6xl"
               />
             </div>
             <Reveal delay={0.1}>
-              <Link
+              <LocaleLink
                 href="/research"
                 className="group inline-flex items-center gap-2 text-sm uppercase tracking-[0.14em] text-ink-soft transition-colors hover:text-ink"
               >
-                All research
+                {t.allResearch}
                 <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-              </Link>
+              </LocaleLink>
             </Reveal>
           </div>
 
           <ul className="mt-14 border-t border-line">
-            {researchItems.slice(0, 5).map((item, i) => (
+            {papers.slice(0, 5).map((item, i) => (
               <Reveal key={item.slug} delay={i * 0.05}>
                 <li>
-                  <Link
+                  <LocaleLink
                     href={`/research#${item.slug}`}
                     className="group grid items-baseline gap-2 border-b border-line py-7 transition-colors hover:bg-canvas-deep/40 sm:grid-cols-[auto_1fr_auto] sm:gap-8"
                   >
@@ -213,11 +229,11 @@ export default async function Home() {
                       {item.title}
                     </span>
                     <span
-                      className={`text-xs uppercase tracking-[0.12em] ${AREA_TONE[item.area] ?? "text-ink-faint"}`}
+                      className={`text-xs uppercase tracking-[0.12em] ${item.tone}`}
                     >
                       {item.area}
                     </span>
-                  </Link>
+                  </LocaleLink>
                 </li>
               </Reveal>
             ))}
@@ -233,7 +249,7 @@ export default async function Home() {
           <div className="max-w-2xl">
             <Reveal>
               <p className="eyebrow">
-                <span className="inline-block h-px w-8 translate-y-[-4px] bg-ember" /> The Novel
+                <span className="inline-block h-px w-8 translate-y-[-4px] bg-ember" /> {t.novelEyebrow}
               </p>
             </Reveal>
             <SplitText
@@ -243,15 +259,15 @@ export default async function Home() {
             />
             <Reveal delay={0.25}>
               <p className="mt-8 max-w-xl font-serif text-xl leading-relaxed text-ink-soft sm:text-2xl">
-                {highestBranch.synopsis}
+                {book.synopsis}
               </p>
             </Reveal>
             <Reveal delay={0.4}>
               <div className="mt-10 flex flex-wrap items-center gap-5">
-                <MagneticLink href="/the-highest-branch">Enter the novel</MagneticLink>
+                <MagneticLink href="/the-highest-branch">{t.enterTheNovel}</MagneticLink>
                 <span className="text-xs uppercase tracking-[0.14em] text-ink-faint">
-                  {highestBranch.chapterCount} chapters ·{" "}
-                  <Counter to={highestBranch.wordCount} format /> words
+                  {highestBranch.chapterCount} {t.chapters} ·{" "}
+                  <Counter to={highestBranch.wordCount} format /> {t.words}
                 </span>
               </div>
             </Reveal>

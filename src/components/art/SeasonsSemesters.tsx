@@ -12,6 +12,7 @@ import {
   type MotionValue,
 } from "motion/react";
 import { Mark } from "@/components/collect/Mark";
+import type { Dictionary } from "@/content/i18n/en";
 import { useIsDesktop } from "@/lib/hooks/useMediaQuery";
 import { FORMS, GROUND, leaves, morphPath, windows } from "@/lib/art/skyline";
 
@@ -104,7 +105,7 @@ function Form({
  * There the section is an ordinary one that scrolls past like any other, and
  * the morph plays itself once when it comes into view.
  */
-export function SeasonsSemesters() {
+export function SeasonsSemesters({ copy }: { copy: Dictionary["seasons"] }) {
   const reduced = useReducedMotion();
   const isDesktop = useIsDesktop();
   const ref = useRef<HTMLDivElement>(null);
@@ -144,11 +145,11 @@ export function SeasonsSemesters() {
           {/* Text side */}
           <div className="relative order-2 lg:order-1">
             <p className="eyebrow flex items-center gap-1">
-              The Novel · The Thesis
+              {copy.eyebrow}
               <Mark id="seasons" className="-my-2" />
             </p>
             <h2 className="mt-5 max-w-lg font-display text-4xl leading-[1.05] text-ink sm:text-6xl">
-              Two ways of measuring a life.
+              {copy.heading}
             </h2>
 
             <div className="mt-8 max-w-md space-y-5">
@@ -156,21 +157,18 @@ export function SeasonsSemesters() {
                 style={dim ? { opacity: seasonsTextOpacity } : undefined}
                 className="font-serif text-lg leading-relaxed text-ink-soft sm:text-xl"
               >
-                <span className="text-verdant">A forest he knows by its seasons</span> — time
-                that returns, circles, and forgives. Growth measured in rings, not results.
+                <span className="text-verdant">{copy.forestLead}</span> {copy.forestRest}
               </motion.p>
               <motion.p
                 style={dim ? { opacity: semestersTextOpacity } : undefined}
                 className="font-serif text-lg leading-relaxed text-ink-soft sm:text-xl"
               >
-                <span className="text-azure">A country that measures time in semesters</span> —
-                time that advances, bills, and expires. Growth measured against a deadline.
+                <span className="text-azure">{copy.semestersLead}</span> {copy.semestersRest}
               </motion.p>
             </div>
 
             <p className="mt-6 max-w-md text-sm text-ink-faint">
-              The distance between those two clocks is the subject of both the research and
-              the novel.
+              {copy.note}
             </p>
           </div>
 
@@ -209,7 +207,7 @@ export function SeasonsSemesters() {
         <div className="pointer-events-none absolute inset-x-0 bottom-8 hidden justify-center lg:flex">
           <div className="flex items-center gap-3">
             <span className="text-[10px] uppercase tracking-[0.22em] text-ink-faint">
-              Forest
+              {copy.forest}
             </span>
             <span className="relative block h-px w-40 bg-[var(--line-strong)]">
               <motion.span
@@ -217,7 +215,7 @@ export function SeasonsSemesters() {
                 style={{ scaleX: progress, transformOrigin: "left" }}
               />
             </span>
-            <span className="text-[10px] uppercase tracking-[0.22em] text-ink-faint">City</span>
+            <span className="text-[10px] uppercase tracking-[0.22em] text-ink-faint">{copy.city}</span>
           </div>
         </div>
       </div>

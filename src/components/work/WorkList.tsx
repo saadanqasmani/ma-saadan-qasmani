@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { Reveal } from "@/components/ui/Reveal";
 import { FloatingGallery } from "@/components/media/FloatingGallery";
 import { getMediaSet } from "@/content/media";
 import type { WorkItem } from "@/content/site";
+import type { Dictionary } from "@/content/i18n/en";
+import { fill } from "@/lib/i18n/dictionary";
 
 /**
  * A row's colours, and a row's destination, are two different things.
@@ -63,10 +65,15 @@ const ROW_THEMES: Record<string, RowTheme> = {
   },
 };
 
-/** Entries with a page of their own on this site. */
-const DETAIL_PAGES: Record<string, { href: string; label: string }> = {
-  iris: { href: "/work/iris", label: "IRIS" },
-  icd: { href: "/work/icd", label: "ICD" },
+/**
+ * Entries with a page of their own on this site.
+ *
+ * The label is a key rather than a word: "Look into recruitment" reads as
+ * one sentence, and a language needs to be able to move its parts.
+ */
+const DETAIL_PAGES: Record<string, { href: string; label: keyof Dictionary["work"]["detailLabels"] }> = {
+  iris: { href: "/work/iris", label: "iris" },
+  icd: { href: "/work/icd", label: "icd" },
   "international-student-recruitment": {
     href: "/work/recruitment",
     label: "recruitment",
@@ -86,7 +93,7 @@ const CATEGORY_TONE: Record<string, string> = {
   Projects: "text-azure",
 };
 
-export function WorkList({ items }: { items: WorkItem[] }) {
+export function WorkList({ items, copy }: { items: WorkItem[]; copy: Dictionary["work"] }) {
   const [openSlug, setOpenSlug] = useState<string | null>(null);
   const openSet = openSlug ? getMediaSet(openSlug) : null;
 
@@ -121,17 +128,17 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                   {/* Only an entry that actually has a gallery becomes a button:
                       a control that opens nothing is worse than plain text. */}
                   {detail ? (
-                    <Link href={detail.href} className="block">
+                    <LocaleLink href={detail.href} className="block">
                       <h2 className={`font-serif text-2xl leading-snug ${skin ? skin.ink : "text-ink"} transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl`}>
                         {item.title}
                       </h2>
-                    </Link>
+                    </LocaleLink>
                   ) : set ? (
                     <button
                       type="button"
                       onClick={() => setOpenSlug(item.slug)}
                       className="block text-left"
-                      aria-label={`Open the gallery for ${item.title}`}
+                      aria-label={fill(copy.openGallery, { name: item.title })}
                     >
                       <h2 className="font-serif text-2xl leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl">
                         {item.title}
@@ -159,7 +166,7 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                         className="group/v inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-soft transition-colors hover:text-ember"
                       >
                         <span className="inline-block h-px w-6 bg-current transition-all duration-300 group-hover/v:w-10" />
-                        View gallery
+                        {copy.viewGallery}
                       </button>
                     )}
 
@@ -176,13 +183,13 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                     )}
 
                     {detail && (
-                      <Link
+                      <LocaleLink
                         href={detail.href}
                         className={`group/e mt-1 inline-flex items-center gap-2 border px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] transition-opacity hover:opacity-60 ${skin ? `${skin.line} ${skin.accent}` : "border-ink text-ink"}`}
                       >
                         <span className="inline-block h-px w-6 bg-current transition-all duration-300 group-hover/e:w-10" />
-                        Look into {detail.label}
-                      </Link>
+                        {fill(copy.lookInto, { name: copy.detailLabels[detail.label] })}
+                      </LocaleLink>
                     )}
                   </div>
                 </div>
@@ -194,7 +201,7 @@ export function WorkList({ items }: { items: WorkItem[] }) {
                       : (CATEGORY_TONE[item.category] ?? "text-ink-faint")
                   }`}
                 >
-                  {item.category}
+                  {copy.categories[item.category] ?? item.category}
                 </span>
               </li>
             </Reveal>

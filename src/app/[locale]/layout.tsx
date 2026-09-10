@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import "../globals.css";
-import { person } from "@/content/site";
+import { getPerson } from "@/lib/data";
 import { getContent } from "@/lib/i18n/content";
 import { fontClassNames } from "@/lib/i18n/fonts";
 import { isLocale, localeMeta, locales, type Locale } from "@/lib/i18n/config";
@@ -34,20 +34,21 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
 
-  const content = await getContent(locale);
-  const title = `${person.name} — ${content.person.positioning}`;
-  const description = content.person.bio.slice(0, 155);
+  const [content, base] = await Promise.all([getContent(locale), getPerson()]);
+  const said = content.person(base);
+  const title = `${said.name} — ${said.positioning}`;
+  const description = said.bio.slice(0, 155);
 
   return {
     metadataBase: new URL(siteUrl),
-    title: { default: title, template: `%s — ${person.name}` },
+    title: { default: title, template: `%s — ${said.name}` },
     description,
     alternates: localeAlternates("/", locale),
     openGraph: {
       title,
       description,
       url: localeMeta[locale].tag === "en" ? siteUrl : `${siteUrl}/${locale}`,
-      siteName: person.name,
+      siteName: said.name,
       locale: localeMeta[locale].tag,
       type: "website",
     },

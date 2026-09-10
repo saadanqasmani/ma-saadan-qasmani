@@ -50,3 +50,16 @@ export async function getDictionary(locale: Locale): Promise<Dictionary> {
 }
 
 export type { Dictionary };
+
+/**
+ * Fills the {placeholders} in a translated string.
+ *
+ * Sentences that carry a value are written whole, with the value named,
+ * rather than glued together from fragments: word order moves between
+ * languages, and a translator needs to be able to move the value with it.
+ */
+export function fill(template: string, values: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (whole, key: string) =>
+    key in values ? String(values[key]) : whole
+  );
+}

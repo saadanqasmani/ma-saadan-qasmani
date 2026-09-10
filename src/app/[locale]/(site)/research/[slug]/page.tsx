@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Reveal } from "@/components/ui/Reveal";
 import { SplitText } from "@/components/ui/SplitText";
@@ -7,7 +6,12 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { RequestAccessForm } from "@/components/forms/RequestAccessForm";
 import { getPerson, getResearchItem, getResearchItems } from "@/lib/data";
 import { researchJsonLd } from "@/lib/seo/jsonLd";
-import { collaborators, instruments } from "@/content/site";
+import { collaborators } from "@/content/site";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
+import { getContent } from "@/lib/i18n/content";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { defaultLocale, isLocale, locales } from "@/lib/i18n/config";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 /**
  * One paper, on its own page.
@@ -21,7 +25,7 @@ import { collaborators, instruments } from "@/content/site";
 
 export async function generateStaticParams() {
   const items = await getResearchItems();
-  return items.map((item) => ({ slug: item.slug }));
+  return locales.flatMap((locale) => items.map((item) => ({ locale, slug: item.slug })));
 }
 
 /** First two sentences, or a clean cut, for the search result snippet. */
@@ -35,35 +39,42 @@ function snippet(abstract: string, limit = 180) {
   return `${(space > 80 ? cut.slice(0, space) : cut).trimEnd()}…`;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
-  const item = await getResearchItem(slug);
-  if (!item) return {};
+type Params = { params: Promise<{ locale: string; slug: string }> };
 
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { locale: raw, slug } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+  const [base, content] = await Promise.all([getResearchItem(slug), getContent(locale)]);
+  if (!base) return {};
+
+  const [item] = content.research([base]);
   const title = item.subtitle ? `${item.title}: ${item.subtitle}` : item.title;
+
   return {
     title: item.title,
     description: snippet(item.abstract),
     keywords: item.keywords,
-    alternates: { canonical: `/research/${item.slug}` },
+    alternates: localeAlternates(`/research/${item.slug}`, locale),
     openGraph: { title, description: snippet(item.abstract), type: "article" },
   };
 }
 
-export default async function ResearchPaperPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const [item, person] = await Promise.all([getResearchItem(slug), getPerson()]);
-  if (!item) notFound();
+export default async function ResearchPaperPage({ params }: Params) {
+  const { locale: raw, slug } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
 
-  const instrument = item.instrument ? instruments[item.instrument] : null;
+  const [base, person, dict, content] = await Promise.all([
+    getResearchItem(slug),
+    getPerson(),
+    getDictionary(locale),
+    getContent(locale),
+  ]);
+  if (!base) notFound();
+
+  const [item] = content.research([base]);
+  const t = dict.paper;
+  const notice = dict.translation;
+  const instrument = item.instrument ? content.instrument : null;
   const byline = item.authors?.length
     ? item.authors
     : [person.name, ...(item.coAuthors ?? [])];
@@ -74,13 +85,13 @@ export default async function ResearchPaperPage({
 
       <article className="mx-auto max-w-3xl px-6 pb-28 pt-24 sm:px-10 sm:pt-32">
         <Reveal>
-          <Link
+          <LocaleLink
             href="/research"
             className="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
           >
             <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span>
-            The Archive
-          </Link>
+            {t.backToArchive}
+          </LocaleLink>
         </Reveal>
 
         <p className="eyebrow mt-10">{[item.type, item.date].filter(Boolean).join(" · ")}</p>
@@ -105,7 +116,7 @@ export default async function ResearchPaperPage({
               const profile = collaborators[name]?.linkedin ?? collaborators[name]?.profile;
               return (
                 <span key={name}>
-                  {i > 0 && (i === byline.length - 1 ? " and " : ", ")}
+                  {i > 0 && (i === byline.length - 1 ? ` ${t.and} ` : ", ")}
                   {profile ? (
                     <a
                       href={profile}
@@ -130,13 +141,39 @@ export default async function ResearchPaperPage({
         </Reveal>
 
         <Reveal delay={0.34}>
-          <h2 className="mt-10 text-xs uppercase tracking-[0.16em] text-ember">Abstract</h2>
+          <h2 className="mt-10 text-xs uppercase tracking-[0.16em] text-ember">{t.abstract}</h2>
           <p className="mt-5 text-base leading-[1.8] text-ink-soft sm:text-lg">{item.abstract}</p>
+
+          {/* The published abstract, kept beside its translation. It is what
+              the authors actually approved, and on a page that exists to be
+              indexed it is also the version a search engine should be able
+              to match against the paper itself. */}
+          {item.original && (
+            <details className="mt-8 border-s-2 border-line ps-5">
+              <summary className="cursor-pointer text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink">
+                {notice.showOriginal}
+              </summary>
+              <p className="mt-3 text-xs italic leading-relaxed text-ink-faint">
+                {notice.abstractNotice}
+              </p>
+              <div lang="en" dir="ltr" className="mt-4 text-start">
+                <p className="font-serif text-lg leading-snug text-ink">{item.original.title}</p>
+                {item.original.subtitle && (
+                  <p className="mt-1 font-serif text-base italic leading-snug text-ink-soft">
+                    {item.original.subtitle}
+                  </p>
+                )}
+                <p className="mt-4 text-sm leading-[1.8] text-ink-soft">
+                  {item.original.abstract}
+                </p>
+              </div>
+            </details>
+          )}
         </Reveal>
 
         {item.keywords.length > 0 && (
           <Reveal delay={0.38}>
-            <h2 className="mt-12 text-xs uppercase tracking-[0.16em] text-ink-faint">Keywords</h2>
+            <h2 className="mt-12 text-xs uppercase tracking-[0.16em] text-ink-faint">{t.keywords}</h2>
             <ul className="mt-4 flex flex-wrap gap-2">
               {item.keywords.map((k) => (
                 <li
@@ -152,7 +189,7 @@ export default async function ResearchPaperPage({
 
         {instrument?.definition && (
           <Reveal delay={0.4}>
-            <div className="mt-12 border-l-2 border-azure pl-6">
+            <div className="mt-12 border-s-2 border-azure ps-6">
               <h2 className="text-xs uppercase tracking-[0.16em] text-azure">
                 {instrument.label}
               </h2>
@@ -163,9 +200,9 @@ export default async function ResearchPaperPage({
 
         <Reveal delay={0.42}>
           <section className="mt-16 border border-line bg-white p-8 sm:p-10">
-            <p className="eyebrow">{item.access === "open" ? "Open access" : "Restricted"}</p>
+            <p className="eyebrow">{item.access === "open" ? t.openAccess : t.restricted}</p>
             <h2 className="mt-3 font-display text-3xl">
-              {item.access === "open" && item.doiOrLink ? "Read the paper" : "Request access"}
+              {item.access === "open" && item.doiOrLink ? t.readThePaper : t.requestAccess}
             </h2>
             {item.access === "open" && item.doiOrLink ? (
               <a
@@ -176,7 +213,7 @@ export default async function ResearchPaperPage({
               >
                 <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                 <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-                  View paper
+                  {t.viewPaper}
                 </span>
               </a>
             ) : (
@@ -188,12 +225,12 @@ export default async function ResearchPaperPage({
         </Reveal>
 
         <Reveal delay={0.46}>
-          <Link
+          <LocaleLink
             href="/research"
             className="mt-14 inline-flex items-center gap-2 border border-line px-6 py-3 text-xs uppercase tracking-[0.16em] text-ink-soft transition-colors hover:border-ink hover:text-ink"
           >
-            All nine papers
-          </Link>
+            {t.allNine}
+          </LocaleLink>
         </Reveal>
       </article>
     </>

@@ -1,12 +1,11 @@
 import {
   highestBranch,
   instruments,
-  person,
   researchNote,
   type ResearchItem,
-  type WorkCategory,
   type WorkItem,
 } from "@/content/site";
+import type { Book, Person } from "@/lib/data";
 import { defaultLocale, type Locale } from "@/lib/i18n/config";
 
 /**
@@ -45,8 +44,6 @@ export type ContentOverlay = {
   instrumentDefinition?: string;
   instrumentLabel?: string;
   researchNote?: { before?: string; after?: string };
-  /** The work categories, which are shown as labels rather than stored as data. */
-  categories?: Partial<Record<WorkCategory, string>>;
   work?: Record<string, { title?: string; summary?: string; linkLabel?: string }>;
   research?: Record<
     string,
@@ -83,28 +80,18 @@ export type Content = {
   locale: Locale;
   /** False for English, and for a language whose overlay is still empty. */
   translated: boolean;
-  person: {
-    positioning: string;
-    location: string;
-    bio: string;
-    practitionerNote: string;
-    roles: readonly { title: string; org: string }[];
-    founded: readonly { name: string; org: string }[];
-    honors: readonly { title: string; org: string; year: string; media?: string }[];
-  };
-  book: {
-    genre: string;
-    tagline: string;
-    status: string;
-    synopsis: string;
-    subject: string;
-    amazonRegions: string;
-    directRegions: string;
-    directNote: string;
-  };
+  /**
+   * Each of these takes the record as it was read — from the database when
+   * one is connected, from src/content otherwise — and returns it in this
+   * language. Translating a copy of the static content instead would mean
+   * that editing the site in the dashboard silently stopped reaching every
+   * page but the English one.
+   */
+  person: (base: Person) => Person;
+  book: (base: Book) => Book;
+  purchase: { amazonRegions: string; directRegions: string; directNote: string };
   instrument: { label: string; definition: string | null };
   researchNote: { before: string; name: string; after: string };
-  category: (category: WorkCategory) => string;
   work: (items: WorkItem[]) => WorkItem[];
   research: (items: ResearchItem[]) => TranslatedResearchItem[];
 };
@@ -124,35 +111,41 @@ export async function getContent(locale: Locale): Promise<Content> {
     locale,
     translated,
 
-    person: {
-      positioning: pick(p.positioning, person.positioning),
-      location: pick(p.location, person.location),
-      bio: pick(p.bio, person.bio),
-      practitionerNote: pick(p.practitionerNote, person.practitionerNote),
-      roles: person.roles.map((role, i) => ({
+    person: (base) => ({
+      ...base,
+      positioning: pick(p.positioning, base.positioning),
+      location: pick(p.location, base.location),
+      bio: pick(p.bio, base.bio),
+      practitionerNote: pick(p.practitionerNote, base.practitionerNote),
+      roles: base.roles.map((role, i) => ({
+        ...role,
         title: pick(p.roles?.[i]?.title, role.title),
         // The organisation is a proper name. It is translated only where a
         // language has its own established name for it.
         org: pick(p.roles?.[i]?.org, role.org),
       })),
-      founded: person.founded.map((item, i) => ({
+      founded: base.founded.map((item, i) => ({
+        ...item,
         name: pick(p.founded?.[i]?.name, item.name),
         org: pick(p.founded?.[i]?.org, item.org),
       })),
-      honors: person.honors.map((honor, i) => ({
+      honors: base.honors.map((honor, i) => ({
+        ...honor,
         title: pick(p.honors?.[i]?.title, honor.title),
         org: pick(p.honors?.[i]?.org, honor.org),
-        year: honor.year,
-        media: honor.media,
       })),
-    },
+    }),
 
-    book: {
-      genre: pick(b.genre, highestBranch.genre),
-      tagline: pick(b.tagline, highestBranch.tagline),
-      status: pick(b.status, highestBranch.status),
-      synopsis: pick(b.synopsis, highestBranch.synopsis),
-      subject: pick(b.subject, highestBranch.subject),
+    book: (base) => ({
+      ...base,
+      genre: pick(b.genre, base.genre),
+      tagline: pick(b.tagline, base.tagline),
+      status: pick(b.status, base.status),
+      synopsis: pick(b.synopsis, base.synopsis),
+      subject: pick(b.subject, base.subject),
+    }),
+
+    purchase: {
       amazonRegions: pick(b.amazonRegions, highestBranch.purchase.amazon.regions),
       directRegions: pick(b.directRegions, highestBranch.purchase.direct.regions),
       directNote: pick(b.directNote, highestBranch.purchase.direct.note),
@@ -169,8 +162,6 @@ export async function getContent(locale: Locale): Promise<Content> {
       name: researchNote.name,
       after: pick(overlay.researchNote?.after, researchNote.after),
     },
-
-    category: (category) => overlay.categories?.[category] ?? category,
 
     work: (items) =>
       items.map((item) => {

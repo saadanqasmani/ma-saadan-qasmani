@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { cn } from "@/lib/utils";
 
 /** A link that leans toward the cursor. Subtle — 10px of travel, no rubber band. */
@@ -62,7 +62,7 @@ export function MagneticLink({
           {inner}
         </a>
       ) : (
-        <Link href={href}>{inner}</Link>
+        <LocaleLink href={href}>{inner}</LocaleLink>
       )}
     </span>
   );

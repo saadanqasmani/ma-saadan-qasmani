@@ -75,6 +75,147 @@ export const en = {
     positioning: "Writer, researcher, and strategist",
   },
 
+  home: {
+    location: "Istanbul",
+    hoverHint: "Hover the marked junctions to trace the work",
+    scroll: "Scroll",
+    author: "The Author",
+    portraitLabel: "Author portrait",
+    readBiography: "Read the biography",
+    practice: "The Practice",
+    practiceHeading: "Training delivered where the questions are hardest.",
+    countries: "Countries",
+    nationalities: "Nationalities",
+    papersInProgress: "Research papers in progress",
+    archive: "The Archive",
+    researchInProgress: "Research in progress",
+    allResearch: "All research",
+    novelEyebrow: "The Novel",
+    enterTheNovel: "Enter the novel",
+    chapters: "chapters",
+    words: "words",
+  },
+
+  about: {
+    eyebrow: "The Author",
+    /**
+     * The heading is set in two parts, the second in colour. A language is
+     * free to put the whole phrase in `titleLead` and leave the accent
+     * empty, since not every language splits where English does.
+     */
+    titleLead: "The",
+    titleAccent: "Person",
+    biography: "Biography",
+    portraitLabel: "Author portrait",
+    theWork: "The Work",
+    currentRoles: "Current roles",
+    practice: "Practice",
+    founded: "Founded",
+    recognition: "Recognition",
+    theResearch: "The research",
+    getInTouch: "Get in touch",
+    /** {name} and {positioning} are filled in. */
+    metaDescription: "Biography of {name}, {positioning}.",
+  },
+
+  work: {
+    eyebrow: "The Work",
+    titleLead: "A Living",
+    titleAccent: "Archive",
+    lede: "Academic, professional, and creative work — added continuously rather than curated once.",
+    metaDescription: "A living archive of projects, roles, and initiatives.",
+    viewGallery: "View gallery",
+    /** {name} is the entry the gallery belongs to. */
+    openGallery: "Open the gallery for {name}",
+    /** {name} is IRIS, ICD or recruitment. */
+    lookInto: "Look into {name}",
+    detailLabels: {
+      iris: "IRIS",
+      icd: "ICD",
+      recruitment: "recruitment",
+    },
+    /** The category shown at the end of each row. */
+    categories: {
+      Academic: "Academic",
+      Research: "Research",
+      Publications: "Publications",
+      "International Education": "International Education",
+      "Global Engagement": "Global Engagement",
+      Strategy: "Strategy",
+      Writing: "Writing",
+      "Creative Work": "Creative Work",
+      Projects: "Projects",
+    },
+  },
+
+  research: {
+    eyebrow: "The Archive",
+    titleLead: "Research",
+    titleAccent: "Archive",
+    lede: "Working papers on the political economy of internationalization, nation branding, and the securitization of international students. Restricted papers are sent only after a request is reviewed personally.",
+    metaDescription:
+      "Working papers and academic research on the political economy of internationalization, nation branding, and the securitization of international students.",
+    shapeEyebrow: "The Shape of It",
+    shapeHeading: "Nine papers, one question.",
+    shapeBody:
+      "How institutions say one thing about international students and do another — traced through policy instruments, partnerships, merit, and security.",
+    trilogyNote: "Three of these belong to one set",
+    all: "All",
+    /** {count} entries. Written whole so a language can inflect it. */
+    entryCount: "{count} entry",
+    entryCountPlural: "{count} entries",
+    readAbstract: "Read abstract",
+    fullEntry: "Full entry",
+    openFullEntry: "Open the full entry",
+    abstract: "Abstract",
+    /** {names} is the list of co-authors, already joined. */
+    withAuthors: "With {names}",
+    /** The same list, on the one-line summary under a title. */
+    withAuthorsInline: "with {names}",
+    and: "and",
+    viewPaper: "View paper",
+    requestAccess: "Request access",
+    requestInstrument: "Request the {name}",
+    requestTheInstrument: "Request the instrument",
+    restricted: "Restricted",
+    close: "Close",
+    whatAreImgIpi: "What are IMG and IPI?",
+    /** {title} is the paper. */
+    abstractOf: "Abstract — {title}",
+    requestAccessTo: "Request access to {title}",
+    keywords: "Keywords",
+    authors: "Authors",
+    instrumentNote: "This paper carries an instrument readers can ask to use.",
+    backToArchive: "Back to the archive",
+  },
+
+  paper: {
+    backToArchive: "The Archive",
+    abstract: "Abstract",
+    keywords: "Keywords",
+    openAccess: "Open access",
+    restricted: "Restricted",
+    readThePaper: "Read the paper",
+    requestAccess: "Request access",
+    viewPaper: "View paper",
+    allNine: "All nine papers",
+    and: "and",
+  },
+
+  seasons: {
+    eyebrow: "The Novel · The Thesis",
+    heading: "Two ways of measuring a life.",
+    forestLead: "A forest he knows by its seasons",
+    forestRest:
+      "— time that returns, circles, and forgives. Growth measured in rings, not results.",
+    semestersLead: "A country that measures time in semesters",
+    semestersRest:
+      "— time that advances, bills, and expires. Growth measured against a deadline.",
+    note: "The distance between those two clocks is the subject of both the research and the novel.",
+    forest: "Forest",
+    city: "City",
+  },
+
   /** The banner that says a translation is a translation. */
   translation: {
     machineNotice:

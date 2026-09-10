@@ -2,27 +2,38 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import type { ResearchItem } from "@/content/site";
 import { ResearchRow } from "@/components/research/ResearchRow";
+import type { Dictionary } from "@/content/i18n/en";
+import type { TranslatedResearchItem } from "@/lib/i18n/content";
+import { fill } from "@/lib/i18n/dictionary";
 
-export function ResearchArchive({ items }: { items: ResearchItem[] }) {
-  const [area, setArea] = useState<string>("All");
+export function ResearchArchive({
+  items,
+  copy,
+  notice,
+  instrument,
+}: {
+  items: TranslatedResearchItem[];
+  copy: Dictionary["research"];
+  notice: Dictionary["translation"];
+  instrument: { label: string; definition: string | null };
+}) {
+  // Null rather than the word "All": the filter is a state, and comparing it
+  // to a translated label would break the moment the label was translated.
+  const [area, setArea] = useState<string | null>(null);
 
-  const areas = useMemo(
-    () => ["All", ...Array.from(new Set(items.map((i) => i.area)))],
-    [items]
-  );
+  const areas = useMemo(() => Array.from(new Set(items.map((i) => i.area))), [items]);
 
-  const filtered = area === "All" ? items : items.filter((i) => i.area === area);
+  const filtered = area === null ? items : items.filter((i) => i.area === area);
 
   return (
     <div>
       <div className="flex flex-wrap gap-2">
-        {areas.map((a) => {
+        {[null, ...areas].map((a) => {
           const active = a === area;
           return (
             <button
-              key={a}
+              key={a ?? "__all"}
               type="button"
               onClick={() => setArea(a)}
               aria-pressed={active}
@@ -32,7 +43,7 @@ export function ResearchArchive({ items }: { items: ResearchItem[] }) {
                   : "border-line text-ink-soft hover:border-ink hover:text-ink"
               }`}
             >
-              {a}
+              {a ?? copy.all}
               {active && (
                 <motion.span
                   layoutId="area-pill"
@@ -46,7 +57,9 @@ export function ResearchArchive({ items }: { items: ResearchItem[] }) {
       </div>
 
       <p className="mt-5 text-xs uppercase tracking-[0.14em] text-ink-faint">
-        {filtered.length} {filtered.length === 1 ? "entry" : "entries"}
+        {fill(filtered.length === 1 ? copy.entryCount : copy.entryCountPlural, {
+          count: filtered.length,
+        })}
       </p>
 
       <div className="mt-8 border-t border-line">
@@ -60,7 +73,13 @@ export function ResearchArchive({ items }: { items: ResearchItem[] }) {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.35, delay: i * 0.03, ease: [0.22, 1, 0.36, 1] }}
             >
-              <ResearchRow item={item} index={i} />
+              <ResearchRow
+                item={item}
+                index={i}
+                copy={copy}
+                notice={notice}
+                instrument={instrument}
+              />
             </motion.div>
           ))}
         </AnimatePresence>

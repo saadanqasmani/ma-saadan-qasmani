@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import Link from "next/link";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { FloatCard } from "@/components/ui/FloatCard";
 import { unlockIris, type UnlockState } from "@/lib/actions/iris";
 
@@ -30,12 +30,12 @@ export function IrisLock({ contactHref = "/contact" }: { contactHref?: string })
             IRIS is not public yet. Get in touch with Saadan for the access code and
             the three sections open together, on this page, for a month.
           </p>
-          <Link
+          <LocaleLink
             href={contactHref}
             className="mt-7 inline-flex items-center gap-2 border border-[var(--iris-blue)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--iris-blue)] transition-colors hover:bg-[var(--iris-blue)] hover:text-canvas-light"
           >
             Request the code
-          </Link>
+          </LocaleLink>
         </div>
 
         <form action={formAction} className="w-full max-w-sm shrink-0">

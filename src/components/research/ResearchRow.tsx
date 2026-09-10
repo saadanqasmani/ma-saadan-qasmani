@@ -1,22 +1,40 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
-import type { ResearchItem } from "@/content/site";
-import { collaborators, instruments } from "@/content/site";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
+import { collaborators } from "@/content/site";
 import { RequestAccessForm } from "@/components/forms/RequestAccessForm";
+import type { Dictionary } from "@/content/i18n/en";
+import type { TranslatedResearchItem } from "@/lib/i18n/content";
+import { fill } from "@/lib/i18n/dictionary";
 
-export function ResearchRow({ item, index }: { item: ResearchItem; index: number }) {
+export function ResearchRow({
+  item,
+  index,
+  copy,
+  notice,
+  instrument,
+}: {
+  item: TranslatedResearchItem;
+  index: number;
+  copy: Dictionary["research"];
+  notice: Dictionary["translation"];
+  instrument: { label: string; definition: string | null };
+}) {
   const [request, setRequest] = useState<null | "paper" | "instrument">(null);
 
-  const instrument = item.instrument ? instruments[item.instrument] : null;
   const subject =
-    request === "instrument" && instrument
+    request === "instrument" && item.instrument
       ? `${item.title} — ${instrument.label}`
       : item.title;
   const [expanded, setExpanded] = useState(false);
   const [reading, setReading] = useState(false);
+  const [original, setOriginal] = useState(false);
+
+  const byline = item.coAuthors?.length
+    ? fill(copy.withAuthorsInline, { names: item.coAuthors.join(", ") })
+    : null;
 
   // Rows alternate between the two accent colours, so a page of open
   // abstracts reads as one set rather than a row of identical boxes.
@@ -53,7 +71,7 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
           )}
           <span className="mt-2 block text-xs uppercase tracking-[0.12em] text-ink-faint">
             {item.type} · {item.date}
-            {item.coAuthors?.length ? ` · with ${item.coAuthors.join(", ")}` : ""}
+            {byline ? ` · ${byline}` : ""}
           </span>
         </span>
         <span
@@ -91,18 +109,18 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
                     }`}
                   />
                   <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-                    Read abstract
+                    {copy.readAbstract}
                   </span>
                 </button>
                 {/* The paper's own page: where the abstract is published as
                     text, and the only version a search engine ever sees. */}
-                <Link
+                <LocaleLink
                   href={`/research/${item.slug}`}
                   className="ml-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
                 >
-                  Full entry
+                  {copy.fullEntry}
                   <span aria-hidden>→</span>
-                </Link>
+                </LocaleLink>
 
                 {item.institution && (
                   <p className="mt-3 text-sm text-ink-faint">{item.institution}</p>
@@ -110,12 +128,12 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
 
                 {item.coAuthors?.length ? (
                   <p className="mt-4 text-sm text-ink-soft">
-                    With{" "}
+                    {copy.withAuthors.split("{names}")[0]}
                     {item.coAuthors.map((name, i) => {
                       const profile = collaborators[name]?.profile;
                       return (
                         <span key={name}>
-                          {i > 0 && (i === item.coAuthors!.length - 1 ? " and " : ", ")}
+                          {i > 0 && (i === item.coAuthors!.length - 1 ? ` ${copy.and} ` : ", ")}
                           {profile ? (
                             <a
                               href={profile}
@@ -131,7 +149,7 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
                         </span>
                       );
                     })}
-                    .
+                    {copy.withAuthors.split("{names}")[1]}
                   </p>
                 ) : null}
 
@@ -158,7 +176,7 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
                     >
                       <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                       <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-                        View paper
+                        {copy.viewPaper}
                       </span>
                     </a>
                   ) : (
@@ -169,7 +187,7 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
                     >
                       <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                       <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-                        Request access
+                        {copy.requestAccess}
                       </span>
                     </button>
                   )}
@@ -183,14 +201,14 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
                       >
                         <span className="absolute inset-0 -translate-y-full bg-azure transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                         <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-                          Request the {instrument!.label}
+                          {fill(copy.requestInstrument, { name: instrument.label })}
                         </span>
                       </button>
-                      {instrument!.definition && (
+                      {instrument.definition && (
                         <span className="group/i relative inline-flex">
                           <button
                             type="button"
-                            aria-label={`What are IMG and IPI?`}
+                            aria-label={copy.whatAreImgIpi}
                             className="flex h-6 w-6 items-center justify-center rounded-full border border-ink-faint text-ink-faint transition-colors hover:border-azure hover:text-azure focus-visible:border-azure focus-visible:text-azure"
                           >
                             <svg
@@ -210,7 +228,7 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
                             role="tooltip"
                             className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-3 w-72 -translate-x-1/2 border border-ink bg-canvas-light p-4 text-xs leading-relaxed text-ink-soft opacity-0 shadow-sm transition-opacity duration-200 group-hover/i:opacity-100 group-focus-within/i:opacity-100"
                           >
-                            {instrument!.definition}
+                            {instrument.definition}
                           </span>
                         </span>
                       )}
@@ -233,7 +251,7 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
             className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/40 p-4 backdrop-blur-sm sm:p-8"
             role="dialog"
             aria-modal="true"
-            aria-label={`Abstract — ${item.title}`}
+            aria-label={fill(copy.abstractOf, { title: item.title })}
             onClick={() => setReading(false)}
           >
             <motion.div
@@ -249,8 +267,8 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
               <button
                 type="button"
                 onClick={() => setReading(false)}
-                aria-label="Close"
-                className="absolute right-5 top-4 z-10 text-2xl leading-none text-ink-faint transition-colors hover:text-ink"
+                aria-label={copy.close}
+                className="absolute end-5 top-4 z-10 text-2xl leading-none text-ink-faint transition-colors hover:text-ink"
               >
                 ×
               </button>
@@ -261,9 +279,9 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
                     accent === "azure" ? "text-azure" : "text-ember"
                   }`}
                 >
-                  Abstract
+                  {copy.abstract}
                 </p>
-                <h3 className="mt-4 pr-8 font-serif text-2xl leading-snug text-ink sm:text-3xl">
+                <h3 className="mt-4 pe-8 font-serif text-2xl leading-snug text-ink sm:text-3xl">
                   {item.title}
                 </h3>
                 {item.subtitle && (
@@ -273,7 +291,7 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
                 )}
                 <p className="mt-4 text-xs uppercase tracking-[0.12em] text-ink-faint">
                   {item.type} · {item.date}
-                  {item.coAuthors?.length ? ` · with ${item.coAuthors.join(", ")}` : ""}
+                  {byline ? ` · ${byline}` : ""}
                 </p>
 
                 <hr
@@ -284,13 +302,49 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
 
                 <p className="mt-7 text-base leading-[1.75] text-ink-soft">{item.abstract}</p>
 
-                <Link
+                {/* An abstract is a published claim, and this is a
+                    translation of one. A reader who wants to check a term
+                    against the words the authors approved can open the
+                    English without leaving the page. */}
+                {item.original && (
+                  <div className="mt-7 border-t border-line pt-5">
+                    <p className="text-xs italic leading-relaxed text-ink-faint">
+                      {notice.abstractNotice}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setOriginal((v) => !v)}
+                      aria-expanded={original}
+                      className="mt-3 inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
+                    >
+                      <span aria-hidden>{original ? "−" : "+"}</span>
+                      {original ? notice.hideOriginal : notice.showOriginal}
+                    </button>
+                    {original && (
+                      <div lang="en" dir="ltr" className="mt-4 text-start">
+                        <p className="font-serif text-lg leading-snug text-ink">
+                          {item.original.title}
+                        </p>
+                        {item.original.subtitle && (
+                          <p className="mt-1 font-serif text-base italic leading-snug text-ink-soft">
+                            {item.original.subtitle}
+                          </p>
+                        )}
+                        <p className="mt-4 text-sm leading-[1.75] text-ink-soft">
+                          {item.original.abstract}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <LocaleLink
                   href={`/research/${item.slug}`}
                   className="mt-8 inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
                 >
-                  Open the full entry
+                  {copy.openFullEntry}
                   <span aria-hidden>→</span>
-                </Link>
+                </LocaleLink>
               </div>
             </motion.div>
           </motion.div>
@@ -306,7 +360,7 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
             className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/40 p-4 backdrop-blur-sm"
             role="dialog"
             aria-modal="true"
-            aria-label={`Request access to ${subject}`}
+            aria-label={fill(copy.requestAccessTo, { title: subject })}
             onClick={() => setRequest(null)}
           >
             <motion.div
@@ -320,14 +374,14 @@ export function ResearchRow({ item, index }: { item: ResearchItem; index: number
               <button
                 type="button"
                 onClick={() => setRequest(null)}
-                aria-label="Close"
-                className="absolute right-6 top-6 text-2xl leading-none text-ink-faint transition-colors hover:text-ink"
+                aria-label={copy.close}
+                className="absolute end-6 top-6 text-2xl leading-none text-ink-faint transition-colors hover:text-ink"
               >
                 ×
               </button>
-              <p className="eyebrow">Restricted</p>
-              <h3 className="mt-3 pr-8 font-display text-3xl">
-                {request === "instrument" ? "Request the instrument" : "Request access"}
+              <p className="eyebrow">{copy.restricted}</p>
+              <h3 className="mt-3 pe-8 font-display text-3xl">
+                {request === "instrument" ? copy.requestTheInstrument : copy.requestAccess}
               </h3>
               <p className="mt-3 text-sm leading-relaxed text-ink-soft">{subject}</p>
               <div className="mt-7">
