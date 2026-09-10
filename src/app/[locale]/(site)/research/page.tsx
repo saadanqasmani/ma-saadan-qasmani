@@ -47,7 +47,7 @@ export default async function ResearchPage({ params }: Params) {
 
   return (
     <>
-      <JsonLd data={researchJsonLd(researchItems, person)} />
+      <JsonLd data={researchJsonLd(papers, content.person(person), locale)} />
       <PageHeader
         eyebrow={t.eyebrow}
         title={t.titleLead}

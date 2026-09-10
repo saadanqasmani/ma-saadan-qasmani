@@ -13,6 +13,8 @@
  */
 
 import type { Book, Person } from "@/lib/data";
+import { defaultLocale, localeMeta, type Locale } from "@/lib/i18n/config";
+import { absoluteUrl } from "@/lib/i18n/metadata";
 import type { ResearchItem } from "@/content/site";
 import { profiles } from "@/content/site";
 import { siteUrl } from "@/lib/siteUrl";
@@ -70,14 +72,14 @@ export function personJsonLd(person: Person) {
   });
 }
 
-export function websiteJsonLd(person: Person) {
+export function websiteJsonLd(person: Person, locale: Locale = defaultLocale) {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "@id": SITE_ID,
     url: siteUrl,
     name: person.name,
-    inLanguage: "en",
+    inLanguage: localeMeta[locale].tag,
     publisher: { "@id": PERSON_ID },
   };
 }
@@ -112,7 +114,11 @@ export function bookJsonLd(book: Book) {
  * no DOI is invented, and the free-text date field is never mapped to a
  * publication date because it usually says "In progress".
  */
-export function researchJsonLd(items: ResearchItem[], person: Person) {
+export function researchJsonLd(
+  items: ResearchItem[],
+  person: Person,
+  locale: Locale = defaultLocale
+) {
   return items.map((item) =>
     compact({
       "@context": "https://schema.org",
@@ -120,10 +126,13 @@ export function researchJsonLd(items: ResearchItem[], person: Person) {
       name: item.subtitle ? `${item.title}: ${item.subtitle}` : item.title,
       headline: item.title,
       abstract: item.abstract,
-      url: `${siteUrl}/research/${item.slug}`,
+      url: absoluteUrl(`/research/${item.slug}`, locale),
       about: item.area,
       keywords: item.keywords,
-      inLanguage: "en",
+      // The language the page is actually written in. Declaring English on
+      // a translated page tells a search engine to match it against English
+      // queries, which is the one thing the translation exists not to do.
+      inLanguage: localeMeta[locale].tag,
       // Author order is a claim in academic work, so the paper's own byline
       // is used where the entry states one. Saadan's node is linked by id so
       // a search engine ties the paper to the person, not to a bare string.

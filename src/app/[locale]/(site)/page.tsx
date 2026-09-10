@@ -51,7 +51,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
 
   return (
     <>
-      <JsonLd data={[personJsonLd(person), websiteJsonLd(person)]} />
+      <JsonLd data={[personJsonLd(said), websiteJsonLd(said, locale)]} />
 
       {/* ─────────── Act I — Arrival ─────────── */}
       <section className="relative min-h-[94vh] overflow-hidden">

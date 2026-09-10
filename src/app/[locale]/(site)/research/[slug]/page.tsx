@@ -81,7 +81,7 @@ export default async function ResearchPaperPage({ params }: Params) {
 
   return (
     <>
-      <JsonLd data={researchJsonLd([item], person)} />
+      <JsonLd data={researchJsonLd([item], content.person(person), locale)} />
 
       <article className="mx-auto max-w-3xl px-6 pb-28 pt-24 sm:px-10 sm:pt-32">
         <Reveal>
