@@ -5,7 +5,7 @@ import {
   subscribeAndUnlock,
   unlockWithCode,
   type GateState,
-} from "@/app/(site)/journal/actions";
+} from "@/lib/actions/journal";
 
 const initial: GateState = { error: null };
 

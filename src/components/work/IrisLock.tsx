@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { FloatCard } from "@/components/ui/FloatCard";
-import { unlockIris, type UnlockState } from "@/app/(site)/work/iris/actions";
+import { unlockIris, type UnlockState } from "@/lib/actions/iris";
 
 const initial: UnlockState = { error: null };
 

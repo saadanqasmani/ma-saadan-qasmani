@@ -38,9 +38,41 @@
   --color-verdant-light: var(--verdant-light);
   --color-line: var(--line);
 
-  --font-display: var(--font-instrument-serif), Georgia, serif;
-  --font-serif: var(--font-newsreader), Georgia, "Times New Roman", serif;
-  --font-sans: var(--font-instrument-sans), "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--stack-display);
+  --font-serif: var(--stack-serif);
+  --font-sans: var(--stack-sans);
+}
+
+/*
+ * Typefaces by script.
+ *
+ * The three roles stay the same in every language — a display face for the
+ * big headings, a serif for reading, a sans for labels — but the faces
+ * filling them change with the script, because none of the Latin faces draw
+ * an Arabic or a Cyrillic glyph. The class is set on <html> from the locale.
+ */
+.script-latin {
+  --stack-display: var(--font-latin-display), Georgia, serif;
+  --stack-serif: var(--font-latin-serif), Georgia, "Times New Roman", serif;
+  --stack-sans: var(--font-latin-sans), "Helvetica Neue", Arial, sans-serif;
+}
+
+.script-arabic {
+  --stack-display: var(--font-arabic-serif), var(--font-latin-display), Georgia, serif;
+  --stack-serif: var(--font-arabic-serif), var(--font-latin-serif), Georgia, serif;
+  --stack-sans: var(--font-arabic-sans), var(--font-latin-sans), Arial, sans-serif;
+}
+
+.script-urdu {
+  --stack-display: var(--font-urdu), var(--font-latin-display), Georgia, serif;
+  --stack-serif: var(--font-urdu), var(--font-latin-serif), Georgia, serif;
+  --stack-sans: var(--font-urdu), var(--font-latin-sans), Arial, sans-serif;
+}
+
+.script-cyrillic {
+  --stack-display: var(--font-cyrillic-serif), var(--font-latin-display), Georgia, serif;
+  --stack-serif: var(--font-cyrillic-serif), var(--font-latin-serif), Georgia, serif;
+  --stack-sans: var(--font-cyrillic-sans), var(--font-latin-sans), Arial, sans-serif;
 }
 
 * {

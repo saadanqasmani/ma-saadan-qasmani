@@ -1,16 +1,29 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { IRIS_COOKIE, tokenIsValid } from "@/lib/irisGate";
+import { defaultLocale, isLocale } from "@/lib/i18n/config";
 
 /**
- * Two gates, on two unrelated paths.
+ * Three jobs, on three unrelated paths.
  *
- * The admin one keeps the session cookie fresh and turns away anonymous
+ * The language one is the reason every request comes through here. English
+ * keeps the bare paths the site has always had, so /work is still /work and
+ * nothing already linked or indexed moves; the app underneath is organised
+ * by language, so /work is rewritten to /en/work on the way in. A rewrite
+ * rather than a redirect: the reader's URL does not change, and the
+ * prerendered English page is the one that answers.
+ *
+ * Nobody is redirected by their browser's language header. A visitor who
+ * asked for a page in English gets it in English, and the switcher in the
+ * header is what changes that. Guessing would break shared links and give
+ * search engines a different page than the one they asked for.
+ *
+ * The admin gate keeps the session cookie fresh and turns away anonymous
  * visitors before a dashboard page renders; the layout checks the admins
  * allowlist as well, so this is the cheap first gate rather than the only
  * one.
  *
- * The IRIS one refuses the explainer film to anyone who has not entered the
+ * The IRIS gate refuses the explainer film to anyone who has not entered the
  * access code. It has to live here because the film is a file in public/,
  * and a page cannot guard a file it does not serve.
  */
@@ -18,8 +31,22 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === "/iris-explainer.html") return irisGate(request);
+  if (pathname.startsWith("/admin")) return adminGate(request);
 
-  return adminGate(request);
+  return languageRewrite(request);
+}
+
+/** Puts the English site back under the locale segment it now lives in. */
+function languageRewrite(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const first = pathname.split("/")[1];
+
+  // Already asking for a language by name: that segment is the locale.
+  if (isLocale(first)) return NextResponse.next();
+
+  const url = request.nextUrl.clone();
+  url.pathname = `/${defaultLocale}${pathname === "/" ? "" : pathname}`;
+  return NextResponse.rewrite(url);
 }
 
 /** Sends an uncoded visitor back to the page that asks for the code. */
@@ -74,5 +101,14 @@ async function adminGate(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/iris-explainer.html"],
+  /**
+   * Everything except the framework's own paths, the API, and files served
+   * from public/ — a request for /logo.png is not a page and has no
+   * language. The IRIS film is the one file that is matched anyway, because
+   * it is the one file behind a gate.
+   */
+  matcher: [
+    "/((?!_next/|api/|.*\\.[^/]+$).*)",
+    "/iris-explainer.html",
+  ],
 };

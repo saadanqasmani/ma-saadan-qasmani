@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "motion/react";
@@ -8,13 +7,27 @@ import { navLinks, novelLink } from "@/content/nav";
 import { Logo } from "@/components/layout/Logo";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { MarginaliaIndicator } from "@/components/collect/MarginaliaIndicator";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
+import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
+import type { Dictionary } from "@/content/i18n/en";
+import { stripLocale } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
 
-export function SiteHeader() {
+export function SiteHeader({
+  nav,
+  chrome,
+}: {
+  nav: Dictionary["nav"];
+  chrome: Dictionary["header"];
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
+
+  // Compared without the language prefix, so the current page is marked as
+  // current in every language rather than only in English.
+  const here = stripLocale(pathname || "/");
 
   useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 40));
 
@@ -35,52 +48,54 @@ export function SiteHeader() {
         )}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 sm:px-10">
-          <Link
+          <LocaleLink
             href="/"
             onClick={() => setOpen(false)}
             className="group flex items-center gap-2.5"
-            aria-label="Saadan Qasmani — home"
+            aria-label={chrome.home}
           >
             <Logo className="h-10 w-auto" />
             <span className="font-display text-lg tracking-tight">Saadan Qasmani</span>
-          </Link>
+          </LocaleLink>
 
           <nav className="hidden items-center gap-7 lg:flex">
             {navLinks.map((link) => (
-              <Link
+              <LocaleLink
                 key={link.href}
                 href={link.href}
                 className={cn(
                   "group relative text-[11px] font-medium uppercase tracking-[0.16em] text-ink-soft transition-colors hover:text-ink",
-                  pathname === link.href && "text-ink"
+                  here === link.href && "text-ink"
                 )}
               >
-                {link.label}
+                {nav[link.key]}
                 <span
                   className={cn(
-                    "absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-ember transition-transform duration-400 ease-out group-hover:scale-x-100",
-                    pathname === link.href && "scale-x-100"
+                    "absolute -bottom-1 start-0 h-px w-full origin-[left] scale-x-0 bg-ember transition-transform duration-400 ease-out group-hover:scale-x-100",
+                    here === link.href && "scale-x-100"
                   )}
                 />
-              </Link>
+              </LocaleLink>
             ))}
             <MarginaliaIndicator />
-            <Link
+            <LocaleSwitcher />
+            <LocaleLink
               href={novelLink.href}
               className="group relative overflow-hidden border border-ink px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em]"
             >
               <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
               <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-                The Novel
+                {nav.novel}
               </span>
-            </Link>
+            </LocaleLink>
           </nav>
 
           <div className="flex items-center gap-4 lg:hidden">
             <MarginaliaIndicator />
+            <LocaleSwitcher />
             <button
             type="button"
-            aria-label={open ? "Close menu" : "Open menu"}
+            aria-label={open ? chrome.closeMenu : chrome.openMenu}
             aria-expanded={open}
             className="relative z-[80] flex h-9 w-9 flex-col items-center justify-center gap-[5px] lg:hidden"
             onClick={() => setOpen((v) => !v)}
@@ -119,13 +134,13 @@ export function SiteHeader() {
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.15 + i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <Link
+                  <LocaleLink
                     href={link.href}
                     onClick={() => setOpen(false)}
                     className="block py-3 font-display text-4xl text-ink"
                   >
-                    {link.label}
-                  </Link>
+                    {nav[link.key]}
+                  </LocaleLink>
                 </motion.div>
               ))}
             </nav>
