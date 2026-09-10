@@ -347,22 +347,21 @@ body {
 }
 
 /*
- * Mixed direction, handled per paragraph.
+ * Mixed direction is handled per element, in the markup, not here.
  *
- * A right-to-left page will always carry some Latin: a name, an acronym, a
- * title that has no translation, and — while a language is still being
- * finished — a sentence that has not been translated yet. Left alone, the
- * bidi algorithm reorders that sentence's own punctuation, so a line reads
- * "Strategist and ,Researcher ,Writer".
+ * There was a blanket `unicode-bidi: plaintext` on every block in a
+ * right-to-left page. It reversed the Arabic and the Urdu wherever a
+ * heading or a paragraph was set with SplitText: that component wraps each
+ * word in its own inline-block, an inline-block is an atomic neutral to the
+ * bidi algorithm, and with every strong character sealed inside one there
+ * was nothing left at paragraph level for `plaintext` to read a direction
+ * from. It fell back to left-to-right and laid the words out backwards, so
+ * الأمم المتحدة came out as المتحدة الأمم.
  *
- * `plaintext` gives each block its direction from its own first strong
- * character, so an English sentence reads as English and an Arabic one as
- * Arabic, on the same page, with the punctuation where its author put it.
+ * Direction is now set where it is known: SplitText reads it from its own
+ * text, and the few elements that carry a name or a title that may still be
+ * Latin carry dir="auto" themselves.
  */
-.script-arabic :is(p, h1, h2, h3, h4, li, dd, dt, blockquote, figcaption),
-.script-urdu :is(p, h1, h2, h3, h4, li, dd, dt, blockquote, figcaption) {
-  unicode-bidi: plaintext;
-}
 
 /*
  * The Polaroid stacks that open a gallery.

@@ -105,7 +105,7 @@ export default async function JournalPage({ params }: Params) {
                   tone="azure"
                 />
                 <div>
-                  <h2 className="font-display text-3xl leading-tight text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-4xl">
+                  <h2 dir="auto" className="font-display text-3xl leading-tight text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-4xl">
                     {post.title}
                   </h2>
                   {post.subtitle && (
@@ -113,7 +113,7 @@ export default async function JournalPage({ params }: Params) {
                       {post.subtitle}
                     </p>
                   )}
-                  <p className="mt-3 max-w-2xl text-base leading-relaxed text-ink-soft">
+                  <p dir="auto" className="mt-3 max-w-2xl text-base leading-relaxed text-ink-soft">
                     {post.excerpt}
                   </p>
                 </div>

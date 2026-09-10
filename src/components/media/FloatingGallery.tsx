@@ -99,7 +99,7 @@ function Frame({ item, index, reduced }: { item: MediaItem; index: number; reduc
           <Placeholder item={item} />
         )}
       </motion.div>
-      <figcaption className="mt-3 text-xs uppercase tracking-[0.12em] text-ink-faint">
+      <figcaption dir="auto" className="mt-3 text-xs uppercase tracking-[0.12em] text-ink-faint">
         {item.caption}
       </figcaption>
     </motion.figure>

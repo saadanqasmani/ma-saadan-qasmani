@@ -78,3 +78,24 @@ export function localeFromPath(path: string): Locale {
   const match = /^\/([a-z]{2})(?=\/|$)/.exec(path);
   return match && isLocale(match[1]) ? match[1] : defaultLocale;
 }
+
+/** Scripts that run right to left: Hebrew, Arabic, Syriac, Thaana, NKo. */
+const RTL_CHARS = /[֐-׿؀-ۿ܀-ݏݐ-ݿހ-޿߀-߿ࡠ-ࣿיִ-﷿ﹰ-﻿]/;
+const LTR_CHARS = /[A-Za-zÀ-ɏͰ-ϿЀ-ӿ]/;
+
+/**
+ * Which way a piece of text runs, read from its own first strong character.
+ *
+ * Used where the direction of a string cannot be assumed from the page: a
+ * paper title that has no translation yet, a proper name, an acronym. Returns
+ * undefined when the text says nothing either way, so the element simply
+ * inherits the page's direction.
+ */
+export function textDirection(text: string): "ltr" | "rtl" | undefined {
+  const rtl = RTL_CHARS.exec(text);
+  const ltr = LTR_CHARS.exec(text);
+  if (!rtl && !ltr) return undefined;
+  if (rtl && !ltr) return "rtl";
+  if (ltr && !rtl) return "ltr";
+  return rtl!.index < ltr!.index ? "rtl" : "ltr";
+}

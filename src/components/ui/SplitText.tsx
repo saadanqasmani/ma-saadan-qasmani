@@ -2,6 +2,7 @@
 
 import { Fragment, useRef } from "react";
 import { motion, useInView, useReducedMotion } from "motion/react";
+import { textDirection } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
 
 /**
@@ -21,6 +22,13 @@ import { cn } from "@/lib/utils";
  * not render is a worse failure than one that does not animate, so
  * .split-word is also pinned to translateY(0) in the stylesheet, where no
  * hydration timing can reach it.
+ *
+ * Direction is declared rather than inherited. Each word is its own
+ * inline-block, and an inline-block is an atomic neutral to the bidi
+ * algorithm: with every strong character sealed inside one, nothing is left
+ * at this level for the browser to infer a direction from. Reading it from
+ * the text itself is what keeps Arabic running right to left and an English
+ * title inside an Arabic page running left to right.
  */
 export function SplitText({
   text,
@@ -39,15 +47,21 @@ export function SplitText({
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "0px 0px -8% 0px" });
   const words = text.split(" ");
+  const dir = textDirection(text);
 
   if (reduced) {
-    return <Tag className={className}>{text}</Tag>;
+    return (
+      <Tag className={className} dir={dir}>
+        {text}
+      </Tag>
+    );
   }
 
   return (
     <Tag
       ref={ref as React.Ref<never>}
       className={cn("inline-block", className)}
+      dir={dir}
       aria-label={text}
     >
       {words.map((word, i) => (

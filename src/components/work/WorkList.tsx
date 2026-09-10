@@ -141,7 +141,10 @@ export function WorkList({
                       a control that opens nothing is worse than plain text. */}
                   {detail ? (
                     <LocaleLink href={detail.href} className="block">
-                      <h2 className={`font-serif text-2xl leading-snug ${skin ? skin.ink : "text-ink"} transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl`}>
+                      <h2
+                        dir="auto"
+                        className={`font-serif text-2xl leading-snug ${skin ? skin.ink : "text-ink"} transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl`}
+                      >
                         {item.title}
                       </h2>
                     </LocaleLink>
@@ -152,17 +155,18 @@ export function WorkList({
                       className="block text-start"
                       aria-label={fill(copy.openGallery, { name: item.title })}
                     >
-                      <h2 className="font-serif text-2xl leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl">
+                      <h2 dir="auto" className="font-serif text-2xl leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl">
                         {item.title}
                       </h2>
                     </button>
                   ) : (
-                    <h2 className="font-serif text-2xl leading-snug text-ink sm:text-3xl">
+                    <h2 dir="auto" className="font-serif text-2xl leading-snug text-ink sm:text-3xl">
                       {item.title}
                     </h2>
                   )}
 
                   <p
+                    dir="auto"
                     className={`mt-2 max-w-2xl text-sm leading-relaxed ${
                       skin ? skin.inkSoft : "text-ink-soft"
                     }`}

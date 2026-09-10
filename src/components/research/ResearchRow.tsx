@@ -63,11 +63,11 @@ export function ResearchRow({
           {String(index + 1).padStart(2, "0")}
         </span>
         <span>
-          <span className="block font-serif text-xl leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-2xl">
+          <span dir="auto" className="block font-serif text-xl leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-2xl">
             {item.title}
           </span>
           {item.subtitle && (
-            <span className="mt-1.5 block max-w-3xl font-serif text-base italic leading-snug text-ink-soft">
+            <span dir="auto" className="mt-1.5 block max-w-3xl font-serif text-base italic leading-snug text-ink-soft">
               {item.subtitle}
             </span>
           )}
@@ -283,7 +283,7 @@ export function ResearchRow({
                 >
                   {copy.abstract}
                 </p>
-                <h3 className="mt-4 pe-8 font-serif text-2xl leading-snug text-ink sm:text-3xl">
+                <h3 dir="auto" className="mt-4 pe-8 font-serif text-2xl leading-snug text-ink sm:text-3xl">
                   {item.title}
                 </h3>
                 {item.subtitle && (
@@ -302,7 +302,9 @@ export function ResearchRow({
                   }`}
                 />
 
-                <p className="mt-7 text-base leading-[1.75] text-ink-soft">{item.abstract}</p>
+                <p dir="auto" className="mt-7 text-base leading-[1.75] text-ink-soft">
+                  {item.abstract}
+                </p>
 
                 {/* An abstract is a published claim, and this is a
                     translation of one. A reader who wants to check a term
