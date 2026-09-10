@@ -5,6 +5,32 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 import type { Dictionary } from "@/content/i18n/en";
 import { en } from "@/content/i18n/en";
 
+/**
+ * That this browser has subscribed, remembered locally.
+ *
+ * Only the pop-up reads it, to decide whether to ask again or simply
+ * remind. It is a convenience, not a claim: the list itself lives in the
+ * database, and clearing it only means being asked once more.
+ */
+const SUBSCRIBED = "thb-subscribed";
+
+export function markSubscribed() {
+  try {
+    window.localStorage.setItem(SUBSCRIBED, "1");
+  } catch {
+    // Storage blocked. They will be asked again, which is the safe way to
+    // be wrong about this.
+  }
+}
+
+export function hasSubscribed(): boolean {
+  try {
+    return window.localStorage.getItem(SUBSCRIBED) === "1";
+  } catch {
+    return false;
+  }
+}
+
 export function NewsletterForm({
   copy = en.newsletter,
   /** Set where the form sits on a dark ground, as it does in the pop-up. */
@@ -39,6 +65,7 @@ export function NewsletterForm({
         setStatus("error");
         return;
       }
+      markSubscribed();
       setStatus("done");
     } catch {
       setError(copy.failed);

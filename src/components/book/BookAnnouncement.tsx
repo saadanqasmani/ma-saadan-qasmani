@@ -3,23 +3,33 @@
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { NewsletterForm } from "@/components/forms/NewsletterForm";
+import { NewsletterForm, hasSubscribed } from "@/components/forms/NewsletterForm";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import type { Dictionary } from "@/content/i18n/en";
 import { stripLocale } from "@/lib/i18n/config";
 
-/** Remembered per browser, so the panel is a first meeting and not a habit. */
-const SEEN = "thb-announcement-seen";
+/**
+ * Remembered for the length of one visit, not for good.
+ *
+ * Session storage rather than local: moving between pages inside a visit
+ * must not reopen it, but coming back tomorrow should. Which panel opens
+ * then depends on whether the address was ever left.
+ */
+const VISIT = "thb-announcement-visit";
 
 /**
  * The one interruption on the site: the novel is coming, and here is where
  * to leave an address for the day it does.
  *
  * It waits a moment before appearing, so the page a reader came for gets to
- * arrive first. It closes on Escape, on the backdrop, and on its own button.
- * Once closed it stays closed, on this browser, for good — the point is to
- * tell someone something they did not know, and after the first time they
- * know it.
+ * arrive first. It closes on Escape, on the backdrop, and on its own button,
+ * and stays closed for the rest of that visit.
+ *
+ * It opens once per visit, and says one of two things. To someone who has
+ * never left an address it makes the same offer as before, because the offer
+ * has not been answered. To someone already on the list it drops the form
+ * and becomes a reminder that the date is coming — asking a subscriber to
+ * subscribe is the fastest way to look like you are not paying attention.
  *
  * A native <dialog> rather than a div: focus goes in and stays in, Escape
  * works, and the rest of the page is inert for a screen reader without any
@@ -36,26 +46,41 @@ export function BookAnnouncement({
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [mounted, setMounted] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
   const pathname = usePathname();
 
   // Nobody needs to be told about the novel on the novel's own page.
   const onNovelPage = stripLocale(pathname || "/").startsWith("/the-highest-branch");
 
+  const remember = useCallback(() => {
+    try {
+      window.sessionStorage.setItem(VISIT, "1");
+    } catch {
+      // Nothing to remember it with. It will open again on the next page,
+      // which is worse than it should be but better than never opening.
+    }
+  }, []);
+
   useEffect(() => {
     if (onNovelPage) return;
 
-    let seen = true;
+    let shownThisVisit = false;
     try {
-      seen = window.localStorage.getItem(SEEN) === "1";
+      shownThisVisit = window.sessionStorage.getItem(VISIT) === "1";
     } catch {
-      // A browser with storage blocked: show it, rather than never showing it.
-      seen = false;
+      // Storage blocked: show it, rather than never showing it.
     }
-    if (seen) return;
+    if (shownThisVisit) return;
 
-    const timer = window.setTimeout(() => setMounted(true), 1400);
+    const timer = window.setTimeout(() => {
+      // Read at opening time, not at mount: a reader who subscribed a moment
+      // ago on this very page should not be asked again on the next one.
+      setSubscribed(hasSubscribed());
+      setMounted(true);
+      remember();
+    }, 1400);
     return () => window.clearTimeout(timer);
-  }, [onNovelPage]);
+  }, [onNovelPage, remember]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -63,14 +88,6 @@ export function BookAnnouncement({
     if (!node || node.open) return;
     node.showModal();
   }, [mounted]);
-
-  const remember = useCallback(() => {
-    try {
-      window.localStorage.setItem(SEEN, "1");
-    } catch {
-      // Nothing to remember it with. It will ask again next time.
-    }
-  }, []);
 
   const close = useCallback(() => {
     remember();
@@ -130,14 +147,23 @@ export function BookAnnouncement({
           <p className="mt-3.5 font-serif text-[0.95rem] leading-relaxed text-canvas-light/85">
             {copy.body}
           </p>
-          <p className="mt-4 text-sm leading-relaxed text-canvas-light/70">{copy.ask}</p>
+          {subscribed ? (
+            <p className="mt-4 flex items-start gap-2.5 text-sm leading-relaxed text-canvas-light/70">
+              <span aria-hidden className="mt-2 block h-px w-4 shrink-0 bg-ember-light" />
+              {copy.onList}
+            </p>
+          ) : (
+            <>
+              <p className="mt-4 text-sm leading-relaxed text-canvas-light/70">{copy.ask}</p>
 
-          <div className="mt-5">
-            <NewsletterForm
-              tone="light"
-              copy={{ ...newsletter, subscribe: copy.submit, sending: copy.sending, done: copy.done, placeholder: copy.placeholder }}
-            />
-          </div>
+              <div className="mt-5">
+                <NewsletterForm
+                  tone="light"
+                  copy={{ ...newsletter, subscribe: copy.submit, sending: copy.sending, done: copy.done, placeholder: copy.placeholder }}
+                />
+              </div>
+            </>
+          )}
 
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
             <LocaleLink
@@ -148,13 +174,15 @@ export function BookAnnouncement({
               <span className="inline-block h-px w-5 bg-current transition-all duration-300 group-hover:w-8" />
               {copy.readMore}
             </LocaleLink>
-            <button
-              type="button"
-              onClick={close}
-              className="text-xs uppercase tracking-[0.16em] text-canvas-light/55 transition-colors hover:text-canvas-light"
-            >
-              {copy.later}
-            </button>
+            {!subscribed && (
+              <button
+                type="button"
+                onClick={close}
+                className="text-xs uppercase tracking-[0.16em] text-canvas-light/55 transition-colors hover:text-canvas-light"
+              >
+                {copy.later}
+              </button>
+            )}
           </div>
         </div>
       </div>

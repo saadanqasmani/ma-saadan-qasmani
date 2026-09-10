@@ -51,6 +51,7 @@ export const ar: DictionaryOverlay = {
     readMore: "اقرأ عن الرواية",
     dismiss: "إغلاق",
     later: "ليس الآن",
+    onList: "أنت على القائمة. سأكتب إليك يوم الصدور.",
   },
 
   newsletter: {
@@ -202,6 +203,7 @@ export const ar: DictionaryOverlay = {
     comingSoonBody:
       "أنت على القائمة، فكل مقال سيصلك حال نشره. هنا ستعيش الكتابة التي تقف بين البحث والرواية.",
     coverLabel: "الغلاف",
+    readNote: "اقرأ الملاحظة",
     gate: {
       eyebrow: "للمشتركين",
       heading: "المقالات والملاحظات للمشتركين.",

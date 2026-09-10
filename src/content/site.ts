@@ -474,23 +474,21 @@ let the counting end.
 
 I wanted to begin there, because everything under it is only detail.
 
-My work is with international students. For years I have stood in rooms in twelve countries, in front of people from more than seventy, running training on intercultural competence, building partnerships between institutions, and helping students get from one country to another in one piece. Some of those rooms were UNESCO Peace and Diplomacy Programmes, in Turkiye, Pakistan, Nepal and Iraq. When I am not in them I am in Istanbul, writing about the same thing from the other side: the political economy of internationalization, the way countries brand themselves through the students they attract, and how quickly a student can turn, in a government's language, from an asset into a risk.
+My work is with international students. For years I have stood in rooms in different countries, in front of people from around the world, running training on intercultural competence, building partnerships between institutions, and helping students get from one country to another in one piece. Some of those rooms were UNESCO Peace and Diplomacy Programmes. When I am not in them I am in Istanbul, writing about the same thing from the other side: the political economy of internationalization, the way countries brand themselves through the students they attract, and how quickly a student can turn, in a government's language, from an asset into a risk.
 
 Those two halves rarely speak to each other. The people who do this work seldom publish. The people who publish seldom sit in the rooms. I have done both, and I have never been able to write a sentence about one without the other pulling at my sleeve.
 
 And then there is the novel.
 
-The Highest Branch is about a boy who crosses a pass at seventeen, leaving a forest he knows by its seasons for a country that measures time in semesters. I am not going to pretend that boy is a stranger to me. He is not me, not exactly. But the crossing is mine, and so is most of what came after it: the first winter, the language that arrives long before the belonging does, the phone calls home in which everything is going well, the slow and unannounced business of becoming someone your own mother might not entirely recognise. I wrote a hundred and forty-four thousand words across twenty-nine chapters because I went looking for that book on a shelf, could not find it, and could not leave it unwritten.
+The Highest Branch is about a young boy who leaves a home that he knows by its seasons for a country that measures time in semesters. I am not going to pretend that boy is a stranger to me. He is me. The journey is mine, and so is most of what came after it: the first winter, the language that arrives long before the belonging does, the phone calls home in which initially everything is going well, the slow and unannounced business of becoming someone a mother might not entirely recognise. I wrote a hundred and forty-four thousand words across twenty-nine chapters because I went looking for that book on a shelf, could not find it, and could not leave it unwritten.
 
 For years these three things lived in three separate places. The research in journals, the training in rooms that emptied at five o'clock, the novel in a drawer. Anyone who came across one of them had no way of knowing the others were there. This site is me putting them in one room and admitting, finally, what I had been slow to admit: that they were never three projects. They were one, approached from three directions.
 
-Who am I writing for. The student sitting in a visa queue with a folder of documents and no idea whether any of it will work. The one in a new city who has learned the word for thank you and not yet the word for lonely. The officer on the other side of the desk with forty files to get through before lunch, who does not know that each one is somebody's entire life. The colleague who has been running these programmes for a decade and has never once been asked what they learned.
+Who am I writing for. The student sitting in a visa queue with a folder of documents and no idea whether any of it will work. The one in a new city who has learned the word for thank you and not yet the word for lonely. The officer on the other side of the desk with a plethora of files to get through before lunch, who does not know that each one is somebody's entire life. The colleague who has been running these programmes for years and has never once been asked what they learned.
 
-What I want out of all of it is smaller than it sounds. I would like the next seventeen-year-old who crosses a pass to arrive somewhere that was expecting them. Not welcomed in a brochure. Expected. There is a difference, and everyone who has made that crossing knows exactly what it is.
+What I want out of all of it is smaller than it sounds. I would like the next youth who crosses a pass to arrive somewhere that was expecting them. Not welcomed in a brochure. Expected. There is a difference, and everyone who has made that crossing knows exactly what it is.
 
 Thank you for being here at the start of it.
-
-Because up is where things fall from.
 
 M. A. Saadan Qasmani`,
     coverImage: null,

@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { markSubscribed } from "@/components/forms/NewsletterForm";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import {
   subscribeAndUnlock,
@@ -26,6 +27,12 @@ export function JournalGate({ copy }: { copy: Dictionary["journal"]["gate"] }) {
   );
   const [codeState, codeAction, checking] = useActionState(unlockWithCode, initial);
   const locale = useLocale();
+
+  // Subscribing here counts the same as subscribing in the pop-up, so the
+  // pop-up stops asking.
+  useEffect(() => {
+    if (subState.subscribed) markSubscribed();
+  }, [subState.subscribed]);
 
   return (
     <div className="max-w-3xl border-t border-line pt-10">

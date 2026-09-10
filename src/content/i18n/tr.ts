@@ -54,6 +54,7 @@ export const tr: DictionaryOverlay = {
     readMore: "Roman hakkında",
     dismiss: "Kapat",
     later: "Şimdi değil",
+    onList: "Listedesiniz. O gün size yazacağım.",
   },
 
   newsletter: {
@@ -206,6 +207,7 @@ export const tr: DictionaryOverlay = {
     comingSoonBody:
       "Listedesiniz; her biri yayımlandığı anda size ulaşacak. Araştırmayla kurmaca arasında yazılanlar burada yaşayacak.",
     coverLabel: "Kapak",
+    readNote: "Notu okuyun",
     gate: {
       eyebrow: "Aboneler için",
       heading: "Denemeler ve notlar abonelere açık.",

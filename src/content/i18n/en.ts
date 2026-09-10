@@ -51,6 +51,7 @@ export const en = {
     readMore: "Read about the novel",
     dismiss: "Close",
     later: "Not now",
+    onList: "You are on the list. I will write on the day.",
   },
 
   newsletter: {
@@ -215,6 +216,7 @@ export const en = {
     comingSoonBody:
       "You are on the list, so each one reaches you as it is published. This is where the writing between the research and the fiction will live.",
     coverLabel: "Cover",
+    readNote: "Read the note",
     gate: {
       eyebrow: "For subscribers",
       heading: "The essays and notes are for subscribers.",

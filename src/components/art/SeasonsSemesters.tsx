@@ -1,11 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import {
-  animate,
   motion,
-  useInView,
-  useMotionValue,
   useReducedMotion,
   useScroll,
   useTransform,
@@ -102,33 +99,36 @@ function Form({
  * the art is small enough that the change in it is easy to miss, and a
  * thumb-flick gives none of the fine control the effect was built for — so
  * people stop scrolling and leave, believing they have reached the bottom.
- * There the section is an ordinary one that scrolls past like any other, and
- * the morph plays itself once when it comes into view.
+ * There the section scrolls past like any other, and the morph is tied to
+ * the section's own travel through the viewport instead of to a pin.
+ *
+ * Tied to scroll on both, and so reversible on both: scroll back up and the
+ * city returns to forest. It played once on a timer before, which left a
+ * reader who scrolled back up looking at a city that would not undo itself.
  */
 export function SeasonsSemesters({ copy }: { copy: Dictionary["seasons"] }) {
   const reduced = useReducedMotion();
   const isDesktop = useIsDesktop();
   const ref = useRef<HTMLDivElement>(null);
+  // Two readings of the same section. Pinned, the section is taller than the
+  // screen and its own top-to-bottom travel is the range. Unpinned, it is
+  // shorter than the screen, so the range has to be its passage across the
+  // viewport instead, or the morph would have almost no room to run in.
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
   });
+  const { scrollYProgress: passing } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
 
-  // The phone's version of the same value: time rather than scroll position.
-  const played = useMotionValue(0);
-  const inView = useInView(ref, { once: true, amount: 0.4 });
+  // That unpinned range covers the whole approach and departure, so taken raw
+  // the last tower would convert with the art already sliding off the top.
+  // Squeezing it into the middle keeps the change where it can be watched.
+  const centred = useTransform(passing, [0.15, 0.72], [0, 1], { clamp: true });
 
-  useEffect(() => {
-    if (isDesktop || !inView) return;
-    if (reduced) {
-      played.set(1);
-      return;
-    }
-    const run = animate(played, 1, { duration: 2.6, ease: [0.4, 0, 0.2, 1] });
-    return () => run.stop();
-  }, [isDesktop, inView, reduced, played]);
-
-  const progress = isDesktop ? scrollYProgress : played;
+  const progress = isDesktop ? scrollYProgress : centred;
 
   // Both statements stay readable throughout; emphasis moves between them
   // rather than crossfading two different texts over each other. Only where

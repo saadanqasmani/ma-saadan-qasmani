@@ -46,6 +46,7 @@ export const de: DictionaryOverlay = {
     readMore: "Mehr über den Roman",
     dismiss: "Schließen",
     later: "Jetzt nicht",
+    onList: "Sie stehen auf der Liste. Am Tag des Erscheinens schreibe ich Ihnen.",
   },
 
   newsletter: {
@@ -198,6 +199,7 @@ export const de: DictionaryOverlay = {
     comingSoonBody:
       "Sie stehen auf der Liste, jeder Text erreicht Sie also, sobald er erscheint. Hier wird das leben, was zwischen der Forschung und der Fiktion geschrieben wird.",
     coverLabel: "Titelbild",
+    readNote: "Notiz lesen",
     gate: {
       eyebrow: "Für Abonnenten",
       heading: "Die Essays und Notizen sind für Abonnenten.",

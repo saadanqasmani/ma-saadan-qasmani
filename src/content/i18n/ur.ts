@@ -50,6 +50,7 @@ export const ur: DictionaryOverlay = {
     readMore: "ناول کے بارے میں پڑھیں",
     dismiss: "بند کریں",
     later: "ابھی نہیں",
+    onList: "آپ فہرست میں شامل ہیں۔ اشاعت کے دن میں آپ کو لکھوں گا۔",
   },
 
   newsletter: {
@@ -201,6 +202,7 @@ export const ur: DictionaryOverlay = {
     comingSoonBody:
       "آپ فہرست میں شامل ہیں، اِس لیے ہر تحریر اشاعت کے ساتھ ہی آپ تک پہنچے گی۔ یہیں وہ تحریر رہے گی جو تحقیق اور افسانے کے درمیان لکھی جاتی ہے۔",
     coverLabel: "سرورق",
+    readNote: "نوٹ پڑھیے",
     gate: {
       eyebrow: "اراکین کے لیے",
       heading: "مضامین اور یادداشتیں اراکین کے لیے ہیں۔",

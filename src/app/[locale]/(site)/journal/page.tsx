@@ -87,7 +87,10 @@ export default async function JournalPage({ params }: Params) {
             <Reveal key={post.slug} delay={i * 0.05}>
               <LocaleLink
                 href={`/journal/${post.slug}`}
-                className="group grid gap-6 border-b border-line py-10 transition-colors hover:bg-canvas-light sm:grid-cols-[7rem_14rem_1fr] sm:gap-8"
+                /* A card, not a row of text. On a phone there is no hover to
+                   discover, so the border, the lift on press, and the "read
+                   the note" line have to say on their own that this opens. */
+                className="group -mx-3 mb-6 grid gap-5 border border-line bg-canvas-light/40 p-5 transition-colors duration-300 hover:border-ink/25 hover:bg-canvas-light active:bg-canvas-light sm:mx-0 sm:mb-0 sm:grid-cols-[7rem_14rem_1fr] sm:gap-8 sm:border-x-0 sm:border-b sm:border-t-0 sm:bg-transparent sm:p-0 sm:py-10"
               >
                 <p className="text-xs uppercase tracking-[0.12em] text-ink-faint">
                   {post.category}
@@ -96,14 +99,21 @@ export default async function JournalPage({ params }: Params) {
                     {post.readingTime} · {post.date}
                   </span>
                 </p>
-                <Figure
-                  src={post.coverImage}
-                  alt={post.title}
-                  label={t.coverLabel}
-                  spec="1600 × 1000 px"
-                  ratio="16 / 10"
-                  tone="azure"
-                />
+                {/* A note without a picture is not a note missing one. The
+                    placeholder is for an editor filling a slot, and on a card
+                    a reader sees it takes more room than the writing does. */}
+                {post.coverImage ? (
+                  <Figure
+                    src={post.coverImage}
+                    alt={post.title}
+                    label={t.coverLabel}
+                    spec="1600 × 1000 px"
+                    ratio="16 / 10"
+                    tone="azure"
+                  />
+                ) : (
+                  <div className="hidden sm:block" aria-hidden />
+                )}
                 <div>
                   <h2 dir="auto" className="font-display text-3xl leading-tight text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-4xl">
                     {post.title}
@@ -116,6 +126,15 @@ export default async function JournalPage({ params }: Params) {
                   <p dir="auto" className="mt-3 max-w-2xl text-base leading-relaxed text-ink-soft">
                     {post.excerpt}
                   </p>
+                  <span className="mt-5 inline-flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-ember">
+                    {t.readNote}
+                    <span
+                      aria-hidden
+                      className="inline-block transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180"
+                    >
+                      &rarr;
+                    </span>
+                  </span>
                 </div>
               </LocaleLink>
             </Reveal>

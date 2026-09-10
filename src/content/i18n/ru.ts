@@ -46,6 +46,7 @@ export const ru: DictionaryOverlay = {
     readMore: "Подробнее о романе",
     dismiss: "Закрыть",
     later: "Не сейчас",
+    onList: "Вы в списке. Я напишу вам в день выхода.",
   },
 
   newsletter: {
@@ -198,6 +199,7 @@ export const ru: DictionaryOverlay = {
     comingSoonBody:
       "Вы в списке, поэтому каждое дойдёт до вас, как только выйдет. Здесь будет жить то, что пишется между исследованием и вымыслом.",
     coverLabel: "Обложка",
+    readNote: "Читать заметку",
     gate: {
       eyebrow: "Для подписчиков",
       heading: "Эссе и заметки — для подписчиков.",
