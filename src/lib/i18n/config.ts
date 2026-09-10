@@ -11,7 +11,7 @@
  * language they asked for in the URL is the language they get.
  */
 
-export const locales = ["en", "ar", "ru", "ur", "de"] as const;
+export const locales = ["en", "ar", "ru", "ur", "de", "tr"] as const;
 
 export type Locale = (typeof locales)[number];
 
@@ -37,6 +37,7 @@ export const localeMeta: Record<Locale, LocaleMeta> = {
   ru: { label: "Русский", english: "Russian", dir: "ltr", tag: "ru" },
   ur: { label: "اردو", english: "Urdu", dir: "rtl", tag: "ur" },
   de: { label: "Deutsch", english: "German", dir: "ltr", tag: "de" },
+  tr: { label: "Türkçe", english: "Turkish", dir: "ltr", tag: "tr" },
 };
 
 export function isLocale(value: string | undefined): value is Locale {

@@ -23,6 +23,7 @@ const overlays: Record<Exclude<Locale, "en">, () => Promise<DictionaryOverlay>> 
   ru: () => import("@/content/i18n/ru").then((m) => m.ru),
   ur: () => import("@/content/i18n/ur").then((m) => m.ur),
   de: () => import("@/content/i18n/de").then((m) => m.de),
+  tr: () => import("@/content/i18n/tr").then((m) => m.tr),
 };
 
 /**

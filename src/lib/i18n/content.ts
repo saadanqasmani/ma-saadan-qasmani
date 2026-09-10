@@ -85,6 +85,7 @@ const overlays: Record<Exclude<Locale, "en">, () => Promise<ContentOverlay>> = {
   ru: () => import("@/content/i18n/ru").then((m) => m.ruContent),
   ur: () => import("@/content/i18n/ur").then((m) => m.urContent),
   de: () => import("@/content/i18n/de").then((m) => m.deContent),
+  tr: () => import("@/content/i18n/tr").then((m) => m.trContent),
 };
 
 /**

@@ -30,21 +30,23 @@ import type { Locale } from "@/lib/i18n/config";
 
 const instrumentSerif = Instrument_Serif({
   variable: "--font-latin-display",
-  subsets: ["latin"],
+  // latin-ext carries ı, ğ, ş and the dotted capital İ. Without it Turkish
+  // falls back mid-word and the page changes typeface inside a name.
+  subsets: ["latin", "latin-ext"],
   weight: "400",
   style: ["normal", "italic"],
 });
 
 const newsreader = Newsreader({
   variable: "--font-latin-serif",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   style: ["normal", "italic"],
   weight: ["300", "400", "500", "600"],
 });
 
 const instrumentSans = Instrument_Sans({
   variable: "--font-latin-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["400", "500", "600"],
 });
 
@@ -96,6 +98,7 @@ const latin = `${instrumentSerif.variable} ${newsreader.variable} ${instrumentSa
 const byLocale: Record<Locale, string> = {
   en: latin,
   de: latin,
+  tr: latin,
   ar: `${latin} ${amiri.variable} ${notoSansArabic.variable}`,
   ur: `${latin} ${notoNastaliqUrdu.variable}`,
   ru: `${latin} ${literata.variable} ${inter.variable}`,
