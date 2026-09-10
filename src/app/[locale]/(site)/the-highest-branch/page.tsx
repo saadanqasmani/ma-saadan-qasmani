@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { BookCover3D } from "@/components/book/BookCover3D";
 import { Reveal } from "@/components/ui/Reveal";
 import { SplitText } from "@/components/ui/SplitText";
 import { Counter } from "@/components/ui/Counter";
@@ -119,25 +118,14 @@ export default async function HighestBranchPage({ params }: Params) {
               <Reveal>
                 <p className="eyebrow">{t.theBook}</p>
               </Reveal>
-              {highestBranch.coverImage ? (
-                <Reveal delay={0.1}>
-                  <BookCover3D
-                    src={highestBranch.coverImage}
-                    alt={fill(t.coverAlt, { title: highestBranch.title })}
-                    sizes="(min-width: 1024px) 24rem, 70vw"
-                    className="max-w-sm"
-                  />
-                </Reveal>
-              ) : (
-                <Figure
-                  src={null}
-                  alt={fill(t.coverAlt, { title: highestBranch.title })}
-                  label={t.coverLabel}
-                  spec="Cover artwork · 1600 × 2400 px"
-                  ratio="529 / 830"
-                  tone="ember"
-                />
-              )}
+              <Figure
+                src={highestBranch.coverImage}
+                alt={fill(t.coverAlt, { title: highestBranch.title })}
+                label={t.coverLabel}
+                spec="Cover artwork · 1600 × 2400 px"
+                ratio="529 / 830"
+                tone="ember"
+              />
             </div>
 
             <div>

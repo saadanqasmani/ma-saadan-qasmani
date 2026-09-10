@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BookCover3D } from "@/components/book/BookCover3D";
 import { NewsletterForm, hasSubscribed } from "@/components/forms/NewsletterForm";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import type { Dictionary } from "@/content/i18n/en";
@@ -124,7 +124,13 @@ export function BookAnnouncement({
 
         {cover && (
           <div className="shrink-0 self-start">
-            <BookCover3D src={cover} alt="" sizes="9rem" className="w-28 sm:w-36" />
+            <Image
+              src={cover}
+              alt=""
+              width={132}
+              height={200}
+              className="h-auto w-24 border border-canvas-light/25 shadow-[0_16px_36px_-18px_rgba(0,0,0,0.7)] sm:w-32"
+            />
           </div>
         )}
 
