@@ -428,4 +428,186 @@ export const de: DictionaryOverlay = {
   },
 };
 
-export const deContent: ContentOverlay = {};
+export const deContent: ContentOverlay = {
+  person: {
+    positioning: "Autor, Forscher und Stratege",
+    location: "Istanbul, Türkiye",
+    bio: "Saadan Qasmani ist Internationalisierungsfachmann, Forscher und Romanautor mit Sitz in Istanbul. Er ist Global Engagement and Brand Strategist und Mitgründer von IRIS, einer SaaS-Plattform für das Management von Internationalisierung. Seine praktische Arbeit umfasst Studierendengewinnung, Partnerschaftsmanagement und Trainings zu interkultureller Kompetenz, durchgeführt in zwölf Ländern mit Teilnehmenden aus über siebzig Nationen, darunter die UNESCO Peace and Diplomacy Programmes, in Türkiye, Pakistan, Nepal und im Irak. Er absolviert einen Master in Politikwissenschaft und Internationalen Beziehungen an der Istanbul Aydın University, wo er außerdem das Model-United-Nations-Programm des Campus und STARLIGHT gegründet hat. Seine Forschung befasst sich mit der politischen Ökonomie der Internationalisierung, dem Nation Branding und der Versicherheitlichung internationaler Studierender.",
+    practitionerNote:
+      "Praktische Arbeit in Studierendengewinnung, Partnerschaftsmanagement und Trainings zur Entwicklung interkultureller Kompetenz (ICD), durchgeführt in 12 Ländern mit Teilnehmenden aus mehr als 70 Nationen, darunter die UNESCO Peace and Diplomacy Programmes, in Türkiye, Pakistan, Nepal und im Irak.",
+    roles: [
+      { title: "Direktor für Global Engagement & Brand Strategy" },
+      { title: "Mitgründer", org: "IRIS — SaaS-Plattform für Internationalisierungsmanagement" },
+      { title: "Masterstudent, Politikwissenschaft und Internationale Beziehungen" },
+    ],
+    founded: [
+      { name: "Model-United-Nations-Programm" },
+      { name: "STARLIGHT" },
+    ],
+    honors: [
+      {
+        title: "Presidential Award of Service and Excellence",
+        org: "STAR Global Conference 2024, Kathmandu University, Nepal",
+      },
+    ],
+  },
+
+  book: {
+    genre: "Allegorische literarische Fiktion, erzählt als Fabel",
+    tagline: "Denn oben ist da, wo die Dinge herunterfallen.",
+    status: "Erscheint am 19. Oktober 2026",
+    synopsis:
+      "Mit siebzehn überquert ein Junge den Pass und verlässt einen Wald, den er an seinen Jahreszeiten kennt, für ein Land, das die Zeit in Semestern misst. Was folgt, ist eine Fabel des Ankommens, der langsamen Architektur der Zugehörigkeit und ihres Preises, erzählt über die Jahre hinweg, die aus einem Studenten jemanden machen, den seine eigene Mutter womöglich nicht wiedererkennt.",
+    subject:
+      "Die Erfahrung internationaler Studierender, verfolgt am Leben eines Protagonisten von der Jugend bis durch einen beruflichen und akademischen Weg im Ausland.",
+    amazonRegions: "Europäische Union & Amerika",
+    directRegions: "Türkiye & Pakistan",
+    directNote:
+      "Direktbestellung — die Zahlungsdaten werden nach der Prüfung von Hand zugesandt, nie automatisch.",
+  },
+
+  instrumentLabel: "IMG- und IPI-Rechner",
+  instrumentDefinition:
+    "Zwei ökonometrische Instrumente (Gültekin & Qasmani). IMG misst, wie groß die Lücke im Internationalisierungsmanagement einer Institution ist, aus Informationsasymmetrie, Fragmentierung der Arbeitsabläufe und Defizit der digitalen Infrastruktur. IPI misst die Fähigkeit, diese Lücke zu schließen, aus dem Engagement der Leitung und der Bereitschaft der Lehrenden. Zusammen gelesen ordnen sie eine Institution einem von vier Profilen zu.",
+
+  researchNote: {
+    before: "Alle Forschung hier entsteht in Zusammenarbeit mit ",
+    after: " oder als Erweiterung seiner Arbeit.",
+  },
+
+  work: {
+    iris: {
+      title: "IRIS — International Relations Intelligent System",
+      summary:
+        "Mitgegründet mit EduYork. Internationalisierung, verwandelt von einem Verwaltungsvorgang in eine strategische, messbare, datengetriebene Funktion, auf Grundlage der ökonometrischen Rahmenwerke IMG und IPI.",
+    },
+    icd: {
+      title: "Entwicklung interkultureller Kompetenz",
+      summary:
+        "Trainings für Studierende, Lehrende und Verwaltung, entworfen um den Befund herum, dass interkulturelle Kompetenz eine Eigenschaft der Institution ist und nicht des Einzelnen. Durchgeführt in Türkiye, Pakistan, im Irak, in Nepal und in Deutschland.",
+    },
+    "star-scholars-global-engagement": {
+      title: "Global Engagement & Brand Strategy",
+      summary:
+        "Leitung von globalem Engagement und Markenstrategie für ein Netzwerk aus 115 Ländern, 2.353 Universitäten und mehr als 20.000 Wissenschaftlerinnen und Wissenschaftlern.",
+      linkLabel: "STAR Scholars besuchen",
+    },
+    "international-student-recruitment": {
+      title: "Internationale Studierendengewinnung",
+      summary:
+        "Gewinnung in Türkiye, Pakistan, Nepal und im Irak, betrieben auf einem gestuften Partnerschaftsmodell: Agenturen steigen von der Erstansprache zur höchsten Stufe durch beständige Konversion, verlässliche Kommunikation und die Qualität ihrer Empfehlungen, wobei jede Stufe eigene Anreize und einen eigenen Prüfzyklus trägt.",
+    },
+    "unesco-peace-diplomacy": {
+      title: "UNESCO Peace and Diplomacy Programmes",
+      summary:
+        "Kurzzeitige internationale Programme unter dem UNESCO-Lehrstuhl, mit der Entwicklung interkultureller Kompetenz im Zentrum.",
+      linkLabel: "Zur Programmseite",
+    },
+  },
+
+  marks: {
+    istanbul: {
+      hint: "Von wo aus die Arbeit geschrieben wird",
+      title: "Istanbul",
+      line: "Die Stadt, aus der das ganze Archiv geschrieben ist.",
+    },
+    seasons: {
+      hint: "Zwei Uhren, ein Leben",
+      title: "Jahreszeiten und Semester",
+      line: "Der zentrale Gegensatz des Romans: Zeit, die wiederkehrt, gegen Zeit, die abläuft.",
+    },
+    nationalities: {
+      hint: "Im Trainingsraum gezählt",
+      title: "Siebzig Nationalitäten",
+      line: "Trainings zu interkultureller Kompetenz, durchgeführt in zwölf Ländern mit Teilnehmenden aus mehr als siebzig Nationen.",
+    },
+    unesco: {
+      hint: "Vier Länder, ein Programm",
+      title: "Türkiye, Pakistan, Nepal, Irak",
+      line: "UNESCO Peace and Diplomacy Programmes.",
+    },
+    trilogy: {
+      hint: "Drei Papiere, die zusammengehören",
+      title: "Die Korruptionstrilogie",
+      line: "Marginalisierung (n = 580), Selling Merit und das dritte Papier der Reihe.",
+    },
+    founded: {
+      hint: "Zwei Dinge, auf einem Campus begonnen",
+      title: "Gegründet an der Istanbul Aydın",
+      line: "Das Model-United-Nations-Programm des Campus und STARLIGHT.",
+    },
+    branch: {
+      hint: "Der höchste",
+      title: "The Highest Branch",
+      line: "Neunundzwanzig Kapitel. Einhundertvierundvierzigtausend Wörter.",
+    },
+  },
+
+  media: {
+    "star-scholars-global-engagement": {
+      title: "Global Engagement & Brand Strategy",
+      captions: [
+        "Am Stand des STAR Scholars Network",
+        "STAR Global Conference 2024, Kathmandu University",
+        "Vor der Konferenzwand",
+        "Vor dem Konferenzprogramm",
+        "Der Stand des STAR Scholars Network",
+        "Delegierte auf der STAR Global Conference 2024",
+        "Delegierte vor dem Veranstaltungsort",
+        "Mit einem Kollegen auf der Konferenz",
+        "Kathmandu University, STAR Global Conference 2024",
+      ],
+    },
+    "unesco-peace-diplomacy": {
+      title: "UNESCO Peace and Diplomacy Programmes",
+      captions: [
+        "Bei der Leitung einer Sitzung",
+        "Mit dem Team des UNESCO-Programms",
+        "Mit der gastgebenden Institution",
+        "Vor dem Veranstaltungsort",
+      ],
+    },
+    "international-student-recruitment": {
+      title: "Internationale Studierendengewinnung",
+      captions: [
+        "Auf der Messe, Stand der İstanbul Nişantaşı University",
+        "Im Gespräch mit einer Interessentin über das Angebot",
+        "Am Stand",
+      ],
+    },
+    icd: {
+      title: "ICD-Training",
+      captions: [
+        "Bei der Leitung einer Sitzung",
+        "Eine laufende Sitzung",
+        "Vortrag über die Marginalisierung der internationalen Studierendenschaft",
+        "Die gesamte Gruppe",
+        "Workshop „ICD in Higher Education“, Kathmandu, Nepal",
+        "Teilnehmende zwischen den Sitzungen",
+      ],
+    },
+    award: {
+      title: "Presidential Award of Service and Excellence",
+      captions: [
+        "Die Auszeichnung, STAR Global Conference 2024",
+        "Mit Dr. Osman Gültekin, Kathmandu University, Nepal",
+      ],
+    },
+    mun: {
+      title: "Model United Nations",
+      captions: [
+        "Auf der Bühne bei IAUMUN",
+        "Delegierte und Organisatoren, Istanbul Aydın University",
+        "Die Eröffnungssitzung",
+        "Ein Ausschuss in Sitzung",
+        "Entgegennahme einer Urkunde auf der Konferenz",
+        "Ein Ausschussraum",
+        "Ausschussarbeit",
+      ],
+    },
+    starlight: {
+      title: "STARLIGHT",
+      captions: ["Ein STARLIGHT-Titelbild", "Mit Exemplaren des Magazins"],
+    },
+  },
+};

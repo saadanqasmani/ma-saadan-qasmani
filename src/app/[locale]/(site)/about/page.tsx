@@ -27,7 +27,6 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   ]);
 
   const said = content.person(person);
-
   return {
     title: dict.about.eyebrow,
     description: fill(dict.about.metaDescription, {
@@ -48,6 +47,14 @@ export default async function AboutPage({ params }: Params) {
   ]);
   const t = dict.about;
   const said = content.person(person);
+  /*
+   * The roles, paired with the organisation name as it was written.
+   *
+   * orgLinks is keyed by that English name, so a translated role must still
+   * look its link up by the original — otherwise translating "Istanbul
+   * Aydın University" would quietly turn its link into plain text.
+   */
+  const roles = said.roles.map((role, i) => ({ ...role, href: orgLinks[person.roles[i].org] }));
 
   return (
     <>
@@ -92,23 +99,23 @@ export default async function AboutPage({ params }: Params) {
               <div>
                 <h2 className="font-display text-3xl sm:text-4xl">{t.currentRoles}</h2>
                 <ul className="mt-8 border-t border-line">
-                  {said.roles.map((role, i) => (
+                  {roles.map((role, i) => (
                     <Reveal key={role.title} delay={i * 0.06}>
                       <li className="grid gap-1 border-b border-line py-6 sm:grid-cols-[1fr_auto] sm:items-baseline sm:gap-8">
                         <span className="font-serif text-xl text-ink">{role.title}</span>
-                        {orgLinks[role.org] ? (
+                        {role.href ? (
                           // An internal path opens in place; an external site
                           // opens in its own tab.
-                          orgLinks[role.org]!.startsWith("/") ? (
+                          role.href.startsWith("/") ? (
                             <LocaleLink
-                              href={orgLinks[role.org]!}
+                              href={role.href}
                               className="text-sm text-ink-soft underline decoration-azure decoration-1 underline-offset-4 transition-colors hover:text-azure"
                             >
                               {role.org}
                             </LocaleLink>
                           ) : (
                             <a
-                              href={orgLinks[role.org]!}
+                              href={role.href}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-sm text-ink-soft underline decoration-ember decoration-1 underline-offset-4 transition-colors hover:text-ember"
