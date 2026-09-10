@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FloatingGallery } from "@/components/media/FloatingGallery";
+import { PolaroidStrip } from "@/components/media/PolaroidStrip";
 import type { MediaSet } from "@/content/media";
 import type { Dictionary } from "@/content/i18n/en";
 import { fill } from "@/lib/i18n/dictionary";
@@ -27,18 +28,23 @@ export function GalleryTrigger({
 
   if (!set) return <>{children}</>;
 
+  const available = set.items.filter((item) => item.src).length;
+  const count =
+    available === 1
+      ? copy.photographCountOne
+      : fill(copy.photographCount, { count: available });
+
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label={fill(copy.openPhotographs, { name: label })}
-        className="group block w-full text-start"
+        className="group/gallery block w-full text-start"
       >
         {children}
-        <span className="mt-1.5 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-ink-faint transition-colors group-hover:text-ember">
-          <span className="inline-block h-px w-5 bg-current transition-all duration-300 group-hover:w-9" />
-          {copy.photographs}
+        <span className="mt-3 block">
+          <PolaroidStrip set={set} count={count} />
         </span>
       </button>
       <FloatingGallery set={set} open={open} onClose={() => setOpen(false)} copy={copy} />

@@ -363,3 +363,29 @@ body {
 .script-urdu :is(p, h1, h2, h3, h4, li, dd, dt, blockquote, figcaption) {
   unicode-bidi: plaintext;
 }
+
+/*
+ * The Polaroid stacks that open a gallery.
+ *
+ * Each print keeps its own tilt, set inline so a set always sits the same
+ * way. Reaching for the stack fans it out and lifts it — the small piece of
+ * feedback that says this is a thing you can pick up.
+ */
+.polaroid {
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.group\/gallery:hover .polaroid,
+.group\/gallery:focus-visible .polaroid {
+  transform: rotate(calc(var(--tilt, 0deg) * 1.85)) translateY(-5px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .polaroid,
+  .group\/gallery:hover .polaroid,
+  .group\/gallery:focus-visible .polaroid {
+    transform: rotate(var(--tilt, 0deg));
+    transition: none;
+  }
+}

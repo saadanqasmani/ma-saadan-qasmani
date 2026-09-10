@@ -396,6 +396,9 @@ export const en = {
   gallery: {
     eyebrow: "Gallery",
     photographs: "Photographs",
+    /** Under the stack of prints. {count} is how many there are. */
+    photographCount: "{count} photographs",
+    photographCountOne: "1 photograph",
     /** {name} is what the photographs are of. */
     openPhotographs: "Open photographs of {name}",
     close: "Close",

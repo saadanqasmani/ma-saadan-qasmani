@@ -4,6 +4,7 @@ import { useState } from "react";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { Reveal } from "@/components/ui/Reveal";
 import { FloatingGallery } from "@/components/media/FloatingGallery";
+import { PolaroidStrip } from "@/components/media/PolaroidStrip";
 import type { MediaSet } from "@/content/media";
 import type { WorkItem } from "@/content/site";
 import type { Dictionary } from "@/content/i18n/en";
@@ -169,18 +170,32 @@ export function WorkList({
                     {item.summary}
                   </p>
 
-                  <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
-                    {set && (
-                      <button
-                        type="button"
-                        onClick={() => setOpenSlug(item.slug)}
-                        className="group/v inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-soft transition-colors hover:text-ember"
-                      >
-                        <span className="inline-block h-px w-6 bg-current transition-all duration-300 group-hover/v:w-10" />
-                        {copy.viewGallery}
-                      </button>
-                    )}
+                  {/* The photographs, as photographs.
+                      A row that said "View gallery" in small caps was not
+                      being found: readers did not know a set of prints was
+                      behind it. A stack of prints is recognisable, and it is
+                      the whole control. */}
+                  {set && (
+                    <button
+                      type="button"
+                      onClick={() => setOpenSlug(item.slug)}
+                      aria-label={fill(copy.openGallery, { name: item.title })}
+                      className="group/gallery mt-5 block text-start"
+                    >
+                      <PolaroidStrip
+                        set={set}
+                        count={
+                          set.items.filter((m) => m.src).length === 1
+                            ? gallery.photographCountOne
+                            : fill(gallery.photographCount, {
+                                count: set.items.filter((m) => m.src).length,
+                              })
+                        }
+                      />
+                    </button>
+                  )}
 
+                  <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
                     {item.link && (
                       <a
                         href={item.link.url}
