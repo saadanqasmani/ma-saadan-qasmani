@@ -38,7 +38,7 @@ export const de: DictionaryOverlay = {
     eyebrow: "Erscheint am 19. Oktober 2026",
     heading: "The Highest Branch",
     body: "Mit siebzehn überquert ein Junge den Pass und verlässt einen Wald, den er an seinen Jahreszeiten kennt, für ein Land, das die Zeit in Semestern misst.",
-    ask: "Hinterlassen Sie eine Adresse, und Sie erfahren es an dem Tag, an dem es erscheint. Sonst nichts.",
+    ask: "Hinterlassen Sie eine Adresse, und Sie erfahren es an dem Tag, an dem es erscheint.",
     placeholder: "sie@beispiel.de",
     submit: "Benachrichtigen Sie mich",
     sending: "Wird gesendet",

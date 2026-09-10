@@ -43,7 +43,7 @@ export const en = {
     eyebrow: "Out 19 October 2026",
     heading: "The Highest Branch",
     body: "A boy crosses the pass at seventeen, leaving a forest he knows by its seasons for a country that measures time in semesters.",
-    ask: "Leave an address and you will hear the day it is out. Nothing else.",
+    ask: "Leave an address and you will hear the day it is out.",
     placeholder: "you@example.com",
     submit: "Tell me when it is out",
     sending: "Sending",

@@ -46,7 +46,7 @@ export const tr: DictionaryOverlay = {
     eyebrow: "19 Ekim 2026'da çıkıyor",
     heading: "The Highest Branch",
     body: "On yedi yaşında bir çocuk geçidi aşar; mevsimlerinden tanıdığı bir ormanı bırakıp zamanı dönemlerle ölçen bir ülkeye gider.",
-    ask: "Bir adres bırakın, çıktığı gün haberiniz olsun. Başka hiçbir şey için değil.",
+    ask: "Bir adres bırakın, çıktığı gün haberiniz olsun.",
     placeholder: "siz@ornek.com",
     submit: "Çıkınca haber verin",
     sending: "Gönderiliyor",

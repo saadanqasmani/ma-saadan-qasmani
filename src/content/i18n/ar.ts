@@ -43,7 +43,7 @@ export const ar: DictionaryOverlay = {
     eyebrow: "يصدر في ١٩ أكتوبر ٢٠٢٦",
     heading: "The Highest Branch",
     body: "في السابعة عشرة يعبر فتى الممرّ، تاركًا غابةً يعرفها بفصولها إلى بلدٍ يقيس الزمن بالفصول الدراسية.",
-    ask: "اترك عنوانك وستعرف يوم صدورها. لا شيء غير ذلك.",
+    ask: "اترك عنوانك وستعرف يوم صدورها.",
     placeholder: "you@example.com",
     submit: "أخبرني عند صدورها",
     sending: "جارٍ الإرسال",
