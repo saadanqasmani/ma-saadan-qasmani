@@ -2,7 +2,9 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "motion/react";
-import { recruitment } from "@/content/recruitment";
+import type { recruitment as RecruitmentContent } from "@/content/recruitment";
+import type { Dictionary } from "@/content/i18n/en";
+import { fill } from "@/lib/i18n/dictionary";
 
 /**
  * Two diagrams for the recruitment page.
@@ -27,11 +29,17 @@ function stageFill(i: number, count: number) {
 }
 
 /** The stages, narrowing left to right, drawn as they come into view. */
-export function Pipeline() {
+export function Pipeline({
+  stages,
+  copy,
+}: {
+  /** The stage names in the reader's language, resolved on the server. */
+  stages: typeof RecruitmentContent.pipeline | readonly string[];
+  copy: Dictionary["detail"]["recruitment"];
+}) {
   const ref = useRef<SVGSVGElement>(null);
   const inView = useInView(ref, { once: true, margin: "-15%" });
   const reduced = useReducedMotion();
-  const stages = recruitment.pipeline;
   const W = 640;
   const H = 190;
   const gap = 10;
@@ -39,7 +47,7 @@ export function Pipeline() {
 
   return (
     <svg ref={ref} viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img"
-      aria-label={`Recruitment pipeline: ${stages.join(", then ")}`}>
+      aria-label={fill(copy.pipelineLabel, { stages: stages.join(copy.pipelineJoin) })}>
       {stages.map((s, i) => {
         // Each stage is shorter than the last: the shape of a funnel without
         // asserting how much falls away at each step.
@@ -92,8 +100,21 @@ export function Pipeline() {
  * The climb is CSS so it costs nothing per frame, and it stops under reduced
  * motion, where the diagram still reads as three labelled tiers.
  */
-export function TierLadder({ label }: { label: string }) {
-  const tiers = recruitment.tiers;
+export function TierLadder({
+  tiers,
+  label,
+}: {
+  /** The tiers in the reader's language, resolved on the server. */
+  tiers: typeof RecruitmentContent.tiers | readonly {
+    n: string;
+    name: string;
+    status: string;
+    relationship: string;
+    incentives: string;
+    meetings: string;
+  }[];
+  label: string;
+}) {
   const W = 560;
   const rowH = 78;
   const gap = 14;

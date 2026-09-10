@@ -374,6 +374,10 @@ export const en = {
       sectionWhatItAnswers: "What it answers",
       sectionWorkingTogether: "Working together",
       thePipeline: "The pipeline",
+      /** {stages} is the pipeline's own stage names, already joined. */
+      pipelineLabel: "Recruitment pipeline: {stages}",
+      /** How the stage names are joined in that sentence. */
+      pipelineJoin: ", then ",
       marketIntelligence: "Market intelligence",
       movesUpOn: "A partner moves up on",
       tier: {

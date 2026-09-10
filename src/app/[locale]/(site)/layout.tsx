@@ -43,7 +43,14 @@ export default async function SiteLayout({
           <main id="main-content" className="flex-1">
             {children}
           </main>
-          <SiteFooter nav={dict.nav} footer={dict.footer} newsletter={dict.newsletter} />
+          <SiteFooter
+            nav={dict.nav}
+            footer={dict.footer}
+            newsletter={dict.newsletter}
+            translationNotice={
+              locale === defaultLocale ? undefined : dict.translation.machineNotice
+            }
+          />
           <MarginaliaPanel />
           <BookAnnouncement
             copy={dict.announcement}

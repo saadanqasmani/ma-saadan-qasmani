@@ -81,7 +81,7 @@ export default async function RecruitmentPage({ params }: Params) {
                   {copy.thePipeline}
                 </p>
                 <div className="mt-4">
-                  <Pipeline />
+                  <Pipeline stages={recruitment.pipeline} copy={copy} />
                 </div>
               </div>
             </Reveal>
@@ -129,7 +129,7 @@ export default async function RecruitmentPage({ params }: Params) {
 
           <div className="mt-12 grid items-center gap-12 lg:grid-cols-[0.9fr_1fr]">
             <Reveal delay={0.12}>
-              <TierLadder label={dict.art.tiers} />
+              <TierLadder tiers={recruitment.tiers} label={dict.art.tiers} />
             </Reveal>
 
             <div className="grid gap-5">

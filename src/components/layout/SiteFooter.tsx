@@ -8,10 +8,13 @@ export function SiteFooter({
   nav,
   footer,
   newsletter,
+  /** Present only where the page is a translation. */
+  translationNotice,
 }: {
   nav: Dictionary["nav"];
   footer: Dictionary["footer"];
   newsletter: Dictionary["newsletter"];
+  translationNotice?: string;
 }) {
   return (
     <footer className="relative overflow-hidden border-t border-line bg-canvas-deep">
@@ -89,7 +92,16 @@ export function SiteFooter({
           </div>
         </div>
 
-        <div className="mt-16 flex flex-col items-start justify-between gap-3 border-t border-line pt-7 text-xs text-ink-faint sm:flex-row sm:items-center">
+        {/* Said once, quietly, at the bottom of a translated page: these are
+            translations of something written in English, and where a word
+            carries weight the English is the one that was written. */}
+        {translationNotice && (
+          <p className="mt-14 max-w-2xl border-t border-line pt-7 text-xs leading-relaxed text-ink-faint">
+            {translationNotice}
+          </p>
+        )}
+
+        <div className="mt-8 flex flex-col items-start justify-between gap-3 border-t border-line pt-7 text-xs text-ink-faint sm:flex-row sm:items-center">
           <p>© {new Date().getFullYear()} {footer.rights}</p>
           <div className="flex items-center gap-6">
             <p className="font-serif italic">{footer.positioning}</p>

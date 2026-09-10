@@ -505,6 +505,379 @@ export const deContent: ContentOverlay = {
     },
   },
 
+  recruitment: {
+    name: "Studierendengewinnung",
+    expansion: "Internationale Studierendengewinnung",
+    lede: "Ein Partnernetz, geführt als gestufte Beziehung statt als Provisionsliste, weil die Alternative messbar ist — und gemessen wird.",
+
+    problem: {
+      quote:
+        "Hope Trafficking bezeichnet die systematische Bewerbung internationaler Bildung bei künftigen Studierenden, insbesondere aus Kontexten begrenzter sozioökonomischer Chancen, mit Erzählungen von Möglichkeiten, von denen die Institution weiß oder wissen müsste, dass sie nicht eingelöst werden.",
+      source:
+        "Gültekin & Qasmani, Strukturelle Marginalisierung internationaler Studierender an türkischen Universitäten",
+      figures: [
+        { value: "18,4 %", note: "stimmten zu, dass Agenturen ihnen realistische Erwartungen vermittelt haben" },
+        { value: "51,1 %", note: "stimmten zu, vor der Einschreibung in die Irre geführt worden zu sein" },
+        {
+          value: "0,66",
+          label: "r",
+          note: "gebrochene Zusagen bei der Anwerbung gegen psychischen Schaden — der stärkste Zusammenhang im Datensatz",
+        },
+      ],
+      body:
+        "Weniger als eine oder einer von fünf Studierenden fand die Darstellung des Angebots durch die Agentur realistisch. Genau das bringt ein als Provisionsliste geführtes Netz hervor, und deshalb werden die Partner in diesem Netz als Beziehungen mit einem einzuhaltenden Standard geführt.",
+      caveat:
+        "Im Querschnitt erhoben und selbstberichtet: Muster des gemeinsamen Auftretens, keine bewiesenen Ursachen.",
+    },
+
+    pipeline: ["Anfrage", "Bewerbung", "Zusage", "Einschreibung", "Ankunft"],
+
+    framework: {
+      heading: "Drei Stufen, eine Leiter",
+      body:
+        "Jeder Partner steht auf einer Stufe, und die Stufe bestimmt Provision, Kontakt und Prüfzyklus. Der Aufstieg wird durch Belege verdient, nicht durch Volumen allein.",
+    },
+
+    tiers: [
+      {
+        n: "Stufe 1",
+        name: "Partner mit hohem Wert",
+        status: "Bewährter, beständiger Zulauf",
+        relationship: "Direkte, persönliche Kommunikation",
+        incentives: "Höchste Provision, exklusive Angebote",
+        meetings: "Vierteljährliche Strategiegespräche",
+      },
+      {
+        n: "Stufe 2",
+        name: "Partner im Aufbau",
+        status: "Wachsend, mittlerer Ertrag",
+        relationship: "Regelmäßige Gespräche, Schulung",
+        incentives: "Standardprovision, Bonusziele",
+        meetings: "Halbjährliche Prüfung",
+      },
+      {
+        n: "Stufe 3",
+        name: "Neu & in Erstansprache",
+        status: "Neu aufgenommen oder wenig aktiv",
+        relationship: "Erste Ansprache, Einführung",
+        incentives: "Einstiegsprovision, Probezeit",
+        meetings: "Einführungsgespräch",
+      },
+    ],
+
+    progression: ["beständige Konversion", "verlässliche Kommunikation", "Qualität der Empfehlungen"],
+
+    intelligence: {
+      heading: "Ein Markt ist eine Entscheidung, kein Ziel.",
+      body:
+        "Die meisten Misserfolge in der Gewinnung sind Fehler in der Zielwahl, die Monate zuvor gemacht wurden, bevor irgendjemand eine Bewerbung bearbeitet hat. Ein Markt wird an drei Fragen gelesen, bevor er betreten wird, und verlassen, sobald er sie nicht mehr beantwortet, ganz gleich wie das Volumen aussieht.",
+      groups: [
+        {
+          n: "01",
+          name: "Schickt er überhaupt Studierende",
+          line: "Grundlagen der Nachfrage, vor allem anderen gelesen.",
+          signals: [
+            "Jugendbevölkerung und Wachstum der Mittelschicht",
+            "Ob das eigene Bildungsangebot die eigene Nachfrage aufnehmen kann",
+            "Bezahlbarkeit gemessen am Haushaltseinkommen, und der Wechselkurs",
+            "Wirtschaftlicher und geopolitischer Druck zu gehen",
+          ],
+        },
+        {
+          n: "02",
+          name: "Schickt er sie hierher",
+          line: "Passung, die darüber entscheidet, ob aus Interesse eine Bewerbung wird.",
+          signals: [
+            "Übereinstimmung des Programms mit dem, was der Markt tatsächlich studieren will",
+            "Studiengebühren und Lebenshaltung gemessen an dem, was eine Familie tragen kann",
+            "Berufsaussichten nach dem Abschluss und Arbeitsrechte nach dem Studium",
+            "Diaspora, Sicherheit, Unterrichtssprache",
+            "Marktanteil der Mitbewerber und wie gesättigt das Agenturnetz bereits ist",
+          ],
+        },
+        {
+          n: "03",
+          name: "Konvertiert er",
+          line: "Umsetzbarkeit, und der Teil, den die meisten Portfolios nie messen.",
+          signals: [
+            "Visumsquote für diese Staatsangehörigkeit, nicht der nationale Durchschnitt",
+            "Integrität der Unterlagen und der Prüfaufwand, den sie erzeugt",
+            "Quote von Zusage zu Einschreibung, nach Markt und nach Programm",
+            "Kosten je Einschreibung gemessen an den Gebühren, die sie zurückbringt",
+            "Verbleib über das erste Jahr hinaus",
+          ],
+        },
+      ],
+      risk:
+        "Ein Markt über etwa einem Drittel der Aufnahme ist ein Konzentrationsrisiko und keine Stärke: eine Visumsregel, eine Währungsbewegung oder eine Politikänderung in einer einzigen Hauptstadt kann eine Jahresplanung mitnehmen. Das Portfolio wird auf Streuung ebenso bewusst geführt wie auf Volumen.",
+    },
+
+    cta: {
+      heading: "Holen Sie das an Ihre Institution.",
+      body:
+        "Beratung zu Anwerbungsstrategie, zum Aufbau eines Partnernetzes, zur Stufung und Aufnahme von Agenturen, oder eine Prüfung dessen, was Ihr bestehendes Netz tatsächlich liefert.",
+    },
+  },
+
+  icd: {
+    name: "ICD",
+    expansion: "Entwicklung interkultureller Kompetenz",
+    lede: "Training, das interkulturelle Kompetenz als etwas behandelt, das eine Institution hat, und nicht als etwas, das Einzelne empfinden sollen.",
+
+    premise: {
+      heading: "Ein Defizit, keine Stimmung",
+      quote:
+        "Institutionelle interkulturelle Kompetenz versteht sich besser als Voraussetzung von Inklusion denn als ergänzende kulturelle Investition.",
+      source:
+        "Gültekin & Qasmani, Strukturelle Marginalisierung internationaler Studierender an türkischen Universitäten",
+      body:
+        "Die Studie misst sieben Dimensionen bei 580 internationalen Studierenden aus 70 Nationen. Der stärkste Zusammenhang im gesamten Datensatz besteht zwischen dem Defizit einer Institution an interkultureller Kompetenz und der Marginalisierung, die ihre Studierenden berichten. Dieser Befund ist der Grund, warum es dieses Training gibt, und warum es nicht allein an Studierende geht.",
+      figures: [
+        {
+          value: "0,80",
+          label: "r",
+          note: "Defizit an interkultureller Kompetenz gegen Marginalisierung — der stärkste Zusammenhang im Datensatz",
+        },
+        {
+          value: "2,62",
+          label: "Mittelwert",
+          note: "institutionelle interkulturelle Kompetenz auf einer fünfstufigen Skala",
+        },
+        {
+          value: "28,4 %",
+          label: "",
+          note: "bejahen, dass die Hochschulleitung wirkliche Inklusion fördert",
+        },
+      ],
+      caveat:
+        "Die Studie ist im Querschnitt angelegt und selbstberichtet, also Muster des gemeinsamen Auftretens und keine bewiesenen Ursachen. Das Papier sagt das selbst.",
+    },
+
+    organisational: {
+      quote:
+        "Diese Studie behandelt interkulturelle Kompetenz als organisationale Eigenschaft: als die gebündelte Fähigkeit von Leitung, Lehrenden und Verwaltung einer Institution, kulturelle Unterschiede in der Gestaltung und Erbringung ihrer Leistungen wahrzunehmen und auf sie einzugehen.",
+      body:
+        "Leitung, Lehrende und Verwaltung halten jeweils einen anderen Teil dieser Fähigkeit, und ein Workshop für eine dieser Gruppen kann die anderen nicht ersetzen. Das Programm läuft in drei Spuren, getrennt entworfen und jeder Gruppe in ihren eigenen Begriffen vermittelt.",
+    },
+
+    audiences: [
+      {
+        key: "Studierende",
+        tone: "green",
+        body: "Interaktive Sitzungen zu Kommunikation, Anpassung und Gemeinschaftsbildung.",
+        outcomes: ["kulturelle Orientierung", "Aushandlung von Identität", "Gemeinschaftsbildung"],
+      },
+      {
+        key: "Lehrende",
+        tone: "blue",
+        body: "Rahmenwerke und Workshops für Inklusion im Lehrraum und interkulturelles Verstehen.",
+        outcomes: ["inklusive Lehre", "interkulturelle Zusammenarbeit", "Studienverbleib"],
+      },
+      {
+        key: "Verwaltung",
+        tone: "amber",
+        body: "Trainings zu Leistungserbringung, kultureller Sensibilität und Problemlösung.",
+        outcomes: ["Leistungserbringung", "kulturelle Sensibilität", "Problemlösung"],
+      },
+    ],
+
+    cycle: [
+      {
+        n: "01",
+        name: "Diagnose",
+        body: "Was die Institution bereits hat und wo die Lücke sitzt. Engagement der Leitung, Kommunikation der Mitarbeitenden und Programmgestaltung werden getrennt erhoben, weil die Forschung sie in unterschiedlichem Maß versagen sieht.",
+      },
+      {
+        n: "02",
+        name: "Entwurf",
+        body: "Ein Curriculum, gebaut für die drei Spuren und für den eigenen Kontext der Institution, statt eines von anderswo mitgebrachten Lehrplans.",
+      },
+      {
+        n: "03",
+        name: "Durchführung",
+        body: "Sitzungen vor Ort oder hybrid, in der Unterrichtssprache, mit Materialien, die bei der Institution bleiben.",
+      },
+      {
+        n: "04",
+        name: "Bericht",
+        body: "Was sich verändert hat, was nicht, und was die Institution ohne externe Unterstützung weiterführen sollte.",
+      },
+    ],
+
+    delivered: ["Türkiye", "Pakistan", "Irak", "Nepal", "Deutschland"],
+
+    priority: {
+      quote:
+        "Interkulturelle Kompetenz muss in jeder Schicht der Institution verankert sein — von Entscheidungen und Mittelvergabe des Rektorats bis zur Besetzung des International Office, der Fortbildung der Lehrenden und den Angeboten der Studierendenberatung.",
+      body:
+        "Zwei Maßnahmen folgen am unmittelbarsten aus den Ergebnissen auf Itemebene: die Berufsberatung neu um die besondere Arbeitsmarktlage internationaler Absolventinnen und Absolventen herum zu gestalten, und Unterstützung in der Unterrichtssprache anzubieten. Sie betreffen die beiden am schlechtesten bewerteten Items des gesamten Instruments.",
+    },
+
+    structures: {
+      heading: "Strukturen, keine Schaufenster",
+      quote:
+        "Universitäten setzen internationale Studierende über Kulturfeste, Werbefotografie und Marketingmaterial als symbolische Ressource ein und erwerben so ein Diversitätszeugnis, ohne ihre Machtverhältnisse oder Chancenstrukturen zu ändern.",
+      body:
+        "In der Befragung stimmten rund 67 % der Studierenden zu, so eingesetzt worden zu sein, während 35,5 % zustimmten, davon profitiert zu haben — eine Lücke von etwa 31 Prozentpunkten, und genau diese Größe soll der Begriff des Tokenismus fassen. Training allein schließt sie nicht. Was sie schließt, sind dauerhafte Strukturen, in denen Studierende ein Amt innehaben, publizieren und Rechenschaft ablegen. Zwei davon wurden an der Istanbul Aydın University gegründet und gehören zu dem, was das Programm einer Institution aufbauen hilft.",
+      items: [
+        {
+          name: "Model United Nations",
+          line: "Das Campus-Programm gegründet und vier Konferenzen ausgerichtet.",
+          why: "Eine Delegierte vertritt eine Position, verhandelt sie und wird an ihr gemessen. Die Kompetenz wird ausgeübt statt beschrieben.",
+        },
+        {
+          name: "STARLIGHT",
+          line: "Die erste Zeitschrift internationaler Studierender in Türkiye.",
+          why: "Eine redaktionelle Plattform, die Studierende selbst führen, gibt ihnen die Autorschaft, die ein Werbefoto ihnen nimmt.",
+        },
+      ],
+    },
+
+    invitations: [
+      {
+        title: "Forschungskooperation",
+        body: "Zu interkultureller Kompetenz, Marginalisierung oder der Internationalisierung der Hochschulbildung.",
+      },
+      {
+        title: "Beratung",
+        body: "Für internationale Studierende und für die Mitarbeitenden, die sie begleiten.",
+      },
+      {
+        title: "Fachberatung",
+        body: "Zu Internationalisierungsstrategie, Aktivierung von Partnerschaften und Studienerfahrung.",
+      },
+      {
+        title: "Kurzzeitprogramme",
+        body: "Sommer- und Winterschulen, Intensivprogramme zu Frieden und Diplomatie, Austausch für Lehrende und Personal — vom Konzept bis zum Bericht.",
+      },
+      {
+        title: "Entwurf eines ICD-Kurses",
+        body: "Aufbau eines Kurses zu interkultureller Kompetenz, den Ihre Institution besitzt und selbst durchführt.",
+      },
+    ],
+
+    closing:
+      "Institutionelle interkulturelle Kompetenz ist die Bedingung, von der Inklusion abhängt. Sie lässt sich messen, und sie lässt sich aufbauen.",
+  },
+
+  iris: {
+    lede: "Internationalisierung, verwandelt von einem Verwaltungsvorgang in eine strategische, messbare, datengetriebene Funktion.",
+
+    problem: {
+      heading: "Universitäten sind global geworden.",
+      counter: "Ihre Verwaltungssysteme nicht.",
+      figures: [
+        { value: "3–6", unit: "Monate", note: "für eine einzige Absichtserklärung" },
+        { value: "5–10", unit: "Personen", note: "fassen jede Vereinbarung an" },
+        { value: "1 von 4", unit: "", note: "Partnerschaftsgesprächen wird abgebrochen" },
+      ],
+      frictions: [
+        "zersplitterte Strategie",
+        "reaktive Entscheidungen",
+        "unstrukturierte Mobilität",
+        "administrative Überlast",
+        "keine messbare Erkenntnis",
+      ],
+      close: "Geführt nach Gefühl. Nicht nach Erkenntnis.",
+      turn: "Und wenn man es messen könnte?",
+    },
+
+    instruments: {
+      heading: "Es beginnt mit zwei ökonometrischen Instrumenten.",
+      img: {
+        role: "Die Größe der Lücke.",
+        parts: [
+          {
+            name: "Informationsasymmetrie",
+            items: [
+              "Tage bis zur Vorlage von Partnerkandidaten",
+              "aktiv genutzte Suchplattformen",
+              "dokumentierter Suchprozess",
+            ],
+          },
+          {
+            name: "Fragmentierung der Arbeitsabläufe",
+            items: [
+              "Genehmigungsstellen je Absichtserklärung",
+              "Tage von der Anfrage bis zur Unterschrift",
+              "Abbruchquote",
+            ],
+          },
+          {
+            name: "Defizit der digitalen Infrastruktur",
+            items: [
+              "eigens gebaute Software",
+              "zentrale Akten",
+              "Verfolgung, Integration, Dashboards",
+            ],
+          },
+        ],
+      },
+      ipi: {
+        role: "Die Fähigkeit, sie zu schließen.",
+        parts: [
+          {
+            name: "Engagement der Leitung",
+            items: [
+              "unterzeichnete Internationalisierungsstrategie",
+              "eigenes IR-Büro (ab 1 Vollzeitstelle)",
+              "eigener Haushaltstitel",
+            ],
+          },
+          {
+            name: "Bereitschaft der Lehrenden",
+            items: [
+              "digitale Sicherheit",
+              "Vertrautheit mit KI",
+              "Vertrauen in KI-Empfehlungen",
+              "Wahrscheinlichkeit regelmäßiger Nutzung",
+            ],
+          },
+        ],
+      },
+      close: "Gemessen — nicht geraten.",
+    },
+
+    profiles: {
+      heading: "Vier institutionelle Profile",
+      note: "IMG und IPI zusammen gelesen.",
+      items: [
+        { condition: "Große Lücke · Hohe Fähigkeit", action: "Jetzt einführen" },
+        { condition: "Kleine Lücke · Hohe Fähigkeit", action: "Ausbauen & vergleichen" },
+        { condition: "Große Lücke · Geringe Fähigkeit", action: "Zuerst die Steuerung" },
+        { condition: "Kleine Lücke · Geringe Fähigkeit", action: "Bereitschaft aufbauen" },
+      ],
+    },
+
+    chain: ["Forschung", "Messung", "Erkenntnis", "Handeln"],
+
+    modules: [
+      { n: "01", name: "Dashboard", line: "Jedes Signal der Internationalisierung." },
+      { n: "02", name: "Health Index", line: "Der Zustand der Internationalisierung, berechnet aus IMG und IPI." },
+      { n: "03", name: "Partnersuche", line: "Kandidaten gefunden und gereiht, nicht erjagt." },
+      { n: "04", name: "Partnerschaften", line: "Das Portfolio, und wie viel davon tatsächlich läuft." },
+      { n: "05", name: "Analytik", line: "Von historischen Verläufen zu strategischen Prognosen." },
+      { n: "06", name: "Mobilität", line: "Jeder Studienweg, mit Daten geplant." },
+      { n: "07", name: "Vertragsverwaltung", line: "Keine Vereinbarung läuft unbemerkt aus." },
+      { n: "08", name: "Gewinnung", line: "Von der Anfrage bis zur Einschreibung, durchgängig gemessen." },
+      { n: "09", name: "Dokumente", line: "Fragen Sie das Archiv." },
+    ],
+
+    engine: {
+      heading: "Keine Datenbank. Ein Erkenntnissystem.",
+      inputs: ["Institution", "Mobilität", "Partnerschaft", "Gewinnung"],
+      core: ["IMG-Rahmenwerk", "IPI-Rahmenwerk", "Forschungsbibliothek", "KI-Schlussfolgern"],
+      outputs: ["Analytik", "Empfehlungen", "Entscheidungshilfe", "Berichte für die Leitung"],
+      close: "Jedes Ergebnis lässt sich auf einen gemessenen Eingang zurückführen — und auf die Wissenschaft dahinter.",
+      library:
+        "Gegründet auf die IRIS-Forschungsbibliothek: begutachtete Aufsätze und amtliche Leitlinien, gespeichert in der eigenen Datenbibliothek von IRIS, sodass jede Antwort wissenschaftlich gestützt ist.",
+    },
+
+    closing:
+      "IRIS verwandelt Internationalisierung von zersplitterter Verwaltung in messbare institutionelle Erkenntnis.",
+    credit: "Gebaut auf den ökonometrischen Rahmenwerken IMG · IPI — Gültekin & Qasmani",
+  },
+
   research: {
     "structural-marginalization-turkish-universities": {
       title: "Strukturelle Marginalisierung internationaler Studierender an türkischen Universitäten",
