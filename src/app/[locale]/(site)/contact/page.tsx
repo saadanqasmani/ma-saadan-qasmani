@@ -3,21 +3,45 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { booking, social } from "@/content/site";
 import { ContactForm } from "@/components/forms/ContactForm";
+import { fill, getDictionary } from "@/lib/i18n/dictionary";
+import { getContent } from "@/lib/i18n/content";
+import { defaultLocale, isLocale } from "@/lib/i18n/config";
+import { localeAlternates } from "@/lib/i18n/metadata";
+import { getPerson } from "@/lib/data";
 
-export const metadata: Metadata = {
-  title: "Correspondence",
-  description: "Get in touch, request professional contact, or arrange an appointment.",
-};
+type Params = { params: Promise<{ locale: string }> };
 
-export default function ContactPage() {
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+  const dict = await getDictionary(locale);
+
+  return {
+    title: dict.contact.eyebrow,
+    description: dict.contact.metaDescription,
+    alternates: localeAlternates("/contact", locale),
+  };
+}
+
+export default async function ContactPage({ params }: Params) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+  const [dict, content, person] = await Promise.all([
+    getDictionary(locale),
+    getContent(locale),
+    getPerson(),
+  ]);
+  const t = dict.contact;
+  const said = content.person(person);
+
   return (
     <>
       <PageHeader
-        eyebrow="Correspondence"
-        title="Get in"
-        accent="Touch"
+        eyebrow={t.eyebrow}
+        title={t.titleLead}
+        accent={t.titleAccent}
         accentTone="azure"
-        lede="For professional inquiries, speaking requests, research collaboration, or general correspondence."
+        lede={t.lede}
       />
 
       <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-24">
@@ -25,16 +49,15 @@ export default function ContactPage() {
           <div className="space-y-10">
             <Reveal>
               <div>
-                <p className="eyebrow">Based in</p>
-                <p className="mt-3 font-serif text-xl">Istanbul, Türkiye</p>
+                <p className="eyebrow">{t.basedIn}</p>
+                <p className="mt-3 font-serif text-xl">{said.location}</p>
               </div>
             </Reveal>
             <Reveal delay={0.08}>
               <div>
-                <p className="eyebrow">Appointments</p>
+                <p className="eyebrow">{t.appointments}</p>
                 <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink-soft">
-                  Booking runs on {booking.provider}. Pick a time that suits you and it lands
-                  directly in the calendar.
+                  {fill(t.bookingNote, { provider: booking.provider })}
                 </p>
                 <a
                   href={booking.url}
@@ -44,7 +67,7 @@ export default function ContactPage() {
                 >
                   <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                   <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-                    Book a time
+                    {t.bookATime}
                   </span>
                 </a>
               </div>
@@ -52,7 +75,7 @@ export default function ContactPage() {
 
             <Reveal delay={0.16}>
               <div>
-                <p className="eyebrow">Elsewhere</p>
+                <p className="eyebrow">{t.elsewhere}</p>
                 <ul className="mt-3 space-y-1">
                   {social.map((s) => (
                     <li key={s.label}>
@@ -74,7 +97,7 @@ export default function ContactPage() {
 
           <Reveal delay={0.15}>
             <div className="max-w-2xl">
-              <ContactForm />
+              <ContactForm copy={dict.forms} />
             </div>
           </Reveal>
         </div>

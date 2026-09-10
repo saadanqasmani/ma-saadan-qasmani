@@ -3,7 +3,10 @@
 import { cookies } from "next/headers";
 import { IRIS_COOKIE, IRIS_COOKIE_MAX_AGE, codeIsCorrect, irisToken } from "@/lib/irisGate";
 
-export type UnlockState = { error: string | null };
+/** Named rather than worded: the page that called this holds the words. */
+export type UnlockError = "enterSomething" | "wrongCode";
+
+export type UnlockState = { error: UnlockError | null };
 
 /**
  * Checks an entered code and, if it is right, records the unlock in an
@@ -17,8 +20,8 @@ export async function unlockIris(
 ): Promise<UnlockState> {
   const entered = String(formData.get("code") ?? "");
 
-  if (!entered.trim()) return { error: "Enter the access code." };
-  if (!codeIsCorrect(entered)) return { error: "That code is not right. Ask Saadan for the current one." };
+  if (!entered.trim()) return { error: "enterSomething" };
+  if (!codeIsCorrect(entered)) return { error: "wrongCode" };
 
   const store = await cookies();
   store.set(IRIS_COOKIE, await irisToken(), {

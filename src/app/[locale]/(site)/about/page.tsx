@@ -160,7 +160,11 @@ export default async function AboutPage({ params }: Params) {
                     <ul className="mt-5 space-y-4">
                       {said.honors.map((h) => (
                         <li key={h.title}>
-                          <GalleryTrigger mediaKey={h.media} label={h.title}>
+                          <GalleryTrigger
+                            set={h.media ? content.mediaSet(h.media) : null}
+                            label={h.title}
+                            copy={dict.gallery}
+                          >
                             <p className="font-serif text-lg text-ink">{h.title}</p>
                             {h.org && <p className="mt-0.5 text-sm text-ink-soft">{h.org}</p>}
                             <p className="text-sm text-ink-faint">{h.year}</p>

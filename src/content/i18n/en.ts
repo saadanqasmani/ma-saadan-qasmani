@@ -124,6 +124,8 @@ export const en = {
     titleAccent: "Archive",
     lede: "Academic, professional, and creative work — added continuously rather than curated once.",
     metaDescription: "A living archive of projects, roles, and initiatives.",
+    recruitmentTitleLead: "International Student",
+    recruitmentTitleAccent: "Recruitment",
     viewGallery: "View gallery",
     /** {name} is the entry the gallery belongs to. */
     openGallery: "Open the gallery for {name}",
@@ -200,6 +202,232 @@ export const en = {
     viewPaper: "View paper",
     allNine: "All nine papers",
     and: "and",
+  },
+
+  journal: {
+    eyebrow: "The Journal",
+    titleLead: "Essays",
+    titleAccent: "& Notes",
+    lede: "Writing that sits between the research and the fiction.",
+    metaDescription: "Essays, reflections, and commentary.",
+    comingSoon: "Coming soon",
+    comingSoonHeading: "The first essays are still being written.",
+    comingSoonBody:
+      "You are on the list, so each one reaches you as it is published. This is where the writing between the research and the fiction will live.",
+    coverLabel: "Cover",
+    gate: {
+      eyebrow: "For subscribers",
+      heading: "The essays and notes are for subscribers.",
+      body: "Notes from the archive, arguments still forming, and the occasional piece that belongs to neither the research nor the fiction. Subscribe and this page opens straight away; you are emailed an access code for next time, and a note whenever something new goes up.",
+      subscribe: "Subscribe",
+      emailPlaceholder: "you@example.com",
+      enter: "Enter",
+      unlocksNote: "The page unlocks the moment you subscribe.",
+      haveCode: "Already have a code",
+      codePlaceholder: "Access code",
+      unlock: "Unlock",
+      codeNote: "It was in the email you were sent when you subscribed.",
+      enterCode: "Enter your access code.",
+      wrongCode: "That code is not right. Check the email you were sent.",
+      badEmail: "Enter a valid email address.",
+      notConnected: "The list isn't connected yet. Use your access code for now.",
+      failed: "Something went wrong. Please try again.",
+    },
+  },
+
+  contact: {
+    eyebrow: "Correspondence",
+    titleLead: "Get in",
+    titleAccent: "Touch",
+    lede: "For professional inquiries, speaking requests, research collaboration, or general correspondence.",
+    metaDescription:
+      "Get in touch, request professional contact, or arrange an appointment.",
+    basedIn: "Based in",
+    appointments: "Appointments",
+    /** {provider} is Calendly. */
+    bookingNote:
+      "Booking runs on {provider}. Pick a time that suits you and it lands directly in the calendar.",
+    bookATime: "Book a time",
+    elsewhere: "Elsewhere",
+  },
+
+  forms: {
+    required: "Required",
+    invalidEmail: "Enter a valid email address",
+    somethingWrong: "Something went wrong.",
+    tryAgain: "Something went wrong. Please try again.",
+    sending: "Sending…",
+    close: "Close",
+    cancel: "Cancel",
+
+    name: "Name",
+    fullName: "Full name",
+    email: "Email",
+    phone: "Phone",
+    phoneNumber: "Phone number",
+    subject: "Subject",
+    message: "Message",
+    optionalMessage: "Optional message",
+    country: "Country",
+    city: "City",
+    institution: "Institution",
+    position: "Position / title",
+    reason: "Reason for requesting access",
+    shippingAddress: "Shipping address",
+    quantity: "Quantity",
+
+    sendMessage: "Send Message",
+    contactDone: "Your message has been received. Thank you.",
+
+    submitRequest: "Submit Request",
+    /** {title} is the paper. Written whole so the quotation marks travel. */
+    requestingAccess:
+      "Requesting access to {title}. Every request is reviewed before anything is sent.",
+    requestDone:
+      "Your request for {title} has been received. Every request is reviewed individually — you will hear back if it is approved.",
+
+    submitOrder: "Submit Order",
+    orderDone:
+      "Your order has been received. Our team reviews every order personally — you will receive payment and shipping instructions by email once it is confirmed. No payment is required yet.",
+    orderNote:
+      "This form does not collect payment or banking details. Our team reviews every order personally and sends payment instructions directly once your order is confirmed.",
+  },
+
+  novel: {
+    aNovel: "A Novel",
+    /** The title is set in two lines, the second in colour. */
+    titleLead: "The Highest",
+    titleAccent: "Branch",
+    theBook: "The Book",
+    /** {title} is the novel. */
+    coverAlt: "Cover of {title}",
+    coverLabel: "Book cover",
+    chapters: "Chapters",
+    words: "Words",
+    form: "Form",
+    status: "Status",
+    availability: "Availability",
+    orderACopy: "Order a copy",
+    /** {name} is the author. */
+    byline: "{title} — a novel by {name}",
+    purchase: {
+      amazonTab: "EU & Americas",
+      amazonNote: "via Amazon",
+      directTab: "Türkiye & Pakistan",
+      directNote: "direct order",
+      /** {regions} is where Amazon ships it. */
+      amazonBody: "Available for readers in {regions} through Amazon.",
+      buyOnAmazon: "Buy on Amazon",
+      amazonPending: "The Amazon link will appear here once the book is listed.",
+    },
+  },
+
+  detail: {
+    /** The eyebrow above each of the three deep pages. */
+    workPractice: "The Work · Practice",
+    workProgramme: "The Work · Programme",
+    workProject: "The Work · Project",
+    backToTheWork: "Back to the work",
+
+    iris: {
+      requestDemo: "Request a demo",
+      enterAccessCode: "Enter the access code",
+      sectionProblem: "The problem",
+      sectionBackbone: "The diagnostic backbone",
+      sectionFilm: "The film",
+      sectionWhatItDoes: "What it does",
+      sectionArchitecture: "The architecture",
+      withheldModules: "The eight modules IRIS runs are held with the film.",
+      withheldArchitecture: "How IRIS is built, end to end, is held with the film.",
+      openFilmFullScreen: "Open the film full screen",
+      unlockTheFilm: "Unlock the film",
+      filmTitle: "IRIS — the explainer film",
+      soundNote: "Sound is off until you turn it on, inside the film.",
+      lock: {
+        eyebrow: "Access code required",
+        heading: "The film, the module list and the architecture are held back.",
+        body: "IRIS is not public yet. Get in touch with Saadan for the access code and the three sections open together, on this page, for a month.",
+        requestTheCode: "Request the code",
+        enterCode: "Enter code",
+        checking: "Checking…",
+        unlock: "Unlock",
+        wrongCode: "That code is not right.",
+        enterSomething: "Enter the access code.",
+      },
+    },
+
+    icd: {
+      sectionWhoFor: "Who it is for",
+      sectionHowItRuns: "How it runs",
+      sectionWorkingTogether: "Working together",
+      bringToInstitution: "Bring this to your institution.",
+      outcomes: "Outcomes",
+      deliveredIn: "Delivered in",
+      fromTheSessions: "From the sessions",
+      galleryLabel: "ICD training",
+      photographs: "Photographs",
+      getInTouch: "Get in touch",
+      theResearchBehindIt: "The research behind it",
+    },
+
+    recruitment: {
+      sectionWhatItAnswers: "What it answers",
+      sectionWorkingTogether: "Working together",
+      thePipeline: "The pipeline",
+      marketIntelligence: "Market intelligence",
+      movesUpOn: "A partner moves up on",
+      tier: {
+        status: "Status",
+        relationship: "Relationship",
+        incentives: "Incentives",
+        meetings: "Meetings",
+      },
+      fromTheField: "From the field",
+      galleryLabel: "recruitment work",
+      scheduleConsultation: "Schedule a consultation",
+      sendMessageInstead: "Send a message instead",
+    },
+  },
+
+  gallery: {
+    eyebrow: "Gallery",
+    photographs: "Photographs",
+    /** {name} is what the photographs are of. */
+    openPhotographs: "Open photographs of {name}",
+    close: "Close",
+  },
+
+  marginalia: {
+    name: "The Marginalia",
+    /** {found} of {total} marks. */
+    foundCount: "{found} of {total} found",
+    body: "Seven marks are left in the margins of this site, the way a reader annotates a book they intend to keep. Each one gives up something true.",
+    readersCard: "The Reader’s Card",
+    readersCardHeading: "You read the margins. Most people don’t.",
+    readersCardBody: "Come into the correspondence — new research, journal entries, and news of",
+    readersCardBodyAfter: ", sent rarely.",
+    clear: "Clear the collection",
+    /** {title} and {line} are the mark's own words. */
+    markFound: "Marginalia found: {title}. {line}",
+    /** {hint} is the clue shown before a mark is collected. */
+    markUnfound: "A mark in the margin: {hint}",
+    /** {found} of {total}, on the header counter. */
+    indicator: "Marginalia: {found} of {total} found. Open the collection.",
+    close: "Close",
+  },
+
+  /** Descriptions of the drawings, for anyone who cannot see them. */
+  art: {
+    tiers:
+      "Three partner tiers, with movement upward earned on conversion, responsiveness and referral quality",
+    constellation: "A constellation of research areas and papers",
+    constellationHint: "Hover a node to trace a paper back through its field.",
+    globe:
+      "A map of the eastern hemisphere with routes from Istanbul to Germany, Qatar, the United Arab Emirates, Pakistan, Nepal and Iraq",
+    branch:
+      "A tree whose branches and roots mark the stages of Saadan Qasmani's work, from A and O Levels at the roots to the novel The Highest Branch at the crown",
+    /** The one place name drawn into the map. */
+    istanbul: "Istanbul",
   },
 
   seasons: {

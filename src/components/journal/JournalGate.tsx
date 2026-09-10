@@ -6,6 +6,7 @@ import {
   unlockWithCode,
   type GateState,
 } from "@/lib/actions/journal";
+import type { Dictionary } from "@/content/i18n/en";
 
 const initial: GateState = { error: null };
 
@@ -17,7 +18,7 @@ const initial: GateState = { error: null };
  * the "real" one; a reader arriving for the first time should not have to
  * work out which applies to them.
  */
-export function JournalGate() {
+export function JournalGate({ copy }: { copy: Dictionary["journal"]["gate"] }) {
   const [subState, subscribeAction, subscribing] = useActionState(
     subscribeAndUnlock,
     initial
@@ -26,16 +27,9 @@ export function JournalGate() {
 
   return (
     <div className="max-w-3xl border-t border-line pt-10">
-      <p className="eyebrow">For subscribers</p>
-      <h2 className="mt-5 font-display text-3xl leading-tight sm:text-4xl">
-        The essays and notes are for subscribers.
-      </h2>
-      <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">
-        Notes from the archive, arguments still forming, and the occasional piece that
-        belongs to neither the research nor the fiction. Subscribe and this page opens
-        straight away; you are emailed an access code for next time, and a note whenever
-        something new goes up.
-      </p>
+      <p className="eyebrow">{copy.eyebrow}</p>
+      <h2 className="mt-5 font-display text-3xl leading-tight sm:text-4xl">{copy.heading}</h2>
+      <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">{copy.body}</p>
 
       <div className="mt-10 grid gap-10 sm:grid-cols-2">
         {/* Subscribe, and go straight in. */}
@@ -44,7 +38,7 @@ export function JournalGate() {
             htmlFor="gate-email"
             className="block text-xs uppercase tracking-[0.16em] text-ink-faint"
           >
-            Subscribe
+            {copy.subscribe}
           </label>
           <div className="mt-3 flex items-end gap-3 border-b border-ink pb-2 transition-colors focus-within:border-ember">
             <input
@@ -52,7 +46,7 @@ export function JournalGate() {
               name="email"
               type="email"
               autoComplete="email"
-              placeholder="you@example.com"
+              placeholder={copy.emailPlaceholder}
               aria-invalid={subState.error ? true : undefined}
               aria-describedby={subState.error ? "gate-email-error" : undefined}
               className="w-full bg-transparent text-base text-ink outline-none placeholder:text-ink-faint/60"
@@ -62,16 +56,16 @@ export function JournalGate() {
               disabled={subscribing}
               className="shrink-0 text-xs font-semibold uppercase tracking-[0.16em] text-ember disabled:opacity-60"
             >
-              {subscribing ? "…" : "Enter"}
+              {subscribing ? "…" : copy.enter}
             </button>
           </div>
           {subState.error && (
             <p id="gate-email-error" role="alert" className="mt-3 text-sm text-ember">
-              {subState.error}
+              {copy[subState.error]}
             </p>
           )}
           <p className="mt-3 text-sm leading-relaxed text-ink-faint">
-            The page unlocks the moment you subscribe.
+            {copy.unlocksNote}
           </p>
         </form>
 
@@ -81,7 +75,7 @@ export function JournalGate() {
             htmlFor="gate-code"
             className="block text-xs uppercase tracking-[0.16em] text-ink-faint"
           >
-            Already have a code
+            {copy.haveCode}
           </label>
           <div className="mt-3 flex items-end gap-3 border-b border-ink pb-2 transition-colors focus-within:border-azure">
             <input
@@ -90,7 +84,7 @@ export function JournalGate() {
               type="text"
               autoComplete="off"
               spellCheck={false}
-              placeholder="Access code"
+              placeholder={copy.codePlaceholder}
               aria-invalid={codeState.error ? true : undefined}
               aria-describedby={codeState.error ? "gate-code-error" : undefined}
               className="w-full bg-transparent font-mono text-base tracking-[0.16em] text-ink outline-none placeholder:font-sans placeholder:tracking-normal placeholder:text-ink-faint/60"
@@ -100,16 +94,16 @@ export function JournalGate() {
               disabled={checking}
               className="shrink-0 text-xs font-semibold uppercase tracking-[0.16em] text-azure disabled:opacity-60"
             >
-              {checking ? "…" : "Unlock"}
+              {checking ? "…" : copy.unlock}
             </button>
           </div>
           {codeState.error && (
             <p id="gate-code-error" role="alert" className="mt-3 text-sm text-ember">
-              {codeState.error}
+              {copy[codeState.error]}
             </p>
           )}
           <p className="mt-3 text-sm leading-relaxed text-ink-faint">
-            It was in the email you were sent when you subscribed.
+            {copy.codeNote}
           </p>
         </form>
       </div>

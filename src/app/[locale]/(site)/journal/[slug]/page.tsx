@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Reveal } from "@/components/ui/Reveal";
 import { SplitText } from "@/components/ui/SplitText";
@@ -7,31 +6,39 @@ import { getBlogPost, getBlogPosts } from "@/lib/data";
 import { cookies } from "next/headers";
 import { JOURNAL_COOKIE, tokenIsValid } from "@/lib/journalGate";
 import { JournalGate } from "@/components/journal/JournalGate";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { defaultLocale, isLocale, locales } from "@/lib/i18n/config";
+import { localeAlternates } from "@/lib/i18n/metadata";
+
+type Params = { params: Promise<{ locale: string; slug: string }> };
 
 export async function generateStaticParams() {
   const posts = await getBlogPosts();
-  return posts.map((post) => ({ slug: post.slug }));
+  return locales.flatMap((locale) => posts.map((post) => ({ locale, slug: post.slug })));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { locale: raw, slug } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
   const post = await getBlogPost(slug);
   if (!post) return {};
-  return { title: post.title, description: post.excerpt };
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    alternates: localeAlternates(`/journal/${post.slug}`, locale),
+  };
 }
 
-export default async function JournalPostPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const post = await getBlogPost(slug);
+export default async function JournalPostPage({ params }: Params) {
+  const { locale: raw, slug } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+
+  const [post, dict] = await Promise.all([getBlogPost(slug), getDictionary(locale)]);
   if (!post) notFound();
+
+  const t = dict.journal;
 
   /*
    * A post is subscribers-only too, not just the list.
@@ -45,16 +52,16 @@ export default async function JournalPostPage({
     return (
       <div className="mx-auto max-w-3xl px-6 pb-28 pt-24 sm:px-10 sm:pt-32">
         <Reveal>
-          <Link
+          <LocaleLink
             href="/journal"
             className="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
           >
             <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span>
-            The Journal
-          </Link>
+            {t.eyebrow}
+          </LocaleLink>
         </Reveal>
         <div className="mt-10">
-          <JournalGate />
+          <JournalGate copy={t.gate} />
         </div>
       </div>
     );
@@ -66,13 +73,13 @@ export default async function JournalPostPage({
   return (
     <article className="mx-auto max-w-3xl px-6 pb-28 pt-24 sm:px-10 sm:pt-32">
       <Reveal>
-        <Link
+        <LocaleLink
           href="/journal"
           className="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
         >
           <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span>
-          The Journal
-        </Link>
+          {t.eyebrow}
+        </LocaleLink>
       </Reveal>
 
       <p className="eyebrow mt-10">

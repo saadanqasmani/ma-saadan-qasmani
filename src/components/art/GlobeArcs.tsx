@@ -97,7 +97,7 @@ function arcPath(a: { x: number; y: number }, b: { x: number; y: number }) {
   return `M ${a.x.toFixed(1)} ${a.y.toFixed(1)} Q ${(mx + (nx / nlen) * lift).toFixed(1)} ${(my + (ny / nlen) * lift).toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
 }
 
-export function GlobeArcs() {
+export function GlobeArcs({ label, home: homeLabel }: { label: string; home: string }) {
   const reduced = useReducedMotion();
   const [active, setActive] = useState<string | null>(null);
 
@@ -109,7 +109,7 @@ export function GlobeArcs() {
   return (
     <div className="relative">
       <svg viewBox="126 148 660 440" fill="none" className="h-auto w-full" role="img"
-        aria-label="A map of the eastern hemisphere with routes from Istanbul to Germany, Qatar, the United Arab Emirates, Pakistan, Nepal and Iraq">
+        aria-label={label}>
         {/* Globe body */}
         <circle cx={CX} cy={CY} r={R} fill="var(--canvas-light)" opacity={0.7} />
         <circle cx={CX} cy={CY} r={R} stroke="var(--line-strong)" strokeWidth={1.2} />
@@ -199,7 +199,7 @@ export function GlobeArcs() {
             fontSize={25}
             fontWeight={600}
           >
-            Istanbul
+            {homeLabel}
           </text>
         </g>
 

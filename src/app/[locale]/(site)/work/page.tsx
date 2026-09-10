@@ -41,7 +41,14 @@ export default async function WorkPage({ params }: Params) {
       />
 
       <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-24">
-        <WorkList items={content.work(workItems)} copy={dict.work} />
+        <WorkList
+          items={content.work(workItems)}
+          copy={dict.work}
+          gallery={dict.gallery}
+          sets={Object.fromEntries(
+            workItems.map((item) => [item.slug, content.mediaSet(item.slug)])
+          )}
+        />
       </section>
     </>
   );

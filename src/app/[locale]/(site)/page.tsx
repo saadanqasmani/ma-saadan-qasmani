@@ -56,7 +56,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       {/* ─────────── Act I — Arrival ─────────── */}
       <section className="relative min-h-[94vh] overflow-hidden">
         {/* Branch: a full-bleed backdrop on small screens, a right-hand column above lg */}
-        <BranchDiagram className="absolute bottom-0 right-0 top-0 h-full w-full opacity-[0.22] lg:left-auto lg:w-[52%] lg:opacity-100" />
+        <BranchDiagram
+          label={dict.art.branch}
+          className="absolute bottom-0 end-0 top-0 h-full w-full opacity-[0.22] lg:start-auto lg:w-[52%] lg:opacity-100"
+        />
 
         {/* pointer-events-none so the branch stays hoverable underneath */}
         <div className="pointer-events-none relative mx-auto flex min-h-[94vh] max-w-7xl items-center px-6 sm:px-10">
@@ -183,7 +186,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             </div>
 
             <Reveal delay={0.2}>
-              <GlobeArcs />
+              <GlobeArcs label={dict.art.globe} home={dict.art.istanbul} />
             </Reveal>
           </div>
         </div>

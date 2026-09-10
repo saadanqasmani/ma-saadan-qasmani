@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { FloatCard } from "@/components/ui/FloatCard";
 import { unlockIris, type UnlockState } from "@/lib/actions/iris";
+import type { Dictionary } from "@/content/i18n/en";
 
 const initial: UnlockState = { error: null };
 
@@ -15,26 +16,31 @@ const initial: UnlockState = { error: null };
  * three locked sections are never sent to a browser that has not unlocked,
  * and the film file itself is refused at the edge.
  */
-export function IrisLock({ contactHref = "/contact" }: { contactHref?: string }) {
+export function IrisLock({
+  contactHref = "/contact",
+  copy,
+}: {
+  contactHref?: string;
+  copy: Dictionary["detail"]["iris"]["lock"];
+}) {
   const [state, formAction, pending] = useActionState(unlockIris, initial);
 
   return (
     <FloatCard tone="mixed" innerClassName="p-8 sm:p-12">
       <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-xl">
-          <p className="text-xs uppercase tracking-[0.16em] text-ember">Access code required</p>
+          <p className="text-xs uppercase tracking-[0.16em] text-ember">{copy.eyebrow}</p>
           <h3 className="mt-5 font-display text-[clamp(1.6rem,3.4vw,2.6rem)] leading-tight text-[var(--iris-navy)]">
-            The film, the module list and the architecture are held back.
+            {copy.heading}
           </h3>
           <p className="mt-5 text-base leading-relaxed text-[var(--iris-navy-soft)]">
-            IRIS is not public yet. Get in touch with Saadan for the access code and
-            the three sections open together, on this page, for a month.
+            {copy.body}
           </p>
           <LocaleLink
             href={contactHref}
             className="mt-7 inline-flex items-center gap-2 border border-[var(--iris-blue)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--iris-blue)] transition-colors hover:bg-[var(--iris-blue)] hover:text-canvas-light"
           >
-            Request the code
+            {copy.requestTheCode}
           </LocaleLink>
         </div>
 
@@ -43,7 +49,7 @@ export function IrisLock({ contactHref = "/contact" }: { contactHref?: string })
             htmlFor="iris-code"
             className="block text-xs uppercase tracking-[0.16em] text-[var(--iris-navy-soft)]"
           >
-            Enter code
+            {copy.enterCode}
           </label>
           <input
             id="iris-code"
@@ -58,7 +64,7 @@ export function IrisLock({ contactHref = "/contact" }: { contactHref?: string })
           />
           {state.error && (
             <p id="iris-code-error" role="alert" className="mt-3 text-sm text-ember">
-              {state.error}
+              {copy[state.error]}
             </p>
           )}
           <button
@@ -68,7 +74,7 @@ export function IrisLock({ contactHref = "/contact" }: { contactHref?: string })
           >
             <span className="absolute inset-0 -translate-y-full bg-[var(--iris-blue)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
             <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-              {pending ? "Checking…" : "Unlock"}
+              {pending ? copy.checking : copy.unlock}
             </span>
           </button>
         </form>

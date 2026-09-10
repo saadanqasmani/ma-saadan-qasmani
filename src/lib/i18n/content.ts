@@ -6,7 +6,13 @@ import {
   type WorkItem,
 } from "@/content/site";
 import type { Book, Person } from "@/lib/data";
+import { icd } from "@/content/icd";
+import { MARKS, type Mark } from "@/content/marginalia";
+import { mediaSets, type MediaSet } from "@/content/media";
+import { iris } from "@/content/iris";
+import { recruitment } from "@/content/recruitment";
 import { defaultLocale, type Locale } from "@/lib/i18n/config";
+import { merge, type Overlay } from "@/lib/i18n/dictionary";
 
 /**
  * Translations of the content itself, as opposed to the interface.
@@ -45,6 +51,21 @@ export type ContentOverlay = {
   instrumentLabel?: string;
   researchNote?: { before?: string; after?: string };
   work?: Record<string, { title?: string; summary?: string; linkLabel?: string }>;
+  /**
+   * The three deep pages. Each is a tree of plain strings, so a translation
+   * is the same tree with the branches it has words for. Anything it leaves
+   * out keeps the English underneath.
+   */
+  /** The seven marks, by id: the hint, and what each one reveals. */
+  marks?: Record<string, { hint?: string; title?: string; line?: string }>;
+  /**
+   * Photograph captions, by set. The captions are given as a list in the
+   * order the set holds them, since a caption has no key of its own.
+   */
+  media?: Record<string, { title?: string; captions?: readonly string[] }>;
+  iris?: Overlay<typeof iris>;
+  icd?: Overlay<typeof icd>;
+  recruitment?: Overlay<typeof recruitment>;
   research?: Record<
     string,
     {
@@ -94,6 +115,11 @@ export type Content = {
   researchNote: { before: string; name: string; after: string };
   work: (items: WorkItem[]) => WorkItem[];
   research: (items: ResearchItem[]) => TranslatedResearchItem[];
+  marks: Mark[];
+  mediaSet: (key: string) => MediaSet | null;
+  iris: typeof iris;
+  icd: typeof icd;
+  recruitment: typeof recruitment;
 };
 
 function pick<T>(translated: T | undefined, original: T): T {
@@ -162,6 +188,35 @@ export async function getContent(locale: Locale): Promise<Content> {
       name: researchNote.name,
       after: pick(overlay.researchNote?.after, researchNote.after),
     },
+
+    marks: MARKS.map((mark) => {
+      const t = overlay.marks?.[mark.id];
+      if (!t) return mark;
+      return {
+        ...mark,
+        hint: pick(t.hint, mark.hint),
+        title: pick(t.title, mark.title),
+        line: pick(t.line, mark.line),
+      };
+    }),
+
+    mediaSet: (key) => {
+      const set = mediaSets[key];
+      if (!set) return null;
+      const t = overlay.media?.[key];
+      if (!t) return set;
+      return {
+        ...set,
+        title: pick(t.title, set.title),
+        items: set.items.map((item, i) => ({
+          ...item,
+          caption: pick(t.captions?.[i], item.caption),
+        })),
+      };
+    },
+    iris: merge(iris, overlay.iris),
+    icd: merge(icd, overlay.icd),
+    recruitment: merge(recruitment, overlay.recruitment),
 
     work: (items) =>
       items.map((item) => {

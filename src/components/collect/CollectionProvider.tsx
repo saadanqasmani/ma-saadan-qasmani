@@ -8,7 +8,8 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { MARK_TOTAL } from "@/content/marginalia";
+import { MARK_TOTAL, type Mark } from "@/content/marginalia";
+import type { Dictionary } from "@/content/i18n/en";
 import {
   collectMark,
   getServerSnapshot,
@@ -18,6 +19,10 @@ import {
 } from "@/lib/marginaliaStore";
 
 type CollectionValue = {
+  /** The marks in the language the page is in. */
+  marks: Mark[];
+  copy: Dictionary["marginalia"];
+  newsletter: Dictionary["newsletter"];
   found: string[];
   collect: (id: string) => void;
   has: (id: string) => boolean;
@@ -33,7 +38,17 @@ type CollectionValue = {
 
 const CollectionContext = createContext<CollectionValue | null>(null);
 
-export function CollectionProvider({ children }: { children: React.ReactNode }) {
+export function CollectionProvider({
+  marks,
+  copy,
+  newsletter,
+  children,
+}: {
+  marks: Mark[];
+  copy: Dictionary["marginalia"];
+  newsletter: Dictionary["newsletter"];
+  children: React.ReactNode;
+}) {
   const found = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const [lastFound, setLastFound] = useState<string | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -52,6 +67,9 @@ export function CollectionProvider({ children }: { children: React.ReactNode }) 
 
   const value = useMemo<CollectionValue>(
     () => ({
+      marks,
+      copy,
+      newsletter,
       found,
       collect,
       has: (id: string) => found.includes(id),
@@ -63,7 +81,7 @@ export function CollectionProvider({ children }: { children: React.ReactNode }) 
       panelOpen,
       setPanelOpen,
     }),
-    [found, collect, reset, lastFound, clearLastFound, panelOpen]
+    [marks, copy, newsletter, found, collect, reset, lastFound, clearLastFound, panelOpen]
   );
 
   return <CollectionContext.Provider value={value}>{children}</CollectionContext.Provider>;

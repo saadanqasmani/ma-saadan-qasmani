@@ -13,21 +13,26 @@ import {
   submitButtonClass,
   SubmitLabel,
 } from "@/components/forms/fields";
+import type { Dictionary } from "@/content/i18n/en";
 
-const schema = z.object({
-  full_name: z.string().min(1, "Required"),
-  email: z.string().email("Enter a valid email address"),
-  phone: z.string().min(1, "Required"),
-  country: z.enum(["Türkiye", "Pakistan"]),
-  city: z.string().min(1, "Required"),
-  shipping_address: z.string().min(1, "Required"),
-  quantity: z.number().int().min(1).max(50),
-  message: z.string().optional(),
-});
+/** Validation messages are read in the language the page is in. */
+function makeSchema(copy: Dictionary["forms"]) {
+  return z.object({
+    full_name: z.string().min(1, copy.required),
+    email: z.string().email(copy.invalidEmail),
+    phone: z.string().min(1, copy.required),
+    // The two country names are proper nouns and stay as they are.
+    country: z.enum(["Türkiye", "Pakistan"]),
+    city: z.string().min(1, copy.required),
+    shipping_address: z.string().min(1, copy.required),
+    quantity: z.number().int().min(1).max(50),
+    message: z.string().optional(),
+  });
+}
 
-type FormValues = z.infer<typeof schema>;
+type FormValues = z.infer<ReturnType<typeof makeSchema>>;
 
-export function DirectOrderForm() {
+export function DirectOrderForm({ copy }: { copy: Dictionary["forms"] }) {
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [serverError, setServerError] = useState<string | null>(null);
   const {
@@ -35,7 +40,7 @@ export function DirectOrderForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(makeSchema(copy)),
     defaultValues: { quantity: 1, country: "Türkiye" },
   });
 
@@ -50,24 +55,20 @@ export function DirectOrderForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setServerError(data.error ?? "Something went wrong.");
+        setServerError(data.error ?? copy.somethingWrong);
         setStatus("error");
         return;
       }
       setStatus("done");
     } catch {
-      setServerError("Something went wrong. Please try again.");
+      setServerError(copy.tryAgain);
       setStatus("error");
     }
   }
 
   if (status === "done") {
     return (
-      <FormNotice tone="success">
-        Your order has been received. Our team reviews every order personally — you will receive
-        payment and shipping instructions by email once it is confirmed. No payment is required
-        yet.
-      </FormNotice>
+      <FormNotice tone="success">{copy.orderDone}</FormNotice>
     );
   }
 
@@ -76,28 +77,28 @@ export function DirectOrderForm() {
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <Label htmlFor="full_name" required>
-            Full name
+            {copy.fullName}
           </Label>
           <TextInput id="full_name" {...register("full_name")} aria-invalid={!!errors.full_name} />
           {errors.full_name && <FormNotice tone="error">{errors.full_name.message}</FormNotice>}
         </div>
         <div>
           <Label htmlFor="email" required>
-            Email
+            {copy.email}
           </Label>
           <TextInput id="email" type="email" {...register("email")} aria-invalid={!!errors.email} />
           {errors.email && <FormNotice tone="error">{errors.email.message}</FormNotice>}
         </div>
         <div>
           <Label htmlFor="phone" required>
-            Phone number
+            {copy.phoneNumber}
           </Label>
           <TextInput id="phone" {...register("phone")} aria-invalid={!!errors.phone} />
           {errors.phone && <FormNotice tone="error">{errors.phone.message}</FormNotice>}
         </div>
         <div>
           <Label htmlFor="country" required>
-            Country
+            {copy.country}
           </Label>
           <Select id="country" {...register("country")}>
             <option value="Türkiye">Türkiye</option>
@@ -106,14 +107,14 @@ export function DirectOrderForm() {
         </div>
         <div>
           <Label htmlFor="city" required>
-            City
+            {copy.city}
           </Label>
           <TextInput id="city" {...register("city")} aria-invalid={!!errors.city} />
           {errors.city && <FormNotice tone="error">{errors.city.message}</FormNotice>}
         </div>
         <div>
           <Label htmlFor="quantity" required>
-            Quantity
+            {copy.quantity}
           </Label>
           <TextInput
             id="quantity"
@@ -127,7 +128,7 @@ export function DirectOrderForm() {
 
       <div>
         <Label htmlFor="shipping_address" required>
-          Shipping address
+          {copy.shippingAddress}
         </Label>
         <TextArea
           id="shipping_address"
@@ -140,19 +141,16 @@ export function DirectOrderForm() {
       </div>
 
       <div>
-        <Label htmlFor="message">Optional message</Label>
+        <Label htmlFor="message">{copy.optionalMessage}</Label>
         <TextArea id="message" {...register("message")} />
       </div>
 
-      <p className="text-xs text-ink-soft">
-        This form does not collect payment or banking details. Our team reviews every order
-        personally and sends payment instructions directly once your order is confirmed.
-      </p>
+      <p className="text-xs text-ink-soft">{copy.orderNote}</p>
 
       {serverError && <FormNotice tone="error">{serverError}</FormNotice>}
 
       <button type="submit" disabled={status === "loading"} className={submitButtonClass}>
-        <SubmitLabel>{status === "loading" ? "Sending…" : "Submit Order"}</SubmitLabel>
+        <SubmitLabel>{status === "loading" ? copy.sending : copy.submitOrder}</SubmitLabel>
       </button>
     </form>
   );

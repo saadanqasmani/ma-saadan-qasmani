@@ -12,24 +12,32 @@ import {
   submitButtonClass,
   SubmitLabel,
 } from "@/components/forms/fields";
+import type { Dictionary } from "@/content/i18n/en";
 
-const schema = z.object({
-  name: z.string().min(1, "Required"),
-  email: z.string().email("Enter a valid email address"),
-  subject: z.string().optional(),
-  message: z.string().min(1, "Required"),
-});
+/**
+ * Built from the dictionary rather than declared once at module scope, so a
+ * reader is told what is wrong with their entry in the language they are
+ * reading the page in.
+ */
+function makeSchema(copy: Dictionary["forms"]) {
+  return z.object({
+    name: z.string().min(1, copy.required),
+    email: z.string().email(copy.invalidEmail),
+    subject: z.string().optional(),
+    message: z.string().min(1, copy.required),
+  });
+}
 
-type FormValues = z.infer<typeof schema>;
+type FormValues = z.infer<ReturnType<typeof makeSchema>>;
 
-export function ContactForm() {
+export function ContactForm({ copy }: { copy: Dictionary["forms"] }) {
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [serverError, setServerError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  } = useForm<FormValues>({ resolver: zodResolver(makeSchema(copy)) });
 
   async function onSubmit(values: FormValues) {
     setStatus("loading");
@@ -42,19 +50,19 @@ export function ContactForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setServerError(data.error ?? "Something went wrong.");
+        setServerError(data.error ?? copy.somethingWrong);
         setStatus("error");
         return;
       }
       setStatus("done");
     } catch {
-      setServerError("Something went wrong. Please try again.");
+      setServerError(copy.tryAgain);
       setStatus("error");
     }
   }
 
   if (status === "done") {
-    return <FormNotice tone="success">Your message has been received. Thank you.</FormNotice>;
+    return <FormNotice tone="success">{copy.contactDone}</FormNotice>;
   }
 
   return (
@@ -62,14 +70,14 @@ export function ContactForm() {
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
           <Label htmlFor="name" required>
-            Name
+            {copy.name}
           </Label>
           <TextInput id="name" {...register("name")} aria-invalid={!!errors.name} />
           {errors.name && <FormNotice tone="error">{errors.name.message}</FormNotice>}
         </div>
         <div>
           <Label htmlFor="email" required>
-            Email
+            {copy.email}
           </Label>
           <TextInput id="email" type="email" {...register("email")} aria-invalid={!!errors.email} />
           {errors.email && <FormNotice tone="error">{errors.email.message}</FormNotice>}
@@ -77,13 +85,13 @@ export function ContactForm() {
       </div>
 
       <div>
-        <Label htmlFor="subject">Subject</Label>
+        <Label htmlFor="subject">{copy.subject}</Label>
         <TextInput id="subject" {...register("subject")} />
       </div>
 
       <div>
         <Label htmlFor="message" required>
-          Message
+          {copy.message}
         </Label>
         <TextArea id="message" {...register("message")} aria-invalid={!!errors.message} />
         {errors.message && <FormNotice tone="error">{errors.message.message}</FormNotice>}
@@ -92,7 +100,7 @@ export function ContactForm() {
       {serverError && <FormNotice tone="error">{serverError}</FormNotice>}
 
       <button type="submit" disabled={status === "loading"} className={submitButtonClass}>
-        <SubmitLabel>{status === "loading" ? "Sending…" : "Send Message"}</SubmitLabel>
+        <SubmitLabel>{status === "loading" ? copy.sending : copy.sendMessage}</SubmitLabel>
       </button>
     </form>
   );

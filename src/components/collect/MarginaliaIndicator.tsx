@@ -2,10 +2,11 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useCollection } from "@/components/collect/CollectionProvider";
+import { fill } from "@/lib/i18n/dictionary";
 
 /** The header counter. Appears only once the reader has found something. */
 export function MarginaliaIndicator() {
-  const { found, total, setPanelOpen } = useCollection();
+  const { found, total, setPanelOpen, copy } = useCollection();
 
   return (
     <AnimatePresence>
@@ -16,7 +17,7 @@ export function MarginaliaIndicator() {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           onClick={() => setPanelOpen(true)}
-          aria-label={`Marginalia: ${found.length} of ${total} found. Open the collection.`}
+          aria-label={fill(copy.indicator, { found: found.length, total })}
           className="flex items-center gap-2 border border-line px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] text-ink-soft transition-colors hover:border-ink hover:text-ink"
         >
           <span className="text-ember">✳</span>

@@ -6,6 +6,7 @@ import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { BookAnnouncement } from "@/components/book/BookAnnouncement";
 import { getBook } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n/dictionary";
+import { getContent } from "@/lib/i18n/content";
 import { isLocale, defaultLocale } from "@/lib/i18n/config";
 
 /** The public site: paper grain, header, footer, and the Marginalia. */
@@ -18,7 +19,11 @@ export default async function SiteLayout({
 }) {
   const { locale: raw } = await params;
   const locale = isLocale(raw) ? raw : defaultLocale;
-  const [dict, book] = await Promise.all([getDictionary(locale), getBook()]);
+  const [dict, content, book] = await Promise.all([
+    getDictionary(locale),
+    getContent(locale),
+    getBook(),
+  ]);
 
   return (
     <LocaleProvider locale={locale}>
@@ -29,7 +34,11 @@ export default async function SiteLayout({
         >
           {dict.header.skipToContent}
         </a>
-        <CollectionProvider>
+        <CollectionProvider
+          marks={content.marks}
+          copy={dict.marginalia}
+          newsletter={dict.newsletter}
+        >
           <SiteHeader nav={dict.nav} chrome={dict.header} />
           <main id="main-content" className="flex-1">
             {children}

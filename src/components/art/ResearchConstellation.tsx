@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import type { ResearchItem } from "@/content/site";
+import type { Dictionary } from "@/content/i18n/en";
 
 /**
  * The archive as a constellation: a centre, a ring of research areas, and the
@@ -27,7 +28,13 @@ type Placed = {
   areaIndex: number;
 };
 
-export function ResearchConstellation({ items }: { items: ResearchItem[] }) {
+export function ResearchConstellation({
+  items,
+  copy,
+}: {
+  items: ResearchItem[];
+  copy: Dictionary["art"];
+}) {
   const reduced = useReducedMotion();
   const [active, setActive] = useState<string | null>(null);
   const [activeArea, setActiveArea] = useState<number | null>(null);
@@ -94,7 +101,7 @@ export function ResearchConstellation({ items }: { items: ResearchItem[] }) {
         fill="none"
         className="h-auto w-full"
         role="img"
-        aria-label="A constellation of research areas and papers"
+        aria-label={copy.constellation}
       >
         {/* area spokes */}
         {areas.map((a) => {
@@ -287,7 +294,7 @@ export function ResearchConstellation({ items }: { items: ResearchItem[] }) {
           <span className="block font-serif text-lg text-ink">{areas[activeArea].name}</span>
         ) : (
           <span className="block text-sm text-ink-faint">
-            Hover a node to trace a paper back through its field.
+            {copy.constellationHint}
           </span>
         )}
       </figcaption>

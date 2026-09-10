@@ -1,4 +1,5 @@
 import { permanentRedirect } from "next/navigation";
+import { defaultLocale, isLocale, localePath } from "@/lib/i18n/config";
 
 /**
  * Archived. Publications never had entries of their own, and the work they
@@ -8,6 +9,13 @@ import { permanentRedirect } from "next/navigation";
  * To bring the section back: restore the previous page from git history and
  * add its entry to src/content/nav.ts and src/app/sitemap.ts.
  */
-export default function PublicationsPage() {
-  permanentRedirect("/research");
+export default async function PublicationsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+  // Lands in the language the visitor was already reading.
+  permanentRedirect(localePath("/research", locale));
 }

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { getBlogPosts } from "@/lib/data";
@@ -8,25 +7,42 @@ import { NewsletterForm } from "@/components/forms/NewsletterForm";
 import { JournalGate } from "@/components/journal/JournalGate";
 import { cookies } from "next/headers";
 import { JOURNAL_COOKIE, tokenIsValid } from "@/lib/journalGate";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { defaultLocale, isLocale } from "@/lib/i18n/config";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
-export const metadata: Metadata = {
-  title: "The Journal",
-  description: "Essays, reflections, and commentary.",
-};
+type Params = { params: Promise<{ locale: string }> };
 
-export default async function JournalPage() {
-  const blogPosts = await getBlogPosts();
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+  const dict = await getDictionary(locale);
+
+  return {
+    title: dict.journal.eyebrow,
+    description: dict.journal.metaDescription,
+    alternates: localeAlternates("/journal", locale),
+  };
+}
+
+export default async function JournalPage({ params }: Params) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+
+  const [blogPosts, dict] = await Promise.all([getBlogPosts(), getDictionary(locale)]);
+  const t = dict.journal;
   // Read on the server, so a locked reader is never sent the writing.
   const unlocked = await tokenIsValid((await cookies()).get(JOURNAL_COOKIE)?.value);
 
   return (
     <>
       <PageHeader
-        eyebrow="The Journal"
-        title="Essays"
-        accent="& Notes"
+        eyebrow={t.eyebrow}
+        title={t.titleLead}
+        accent={t.titleAccent}
         accentTone="azure"
-        lede="Writing that sits between the research and the fiction."
+        lede={t.lede}
         aside={
           <Reveal delay={0.3}>
             {/* Decorative: the page's title already says what this is. */}
@@ -46,23 +62,20 @@ export default async function JournalPage() {
       <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-24">
         {!unlocked && (
           <Reveal>
-            <JournalGate />
+            <JournalGate copy={t.gate} />
           </Reveal>
         )}
 
         {unlocked && blogPosts.length === 0 && (
           <Reveal>
             <div className="max-w-2xl border-t border-line pt-10">
-              <p className="eyebrow">Coming soon</p>
+              <p className="eyebrow">{t.comingSoon}</p>
               <h2 className="mt-5 font-display text-3xl leading-tight sm:text-4xl">
-                The first essays are still being written.
+                {t.comingSoonHeading}
               </h2>
-              <p className="mt-5 text-lg leading-relaxed text-ink-soft">
-                You are on the list, so each one reaches you as it is published. This is
-                where the writing between the research and the fiction will live.
-              </p>
+              <p className="mt-5 text-lg leading-relaxed text-ink-soft">{t.comingSoonBody}</p>
               <div className="mt-9 max-w-md">
-                <NewsletterForm />
+                <NewsletterForm copy={dict.newsletter} />
               </div>
             </div>
           </Reveal>
@@ -72,7 +85,7 @@ export default async function JournalPage() {
           {unlocked &&
             blogPosts.map((post, i) => (
             <Reveal key={post.slug} delay={i * 0.05}>
-              <Link
+              <LocaleLink
                 href={`/journal/${post.slug}`}
                 className="group grid gap-6 border-b border-line py-10 transition-colors hover:bg-canvas-light sm:grid-cols-[7rem_14rem_1fr] sm:gap-8"
               >
@@ -86,7 +99,7 @@ export default async function JournalPage() {
                 <Figure
                   src={post.coverImage}
                   alt={post.title}
-                  label="Cover"
+                  label={t.coverLabel}
                   spec="1600 × 1000 px"
                   ratio="16 / 10"
                   tone="azure"
@@ -104,7 +117,7 @@ export default async function JournalPage() {
                     {post.excerpt}
                   </p>
                 </div>
-              </Link>
+              </LocaleLink>
             </Reveal>
           ))}
         </div>

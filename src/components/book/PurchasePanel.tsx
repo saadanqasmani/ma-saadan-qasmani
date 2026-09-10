@@ -4,19 +4,30 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { highestBranch } from "@/content/site";
 import { DirectOrderForm } from "@/components/forms/DirectOrderForm";
+import type { Dictionary } from "@/content/i18n/en";
+import { fill } from "@/lib/i18n/dictionary";
 
-const TABS = [
-  { id: "amazon" as const, label: "EU & Americas", note: "via Amazon" },
-  { id: "direct" as const, label: "Türkiye & Pakistan", note: "direct order" },
-];
-
-export function PurchasePanel() {
+export function PurchasePanel({
+  copy,
+  forms,
+  regions,
+}: {
+  copy: Dictionary["novel"]["purchase"];
+  forms: Dictionary["forms"];
+  /** Where the book can be had, in this language. */
+  regions: { amazon: string; direct: string; directNote: string };
+}) {
   const [tab, setTab] = useState<"amazon" | "direct">("amazon");
+
+  const tabs = [
+    { id: "amazon" as const, label: copy.amazonTab, note: copy.amazonNote },
+    { id: "direct" as const, label: copy.directTab, note: copy.directNote },
+  ];
 
   return (
     <div className="grid gap-12 lg:grid-cols-[0.4fr_1fr]">
       <div className="flex flex-col gap-3">
-        {TABS.map((t) => {
+        {tabs.map((t) => {
           const active = tab === t.id;
           return (
             <button
@@ -24,7 +35,7 @@ export function PurchasePanel() {
               type="button"
               onClick={() => setTab(t.id)}
               aria-pressed={active}
-              className={`group relative overflow-hidden border p-6 text-left transition-colors ${
+              className={`group relative overflow-hidden border p-6 text-start transition-colors ${
                 active ? "border-ink bg-ink text-canvas-light" : "border-line hover:border-ink"
               }`}
             >
@@ -53,8 +64,7 @@ export function PurchasePanel() {
             {tab === "amazon" ? (
               <div className="max-w-xl">
                 <p className="font-serif text-xl leading-relaxed text-ink-soft">
-                  Available for readers in {highestBranch.purchase.amazon.regions} through
-                  Amazon.
+                  {fill(copy.amazonBody, { regions: regions.amazon })}
                 </p>
                 {highestBranch.purchase.amazon.url ? (
                   <a
@@ -65,22 +75,22 @@ export function PurchasePanel() {
                   >
                     <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                     <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-                      Buy on Amazon
+                      {copy.buyOnAmazon}
                     </span>
                   </a>
                 ) : (
                   <p className="mt-8 border border-dashed border-line px-6 py-5 text-sm text-ink-faint">
-                    The Amazon link will appear here once the book is listed.
+                    {copy.amazonPending}
                   </p>
                 )}
               </div>
             ) : (
               <div className="max-w-xl">
                 <p className="font-serif text-xl leading-relaxed text-ink-soft">
-                  {highestBranch.purchase.direct.note}
+                  {regions.directNote}
                 </p>
                 <div className="mt-10">
-                  <DirectOrderForm />
+                  <DirectOrderForm copy={forms} />
                 </div>
               </div>
             )}

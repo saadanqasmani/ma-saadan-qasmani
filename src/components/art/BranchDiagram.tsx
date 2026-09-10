@@ -280,7 +280,7 @@ function build(seed: number) {
 
 const TONES = ["var(--azure)", "var(--ember)", "var(--verdant)"];
 
-export function BranchDiagram({ className = "" }: { className?: string }) {
+export function BranchDiagram({ className = "", label }: { className?: string; label: string }) {
   const reduced = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<number | null>(null);
@@ -326,7 +326,7 @@ export function BranchDiagram({ className = "" }: { className?: string }) {
         style={reduced ? undefined : { x: tx, y: ty }}
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="A tree whose branches and roots mark the stages of Saadan Qasmani's work, from A and O Levels at the roots to the novel The Highest Branch at the crown"
+        aria-label={label}
       >
         {/* The ground line: everything below it came before everything above it. */}
         <motion.line

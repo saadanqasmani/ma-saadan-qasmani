@@ -218,7 +218,11 @@ export default async function ResearchPaperPage({ params }: Params) {
               </a>
             ) : (
               <div className="mt-7">
-                <RequestAccessForm researchSlug={item.slug} researchTitle={item.title} />
+                <RequestAccessForm
+                  researchSlug={item.slug}
+                  researchTitle={item.title}
+                  copy={dict.forms}
+                />
               </div>
             )}
           </section>

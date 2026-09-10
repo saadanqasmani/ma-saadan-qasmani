@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { cookies } from "next/headers";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { Mark } from "@/components/collect/Mark";
 import { FloatCard } from "@/components/ui/FloatCard";
-import { iris } from "@/content/iris";
 import { irisDemo } from "@/content/site";
 import { IrisEye } from "@/components/novel/IrisEye";
 import { IrisLock } from "@/components/work/IrisLock";
 import { IRIS_COOKIE, tokenIsValid } from "@/lib/irisGate";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
+import { getContent } from "@/lib/i18n/content";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { defaultLocale, isLocale } from "@/lib/i18n/config";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 /**
  * The IRIS project page.
@@ -19,19 +22,28 @@ import { IRIS_COOKIE, tokenIsValid } from "@/lib/irisGate";
  * comes from Saadan's own explainer, which is embedded partway down.
  */
 
-export const metadata: Metadata = {
-  title: `${iris.name} by ${iris.by}`,
-  description: `${iris.expansion}. ${iris.lede}`,
-};
+type Params = { params: Promise<{ locale: string }> };
 
-function DemoLink({ className = "" }: { className?: string }) {
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+  const iris = (await getContent(locale)).iris;
+
+  return {
+    title: `${iris.name} by ${iris.by}`,
+    description: `${iris.expansion}. ${iris.lede}`,
+    alternates: localeAlternates("/work/iris", locale),
+  };
+}
+
+function DemoLink({ className = "", label }: { className?: string; label: string }) {
   const href = irisDemo.url ?? "/contact?subject=IRIS%20demo%20request";
   const external = Boolean(irisDemo.url);
   const inner = (
     <>
       <span className="absolute inset-0 -translate-y-full bg-[var(--iris-blue)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
       <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-        Request a demo
+        {label}
       </span>
     </>
   );
@@ -41,9 +53,9 @@ function DemoLink({ className = "" }: { className?: string }) {
       {inner}
     </a>
   ) : (
-    <Link href={href} className={cls}>
+    <LocaleLink href={href} className={cls}>
       {inner}
-    </Link>
+    </LocaleLink>
   );
 }
 
@@ -51,23 +63,30 @@ function DemoLink({ className = "" }: { className?: string }) {
  * Stands in for a locked section's content: it keeps the page's shape
  * legible without putting any of the section in the document.
  */
-function Withheld({ line }: { line: string }) {
+function Withheld({ line, cta }: { line: string; cta: string }) {
   return (
     <Reveal delay={0.08}>
-      <div className="mt-8 max-w-2xl border-l-2 border-ember pl-6">
+      <div className="mt-8 max-w-2xl border-s-2 border-ember ps-6">
         <p className="font-serif text-xl italic leading-snug text-[var(--iris-navy)]">{line}</p>
         <a
           href="#film"
           className="mt-4 inline-flex text-xs uppercase tracking-[0.16em] text-[var(--iris-blue)] underline underline-offset-4"
         >
-          Enter the access code
+          {cta}
         </a>
       </div>
     </Reveal>
   );
 }
 
-export default async function IrisPage() {
+export default async function IrisPage({ params }: Params) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+
+  const [dict, content] = await Promise.all([getDictionary(locale), getContent(locale)]);
+  const iris = content.iris;
+  const t = dict.detail.iris;
+
   // Read on the server: a locked visitor is never sent the film, the module
   // list or the architecture, so there is nothing in the page to reveal.
   const unlocked = await tokenIsValid((await cookies()).get(IRIS_COOKIE)?.value);
@@ -77,7 +96,7 @@ export default async function IrisPage() {
       <IrisEye />
 
       <PageHeader
-        eyebrow="The Work · Project"
+        eyebrow={dict.detail.workProject}
         title={iris.name}
         sub={`by ${iris.by}`}
         lede={iris.lede}
@@ -89,7 +108,7 @@ export default async function IrisPage() {
         </Reveal>
         <Reveal delay={0.1}>
           <div className="mt-8 flex flex-wrap gap-4">
-            <DemoLink />
+            <DemoLink label={t.requestDemo} />
             {unlocked ? (
               <a
                 href={irisDemo.explainer}
@@ -99,7 +118,7 @@ export default async function IrisPage() {
               >
                 <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                 <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-                  Open the film full screen
+                  {t.openFilmFullScreen}
                 </span>
               </a>
             ) : (
@@ -109,7 +128,7 @@ export default async function IrisPage() {
               >
                 <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                 <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
-                  Unlock the film
+                  {t.unlockTheFilm}
                 </span>
               </a>
             )}
@@ -121,7 +140,7 @@ export default async function IrisPage() {
       <section className="mt-24 border-y border-[var(--iris-blue-pale)] bg-[var(--iris-ground-deep)] py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
-            <p className="eyebrow">01 — The problem</p>
+            <p className="eyebrow">01 — {t.sectionProblem}</p>
           </Reveal>
           <Reveal delay={0.08}>
             <h2 className="mt-6 max-w-4xl font-display text-[clamp(2rem,5vw,3.8rem)] leading-[1.05] text-[var(--iris-navy)]">
@@ -180,7 +199,7 @@ export default async function IrisPage() {
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
             <p className="eyebrow flex items-center gap-1">
-              02 — The diagnostic backbone
+              02 — {t.sectionBackbone}
               <Mark id="trilogy" className="-my-2 ml-1" />
             </p>
           </Reveal>
@@ -301,7 +320,7 @@ export default async function IrisPage() {
       >
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
-            <p className="eyebrow">03 — The film</p>
+            <p className="eyebrow">03 — {t.sectionFilm}</p>
           </Reveal>
           <Reveal delay={0.08}>
             <h2 className="mt-6 font-display text-[clamp(1.8rem,4vw,3rem)] leading-tight text-canvas-light">
@@ -317,7 +336,7 @@ export default async function IrisPage() {
                 <FloatCard tone="mixed" className="mt-10" innerClassName="overflow-hidden bg-canvas">
                   <iframe
                     src={irisDemo.explainer}
-                    title="IRIS — the explainer film"
+                    title={t.filmTitle}
                     loading="lazy"
                     sandbox="allow-scripts"
                     className="aspect-video h-full w-full"
@@ -326,14 +345,14 @@ export default async function IrisPage() {
               </Reveal>
               <Reveal delay={0.2}>
                 <p className="mt-4 text-sm text-canvas-light/60">
-                  Sound is off until you turn it on, inside the film.
+                  {t.soundNote}
                 </p>
               </Reveal>
             </>
           ) : (
             <Reveal delay={0.14}>
               <div className="mt-10">
-                <IrisLock />
+                <IrisLock copy={t.lock} />
               </div>
             </Reveal>
           )}
@@ -344,10 +363,10 @@ export default async function IrisPage() {
       <section className="py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
-            <p className="eyebrow">04 — What it does</p>
+            <p className="eyebrow">04 — {t.sectionWhatItDoes}</p>
           </Reveal>
           {!unlocked && (
-            <Withheld line="The eight modules IRIS runs are held with the film." />
+            <Withheld line={t.withheldModules} cta={t.enterAccessCode} />
           )}
           {unlocked && (
           <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -381,10 +400,10 @@ export default async function IrisPage() {
       <section className="border-t border-[var(--iris-blue-pale)] bg-[var(--iris-ground-deep)] py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
-            <p className="eyebrow">05 — The architecture</p>
+            <p className="eyebrow">05 — {t.sectionArchitecture}</p>
           </Reveal>
           {!unlocked && (
-            <Withheld line="How IRIS is built, end to end, is held with the film." />
+            <Withheld line={t.withheldArchitecture} cta={t.enterAccessCode} />
           )}
           {unlocked && (
           <>
@@ -448,13 +467,13 @@ export default async function IrisPage() {
           </Reveal>
           <Reveal delay={0.18}>
             <div className="mt-10 flex flex-wrap gap-4">
-              <DemoLink />
-              <Link
+              <DemoLink label={t.requestDemo} />
+              <LocaleLink
                 href="/work"
                 className="inline-flex items-center gap-2 border border-line px-6 py-3 text-xs uppercase tracking-[0.16em] text-ink-soft transition-colors hover:border-ink hover:text-ink"
               >
-                Back to the work
-              </Link>
+                {dict.detail.backToTheWork}
+              </LocaleLink>
             </div>
           </Reveal>
         </div>

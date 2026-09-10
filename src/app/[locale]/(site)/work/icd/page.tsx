@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { GalleryTrigger } from "@/components/media/GalleryTrigger";
-import { icd } from "@/content/icd";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
+import { getContent } from "@/lib/i18n/content";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { defaultLocale, isLocale } from "@/lib/i18n/config";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 /**
  * The ICD training page.
@@ -13,10 +16,19 @@ import { icd } from "@/content/icd";
  * this way is quoted from his own paper, with the paper's own caveat kept.
  */
 
-export const metadata: Metadata = {
-  title: `${icd.expansion}`,
-  description: `${icd.name} — ${icd.expansion}. ${icd.lede}`,
-};
+type Params = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+  const icd = (await getContent(locale)).icd;
+
+  return {
+    title: `${icd.expansion}`,
+    description: `${icd.name} — ${icd.expansion}. ${icd.lede}`,
+    alternates: localeAlternates("/work/icd", locale),
+  };
+}
 
 const TONES: Record<string, { rule: string; text: string; chip: string }> = {
   green: {
@@ -38,7 +50,7 @@ const TONES: Record<string, { rule: string; text: string; chip: string }> = {
 
 function Quote({ children, source }: { children: string; source?: string }) {
   return (
-    <figure className="max-w-3xl border-l-[3px] border-[var(--icd-green)] pl-7">
+    <figure className="max-w-3xl border-s-[3px] border-[var(--icd-green)] ps-7">
       <blockquote className="font-serif text-2xl italic leading-snug text-[var(--icd-ink)] sm:text-[1.75rem]">
         “{children}”
       </blockquote>
@@ -51,11 +63,18 @@ function Quote({ children, source }: { children: string; source?: string }) {
   );
 }
 
-export default function IcdPage() {
+export default async function IcdPage({ params }: Params) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+
+  const [dict, content] = await Promise.all([getDictionary(locale), getContent(locale)]);
+  const icd = content.icd;
+  const copy = dict.detail.icd;
+
   return (
     <div className="icd-theme bg-[var(--icd-ground)]">
       <PageHeader
-        eyebrow="The Work · Programme"
+        eyebrow={dict.detail.workProgramme}
         title={icd.name}
         sub={icd.expansion}
         lede={icd.lede}
@@ -110,7 +129,7 @@ export default function IcdPage() {
       <section className="border-b border-[var(--icd-green-pale)] bg-[var(--icd-ground-deep)] py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
-            <p className="eyebrow">02 — Who it is for</p>
+            <p className="eyebrow">02 — {copy.sectionWhoFor}</p>
           </Reveal>
           <Reveal delay={0.08}>
             <div className="mt-8">
@@ -134,7 +153,7 @@ export default function IcdPage() {
                       {a.body}
                     </p>
                     <p className="mt-7 text-[10px] uppercase tracking-[0.16em] text-[var(--icd-ink-soft)]">
-                      Outcomes
+                      {copy.outcomes}
                     </p>
                     <ul className="mt-3 flex flex-wrap gap-2">
                       {a.outcomes.map((o) => (
@@ -158,7 +177,7 @@ export default function IcdPage() {
       <section className="border-b border-[var(--icd-green-pale)] py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
-            <p className="eyebrow">03 — How it runs</p>
+            <p className="eyebrow">03 — {copy.sectionHowItRuns}</p>
           </Reveal>
           <ol className="mt-12 border-t-2 border-[var(--icd-green)]">
             {icd.cycle.map((c, i) => (
@@ -179,7 +198,7 @@ export default function IcdPage() {
           <Reveal delay={0.28}>
             <div className="mt-12 flex flex-wrap items-center gap-3">
               <span className="text-[10px] uppercase tracking-[0.16em] text-[var(--icd-ink-soft)]">
-                Delivered in
+                {copy.deliveredIn}
               </span>
               {icd.delivered.map((d) => (
                 <span
@@ -203,8 +222,8 @@ export default function IcdPage() {
 
           <Reveal delay={0.4}>
             <div className="mt-12">
-              <GalleryTrigger mediaKey="icd" label="ICD training">
-                <p className="font-serif text-xl text-[var(--icd-ink)]">From the sessions</p>
+              <GalleryTrigger set={content.mediaSet("icd")} label={copy.galleryLabel} copy={dict.gallery}>
+                <p className="font-serif text-xl text-[var(--icd-ink)]">{copy.fromTheSessions}</p>
               </GalleryTrigger>
             </div>
           </Reveal>
@@ -241,8 +260,12 @@ export default function IcdPage() {
                       orphaned when the Work entry that used to open them moved
                       here, so the galleries hang off the cards instead. */}
                   <div className="mt-6 pt-2">
-                    <GalleryTrigger mediaKey={s.media} label={s.name}>
-                      <span className="text-sm text-white/70">Photographs</span>
+                    <GalleryTrigger
+                      set={s.media ? content.mediaSet(s.media) : null}
+                      label={s.name}
+                      copy={dict.gallery}
+                    >
+                      <span className="text-sm text-white/70">{copy.photographs}</span>
                     </GalleryTrigger>
                   </div>
                 </div>
@@ -256,11 +279,11 @@ export default function IcdPage() {
       <section className="py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
-            <p className="eyebrow">05 — Working together</p>
+            <p className="eyebrow">05 — {copy.sectionWorkingTogether}</p>
           </Reveal>
           <Reveal delay={0.08}>
             <h2 className="mt-6 max-w-3xl font-display text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[var(--icd-ink)]">
-              Bring this to your institution.
+              {copy.bringToInstitution}
             </h2>
           </Reveal>
 
@@ -285,21 +308,21 @@ export default function IcdPage() {
 
           <Reveal delay={0.36}>
             <div className="mt-10 flex flex-wrap gap-4">
-              <Link
+              <LocaleLink
                 href="/contact?subject=ICD%20training%20enquiry"
                 className="group relative inline-flex overflow-hidden border-2 border-[var(--icd-green)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--icd-green)]"
               >
                 <span className="absolute inset-0 -translate-y-full bg-[var(--icd-green)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                 <span className="relative transition-colors duration-300 group-hover:text-white">
-                  Get in touch
+                  {copy.getInTouch}
                 </span>
-              </Link>
-              <Link
+              </LocaleLink>
+              <LocaleLink
                 href="/research"
                 className="inline-flex items-center gap-2 border border-[var(--icd-green-pale)] px-6 py-3 text-xs uppercase tracking-[0.16em] text-[var(--icd-ink-soft)] transition-colors hover:border-[var(--icd-green)] hover:text-[var(--icd-green)]"
               >
-                The research behind it
-              </Link>
+                {copy.theResearchBehindIt}
+              </LocaleLink>
             </div>
           </Reveal>
         </div>

@@ -71,7 +71,7 @@ export default async function ResearchPage({ params }: Params) {
             </Reveal>
           </div>
           <Reveal delay={0.15}>
-            <ResearchConstellation items={papers} />
+            <ResearchConstellation items={papers} copy={dict.art} />
           </Reveal>
         </div>
       </section>
@@ -100,6 +100,7 @@ export default async function ResearchPage({ params }: Params) {
         <ResearchArchive
           items={papers}
           copy={t}
+          forms={dict.forms}
           notice={dict.translation}
           instrument={content.instrument}
         />

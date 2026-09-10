@@ -10,7 +10,15 @@ import {
 } from "@/lib/journalGate";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-export type GateState = { error: string | null; subscribed?: boolean };
+/**
+ * What went wrong, as a name rather than a sentence.
+ *
+ * The server does not know which language the reader is in, and it does not
+ * need to: the page that called it does, and it holds the words.
+ */
+export type GateError = "enterCode" | "wrongCode" | "badEmail" | "notConnected" | "failed";
+
+export type GateState = { error: GateError | null; subscribed?: boolean };
 
 async function letThemIn() {
   const store = await cookies();
@@ -29,10 +37,8 @@ export async function unlockWithCode(
   formData: FormData
 ): Promise<GateState> {
   const entered = String(formData.get("code") ?? "");
-  if (!entered.trim()) return { error: "Enter your access code." };
-  if (!codeIsCorrect(entered)) {
-    return { error: "That code is not right. Check the email you were sent." };
-  }
+  if (!entered.trim()) return { error: "enterCode" };
+  if (!codeIsCorrect(entered)) return { error: "wrongCode" };
   await letThemIn();
   return { error: null };
 }
@@ -53,12 +59,12 @@ export async function subscribeAndUnlock(
 ): Promise<GateState> {
   const email = String(formData.get("email") ?? "").trim();
   if (!emailSchema.safeParse(email).success) {
-    return { error: "Enter a valid email address." };
+    return { error: "badEmail" };
   }
 
   const supabase = getSupabaseServerClient();
   if (!supabase) {
-    return { error: "The list isn't connected yet. Use your access code for now." };
+    return { error: "notConnected" };
   }
 
   const { error } = await supabase
@@ -66,7 +72,7 @@ export async function subscribeAndUnlock(
     .upsert({ email, status: "active" }, { onConflict: "email" });
 
   if (error) {
-    return { error: "Something went wrong. Please try again." };
+    return { error: "failed" };
   }
 
   await letThemIn();

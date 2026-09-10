@@ -13,12 +13,14 @@ export function ResearchRow({
   item,
   index,
   copy,
+  forms,
   notice,
   instrument,
 }: {
   item: TranslatedResearchItem;
   index: number;
   copy: Dictionary["research"];
+  forms: Dictionary["forms"];
   notice: Dictionary["translation"];
   instrument: { label: string; definition: string | null };
 }) {
@@ -389,6 +391,7 @@ export function ResearchRow({
                   researchSlug={item.slug}
                   researchTitle={subject}
                   onClose={() => setRequest(null)}
+                  copy={forms}
                 />
               </div>
             </motion.div>

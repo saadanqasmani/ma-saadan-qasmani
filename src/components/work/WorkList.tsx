@@ -4,7 +4,7 @@ import { useState } from "react";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { Reveal } from "@/components/ui/Reveal";
 import { FloatingGallery } from "@/components/media/FloatingGallery";
-import { getMediaSet } from "@/content/media";
+import type { MediaSet } from "@/content/media";
 import type { WorkItem } from "@/content/site";
 import type { Dictionary } from "@/content/i18n/en";
 import { fill } from "@/lib/i18n/dictionary";
@@ -93,9 +93,20 @@ const CATEGORY_TONE: Record<string, string> = {
   Projects: "text-azure",
 };
 
-export function WorkList({ items, copy }: { items: WorkItem[]; copy: Dictionary["work"] }) {
+export function WorkList({
+  items,
+  copy,
+  gallery,
+  sets,
+}: {
+  items: WorkItem[];
+  copy: Dictionary["work"];
+  gallery: Dictionary["gallery"];
+  /** Resolved on the server, so the captions arrive already translated. */
+  sets: Record<string, MediaSet | null>;
+}) {
   const [openSlug, setOpenSlug] = useState<string | null>(null);
-  const openSet = openSlug ? getMediaSet(openSlug) : null;
+  const openSet = openSlug ? (sets[openSlug] ?? null) : null;
 
   return (
     <>
@@ -111,7 +122,7 @@ export function WorkList({ items, copy }: { items: WorkItem[]; copy: Dictionary[
            * and an empty set is the thing worth hiding, not a set that happens
            * to sit beside a link.
            */
-          const candidate = getMediaSet(item.slug);
+          const candidate = sets[item.slug] ?? null;
           const set = candidate?.items.some((m) => m.src) ? candidate : null;
           return (
             <Reveal key={item.slug} delay={i * 0.05}>
@@ -137,7 +148,7 @@ export function WorkList({ items, copy }: { items: WorkItem[]; copy: Dictionary[
                     <button
                       type="button"
                       onClick={() => setOpenSlug(item.slug)}
-                      className="block text-left"
+                      className="block text-start"
                       aria-label={fill(copy.openGallery, { name: item.title })}
                     >
                       <h2 className="font-serif text-2xl leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:text-3xl">
@@ -210,7 +221,12 @@ export function WorkList({ items, copy }: { items: WorkItem[]; copy: Dictionary[
       </ul>
 
       {openSet && (
-        <FloatingGallery set={openSet} open={Boolean(openSlug)} onClose={() => setOpenSlug(null)} />
+        <FloatingGallery
+          set={openSet}
+          open={Boolean(openSlug)}
+          onClose={() => setOpenSlug(null)}
+          copy={gallery}
+        />
       )}
     </>
   );

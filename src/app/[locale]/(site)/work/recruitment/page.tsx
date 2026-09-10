@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { FloatCard } from "@/components/ui/FloatCard";
 import { GalleryTrigger } from "@/components/media/GalleryTrigger";
 import { Pipeline, TierLadder } from "@/components/art/RecruitmentDiagrams";
-import { recruitment } from "@/content/recruitment";
 import { booking } from "@/content/site";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
+import { getContent } from "@/lib/i18n/content";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { defaultLocale, isLocale } from "@/lib/i18n/config";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 /**
  * International student recruitment.
@@ -16,18 +19,34 @@ import { booking } from "@/content/site";
  * rather than a pitch.
  */
 
-export const metadata: Metadata = {
-  title: recruitment.expansion,
-  description: `${recruitment.expansion}. ${recruitment.lede}`,
-};
+type Params = { params: Promise<{ locale: string }> };
 
-export default function RecruitmentPage() {
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+  const recruitment = (await getContent(locale)).recruitment;
+
+  return {
+    title: recruitment.expansion,
+    description: `${recruitment.expansion}. ${recruitment.lede}`,
+    alternates: localeAlternates("/work/recruitment", locale),
+  };
+}
+
+export default async function RecruitmentPage({ params }: Params) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : defaultLocale;
+
+  const [dict, content] = await Promise.all([getDictionary(locale), getContent(locale)]);
+  const recruitment = content.recruitment;
+  const copy = dict.detail.recruitment;
+
   return (
     <div className="rec-theme bg-[var(--rec-ground)]">
       <PageHeader
-        eyebrow="The Work · Practice"
-        title="International Student"
-        accent="Recruitment"
+        eyebrow={dict.detail.workPractice}
+        title={dict.work.recruitmentTitleLead}
+        accent={dict.work.recruitmentTitleAccent}
         lede={recruitment.lede}
       />
 
@@ -37,10 +56,10 @@ export default function RecruitmentPage() {
           <div className="grid items-start gap-14 lg:grid-cols-[1fr_0.85fr]">
             <div>
               <Reveal>
-                <p className="eyebrow">01 — What it answers</p>
+                <p className="eyebrow">01 — {copy.sectionWhatItAnswers}</p>
               </Reveal>
               <Reveal delay={0.08}>
-                <figure className="mt-8 border-l-[3px] border-[var(--rec-orange)] pl-7">
+                <figure className="mt-8 border-s-[3px] border-[var(--rec-orange)] ps-7">
                   <blockquote className="font-serif text-xl italic leading-snug text-[var(--rec-ink)] sm:text-2xl">
                     “{recruitment.problem.quote}”
                   </blockquote>
@@ -59,7 +78,7 @@ export default function RecruitmentPage() {
             <Reveal delay={0.18}>
               <div>
                 <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--rec-ink-soft)]">
-                  The pipeline
+                  {copy.thePipeline}
                 </p>
                 <div className="mt-4">
                   <Pipeline />
@@ -110,7 +129,7 @@ export default function RecruitmentPage() {
 
           <div className="mt-12 grid items-center gap-12 lg:grid-cols-[0.9fr_1fr]">
             <Reveal delay={0.12}>
-              <TierLadder />
+              <TierLadder label={dict.art.tiers} />
             </Reveal>
 
             <div className="grid gap-5">
@@ -125,10 +144,10 @@ export default function RecruitmentPage() {
                     </div>
                     <dl className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
                       {[
-                        ["Status", t.status],
-                        ["Relationship", t.relationship],
-                        ["Incentives", t.incentives],
-                        ["Meetings", t.meetings],
+                        [copy.tier.status, t.status],
+                        [copy.tier.relationship, t.relationship],
+                        [copy.tier.incentives, t.incentives],
+                        [copy.tier.meetings, t.meetings],
                       ].map(([k, v]) => (
                         <div key={k}>
                           <dt className="text-[10px] uppercase tracking-[0.14em] text-[var(--rec-orange)]">
@@ -149,7 +168,7 @@ export default function RecruitmentPage() {
           <Reveal delay={0.3}>
             <div className="mt-12 flex flex-wrap items-center gap-4">
               <span className="text-[10px] uppercase tracking-[0.16em] text-[var(--rec-ink-soft)]">
-                A partner moves up on
+                {copy.movesUpOn}
               </span>
               {recruitment.progression.map((c) => (
                 <span
@@ -169,7 +188,7 @@ export default function RecruitmentPage() {
       <section className="border-b border-[var(--rec-pale)] bg-[var(--rec-ground-deep)] py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
-            <p className="eyebrow">Market intelligence</p>
+            <p className="eyebrow">{copy.marketIntelligence}</p>
           </Reveal>
           <Reveal delay={0.08}>
             <h2 className="mt-6 max-w-3xl font-display text-[clamp(1.7rem,3.6vw,2.8rem)] leading-tight text-[var(--rec-ink)]">
@@ -213,15 +232,19 @@ export default function RecruitmentPage() {
           </div>
 
           <Reveal delay={0.34}>
-            <p className="mt-12 max-w-3xl border-l-[3px] border-[var(--rec-orange)] pl-6 font-serif text-lg italic leading-relaxed text-[var(--rec-ink)]">
+            <p className="mt-12 max-w-3xl border-s-[3px] border-[var(--rec-orange)] ps-6 font-serif text-lg italic leading-relaxed text-[var(--rec-ink)]">
               {recruitment.intelligence.risk}
             </p>
           </Reveal>
 
           <Reveal delay={0.38}>
             <div className="mt-14 border-t border-[var(--rec-pale)] pt-10">
-              <GalleryTrigger mediaKey="international-student-recruitment" label="recruitment work">
-                <p className="font-serif text-xl text-[var(--rec-ink)]">From the field</p>
+              <GalleryTrigger
+                set={content.mediaSet("international-student-recruitment")}
+                label={copy.galleryLabel}
+                copy={dict.gallery}
+              >
+                <p className="font-serif text-xl text-[var(--rec-ink)]">{copy.fromTheField}</p>
               </GalleryTrigger>
             </div>
           </Reveal>
@@ -232,7 +255,7 @@ export default function RecruitmentPage() {
       <section className="py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
-            <p className="eyebrow">03 — Working together</p>
+            <p className="eyebrow">03 — {copy.sectionWorkingTogether}</p>
           </Reveal>
           <Reveal delay={0.08}>
             <h2 className="mt-6 max-w-2xl font-display text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[var(--rec-ink)]">
@@ -254,15 +277,15 @@ export default function RecruitmentPage() {
               >
                 <span className="absolute inset-0 -translate-y-full bg-[var(--rec-orange)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                 <span className="relative transition-colors duration-300 group-hover:text-white">
-                  Schedule a consultation
+                  {copy.scheduleConsultation}
                 </span>
               </a>
-              <Link
+              <LocaleLink
                 href="/contact?subject=Recruitment%20consultation"
                 className="inline-flex items-center gap-2 border border-[var(--rec-pale)] px-7 py-3.5 text-xs uppercase tracking-[0.16em] text-[var(--rec-ink-soft)] transition-colors hover:border-[var(--rec-orange)] hover:text-[var(--rec-orange)]"
               >
-                Send a message instead
-              </Link>
+                {copy.sendMessageInstead}
+              </LocaleLink>
             </div>
           </Reveal>
         </div>

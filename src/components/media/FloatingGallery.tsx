@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { MediaItem, MediaSet } from "@/content/media";
+import type { Dictionary } from "@/content/i18n/en";
 
 /**
  * The pop-up gallery used everywhere media is attached to a section: the work
@@ -109,10 +110,12 @@ export function FloatingGallery({
   set,
   open,
   onClose,
+  copy,
 }: {
   set: MediaSet;
   open: boolean;
   onClose: () => void;
+  copy: Dictionary["gallery"];
 }) {
   const reduced = useReducedMotion() ?? false;
   const panelRef = useRef<HTMLDivElement>(null);
@@ -160,13 +163,13 @@ export function FloatingGallery({
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close"
-              className="absolute right-5 top-5 z-10 text-2xl leading-none text-ink-faint transition-colors hover:text-ink"
+              aria-label={copy.close}
+              className="absolute end-5 top-5 z-10 text-2xl leading-none text-ink-faint transition-colors hover:text-ink"
             >
               ×
             </button>
 
-            <p className="eyebrow">Gallery</p>
+            <p className="eyebrow">{copy.eyebrow}</p>
             <h3 className="mt-2 max-w-[85%] font-display text-3xl leading-tight">{set.title}</h3>
 
             <div className="mt-8">

@@ -10,11 +10,13 @@ import { fill } from "@/lib/i18n/dictionary";
 export function ResearchArchive({
   items,
   copy,
+  forms,
   notice,
   instrument,
 }: {
   items: TranslatedResearchItem[];
   copy: Dictionary["research"];
+  forms: Dictionary["forms"];
   notice: Dictionary["translation"];
   instrument: { label: string; definition: string | null };
 }) {
@@ -77,6 +79,7 @@ export function ResearchArchive({
                 item={item}
                 index={i}
                 copy={copy}
+                forms={forms}
                 notice={notice}
                 instrument={instrument}
               />

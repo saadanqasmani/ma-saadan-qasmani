@@ -32,7 +32,7 @@ const overlays: Record<Exclude<Locale, "en">, () => Promise<DictionaryOverlay>> 
  * three roles translated as three roles is one decision, and merging by
  * index would let a shorter translated list leave English stragglers behind.
  */
-function merge<T>(base: T, over: unknown): T {
+export function merge<T>(base: T, over: unknown): T {
   if (over === undefined || over === null) return base;
   if (Array.isArray(base) || Array.isArray(over)) return over as T;
   if (typeof base !== "object" || typeof over !== "object") return over as T;

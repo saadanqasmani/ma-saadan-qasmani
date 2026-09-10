@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { MARKS, type Mark as MarkType } from "@/content/marginalia";
+import type { Mark as MarkType } from "@/content/marginalia";
 import { useCollection } from "@/components/collect/CollectionProvider";
+import { fill } from "@/lib/i18n/dictionary";
 import { cn } from "@/lib/utils";
 
 const GLYPHS: Record<MarkType["glyph"], React.ReactNode> = {
@@ -58,9 +59,9 @@ const GLYPHS: Record<MarkType["glyph"], React.ReactNode> = {
  */
 export function Mark({ id, className }: { id: string; className?: string }) {
   const reduced = useReducedMotion();
-  const { has, collect } = useCollection();
+  const { has, collect, marks, copy } = useCollection();
   const [hovered, setHovered] = useState(false);
-  const mark = MARKS.find((m) => m.id === id);
+  const mark = marks.find((m) => m.id === id);
   if (!mark) return null;
 
   const found = has(id);
@@ -76,7 +77,9 @@ export function Mark({ id, className }: { id: string; className?: string }) {
         onBlur={() => setHovered(false)}
         aria-pressed={found}
         aria-label={
-          found ? `Marginalia found: ${mark.title}. ${mark.line}` : `A mark in the margin: ${mark.hint}`
+          found
+            ? fill(copy.markFound, { title: mark.title, line: mark.line })
+            : fill(copy.markUnfound, { hint: mark.hint })
         }
         className={cn(
           "group relative grid h-9 w-9 place-items-center rounded-full transition-colors",
@@ -129,7 +132,7 @@ export function Mark({ id, className }: { id: string; className?: string }) {
             ) : (
               <>
                 <span className="block font-medium uppercase tracking-[0.12em] text-ink-faint">
-                  Marginalia
+                  {copy.name}
                 </span>
                 <span className="mt-1 block italic">{mark.hint}</span>
               </>

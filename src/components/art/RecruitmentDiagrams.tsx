@@ -92,7 +92,7 @@ export function Pipeline() {
  * The climb is CSS so it costs nothing per frame, and it stops under reduced
  * motion, where the diagram still reads as three labelled tiers.
  */
-export function TierLadder() {
+export function TierLadder({ label }: { label: string }) {
   const tiers = recruitment.tiers;
   const W = 560;
   const rowH = 78;
@@ -101,7 +101,7 @@ export function TierLadder() {
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img"
-      aria-label="Three partner tiers, with movement upward earned on conversion, responsiveness and referral quality">
+      aria-label={label}>
       {tiers.map((t, i) => {
         // Drawn bottom to top, so Tier 1 sits at the top of the ladder.
         const row = tiers.length - 1 - i;
