@@ -29,8 +29,8 @@ export function IrisLock({
     <FloatCard tone="mixed" innerClassName="p-8 sm:p-12">
       <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-xl">
-          <p className="text-xs uppercase tracking-[0.16em] text-ember">{copy.eyebrow}</p>
-          <h3 className="mt-5 font-display text-[clamp(1.6rem,3.4vw,2.6rem)] leading-tight text-[var(--iris-navy)]">
+          <p className="t-label text-ember">{copy.eyebrow}</p>
+          <h3 className="t-h2 mt-5 text-[var(--iris-navy)]">
             {copy.heading}
           </h3>
           <p className="mt-5 text-base leading-relaxed text-[var(--iris-navy-soft)]">
@@ -38,7 +38,7 @@ export function IrisLock({
           </p>
           <LocaleLink
             href={contactHref}
-            className="mt-7 inline-flex items-center gap-2 border border-[var(--iris-blue)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--iris-blue)] transition-colors hover:bg-[var(--iris-blue)] hover:text-canvas-light"
+            className="t-label mt-7 inline-flex items-center gap-2 border border-[var(--iris-blue)] px-6 py-3 font-semibold text-[var(--iris-blue)] transition-colors hover:bg-[var(--iris-blue)] hover:text-canvas-light"
           >
             {copy.requestTheCode}
           </LocaleLink>
@@ -47,7 +47,7 @@ export function IrisLock({
         <form action={formAction} className="w-full max-w-sm shrink-0">
           <label
             htmlFor="iris-code"
-            className="block text-xs uppercase tracking-[0.16em] text-[var(--iris-navy-soft)]"
+            className="t-label block text-[var(--iris-navy-soft)]"
           >
             {copy.enterCode}
           </label>
@@ -70,7 +70,7 @@ export function IrisLock({
           <button
             type="submit"
             disabled={pending}
-            className="group relative mt-5 inline-flex w-full justify-center overflow-hidden border-2 border-[var(--iris-blue)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--iris-blue)] disabled:opacity-60"
+            className="t-label group relative mt-5 inline-flex w-full justify-center overflow-hidden border-2 border-[var(--iris-blue)] px-6 py-3 font-semibold text-[var(--iris-blue)] disabled:opacity-60"
           >
             <span className="absolute inset-0 -translate-y-full bg-[var(--iris-blue)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
             <span className="relative transition-colors duration-300 group-hover:text-canvas-light">

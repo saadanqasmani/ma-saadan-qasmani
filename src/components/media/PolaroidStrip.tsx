@@ -58,7 +58,7 @@ export function PolaroidStrip({ set, count }: { set: MediaSet; count: string }) 
 
         {rest > 0 && (
           <span
-            className="polaroid relative flex h-[59px] w-[44px] shrink-0 items-center justify-center border border-line bg-canvas-light text-[11px] tabular-nums text-ink-soft shadow-[0_10px_22px_-14px_rgba(21,20,15,0.75)] sm:h-[67px] sm:w-[50px]"
+            className="t-label polaroid relative flex h-[59px] w-[44px] shrink-0 items-center justify-center border border-line bg-canvas-light tabular-nums text-ink-soft shadow-[0_10px_22px_-14px_rgba(21,20,15,0.75)] sm:h-[67px] sm:w-[50px]"
             style={{ ["--tilt" as string]: "-4deg", marginInlineStart: "-12px" }}
             aria-hidden
           >
@@ -67,7 +67,7 @@ export function PolaroidStrip({ set, count }: { set: MediaSet; count: string }) 
         )}
       </span>
 
-      <span className="mt-2.5 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-ink-soft transition-colors group-hover/gallery:text-ember">
+      <span className="t-label mt-2.5 inline-flex items-center gap-2 text-ink-soft transition-colors group-hover/gallery:text-ember">
         <span className="inline-block h-px w-5 bg-current transition-all duration-300 group-hover/gallery:w-9" />
         {count}
       </span>

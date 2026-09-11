@@ -124,7 +124,7 @@ export function NewsletterForm({
         <button
           type="submit"
           disabled={status === "loading"}
-          className={`group inline-flex shrink-0 items-center self-start py-1 text-xs font-medium uppercase tracking-[0.16em] transition-colors disabled:opacity-50 sm:self-end ${
+          className={`t-label group inline-flex shrink-0 items-center self-start py-1 transition-colors disabled:opacity-50 sm:self-end ${
             light ? "text-canvas-light hover:text-ember-light" : "text-ink hover:text-ember"
           }`}
         >

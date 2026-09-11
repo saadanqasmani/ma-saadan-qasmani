@@ -93,7 +93,7 @@ export default async function ResearchPage({ params }: Params) {
           )}
           {note.after}
         </p>
-        <p className="mb-8 flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint">
+        <p className="t-label mb-8 flex items-center gap-2 text-ink-faint">
           {t.trilogyNote}
           <Mark id="trilogy" className="-my-2" />
         </p>

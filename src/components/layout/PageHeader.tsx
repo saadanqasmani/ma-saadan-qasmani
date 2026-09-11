@@ -40,7 +40,7 @@ export function PageHeader({
             <span className="inline-block h-px w-8 translate-y-[-4px] bg-ember" /> {eyebrow}
           </p>
         </Reveal>
-        <h1 className="mt-6 font-display text-[clamp(2.75rem,8vw,7rem)] leading-[0.9] tracking-[-0.02em]">
+        <h1 className="t-display mt-6">
           <SplitText text={title} as="span" className="block" />
           {accent && (
             <SplitText

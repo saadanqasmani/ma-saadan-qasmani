@@ -120,18 +120,18 @@ export function Mark({ id, className }: { id: string; className?: string }) {
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.2 }}
             role="status"
-            className="pointer-events-none absolute left-1/2 top-full z-50 mt-1 w-52 -translate-x-1/2 border border-ink bg-canvas-light px-3 py-2 text-left text-[11px] leading-snug text-ink-soft shadow-sm"
+            className="t-label pointer-events-none absolute left-1/2 top-full z-50 mt-1 w-52 -translate-x-1/2 border border-ink bg-canvas-light px-3 py-2 text-left leading-snug text-ink-soft shadow-sm"
           >
             {found ? (
               <>
-                <span className="block font-medium uppercase tracking-[0.12em] text-ember">
+                <span className="t-label block text-ember">
                   {mark.title}
                 </span>
                 <span className="mt-1 block">{mark.line}</span>
               </>
             ) : (
               <>
-                <span className="block font-medium uppercase tracking-[0.12em] text-ink-faint">
+                <span className="t-label block text-ink-faint">
                   {copy.name}
                 </span>
                 <span className="mt-1 block italic">{mark.hint}</span>

@@ -46,7 +46,7 @@ export function JournalGate({ copy }: { copy: Dictionary["journal"]["gate"] }) {
           <input type="hidden" name="locale" value={locale} />
           <label
             htmlFor="gate-email"
-            className="block text-xs uppercase tracking-[0.16em] text-ink-faint"
+            className="t-label block text-ink-faint"
           >
             {copy.subscribe}
           </label>
@@ -64,7 +64,7 @@ export function JournalGate({ copy }: { copy: Dictionary["journal"]["gate"] }) {
             <button
               type="submit"
               disabled={subscribing}
-              className="shrink-0 text-xs font-semibold uppercase tracking-[0.16em] text-ember disabled:opacity-60"
+              className="t-label shrink-0 font-semibold text-ember disabled:opacity-60"
             >
               {subscribing ? "…" : copy.enter}
             </button>
@@ -83,7 +83,7 @@ export function JournalGate({ copy }: { copy: Dictionary["journal"]["gate"] }) {
         <form action={codeAction}>
           <label
             htmlFor="gate-code"
-            className="block text-xs uppercase tracking-[0.16em] text-ink-faint"
+            className="t-label block text-ink-faint"
           >
             {copy.haveCode}
           </label>
@@ -102,7 +102,7 @@ export function JournalGate({ copy }: { copy: Dictionary["journal"]["gate"] }) {
             <button
               type="submit"
               disabled={checking}
-              className="shrink-0 text-xs font-semibold uppercase tracking-[0.16em] text-azure disabled:opacity-60"
+              className="t-label shrink-0 font-semibold text-azure disabled:opacity-60"
             >
               {checking ? "…" : copy.unlock}
             </button>

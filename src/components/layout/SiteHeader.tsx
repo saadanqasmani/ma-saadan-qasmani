@@ -69,7 +69,7 @@ export function SiteHeader({
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "group relative text-[11px] font-medium uppercase tracking-[0.16em] text-ink-soft transition-colors hover:text-ink",
+                  "group relative t-label text-ink-soft transition-colors hover:text-ink",
                   here === link.href && "text-ink"
                 )}
               >
@@ -86,7 +86,7 @@ export function SiteHeader({
             <LocaleSwitcher />
             <LocaleLink
               href={novelLink.href}
-              className="group relative overflow-hidden border border-ink px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em]"
+              className="t-label group relative overflow-hidden border border-ink px-5 py-2.5 font-medium"
             >
               <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
               <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
@@ -108,7 +108,7 @@ export function SiteHeader({
               aria-label={open ? chrome.closeMenu : chrome.openMenu}
               aria-expanded={open}
               aria-controls="phone-menu"
-              className="relative z-[80] flex h-11 items-center gap-2.5 border border-ink px-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink"
+              className="t-label relative z-[80] flex h-11 items-center gap-2.5 border border-ink px-4 font-semibold text-ink"
               onClick={() => setOpen((v) => !v)}
             >
               <span className="flex h-3.5 w-5 flex-col justify-between">
@@ -163,12 +163,12 @@ export function SiteHeader({
                       href={link.href}
                       onClick={() => setOpen(false)}
                       aria-current={here === link.href ? "page" : undefined}
-                      className="flex items-baseline justify-between gap-4 py-5 font-display text-[2rem] leading-tight text-ink"
+                      className="t-h1 flex items-baseline justify-between gap-4 py-5 text-ink"
                     >
                       <span>{nav[link.key]}</span>
                       <span
                         className={cn(
-                          "font-sans text-[10px] tracking-[0.2em]",
+                          "t-label",
                           here === link.href ? "text-ember" : "text-ink-faint"
                         )}
                       >
@@ -191,7 +191,7 @@ export function SiteHeader({
                   className="flex items-center justify-between gap-4 bg-ember px-5 py-4 text-canvas-light"
                 >
                   <span className="font-display text-2xl leading-tight">{nav.novelTitle}</span>
-                  <span className="text-[10px] uppercase tracking-[0.2em]">{nav.novel}</span>
+                  <span className="t-label">{nav.novel}</span>
                 </LocaleLink>
               </motion.div>
 

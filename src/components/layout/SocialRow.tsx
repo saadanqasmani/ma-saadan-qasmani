@@ -13,7 +13,7 @@ export function SocialRow({ className = "" }: { className?: string }) {
             href={s.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-ink-soft transition-colors hover:text-ember"
+            className="t-label group inline-flex items-center gap-2 text-ink-soft transition-colors hover:text-ember"
           >
             <span className="inline-block h-px w-4 bg-current transition-all duration-300 group-hover:w-7" />
             {s.label}

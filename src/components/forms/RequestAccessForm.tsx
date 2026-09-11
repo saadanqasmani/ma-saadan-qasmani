@@ -84,7 +84,7 @@ export function RequestAccessForm({
           <button
             type="button"
             onClick={onClose}
-            className="text-xs uppercase tracking-[0.16em] text-ink-soft hover:text-ink"
+            className="t-label text-ink-soft hover:text-ink"
           >
             {copy.close}
           </button>
@@ -163,7 +163,7 @@ export function RequestAccessForm({
           <button
             type="button"
             onClick={onClose}
-            className="text-xs uppercase tracking-[0.16em] text-ink-faint transition-colors hover:text-ink"
+            className="t-label text-ink-faint transition-colors hover:text-ink"
           >
             {copy.cancel}
           </button>

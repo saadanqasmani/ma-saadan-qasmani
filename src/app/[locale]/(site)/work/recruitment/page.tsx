@@ -63,7 +63,7 @@ export default async function RecruitmentPage({ params }: Params) {
                   <blockquote className="font-serif text-xl italic leading-snug text-[var(--rec-ink)] sm:text-2xl">
                     “{recruitment.problem.quote}”
                   </blockquote>
-                  <figcaption className="mt-4 text-xs uppercase tracking-[0.14em] text-[var(--rec-ink-soft)]">
+                  <figcaption className="t-label mt-4 text-[var(--rec-ink-soft)]">
                     {recruitment.problem.source}
                   </figcaption>
                 </figure>
@@ -77,7 +77,7 @@ export default async function RecruitmentPage({ params }: Params) {
 
             <Reveal delay={0.18}>
               <div>
-                <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--rec-ink-soft)]">
+                <p className="t-label text-[var(--rec-ink-soft)]">
                   {copy.thePipeline}
                 </p>
                 <div className="mt-4">
@@ -94,7 +94,7 @@ export default async function RecruitmentPage({ params }: Params) {
                   <dt className="font-display text-5xl leading-none text-[var(--rec-orange)]">
                     {f.value}
                     {"label" in f && f.label && (
-                      <span className="ml-2 font-sans text-sm uppercase tracking-[0.14em] text-[var(--rec-ink-soft)]">
+                      <span className="t-label ml-2 text-[var(--rec-ink-soft)]">
                         {f.label}
                       </span>
                     )}
@@ -137,7 +137,7 @@ export default async function RecruitmentPage({ params }: Params) {
                 <Reveal key={t.n} delay={0.16 + i * 0.07}>
                   <FloatCard tone="ember" index={i} innerClassName="p-6">
                     <div className="flex flex-wrap items-baseline gap-3">
-                      <span className="bg-[var(--rec-orange)] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-white">
+                      <span className="t-label bg-[var(--rec-orange)] px-2.5 py-1 text-white">
                         {t.n}
                       </span>
                       <h3 className="font-serif text-xl text-[var(--rec-ink)]">{t.name}</h3>
@@ -150,7 +150,7 @@ export default async function RecruitmentPage({ params }: Params) {
                         [copy.tier.meetings, t.meetings],
                       ].map(([k, v]) => (
                         <div key={k}>
-                          <dt className="text-[10px] uppercase tracking-[0.14em] text-[var(--rec-orange)]">
+                          <dt className="t-label text-[var(--rec-orange)]">
                             {k}
                           </dt>
                           <dd className="mt-1 text-sm leading-snug text-[var(--rec-ink-soft)]">
@@ -167,7 +167,7 @@ export default async function RecruitmentPage({ params }: Params) {
 
           <Reveal delay={0.3}>
             <div className="mt-12 flex flex-wrap items-center gap-4">
-              <span className="text-[10px] uppercase tracking-[0.16em] text-[var(--rec-ink-soft)]">
+              <span className="t-label text-[var(--rec-ink-soft)]">
                 {copy.movesUpOn}
               </span>
               {recruitment.progression.map((c) => (
@@ -191,7 +191,7 @@ export default async function RecruitmentPage({ params }: Params) {
             <p className="eyebrow">{copy.marketIntelligence}</p>
           </Reveal>
           <Reveal delay={0.08}>
-            <h2 className="mt-6 max-w-3xl font-display text-[clamp(1.7rem,3.6vw,2.8rem)] leading-tight text-[var(--rec-ink)]">
+            <h2 className="t-h2 mt-6 max-w-3xl text-[var(--rec-ink)]">
               {recruitment.intelligence.heading}
             </h2>
           </Reveal>
@@ -258,7 +258,7 @@ export default async function RecruitmentPage({ params }: Params) {
             <p className="eyebrow">03 — {copy.sectionWorkingTogether}</p>
           </Reveal>
           <Reveal delay={0.08}>
-            <h2 className="mt-6 max-w-2xl font-display text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[var(--rec-ink)]">
+            <h2 className="t-h2 mt-6 max-w-2xl text-[var(--rec-ink)]">
               {recruitment.cta.heading}
             </h2>
           </Reveal>
@@ -273,7 +273,7 @@ export default async function RecruitmentPage({ params }: Params) {
                 href={booking.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative inline-flex overflow-hidden border-2 border-[var(--rec-orange)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--rec-orange)]"
+                className="t-label group relative inline-flex overflow-hidden border-2 border-[var(--rec-orange)] px-7 py-3.5 font-semibold text-[var(--rec-orange)]"
               >
                 <span className="absolute inset-0 -translate-y-full bg-[var(--rec-orange)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                 <span className="relative transition-colors duration-300 group-hover:text-white">
@@ -282,7 +282,7 @@ export default async function RecruitmentPage({ params }: Params) {
               </a>
               <LocaleLink
                 href="/contact?subject=Recruitment%20consultation"
-                className="inline-flex items-center gap-2 border border-[var(--rec-pale)] px-7 py-3.5 text-xs uppercase tracking-[0.16em] text-[var(--rec-ink-soft)] transition-colors hover:border-[var(--rec-orange)] hover:text-[var(--rec-orange)]"
+                className="t-label inline-flex items-center gap-2 border border-[var(--rec-pale)] px-7 py-3.5 text-[var(--rec-ink-soft)] transition-colors hover:border-[var(--rec-orange)] hover:text-[var(--rec-orange)]"
               >
                 {copy.sendMessageInstead}
               </LocaleLink>

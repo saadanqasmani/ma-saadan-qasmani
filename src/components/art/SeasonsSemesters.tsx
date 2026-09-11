@@ -206,7 +206,7 @@ export function SeasonsSemesters({ copy }: { copy: Dictionary["seasons"] }) {
             something and that there is more underneath. */}
         <div className="pointer-events-none absolute inset-x-0 bottom-8 hidden justify-center lg:flex">
           <div className="flex items-center gap-3">
-            <span className="text-[10px] uppercase tracking-[0.22em] text-ink-faint">
+            <span className="t-label text-ink-faint">
               {copy.forest}
             </span>
             <span className="relative block h-px w-40 bg-[var(--line-strong)]">
@@ -215,7 +215,7 @@ export function SeasonsSemesters({ copy }: { copy: Dictionary["seasons"] }) {
                 style={{ scaleX: progress, transformOrigin: "left" }}
               />
             </span>
-            <span className="text-[10px] uppercase tracking-[0.22em] text-ink-faint">{copy.city}</span>
+            <span className="t-label text-ink-faint">{copy.city}</span>
           </div>
         </div>
       </div>

@@ -65,7 +65,7 @@ export function InboxRow({
               if (value === null || value === undefined || value === "") return null;
               return (
                 <div key={f.name} className={f.type === "textarea" ? "sm:col-span-2" : ""}>
-                  <dt className="text-[10px] uppercase tracking-[0.12em] text-ink-faint">
+                  <dt className="t-label text-ink-faint">
                     {f.label}
                   </dt>
                   <dd className="mt-1 whitespace-pre-wrap text-sm text-ink">{String(value)}</dd>
@@ -77,7 +77,7 @@ export function InboxRow({
           {row.email ? (
             <a
               href={`mailto:${String(row.email)}`}
-              className="mt-5 inline-block text-xs uppercase tracking-[0.12em] text-azure underline-offset-4 hover:underline"
+              className="t-label mt-5 inline-block text-azure underline-offset-4 hover:underline"
             >
               Reply by email →
             </a>
@@ -89,7 +89,7 @@ export function InboxRow({
                 <div>
                   <label
                     htmlFor={`status-${id}`}
-                    className="mb-1 block text-[10px] uppercase tracking-[0.12em] text-ink-faint"
+                    className="t-label mb-1 block text-ink-faint"
                   >
                     Status
                   </label>
@@ -121,7 +121,7 @@ export function InboxRow({
               <div className="mt-4">
                 <label
                   htmlFor={`notes-${id}`}
-                  className="mb-1 block text-[10px] uppercase tracking-[0.12em] text-ink-faint"
+                  className="t-label mb-1 block text-ink-faint"
                 >
                   Private notes (never shown to the sender)
                 </label>

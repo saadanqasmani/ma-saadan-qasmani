@@ -96,10 +96,10 @@ export function Figure({
           <span className="absolute bottom-4 right-4 h-5 w-5 border-b border-r" style={{ borderColor: toneVar }} />
 
           <figcaption className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center">
-            <span className="bg-canvas px-3 py-1 text-[10px] font-medium uppercase tracking-[0.22em] text-ink-soft">
+            <span className="t-label bg-canvas px-3 py-1 font-medium text-ink-soft">
               {label}
             </span>
-            <span className="bg-canvas px-3 py-1 text-[11px] text-ink-faint">{spec}</span>
+            <span className="t-label bg-canvas px-3 py-1 text-ink-faint">{spec}</span>
           </figcaption>
         </>
       )}

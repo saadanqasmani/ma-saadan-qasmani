@@ -69,7 +69,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
               <Mark id="istanbul" className="-my-2 ml-1" />
             </p>
 
-            <h1 className="mt-6 font-display text-[clamp(3.25rem,8.5vw,8rem)] font-normal leading-[0.86] tracking-[-0.03em]">
+            <h1 className="t-display mt-6">
               <SplitText text="Saadan" delay={0.1} />
               <br />
               <SplitText text="Qasmani" delay={0.22} className="italic text-ember" />
@@ -79,7 +79,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
               text={said.positioning}
               as="p"
               delay={0.55}
-              className="mt-8 font-sans text-sm uppercase tracking-[0.2em] text-ink-soft"
+              className="t-label mt-8 text-ink-soft"
             />
 
             {/* Hover is a pointer affordance — hidden where there is no cursor */}
@@ -96,7 +96,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           <Reveal delay={1.3}>
             <div className="flex items-center gap-3">
               <span className="h-px w-10 bg-ink-faint" />
-              <span className="text-[10px] uppercase tracking-[0.25em] text-ink-faint">
+              <span className="t-label text-ink-faint">
                 {t.scroll}
               </span>
             </div>
@@ -175,7 +175,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                       <dt className={`font-display text-5xl sm:text-6xl ${stat.tone}`}>
                         <Counter to={stat.n} suffix={stat.suffix} />
                       </dt>
-                      <dd className="mt-2 flex items-center gap-1 text-xs uppercase tracking-[0.14em] text-ink-faint">
+                      <dd className="t-label mt-2 flex items-center gap-1 text-ink-faint">
                         {stat.label}
                         {stat.mark && <Mark id="nationalities" className="-my-2" />}
                       </dd>
@@ -209,7 +209,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <Reveal delay={0.1}>
               <LocaleLink
                 href="/research"
-                className="group inline-flex items-center gap-2 text-sm uppercase tracking-[0.14em] text-ink-soft transition-colors hover:text-ink"
+                className="t-label group inline-flex items-center gap-2 text-ink-soft transition-colors hover:text-ink"
               >
                 {t.allResearch}
                 <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -232,7 +232,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                       {item.title}
                     </span>
                     <span
-                      className={`text-xs uppercase tracking-[0.12em] ${item.tone}`}
+                      className={`t-label ${item.tone}`}
                     >
                       {item.area}
                     </span>
@@ -268,7 +268,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <Reveal delay={0.4}>
               <div className="mt-10 flex flex-wrap items-center gap-5">
                 <MagneticLink href="/the-highest-branch">{t.enterTheNovel}</MagneticLink>
-                <span className="text-xs uppercase tracking-[0.14em] text-ink-faint">
+                <span className="t-label text-ink-faint">
                   {highestBranch.chapterCount} {t.chapters} ·{" "}
                   <Counter to={highestBranch.wordCount} format /> {t.words}
                 </span>

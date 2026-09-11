@@ -267,7 +267,7 @@ export function ResearchConstellation({
               <span className="block font-serif text-base leading-snug text-ink">
                 {activePaper.item.title}
               </span>
-              <span className="mt-1 block text-[10px] uppercase tracking-[0.12em] text-ink-faint">
+              <span className="t-label mt-1 block text-ink-faint">
                 {activePaper.item.area} · {activePaper.item.type}
               </span>
             </>
@@ -286,7 +286,7 @@ export function ResearchConstellation({
             <span className="block font-serif text-lg leading-snug text-ink">
               {activePaper.item.title}
             </span>
-            <span className="mt-0.5 block text-xs uppercase tracking-[0.12em] text-ink-faint">
+            <span className="t-label mt-0.5 block text-ink-faint">
               {activePaper.item.area} · {activePaper.item.type}
             </span>
           </>

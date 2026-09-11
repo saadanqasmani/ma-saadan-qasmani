@@ -324,7 +324,7 @@ export function IrisEye() {
           </svg>
 
           <p
-            className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-[0.36em]"
+            className="t-label pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2"
             style={{ color: PALE, opacity: 1 - travel }}
           >
             IRIS

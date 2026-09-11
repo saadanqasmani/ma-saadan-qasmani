@@ -39,7 +39,7 @@ export function ResearchArchive({
               type="button"
               onClick={() => setArea(a)}
               aria-pressed={active}
-              className={`relative overflow-hidden border px-4 py-2 text-[11px] uppercase tracking-[0.12em] transition-colors ${
+              className={`t-label relative overflow-hidden border px-4 py-2 transition-colors ${
                 active
                   ? "border-ink bg-ink text-canvas-light"
                   : "border-line text-ink-soft hover:border-ink hover:text-ink"
@@ -58,7 +58,7 @@ export function ResearchArchive({
         })}
       </div>
 
-      <p className="mt-5 text-xs uppercase tracking-[0.14em] text-ink-faint">
+      <p className="t-label mt-5 text-ink-faint">
         {fill(filtered.length === 1 ? copy.entryCount : copy.entryCountPlural, {
           count: filtered.length,
         })}

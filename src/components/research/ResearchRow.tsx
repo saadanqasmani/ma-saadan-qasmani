@@ -71,7 +71,7 @@ export function ResearchRow({
               {item.subtitle}
             </span>
           )}
-          <span className="mt-2 block text-xs uppercase tracking-[0.12em] text-ink-faint">
+          <span className="t-label mt-2 block text-ink-faint">
             {item.type} · {item.date}
             {byline ? ` · ${byline}` : ""}
           </span>
@@ -101,7 +101,7 @@ export function ResearchRow({
                 <button
                   type="button"
                   onClick={() => setReading(true)}
-                  className={`group relative inline-flex overflow-hidden border px-6 py-3 text-xs font-medium uppercase tracking-[0.16em] ${
+                  className={`t-label group relative inline-flex overflow-hidden border px-6 py-3 ${
                     accent === "azure" ? "border-azure text-azure" : "border-ember text-ember"
                   }`}
                 >
@@ -118,7 +118,7 @@ export function ResearchRow({
                     text, and the only version a search engine ever sees. */}
                 <LocaleLink
                   href={`/research/${item.slug}`}
-                  className="ml-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
+                  className="t-label ml-4 inline-flex items-center gap-2 text-ink-faint transition-colors hover:text-ink"
                 >
                   {copy.fullEntry}
                   <span aria-hidden>→</span>
@@ -160,7 +160,7 @@ export function ResearchRow({
                     {item.keywords.map((k) => (
                       <li
                         key={k}
-                        className="border border-line px-2.5 py-1 text-[11px] uppercase tracking-[0.1em] text-ink-soft"
+                        className="t-label border border-line px-2.5 py-1 text-ink-soft"
                       >
                         {k}
                       </li>
@@ -174,7 +174,7 @@ export function ResearchRow({
                       href={item.doiOrLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group relative inline-flex overflow-hidden border border-ink px-6 py-3 text-xs font-medium uppercase tracking-[0.16em]"
+                      className="t-label group relative inline-flex overflow-hidden border border-ink px-6 py-3"
                     >
                       <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                       <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
@@ -185,7 +185,7 @@ export function ResearchRow({
                     <button
                       type="button"
                       onClick={() => setRequest("paper")}
-                      className="group relative inline-flex overflow-hidden border border-ink px-6 py-3 text-xs font-medium uppercase tracking-[0.16em]"
+                      className="t-label group relative inline-flex overflow-hidden border border-ink px-6 py-3"
                     >
                       <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                       <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
@@ -199,7 +199,7 @@ export function ResearchRow({
                       <button
                         type="button"
                         onClick={() => setRequest("instrument")}
-                        className="group relative inline-flex overflow-hidden border border-azure px-6 py-3 text-xs font-medium uppercase tracking-[0.16em] text-azure"
+                        className="t-label group relative inline-flex overflow-hidden border border-azure px-6 py-3 text-azure"
                       >
                         <span className="absolute inset-0 -translate-y-full bg-azure transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                         <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
@@ -277,7 +277,7 @@ export function ResearchRow({
 
               <div className="overflow-y-auto px-8 py-9 sm:px-12 sm:py-11">
                 <p
-                  className={`text-xs uppercase tracking-[0.16em] ${
+                  className={`t-label ${
                     accent === "azure" ? "text-azure" : "text-ember"
                   }`}
                 >
@@ -291,7 +291,7 @@ export function ResearchRow({
                     {item.subtitle}
                   </p>
                 )}
-                <p className="mt-4 text-xs uppercase tracking-[0.12em] text-ink-faint">
+                <p className="t-label mt-4 text-ink-faint">
                   {item.type} · {item.date}
                   {byline ? ` · ${byline}` : ""}
                 </p>
@@ -319,7 +319,7 @@ export function ResearchRow({
                       type="button"
                       onClick={() => setOriginal((v) => !v)}
                       aria-expanded={original}
-                      className="mt-3 inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
+                      className="t-label mt-3 inline-flex items-center gap-2 text-ink-faint transition-colors hover:text-ink"
                     >
                       <span aria-hidden>{original ? "−" : "+"}</span>
                       {original ? notice.hideOriginal : notice.showOriginal}
@@ -344,7 +344,7 @@ export function ResearchRow({
 
                 <LocaleLink
                   href={`/research/${item.slug}`}
-                  className="mt-8 inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
+                  className="t-label mt-8 inline-flex items-center gap-2 text-ink-faint transition-colors hover:text-ink"
                 >
                   {copy.openFullEntry}
                   <span aria-hidden>→</span>

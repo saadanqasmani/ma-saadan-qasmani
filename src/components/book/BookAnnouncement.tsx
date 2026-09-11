@@ -135,7 +135,7 @@ export function BookAnnouncement({
         )}
 
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-ember-light">
+          <p className="t-label font-semibold text-ember-light">
             {copy.eyebrow}
           </p>
           <h2
@@ -144,7 +144,7 @@ export function BookAnnouncement({
           >
             {copy.heading}
           </h2>
-          <p className="mt-3.5 font-serif text-[0.95rem] leading-relaxed text-canvas-light/85">
+          <p className="t-body mt-3.5 text-canvas-light/85">
             {copy.body}
           </p>
           {subscribed ? (
@@ -169,7 +169,7 @@ export function BookAnnouncement({
             <LocaleLink
               href="/the-highest-branch"
               onClick={close}
-              className="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-canvas-light transition-opacity hover:opacity-75"
+              className="t-label group inline-flex items-center gap-2 text-canvas-light transition-opacity hover:opacity-75"
             >
               <span className="inline-block h-px w-5 bg-current transition-all duration-300 group-hover:w-8" />
               {copy.readMore}
@@ -178,7 +178,7 @@ export function BookAnnouncement({
               <button
                 type="button"
                 onClick={close}
-                className="text-xs uppercase tracking-[0.16em] text-canvas-light/55 transition-colors hover:text-canvas-light"
+                className="t-label text-canvas-light/55 transition-colors hover:text-canvas-light"
               >
                 {copy.later}
               </button>

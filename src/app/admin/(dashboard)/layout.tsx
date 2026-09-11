@@ -82,7 +82,7 @@ export default async function DashboardLayout({
             <form action={signOut}>
               <button
                 type="submit"
-                className="mt-2 text-xs uppercase tracking-[0.14em] text-ink-faint underline-offset-4 hover:text-ink hover:underline"
+                className="t-label mt-2 text-ink-faint underline-offset-4 hover:text-ink hover:underline"
               >
                 Sign out
               </button>

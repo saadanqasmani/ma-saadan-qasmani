@@ -205,7 +205,7 @@ export function WorkList({
                         href={item.link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group/l inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-azure transition-opacity hover:opacity-70"
+                        className="t-label group/l inline-flex items-center gap-2 text-azure transition-opacity hover:opacity-70"
                       >
                         <span className="inline-block h-px w-6 bg-current transition-all duration-300 group-hover/l:w-10" />
                         {item.link.label}
@@ -215,7 +215,7 @@ export function WorkList({
                     {detail && (
                       <LocaleLink
                         href={detail.href}
-                        className={`group/e mt-1 inline-flex items-center gap-2 border px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] transition-opacity hover:opacity-60 ${skin ? `${skin.line} ${skin.accent}` : "border-ink text-ink"}`}
+                        className={`t-label group/e mt-1 inline-flex items-center gap-2 border px-4 py-2 font-semibold transition-opacity hover:opacity-60 ${skin ?`${skin.line} ${skin.accent}` : "border-ink text-ink"}`}
                       >
                         <span className="inline-block h-px w-6 bg-current transition-all duration-300 group-hover/e:w-10" />
                         {fill(copy.lookInto, { name: copy.detailLabels[detail.label] })}
@@ -225,7 +225,7 @@ export function WorkList({
                 </div>
 
                 <span
-                  className={`text-xs uppercase tracking-[0.12em] sm:text-right ${
+                  className={`t-label sm:text-right ${
                     skin
                       ? skin.accent
                       : (CATEGORY_TONE[item.category] ?? "text-ink-faint")

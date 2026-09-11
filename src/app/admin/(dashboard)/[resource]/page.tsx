@@ -65,7 +65,7 @@ export default async function ResourceListPage({
               {resource.listColumns.map((c) => (
                 <th
                   key={c.name}
-                  className="pb-3 text-[10px] font-medium uppercase tracking-[0.14em] text-ink-faint"
+                  className="t-label pb-3 font-medium text-ink-faint"
                 >
                   {c.label}
                 </th>
@@ -96,7 +96,7 @@ export default async function ResourceListPage({
                 <td className="py-4 text-right">
                   <Link
                     href={`/admin/${resource.key}/${row.id}`}
-                    className="text-xs uppercase tracking-[0.12em] text-ink-soft underline-offset-4 hover:text-ink hover:underline"
+                    className="t-label text-ink-soft underline-offset-4 hover:text-ink hover:underline"
                   >
                     Edit
                   </Link>

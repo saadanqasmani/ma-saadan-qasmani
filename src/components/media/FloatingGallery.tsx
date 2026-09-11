@@ -33,7 +33,7 @@ function Placeholder({ item }: { item: MediaItem }) {
       </svg>
 
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center">
-        <span className="text-[10px] uppercase tracking-[0.18em] text-ink-faint">
+        <span className="t-label text-ink-faint">
           {item.kind === "video" ? "Video" : "Image"} to come
         </span>
         <span className="font-serif text-lg italic leading-snug text-ink-soft">
@@ -99,7 +99,7 @@ function Frame({ item, index, reduced }: { item: MediaItem; index: number; reduc
           <Placeholder item={item} />
         )}
       </motion.div>
-      <figcaption dir="auto" className="mt-3 text-xs uppercase tracking-[0.12em] text-ink-faint">
+      <figcaption dir="auto" className="t-label mt-3 text-ink-faint">
         {item.caption}
       </figcaption>
     </motion.figure>

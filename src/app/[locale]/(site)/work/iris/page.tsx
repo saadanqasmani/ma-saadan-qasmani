@@ -47,7 +47,7 @@ function DemoLink({ className = "", label }: { className?: string; label: string
       </span>
     </>
   );
-  const cls = `group relative inline-flex overflow-hidden border-2 border-[var(--iris-blue)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--iris-blue)] ${className}`;
+  const cls = `t-label group relative inline-flex overflow-hidden border-2 border-[var(--iris-blue)] px-6 py-3 font-semibold text-[var(--iris-blue)] ${className}`;
   return external ? (
     <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
       {inner}
@@ -70,7 +70,7 @@ function Withheld({ line, cta }: { line: string; cta: string }) {
         <p className="font-serif text-xl italic leading-snug text-[var(--iris-navy)]">{line}</p>
         <a
           href="#film"
-          className="mt-4 inline-flex text-xs uppercase tracking-[0.16em] text-[var(--iris-blue)] underline underline-offset-4"
+          className="t-label mt-4 inline-flex text-[var(--iris-blue)] underline underline-offset-4"
         >
           {cta}
         </a>
@@ -114,7 +114,7 @@ export default async function IrisPage({ params }: Params) {
                 href={irisDemo.explainer}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative inline-flex overflow-hidden border border-ink px-6 py-3 text-xs font-medium uppercase tracking-[0.16em]"
+                className="t-label group relative inline-flex overflow-hidden border border-ink px-6 py-3"
               >
                 <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                 <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
@@ -124,7 +124,7 @@ export default async function IrisPage({ params }: Params) {
             ) : (
               <a
                 href="#film"
-                className="group relative inline-flex overflow-hidden border border-ink px-6 py-3 text-xs font-medium uppercase tracking-[0.16em]"
+                className="t-label group relative inline-flex overflow-hidden border border-ink px-6 py-3"
               >
                 <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                 <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
@@ -143,7 +143,7 @@ export default async function IrisPage({ params }: Params) {
             <p className="eyebrow">01 — {t.sectionProblem}</p>
           </Reveal>
           <Reveal delay={0.08}>
-            <h2 className="mt-6 max-w-4xl font-display text-[clamp(2rem,5vw,3.8rem)] leading-[1.05] text-[var(--iris-navy)]">
+            <h2 className="t-h1 mt-6 max-w-4xl text-[var(--iris-navy)]">
               {iris.problem.heading}
               <br />
               <span className="text-ember">{iris.problem.counter}</span>
@@ -157,7 +157,7 @@ export default async function IrisPage({ params }: Params) {
                   <dt className="font-display text-5xl leading-none text-ember sm:text-6xl">
                     {f.value}
                     {f.unit && (
-                      <span className="ml-2 font-sans text-base uppercase tracking-[0.14em] text-[var(--iris-navy-soft)]">
+                      <span className="t-label ml-2 text-[var(--iris-navy-soft)]">
                         {f.unit}
                       </span>
                     )}
@@ -173,7 +173,7 @@ export default async function IrisPage({ params }: Params) {
               {iris.problem.frictions.map((f) => (
                 <li
                   key={f}
-                  className="bg-white px-3.5 py-2 text-[11px] uppercase tracking-[0.1em] text-[var(--iris-navy-soft)] shadow-[0_6px_16px_-12px_rgba(21,32,60,0.6)]"
+                  className="t-label bg-white px-3.5 py-2 text-[var(--iris-navy-soft)] shadow-[0_6px_16px_-12px_rgba(21,32,60,0.6)]"
                 >
                   {f}
                 </li>
@@ -204,12 +204,12 @@ export default async function IrisPage({ params }: Params) {
             </p>
           </Reveal>
           <Reveal delay={0.08}>
-            <h2 className="mt-6 max-w-3xl font-display text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[var(--iris-navy)]">
+            <h2 className="t-h2 mt-6 max-w-3xl text-[var(--iris-navy)]">
               {iris.instruments.heading}
             </h2>
           </Reveal>
           <Reveal delay={0.12}>
-            <p className="mt-4 text-xs uppercase tracking-[0.16em] text-ink-faint">
+            <p className="t-label mt-4 text-ink-faint">
               {iris.instruments.attribution}
             </p>
           </Reveal>
@@ -283,7 +283,7 @@ export default async function IrisPage({ params }: Params) {
                 return (
                   <Reveal key={p.condition} delay={i * 0.06}>
                     <FloatCard tone={go ? "blue" : "ember"} index={i} innerClassName="p-8">
-                      <p className="text-xs uppercase tracking-[0.12em] text-[var(--iris-navy-soft)]">
+                      <p className="t-label text-[var(--iris-navy-soft)]">
                         {p.condition}
                       </p>
                       <p
@@ -301,7 +301,7 @@ export default async function IrisPage({ params }: Params) {
           </div>
 
           <Reveal delay={0.2}>
-            <p className="mt-16 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs uppercase tracking-[0.16em] text-[var(--iris-blue)]">
+            <p className="t-label mt-16 flex flex-wrap items-center gap-x-4 gap-y-2 text-[var(--iris-blue)]">
               {iris.chain.map((step, i) => (
                 <span key={step} className="flex items-center gap-4">
                   {i > 0 && <span className="text-ember">→</span>}
@@ -323,7 +323,7 @@ export default async function IrisPage({ params }: Params) {
             <p className="eyebrow">03 — {t.sectionFilm}</p>
           </Reveal>
           <Reveal delay={0.08}>
-            <h2 className="mt-6 font-display text-[clamp(1.8rem,4vw,3rem)] leading-tight text-canvas-light">
+            <h2 className="t-h2 mt-6 text-canvas-light">
               Three and a half minutes, <span className="text-ember">end to end</span>.
             </h2>
           </Reveal>
@@ -408,7 +408,7 @@ export default async function IrisPage({ params }: Params) {
           {unlocked && (
           <>
           <Reveal delay={0.08}>
-            <h2 className="mt-6 max-w-3xl font-display text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[var(--iris-navy)]">
+            <h2 className="t-h2 mt-6 max-w-3xl text-[var(--iris-navy)]">
               {iris.engine.heading}
             </h2>
           </Reveal>
@@ -421,7 +421,7 @@ export default async function IrisPage({ params }: Params) {
             ].map((col, i) => (
               <Reveal key={col.label} delay={0.1 + i * 0.08}>
                 <FloatCard tone={col.tone} index={i} innerClassName="p-8">
-                  <p className={`text-xs uppercase tracking-[0.16em] ${col.fg}`}>{col.label}</p>
+                  <p className={`t-label ${col.fg}`}>{col.label}</p>
                   <ul className="mt-5 space-y-2">
                     {col.items.map((it) => (
                       <li
@@ -456,12 +456,12 @@ export default async function IrisPage({ params }: Params) {
       <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
-            <p className="max-w-4xl font-display text-[clamp(1.8rem,4.2vw,3.4rem)] leading-[1.1] text-[var(--iris-navy)]">
+            <p className="t-h2 max-w-4xl text-[var(--iris-navy)]">
               {iris.closing}
             </p>
           </Reveal>
           <Reveal delay={0.12}>
-            <p className="mt-8 text-xs uppercase tracking-[0.16em] text-[var(--iris-blue)]">
+            <p className="t-label mt-8 text-[var(--iris-blue)]">
               {iris.credit}
             </p>
           </Reveal>
@@ -470,7 +470,7 @@ export default async function IrisPage({ params }: Params) {
               <DemoLink label={t.requestDemo} />
               <LocaleLink
                 href="/work"
-                className="inline-flex items-center gap-2 border border-line px-6 py-3 text-xs uppercase tracking-[0.16em] text-ink-soft transition-colors hover:border-ink hover:text-ink"
+                className="t-label inline-flex items-center gap-2 border border-line px-6 py-3 text-ink-soft transition-colors hover:border-ink hover:text-ink"
               >
                 {dict.detail.backToTheWork}
               </LocaleLink>

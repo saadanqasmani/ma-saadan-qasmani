@@ -92,7 +92,7 @@ export default async function JournalPage({ params }: Params) {
                    the note" line have to say on their own that this opens. */
                 className="group -mx-3 mb-6 grid gap-5 border border-line bg-canvas-light/40 p-5 transition-colors duration-300 hover:border-ink/25 hover:bg-canvas-light active:bg-canvas-light sm:mx-0 sm:mb-0 sm:grid-cols-[7rem_14rem_1fr] sm:gap-8 sm:border-x-0 sm:border-b sm:border-t-0 sm:bg-transparent sm:p-0 sm:py-10"
               >
-                <p className="text-xs uppercase tracking-[0.12em] text-ink-faint">
+                <p className="t-label text-ink-faint">
                   {post.category}
                   <br />
                   <span className="text-ink-faint/70">
@@ -126,7 +126,7 @@ export default async function JournalPage({ params }: Params) {
                   <p dir="auto" className="mt-3 max-w-2xl text-base leading-relaxed text-ink-soft">
                     {post.excerpt}
                   </p>
-                  <span className="mt-5 inline-flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-ember">
+                  <span className="t-label mt-5 inline-flex items-center gap-2 text-ember">
                     {t.readNote}
                     <span
                       aria-hidden

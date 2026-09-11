@@ -122,15 +122,122 @@ body {
   background: var(--line);
 }
 
-/* Editorial label — used for every section eyebrow */
+/* ------------------------------------------------------------------------
+ * The type scale
+ *
+ * Eight roles, and nothing outside them. Every size, leading, weight and
+ * letter-spacing a piece of text needs is decided here once, by what the
+ * text is for, rather than at each place it appears.
+ *
+ * The three families were already settled — a display face for headings, a
+ * serif for reading, a sans for labels, swapped per script. What was not
+ * settled was the sizes: the site had grown twenty-three of them, including
+ * three different answers to "how big is the page title". A reader cannot
+ * name that, but they can feel it, and what it feels like is that nobody
+ * decided.
+ *
+ * Headings are fluid because a page title that fits a laptop is a wall on a
+ * phone. Body text is not: reading size is reading size, and a paragraph
+ * that grows with the window ends up too wide to track.
+ *
+ * They live in the components layer, under Tailwind's utilities, so a
+ * deliberate local override still works: t-label sets a weight, and a
+ * font-semibold beside it still wins. Enforcement comes from there being no
+ * stray sizes left to apply, not from a specificity fight.
+ * ------------------------------------------------------------------------ */
+@layer components {
+
+/* The one-per-page title. Nothing else is allowed to be this big. */
+.t-display {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 8.5vw, 7.5rem);
+  font-weight: 400;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+}
+
+.t-h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1.03;
+  letter-spacing: -0.01em;
+}
+
+.t-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.4vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.t-h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.9vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+/* The paragraph that opens a page or a section. */
+.t-lead {
+  font-family: var(--font-serif);
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+.t-body {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+@media (min-width: 640px) {
+  .t-body {
+    font-size: 1.125rem;
+  }
+}
+
+/* Captions, meta lines, anything secondary. */
+.t-small {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+/*
+ * The uppercase label above a section. One letter-spacing for all of them:
+ * the site had eight, between 0.10em and 0.36em, doing the same job.
+ */
+.t-label {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* The original name for the label, kept so existing markup keeps working. */
 .eyebrow {
   font-family: var(--font-sans);
   font-size: 0.6875rem;
   font-weight: 500;
-  letter-spacing: 0.22em;
+  line-height: 1;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink-faint);
 }
+
+}
+
+/*
+ * Arabic and Urdu do not have upper case, so the transform does nothing and
+ * the tracking only pulls joined letterforms apart. Handled further down,
+ * where the other script corrections live.
+ */
 
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -170,7 +277,7 @@ body {
 .icd-theme {
   --icd-ground: #f1f6f0;
   --icd-ground-deep: #e3eee1;
-  --icd-green: #0f6b42;
+  --icd-green: var(--verdant);
   --icd-green-deep: #0a3d27;
   --icd-green-pale: #c2dac9;
   --icd-ink: #14261d;
@@ -217,7 +324,7 @@ body {
 .rec-theme {
   --rec-ground: #fff7f0;
   --rec-ground-deep: #ffe9da;
-  --rec-orange: #c2430f;
+  --rec-orange: var(--ember);
   --rec-orange-bright: #f2701c;
   --rec-orange-deep: #7a2907;
   --rec-pale: #f8ccad;
@@ -319,6 +426,8 @@ body {
  */
 .script-arabic .eyebrow,
 .script-urdu .eyebrow,
+.script-arabic .t-label,
+.script-urdu .t-label,
 .script-arabic .uppercase,
 .script-urdu .uppercase,
 .script-arabic [class*="tracking-"],

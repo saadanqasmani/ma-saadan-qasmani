@@ -56,7 +56,7 @@ export function LocaleSwitcher({ tone = "dark" }: { tone?: "dark" | "light" }) {
         aria-haspopup="listbox"
         aria-label={`${localeMeta[current].english} — change language`}
         className={cn(
-          "flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors",
+          "t-label flex items-center gap-1.5 transition-colors",
           label
         )}
       >

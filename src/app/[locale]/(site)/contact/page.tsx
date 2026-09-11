@@ -63,7 +63,7 @@ export default async function ContactPage({ params }: Params) {
                   href={booking.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative mt-5 inline-flex overflow-hidden border border-ink px-6 py-3 text-xs font-medium uppercase tracking-[0.16em]"
+                  className="t-label group relative mt-5 inline-flex overflow-hidden border border-ink px-6 py-3"
                 >
                   <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                   <span className="relative transition-colors duration-300 group-hover:text-canvas-light">

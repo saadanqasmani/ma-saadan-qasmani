@@ -55,7 +55,7 @@ export function FilePicker({
           type="button"
           disabled={busy}
           onClick={() => inputRef.current?.click()}
-          className="border border-line px-4 py-2 text-xs uppercase tracking-[0.12em] text-ink-soft transition-colors hover:border-ink hover:text-ink disabled:opacity-50"
+          className="t-label border border-line px-4 py-2 text-ink-soft transition-colors hover:border-ink hover:text-ink disabled:opacity-50"
         >
           {busy ? "Uploading…" : value ? "Replace file" : "Upload file"}
         </button>
@@ -63,7 +63,7 @@ export function FilePicker({
           <button
             type="button"
             onClick={() => setValue("")}
-            className="text-xs uppercase tracking-[0.12em] text-ink-faint underline-offset-4 hover:text-ember hover:underline"
+            className="t-label text-ink-faint underline-offset-4 hover:text-ember hover:underline"
           >
             Remove
           </button>

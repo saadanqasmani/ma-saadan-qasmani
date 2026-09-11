@@ -49,7 +49,7 @@ export default async function AdminOverview() {
                 <p className="font-display text-5xl">
                   {r.key === "subscribers" ? stat.total : stat.fresh}
                 </p>
-                <p className="mt-2 text-xs uppercase tracking-[0.12em] text-ink-faint">
+                <p className="t-label mt-2 text-ink-faint">
                   {r.key === "subscribers" ? r.label : `New ${r.label.toLowerCase()}`}
                 </p>
                 {r.key !== "subscribers" && stat.total > 0 && (

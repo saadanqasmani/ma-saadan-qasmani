@@ -84,7 +84,7 @@ export default async function HighestBranchPage({ params }: Params) {
             </p>
           </Reveal>
 
-          <h1 className="mt-6 font-display text-[clamp(3rem,10vw,9rem)] italic leading-[0.85] tracking-[-0.02em]">
+          <h1 className="t-display mt-6 italic">
             <SplitText text={t.titleLead} delay={0.1} />
             <br />
             <SplitText text={t.titleAccent} delay={0.25} className="text-ember" />
@@ -97,7 +97,7 @@ export default async function HighestBranchPage({ params }: Params) {
           </Reveal>
 
           <Reveal delay={0.65}>
-            <p className="mt-8 text-sm uppercase tracking-[0.22em] text-ink-soft">
+            <p className="t-label mt-8 text-ink-soft">
               {person.name}
             </p>
           </Reveal>

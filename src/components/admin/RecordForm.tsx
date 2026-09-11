@@ -100,7 +100,7 @@ export function RecordForm({
             {field.type !== "boolean" && (
               <label
                 htmlFor={field.name}
-                className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.14em] text-ink-faint"
+                className="t-label mb-1.5 block font-medium text-ink-faint"
               >
                 {field.label}
                 {field.required && <span className="text-ember"> *</span>}
@@ -130,7 +130,7 @@ export function RecordForm({
         >
           <button
             type="submit"
-            className="text-xs uppercase tracking-[0.14em] text-ember underline-offset-4 hover:underline"
+            className="t-label text-ember underline-offset-4 hover:underline"
           >
             Delete this {resource.singular.toLowerCase()}
           </button>

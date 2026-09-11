@@ -35,7 +35,7 @@ export function MagneticLink({
   const inner = (
     <motion.span
       className={cn(
-        "group relative inline-flex items-center gap-2 overflow-hidden border border-ink px-7 py-3.5 text-xs font-medium uppercase tracking-[0.18em] text-ink transition-colors",
+        "t-label group relative inline-flex items-center gap-2 overflow-hidden border border-ink px-7 py-3.5 text-ink transition-colors",
         className
       )}
       style={reduced ? undefined : { x: sx, y: sy }}

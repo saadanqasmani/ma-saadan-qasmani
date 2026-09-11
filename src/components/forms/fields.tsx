@@ -15,7 +15,7 @@ export function Label({
   return (
     <label
       htmlFor={htmlFor}
-      className="mb-1 block text-[11px] font-medium uppercase tracking-[0.16em] text-ink-faint"
+      className="t-label mb-1 block font-medium text-ink-faint"
     >
       {children}
       {required && <span className="text-ember"> *</span>}
@@ -61,7 +61,7 @@ export function FormNotice({
 }
 
 export const submitButtonClass =
-  "group relative inline-flex overflow-hidden border border-ink px-7 py-3.5 text-xs font-medium uppercase tracking-[0.18em] text-ink disabled:opacity-50";
+  "t-label group relative inline-flex overflow-hidden border border-ink px-7 py-3.5 text-ink disabled:opacity-50";
 
 export function SubmitLabel({ children }: { children: React.ReactNode }) {
   return (

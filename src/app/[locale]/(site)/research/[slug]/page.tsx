@@ -87,7 +87,7 @@ export default async function ResearchPaperPage({ params }: Params) {
         <Reveal>
           <LocaleLink
             href="/research"
-            className="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
+            className="t-label group inline-flex items-center gap-2 text-ink-faint transition-colors hover:text-ink"
           >
             <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span>
             {t.backToArchive}
@@ -141,7 +141,7 @@ export default async function ResearchPaperPage({ params }: Params) {
         </Reveal>
 
         <Reveal delay={0.34}>
-          <h2 className="mt-10 text-xs uppercase tracking-[0.16em] text-ember">{t.abstract}</h2>
+          <h2 className="t-label mt-10 text-ember">{t.abstract}</h2>
           <p className="mt-5 text-base leading-[1.8] text-ink-soft sm:text-lg">{item.abstract}</p>
 
           {/* The published abstract, kept beside its translation. It is what
@@ -150,7 +150,7 @@ export default async function ResearchPaperPage({ params }: Params) {
               to match against the paper itself. */}
           {item.original && (
             <details className="mt-8 border-s-2 border-line ps-5">
-              <summary className="cursor-pointer text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink">
+              <summary className="t-label cursor-pointer text-ink-faint transition-colors hover:text-ink">
                 {notice.showOriginal}
               </summary>
               <p className="mt-3 text-xs italic leading-relaxed text-ink-faint">
@@ -173,12 +173,12 @@ export default async function ResearchPaperPage({ params }: Params) {
 
         {item.keywords.length > 0 && (
           <Reveal delay={0.38}>
-            <h2 className="mt-12 text-xs uppercase tracking-[0.16em] text-ink-faint">{t.keywords}</h2>
+            <h2 className="t-label mt-12 text-ink-faint">{t.keywords}</h2>
             <ul className="mt-4 flex flex-wrap gap-2">
               {item.keywords.map((k) => (
                 <li
                   key={k}
-                  className="border border-line px-2.5 py-1 text-[11px] uppercase tracking-[0.1em] text-ink-soft"
+                  className="t-label border border-line px-2.5 py-1 text-ink-soft"
                 >
                   {k}
                 </li>
@@ -190,7 +190,7 @@ export default async function ResearchPaperPage({ params }: Params) {
         {instrument?.definition && (
           <Reveal delay={0.4}>
             <div className="mt-12 border-s-2 border-azure ps-6">
-              <h2 className="text-xs uppercase tracking-[0.16em] text-azure">
+              <h2 className="t-label text-azure">
                 {instrument.label}
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-ink-soft">{instrument.definition}</p>
@@ -209,7 +209,7 @@ export default async function ResearchPaperPage({ params }: Params) {
                 href={item.doiOrLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative mt-6 inline-flex overflow-hidden border border-ink px-6 py-3 text-xs font-medium uppercase tracking-[0.16em]"
+                className="t-label group relative mt-6 inline-flex overflow-hidden border border-ink px-6 py-3"
               >
                 <span className="absolute inset-0 -translate-y-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                 <span className="relative transition-colors duration-300 group-hover:text-canvas-light">
@@ -231,7 +231,7 @@ export default async function ResearchPaperPage({ params }: Params) {
         <Reveal delay={0.46}>
           <LocaleLink
             href="/research"
-            className="mt-14 inline-flex items-center gap-2 border border-line px-6 py-3 text-xs uppercase tracking-[0.16em] text-ink-soft transition-colors hover:border-ink hover:text-ink"
+            className="t-label mt-14 inline-flex items-center gap-2 border border-line px-6 py-3 text-ink-soft transition-colors hover:border-ink hover:text-ink"
           >
             {t.allNine}
           </LocaleLink>

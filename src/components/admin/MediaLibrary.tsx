@@ -42,7 +42,7 @@ function Uploader({ bucket, onDone }: { bucket: "media" | "papers"; onDone: () =
         type="button"
         disabled={busy}
         onClick={() => ref.current?.click()}
-        className="border border-line px-4 py-2 text-xs uppercase tracking-[0.12em] text-ink-soft transition-colors hover:border-ink hover:text-ink disabled:opacity-50"
+        className="t-label border border-line px-4 py-2 text-ink-soft transition-colors hover:border-ink hover:text-ink disabled:opacity-50"
       >
         {busy ? "Uploading…" : `Upload ${bucket === "papers" ? "a PDF" : "an image"}`}
       </button>
@@ -72,7 +72,7 @@ function FileRow({ file, onDeleted }: { file: MediaFile; onDeleted: () => void }
         // eslint-disable-next-line @next/next/no-img-element
         <img src={file.url} alt="" className="h-14 w-14 shrink-0 border border-line object-cover" />
       ) : (
-        <span className="grid h-14 w-14 shrink-0 place-items-center border border-line text-[10px] uppercase tracking-[0.1em] text-ink-faint">
+        <span className="t-label grid h-14 w-14 shrink-0 place-items-center border border-line text-ink-faint">
           PDF
         </span>
       )}
@@ -95,7 +95,7 @@ function FileRow({ file, onDeleted }: { file: MediaFile; onDeleted: () => void }
               setCopied(true);
               setTimeout(() => setCopied(false), 1500);
             }}
-            className="text-xs uppercase tracking-[0.12em] text-ink-soft hover:text-ink"
+            className="t-label text-ink-soft hover:text-ink"
           >
             {copied ? "Copied" : "Copy link"}
           </button>
@@ -108,7 +108,7 @@ function FileRow({ file, onDeleted }: { file: MediaFile; onDeleted: () => void }
         >
           <button
             type="submit"
-            className="text-xs uppercase tracking-[0.12em] text-ink-faint hover:text-ember"
+            className="t-label text-ink-faint hover:text-ember"
           >
             Delete
           </button>

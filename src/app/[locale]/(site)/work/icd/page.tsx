@@ -51,11 +51,11 @@ const TONES: Record<string, { rule: string; text: string; chip: string }> = {
 function Quote({ children, source }: { children: string; source?: string }) {
   return (
     <figure className="max-w-3xl border-s-[3px] border-[var(--icd-green)] ps-7">
-      <blockquote className="font-serif text-2xl italic leading-snug text-[var(--icd-ink)] sm:text-[1.75rem]">
+      <blockquote className="t-lead italic text-[var(--icd-ink)]">
         “{children}”
       </blockquote>
       {source && (
-        <figcaption className="mt-4 text-xs uppercase tracking-[0.14em] text-[var(--icd-ink-soft)]">
+        <figcaption className="t-label mt-4 text-[var(--icd-ink-soft)]">
           {source}
         </figcaption>
       )}
@@ -104,7 +104,7 @@ export default async function IcdPage({ params }: Params) {
                   <dt className="font-display text-5xl leading-none text-[var(--icd-green)]">
                     {f.value}
                     {f.label && (
-                      <span className="ml-2 font-sans text-sm uppercase tracking-[0.14em] text-[var(--icd-ink-soft)]">
+                      <span className="t-label ml-2 text-[var(--icd-ink-soft)]">
                         {f.label}
                       </span>
                     )}
@@ -152,7 +152,7 @@ export default async function IcdPage({ params }: Params) {
                     <p className="mt-4 text-base leading-relaxed text-[var(--icd-ink-soft)]">
                       {a.body}
                     </p>
-                    <p className="mt-7 text-[10px] uppercase tracking-[0.16em] text-[var(--icd-ink-soft)]">
+                    <p className="t-label mt-7 text-[var(--icd-ink-soft)]">
                       {copy.outcomes}
                     </p>
                     <ul className="mt-3 flex flex-wrap gap-2">
@@ -197,7 +197,7 @@ export default async function IcdPage({ params }: Params) {
 
           <Reveal delay={0.28}>
             <div className="mt-12 flex flex-wrap items-center gap-3">
-              <span className="text-[10px] uppercase tracking-[0.16em] text-[var(--icd-ink-soft)]">
+              <span className="t-label text-[var(--icd-ink-soft)]">
                 {copy.deliveredIn}
               </span>
               {icd.delivered.map((d) => (
@@ -237,7 +237,7 @@ export default async function IcdPage({ params }: Params) {
             <p className="eyebrow text-white/60">04 — {icd.structures.heading}</p>
           </Reveal>
           <Reveal delay={0.08}>
-            <blockquote className="mt-8 max-w-3xl border-l-[3px] border-ember pl-7 font-serif text-2xl italic leading-snug text-white sm:text-[1.75rem]">
+            <blockquote className="t-lead mt-8 max-w-3xl border-l-[3px] border-ember pl-7 italic text-white">
               “{icd.structures.quote}”
             </blockquote>
           </Reveal>
@@ -282,7 +282,7 @@ export default async function IcdPage({ params }: Params) {
             <p className="eyebrow">05 — {copy.sectionWorkingTogether}</p>
           </Reveal>
           <Reveal delay={0.08}>
-            <h2 className="mt-6 max-w-3xl font-display text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[var(--icd-ink)]">
+            <h2 className="t-h2 mt-6 max-w-3xl text-[var(--icd-ink)]">
               {copy.bringToInstitution}
             </h2>
           </Reveal>
@@ -310,7 +310,7 @@ export default async function IcdPage({ params }: Params) {
             <div className="mt-10 flex flex-wrap gap-4">
               <LocaleLink
                 href="/contact?subject=ICD%20training%20enquiry"
-                className="group relative inline-flex overflow-hidden border-2 border-[var(--icd-green)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--icd-green)]"
+                className="t-label group relative inline-flex overflow-hidden border-2 border-[var(--icd-green)] px-6 py-3 font-semibold text-[var(--icd-green)]"
               >
                 <span className="absolute inset-0 -translate-y-full bg-[var(--icd-green)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                 <span className="relative transition-colors duration-300 group-hover:text-white">
@@ -319,7 +319,7 @@ export default async function IcdPage({ params }: Params) {
               </LocaleLink>
               <LocaleLink
                 href="/research"
-                className="inline-flex items-center gap-2 border border-[var(--icd-green-pale)] px-6 py-3 text-xs uppercase tracking-[0.16em] text-[var(--icd-ink-soft)] transition-colors hover:border-[var(--icd-green)] hover:text-[var(--icd-green)]"
+                className="t-label inline-flex items-center gap-2 border border-[var(--icd-green-pale)] px-6 py-3 text-[var(--icd-ink-soft)] transition-colors hover:border-[var(--icd-green)] hover:text-[var(--icd-green)]"
               >
                 {copy.theResearchBehindIt}
               </LocaleLink>

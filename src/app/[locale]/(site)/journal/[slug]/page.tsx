@@ -54,7 +54,7 @@ export default async function JournalPostPage({ params }: Params) {
         <Reveal>
           <LocaleLink
             href="/journal"
-            className="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
+            className="t-label group inline-flex items-center gap-2 text-ink-faint transition-colors hover:text-ink"
           >
             <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span>
             {t.eyebrow}
@@ -75,7 +75,7 @@ export default async function JournalPostPage({ params }: Params) {
       <Reveal>
         <LocaleLink
           href="/journal"
-          className="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-faint transition-colors hover:text-ink"
+          className="t-label group inline-flex items-center gap-2 text-ink-faint transition-colors hover:text-ink"
         >
           <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span>
           {t.eyebrow}

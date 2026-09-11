@@ -14,7 +14,7 @@ function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNo
   return (
     <label
       htmlFor={htmlFor}
-      className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.14em] text-ink-faint"
+      className="t-label mb-1.5 block font-medium text-ink-faint"
     >
       {children}
     </label>
@@ -37,7 +37,7 @@ function Repeater({
 }) {
   return (
     <fieldset className="border border-line p-5">
-      <legend className="px-2 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-faint">
+      <legend className="t-label px-2 font-medium text-ink-faint">
         {legend}
       </legend>
 
@@ -74,7 +74,7 @@ function Repeater({
       <button
         type="button"
         onClick={() => onChange([...rows, Object.fromEntries(fields.map((f) => [f.key, ""]))])}
-        className="mt-4 text-xs uppercase tracking-[0.12em] text-ink-soft underline-offset-4 hover:text-ink hover:underline"
+        className="t-label mt-4 text-ink-soft underline-offset-4 hover:text-ink hover:underline"
       >
         + Add row
       </button>

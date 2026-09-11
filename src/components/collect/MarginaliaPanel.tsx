@@ -54,7 +54,7 @@ export function MarginaliaPanel() {
             aria-live="polite"
             className="fixed bottom-6 start-6 z-[80] max-w-xs border border-ink bg-canvas-light p-5"
           >
-            <p className="text-[10px] uppercase tracking-[0.2em] text-ink-faint">
+            <p className="t-label text-ink-faint">
               {copy.name} · {fill(copy.foundCount, { found: found.length, total })}
             </p>
             <p className="mt-2 font-display text-2xl text-ink">{toastMark.title}</p>
@@ -152,7 +152,7 @@ export function MarginaliaPanel() {
               <button
                 type="button"
                 onClick={reset}
-                className="mt-8 text-[11px] uppercase tracking-[0.14em] text-ink-faint underline-offset-4 transition-colors hover:text-ink hover:underline"
+                className="t-label mt-8 text-ink-faint underline-offset-4 transition-colors hover:text-ink hover:underline"
               >
                 {copy.clear}
               </button>
