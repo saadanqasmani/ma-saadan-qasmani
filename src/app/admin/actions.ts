@@ -347,9 +347,16 @@ export async function sendLetter(_prev: LetterResult, formData: FormData): Promi
     const built = await buildLetter(formData, user.email);
     if ("error" in built) return { ok: false, message: built.error };
     const sent = await sendMail({ to: user.email, ...built.letter });
-    return sent.ok
-      ? { ok: true, message: `A copy is on its way to ${user.email}.` }
-      : { ok: false, message: `Resend refused it: ${sent.reason}` };
+    if (!sent.ok) return { ok: false, message: `Resend refused it: ${sent.reason}` };
+    // Accepted is not the same as delivered. The id is how to find this
+    // exact message in Resend's own log, which is the only place that knows
+    // whether it reached the inbox, the spam folder, or nowhere.
+    return {
+      ok: true,
+      message: sent.id
+        ? `Resend accepted it for ${user.email}, id ${sent.id}. If it does not arrive, look that id up under Emails at resend.com to see whether it was delivered, and check your spam folder.`
+        : `Resend accepted it for ${user.email}. If it does not arrive, check your spam folder and the Emails log at resend.com.`,
+    };
   }
 
   const { data: rows, error } = await db.from("subscribers").select("email").eq("status", "active");
