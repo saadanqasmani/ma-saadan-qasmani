@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { GCB_COOKIE, gcbTokenIsValid } from "@/lib/gcb/gate";
 import { IRIS_COOKIE, tokenIsValid } from "@/lib/irisGate";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 
@@ -32,6 +33,7 @@ export async function middleware(request: NextRequest) {
 
   if (pathname === "/iris-explainer.html") return irisGate(request);
   if (pathname.startsWith("/admin")) return adminGate(request);
+  if (pathname.startsWith("/gcb")) return gcbGate(request);
 
   return languageRewrite(request);
 }
@@ -47,6 +49,27 @@ function languageRewrite(request: NextRequest) {
   const url = request.nextUrl.clone();
   url.pathname = `/${defaultLocale}${pathname === "/" ? "" : pathname}`;
   return NextResponse.rewrite(url);
+}
+
+/**
+ * Refuses everything under /gcb to anyone without the code.
+ *
+ * A 404 rather than a redirect or a 403: a redirect to an unlock screen
+ * announces that there is something there to unlock, and the whole point is
+ * that a passer-by learns nothing. The one page allowed through is the one
+ * that takes the code, and it is reachable only by someone who already knows
+ * to ask for it.
+ */
+async function gcbGate(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (await gcbTokenIsValid(request.cookies.get(GCB_COOKIE)?.value)) {
+    return NextResponse.next();
+  }
+
+  if (pathname === "/gcb/unlock") return NextResponse.next();
+
+  return new NextResponse(null, { status: 404 });
 }
 
 /** Sends an uncoded visitor back to the page that asks for the code. */

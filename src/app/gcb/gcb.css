@@ -1,0 +1,231 @@
+/*
+ * GCB's own ground.
+ *
+ * Scoped under .gcb so none of it can reach the site it is parked on, and so
+ * the whole file lifts out with the folder when this moves to a domain of
+ * its own. Dark, because the site it is parked on is cream and the two
+ * should never be mistaken for each other.
+ *
+ * Same discipline as the host site learned the hard way: one scale, one
+ * palette, decided here rather than at each place a thing is used.
+ */
+
+.gcb {
+  --bg: #05070d;
+  --surface: #0b101c;
+  --surface-2: #121a2b;
+  --line: rgba(232, 236, 245, 0.1);
+  --line-strong: rgba(232, 236, 245, 0.22);
+
+  --text: #e8ecf5;
+  --text-soft: #a9b3c7;
+  --text-faint: #6b7689;
+
+  --accent: #5b8cff;
+  --accent-deep: #2f62e0;
+  /* What is free, and what costs. Used only for that. */
+  --free: #35e0a1;
+  --paid: #ffb84d;
+
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--gcb-body), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.gcb *,
+.gcb *::before,
+.gcb *::after {
+  box-sizing: border-box;
+}
+
+.gcb h1,
+.gcb h2,
+.gcb h3,
+.gcb p,
+.gcb ul,
+.gcb ol,
+.gcb figure {
+  margin: 0;
+}
+
+.gcb a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* --- the scale ------------------------------------------------------- */
+
+.gcb-display {
+  font-family: var(--gcb-display), system-ui, sans-serif;
+  font-size: clamp(2.6rem, 6.5vw, 5.25rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.gcb-h1 {
+  font-family: var(--gcb-display), system-ui, sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.gcb-h2 {
+  font-family: var(--gcb-display), system-ui, sans-serif;
+  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.gcb-lead {
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+
+.gcb-body {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-soft);
+}
+
+.gcb-small {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-faint);
+}
+
+.gcb-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* --- structure ------------------------------------------------------- */
+
+.gcb-shell {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .gcb-shell {
+    padding: 0 2.5rem;
+  }
+}
+
+.gcb-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+/* --- the one button -------------------------------------------------- */
+
+.gcb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.4rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-family: var(--gcb-body), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background 0.25s ease,
+    border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.gcb-btn--primary {
+  background: var(--accent);
+  color: #04070f;
+  box-shadow: 0 10px 30px -12px rgba(91, 140, 255, 0.8);
+}
+
+.gcb-btn--primary:hover {
+  background: #7aa3ff;
+  transform: translateY(-2px);
+}
+
+.gcb-btn--ghost {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+.gcb-btn--ghost:hover {
+  border-color: var(--text-soft);
+  transform: translateY(-2px);
+}
+
+/* --- motion ----------------------------------------------------------- */
+
+/*
+ * One entrance, used everywhere, staggered by a delay set inline. Written
+ * with an animation-timeline where the browser has one, so it plays as the
+ * element arrives rather than on a timer; browsers without it get the
+ * animation on load, which is the same effect a beat earlier.
+ */
+@keyframes gcb-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.gcb-rise {
+  animation: gcb-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@supports (animation-timeline: view()) {
+  .gcb-rise {
+    animation-timeline: view();
+    animation-range: entry 0% cover 28%;
+  }
+}
+
+/* The slow drift behind the hero. */
+@keyframes gcb-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, -3%, 0) scale(1.08);
+  }
+}
+
+.gcb-aurora {
+  position: absolute;
+  inset: -30% -10% auto -10%;
+  height: 80vh;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 46% at 22% 32%, rgba(91, 140, 255, 0.4), transparent 70%),
+    radial-gradient(38% 42% at 74% 24%, rgba(53, 224, 161, 0.22), transparent 72%),
+    radial-gradient(46% 50% at 52% 66%, rgba(47, 98, 224, 0.3), transparent 74%);
+  filter: blur(30px);
+  animation: gcb-drift 22s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gcb-rise,
+  .gcb-aurora {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

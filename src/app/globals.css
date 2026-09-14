@@ -662,3 +662,38 @@ body {
     height: 220px;
   }
 }
+
+/* ------------------------------------------------------------------------
+ * The egg
+ *
+ * Deliberately easy to miss and, once found, unmistakably a thing you can
+ * press. It does not grow on hover so much as sit up.
+ * ------------------------------------------------------------------------ */
+.egg-button {
+  display: block;
+  height: 18px;
+  width: 14px;
+  opacity: 0.28;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.egg-button:hover,
+.egg-button:focus-visible {
+  opacity: 1;
+  transform: translateY(-2px) rotate(-6deg);
+}
+
+.egg-dialog {
+  margin: auto;
+  box-shadow: 0 40px 90px -50px rgba(21, 20, 15, 0.8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .egg-button {
+    transition: opacity 0.2s ease;
+  }
+  .egg-button:hover,
+  .egg-button:focus-visible {
+    transform: none;
+  }
+}
