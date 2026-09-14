@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { documents, providerLabel, type Doc } from "@/content/taraki/documents";
 import { usePoints, Star } from "@/components/taraki/Points";
 import { TIER_ORDER, tierMeta, type Tier } from "@/lib/taraki/wishlist";
-import { serverSnapshot, snapshot, subscribe, targetId, write } from "@/lib/taraki/browserStore";
+import { serverSnapshot, snapshot, subscribe, write } from "@/lib/taraki/browserStore";
 
 const STORE = "tk-plan";
 
@@ -38,26 +38,12 @@ export function Plan() {
     }
   }, [raw]);
 
-  const [name, setName] = useState("");
-  const [country, setCountry] = useState("");
   const [open, setOpen] = useState<string | null>(null);
   const [stuck, setStuck] = useState<string | null>(null);
   const { award } = usePoints();
 
   function save(next: PlanState) {
     write(STORE, JSON.stringify(next));
-  }
-
-  function addTarget(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) return;
-    const id = targetId(name.trim(), country.trim());
-    if (state.targets.some((t) => t.id === id)) return;
-    save({ targets: [...state.targets, { id, name: name.trim(), country: country.trim(), done: [] }] });
-    award("plan-first-target", 25);
-    setName("");
-    setCountry("");
-    setOpen(id);
   }
 
   function toggleDoc(targetId: string, docId: string, el?: DOMRect) {
@@ -67,6 +53,7 @@ export function Plan() {
       return { ...t, done: has ? t.done.filter((d) => d !== docId) : [...t.done, docId] };
     });
     save({ targets });
+
     const target = targets.find((t) => t.id === targetId);
     if (target?.done.includes(docId)) {
       award(`doc-${targetId}-${docId}`, 5, el);
@@ -84,38 +71,15 @@ export function Plan() {
 
   return (
     <div>
-      {/* Add a university */}
-      <form onSubmit={addTarget} className="tk-pane" style={{ padding: "1.5rem" }}>
-        <label className="tk-label" style={{ color: "var(--text-faint)" }}>
-          Add a university to your wish list
-        </label>
-        <div style={{ marginTop: "0.9rem", display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="University name"
-            style={inputStyle}
-          />
-          <input
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            placeholder="Country"
-            style={{ ...inputStyle, maxWidth: "12rem" }}
-          />
-          <button type="submit" className="tk-btn tk-btn--primary">Add</button>
-        </div>
-        <p className="tk-small" style={{ marginTop: "0.85rem" }}>
-          Type any university for now. Once the database is loaded you will pick from a list and
-          the requirements will fill themselves in.
-        </p>
-      </form>
-
       {state.targets.length === 0 && (
-        <div className="tk-pane tk-land" style={{ marginTop: "1rem", padding: "2rem", textAlign: "center" }}>
-          <p className="tk-h2" style={{ fontSize: "1.125rem" }}>Your wish list is empty.</p>
-          <p className="tk-body" style={{ marginTop: "0.6rem" }}>
-            Add the one you think about at night. You can be realistic later.
+        <div className="tk-pane tk-land" style={{ padding: "2rem", textAlign: "center" }}>
+          <p className="tk-h2" style={{ fontSize: "1.25rem" }}>Nothing here yet.</p>
+          <p className="tk-body" style={{ marginTop: "0.6rem", maxWidth: "34ch", marginInline: "auto" }}>
+            Go and add the one you think about at night. Be realistic afterwards.
           </p>
+          <Link href="/taraki/match" className="tk-btn tk-btn--primary" style={{ marginTop: "1.5rem" }}>
+            Browse universities
+          </Link>
         </div>
       )}
 
@@ -418,16 +382,3 @@ function Ring({ pct }: { pct: number }) {
     </div>
   );
 }
-
-const inputStyle: React.CSSProperties = {
-  flex: 1,
-  minWidth: "11rem",
-  padding: "0.75rem 0.9rem",
-  background: "var(--surface)",
-  border: "1px solid var(--line)",
-  borderRadius: "11px",
-  color: "var(--text)",
-  fontFamily: "inherit",
-  fontSize: "0.95rem",
-  outline: "none",
-};

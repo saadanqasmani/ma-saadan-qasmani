@@ -23,7 +23,7 @@ import { ThemeToggle } from "@/components/taraki/ThemeToggle";
 const PRIMARY = [
   { href: "/taraki/equivalence", label: "My grades", hint: "Convert O Level, A Level, Matric, FSc or IB" },
   { href: "/taraki/match", label: "Universities", hint: "141 of them, across twelve countries" },
-  { href: "/taraki/plan", label: "My plan", hint: "Documents, deadlines, what is left to do" },
+  { href: "/taraki/plan", label: "Wish list", hint: "The universities you are going for" },
   { href: "/taraki/talk", label: "Get help", hint: "Talk to a counsellor or a student out there" },
 ];
 
@@ -31,7 +31,6 @@ const SECONDARY = [
   { href: "/taraki/apply", label: "How to apply" },
   { href: "/taraki/costs", label: "What it costs" },
   { href: "/taraki/scholarships", label: "Scholarships" },
-  { href: "/taraki/school", label: "What your school must do" },
   { href: "/taraki/pricing", label: "Pricing" },
   { href: "/taraki/contact", label: "Contact" },
 ];

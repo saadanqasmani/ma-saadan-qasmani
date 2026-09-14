@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { TarakiNav } from "@/components/taraki/TarakiNav";
 import { TarakiMark } from "@/components/taraki/Logo";
-import { countries, hasAnyCosts } from "@/content/taraki/countries";
 import { totalUniversities } from "@/content/taraki/universities";
 
 /**
@@ -26,8 +25,8 @@ const START = [
   },
   {
     href: "/taraki/plan",
-    label: "Start my application list",
-    hint: "Every document, and who has to produce it.",
+    label: "Build my wish list",
+    hint: "Dream, likely and safe. Keep them straight.",
   },
   {
     href: "/taraki/talk",
@@ -37,8 +36,6 @@ const START = [
 ];
 
 export default function TarakiHome() {
-  const sourced = countries.filter(hasAnyCosts).length;
-
   return (
     <>
       <TarakiNav />
@@ -49,12 +46,12 @@ export default function TarakiHome() {
           <div className="tk-rise" style={{ display: "flex", alignItems: "center", gap: "0.7rem" }}>
             <TarakiMark size={34} animate />
             <span className="tk-label" style={{ color: "var(--accent)" }}>
-              Taraki Company · Free · Starting in Pakistan
+              Taraki Company · Free
             </span>
           </div>
 
           <h1 className="tk-display tk-rise" style={{ marginTop: "1.25rem", maxWidth: "15ch", animationDelay: "0.05s" }}>
-            Applying abroad, without the agency fee.
+            Applying abroad should not cost a kidney.
           </h1>
 
           {/* The doing, before the arguing. */}
@@ -82,10 +79,9 @@ export default function TarakiHome() {
 
       {/* The argument, for whoever wants it. */}
       <section className="tk-shell" style={{ paddingBlock: "clamp(2rem, 5vw, 3.5rem)" }}>
-        <p className="tk-lead" style={{ maxWidth: "54ch" }}>
-          Agencies charge families thousands to fill in forms a student can file themselves.
-          Taraki Company gives you the same answers for nothing. You pay only if you want a person on a
-          call.
+        <p className="tk-lead" style={{ maxWidth: "50ch" }}>
+          Agencies charge lakhs to fill in forms you could file yourself. We do the same work for
+          free. You pay only if you want a human on a call.
         </p>
       </section>
 
@@ -95,7 +91,7 @@ export default function TarakiHome() {
           {[
             { tag: "Free", tone: "free", title: "Grade equivalence", body: "The number a foreign university actually reads, with the arithmetic shown." },
             { tag: "Free", tone: "free", title: "Universities and costs", body: "Where you can apply, and what a year really costs, with a source on every figure." },
-            { tag: "Free", tone: "free", title: "The whole application", body: "Every document, every deadline, and who has to produce each one." },
+            { tag: "Free", tone: "free", title: "The whole application", body: "Every document and every deadline, in one list that ticks off." },
             { tag: "$5", tone: "paid", title: "When you want a person", body: "Scholarships kept current, a document review, and a call with someone who has done it." },
           ].map((c, i) => (
             <article key={c.title} className="tk-card tk-rise" style={{ padding: "1.35rem", animationDelay: `${0.04 * i}s` }}>
@@ -111,25 +107,13 @@ export default function TarakiHome() {
 
       <section className="tk-shell" style={{ paddingBlock: "clamp(2rem, 5vw, 3.5rem) 5rem" }}>
         <div className="tk-card" style={{ padding: "clamp(1.4rem, 4vw, 2.5rem)", borderColor: "var(--line-strong)" }}>
-          <span className="tk-label" style={{ color: "var(--accent)" }}>How this stays honest</span>
+          <span className="tk-label" style={{ color: "var(--accent)" }}>No vibes, only receipts</span>
           <h2 className="tk-h1" style={{ marginTop: "0.9rem", maxWidth: "20ch" }}>
-            Every number here carries its source and its date.
+            Every number here links to where it came from.
           </h2>
-          <p className="tk-body" style={{ marginTop: "1rem", maxWidth: "62ch" }}>
-            A student may hand this to a parent and ask them to commit a decade of savings. So
-            nothing here is an estimate dressed up as a fact. {sourced} of twelve countries have
-            cost figures with a source attached; the rest say so rather than showing a number
-            nobody checked.
-          </p>
-          <p className="tk-small" style={{ marginTop: "1.1rem" }}>
-            Taraki Company does not predict admission. It shows you your profile against what a
-            university publishes about the students it admits, and lets you draw your own
-            conclusion.
-          </p>
-          <p className="tk-small" style={{ marginTop: "1.4rem", paddingTop: "1.2rem", borderTop: "1px solid var(--line)" }}>
-            <strong style={{ color: "var(--text-soft)" }}>About the name.</strong> Taraqi (ترقی)
-            means progress: moving up, getting on. Tara means star. Both readings are meant, and
-            so is the mark, which is a star going up rather than falling.
+          <p className="tk-body" style={{ marginTop: "1rem", maxWidth: "56ch" }}>
+            Fees, deadlines, entry requirements. Tap the source on any of them and you land on
+            the university&apos;s own page. Show your parents. We would rather you checked.
           </p>
         </div>
       </section>

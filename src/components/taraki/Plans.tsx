@@ -19,7 +19,7 @@ const plans = [
       "University matching across twelve countries",
       "Real costs, with the source on every figure",
       "The full application checklist and every deadline",
-      "An account, and your progress saved",
+      "Your wish list and progress, saved as you go",
     ],
     cta: "Start now",
     featured: false,
@@ -66,32 +66,6 @@ export function Plans() {
 
   return (
     <div>
-      {/* The switch. Annual is the default because it is the better deal and
-          hiding that behind a toggle nobody flips would be a small dishonesty. */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2.25rem", flexWrap: "wrap" }}>
-        <button
-          type="button"
-          onClick={() => setAnnual(false)}
-          className="tk-chip"
-          data-on={!annual}
-          style={{ minWidth: "5.5rem" }}
-        >
-          Monthly
-        </button>
-        <button
-          type="button"
-          onClick={() => setAnnual(true)}
-          className="tk-chip"
-          data-on={annual}
-          style={{ minWidth: "5.5rem" }}
-        >
-          Yearly
-        </button>
-        <span className="tk-small" style={{ color: "var(--free)" }}>
-          Pay yearly, keep 10%. ${yearly} instead of ${MONTHLY * 12}.
-        </span>
-      </div>
-
       <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
         {plans.map((p) => (
           <article
@@ -125,6 +99,39 @@ export function Plans() {
                 {p.id === "plus" ? (annual ? "a year" : "a month") : p.per}
               </span>
             </div>
+
+            {/* Only on the plan it applies to, and only once someone is
+                looking at it. A currency switch floating above three cards
+                is a control looking for a home. */}
+            {p.id === "plus" && (
+              <div style={{ marginTop: "0.9rem" }}>
+                <div style={{ display: "flex", gap: "0.4rem" }}>
+                  <button
+                    type="button"
+                    className="tk-chip"
+                    data-on={!annual}
+                    onClick={() => setAnnual(false)}
+                    style={{ flex: 1, padding: "0.45rem 0.5rem" }}
+                  >
+                    Monthly
+                  </button>
+                  <button
+                    type="button"
+                    className="tk-chip"
+                    data-on={annual}
+                    onClick={() => setAnnual(true)}
+                    style={{ flex: 1, padding: "0.45rem 0.5rem" }}
+                  >
+                    Yearly
+                  </button>
+                </div>
+                <p className="tk-small" style={{ marginTop: "0.5rem", color: annual ? "var(--free)" : "var(--text-faint)" }}>
+                  {annual
+                    ? `Two months free. $${yearly} instead of $${MONTHLY * 12}.`
+                    : `Go yearly and keep $${MONTHLY * 12 - yearly}.`}
+                </p>
+              </div>
+            )}
 
             <ul style={{ marginTop: "1.75rem", display: "grid", gap: "0.7rem", paddingLeft: 0, listStyle: "none", flex: 1 }}>
               {p.features.map((f) => (
