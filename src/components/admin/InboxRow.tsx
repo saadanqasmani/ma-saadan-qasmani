@@ -40,11 +40,14 @@ export function InboxRow({
           <span className="mt-0.5 block text-xs text-ink-faint">
             {resource.listColumns
               .filter((c) => c.name !== resource.titleField && c.name !== resource.statusField)
-              .map((c) =>
-                c.name.includes("_at")
-                  ? formatDate(row[c.name] as string)
-                  : String(row[c.name] ?? "")
-              )
+              .map((c) => {
+                // Dates carry their own label. Two bare dates side by side
+                // say nothing about which is which, and an empty one is
+                // indistinguishable from a column that is not there at all.
+                if (!c.name.includes("_at")) return String(row[c.name] ?? "");
+                const when = formatDate(row[c.name] as string);
+                return `${c.label}: ${when || "not yet"}`;
+              })
               .filter(Boolean)
               .join(" · ")}
           </span>
