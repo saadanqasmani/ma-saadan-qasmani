@@ -51,7 +51,7 @@ function Desk() {
   const [focus, setFocus] = useState<string | null>(null);
   const [newOpen, setNewOpen] = useState(false);
   const { toast, burst } = useCelebrate();
-  const { state, ready, live, saving, error } = shell;
+  const { state, ready, live, saving, error, offline } = shell;
 
   useEffect(() => {
     void ensureLoaded();
@@ -170,7 +170,7 @@ function Desk() {
 
         {!live && (
           <p className="banner" style={{ marginBottom: 14 }}>
-            <span>Saved on this device only. Add the Supabase keys to share it between the two of you.</span>
+            <span>Saved on this device only. {offline}</span>
           </p>
         )}
 

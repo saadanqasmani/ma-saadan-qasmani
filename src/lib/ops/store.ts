@@ -34,6 +34,8 @@ export type Shell = {
   /** Writes in flight. Zero means everything on screen is on the server. */
   saving: number;
   error: string | null;
+  /** Why there is no shared database, in words the banner can show. */
+  offline: string | null;
   state: OpsState;
 };
 
@@ -44,7 +46,7 @@ function empty(): OpsState {
   return { tasks: [], meetings: [], attendance: {}, meta: { ...EMPTY_META }, materials: [] };
 }
 
-const SERVER_SHELL: Shell = { ready: false, live: false, saving: 0, error: null, state: empty() };
+const SERVER_SHELL: Shell = { ready: false, live: false, saving: 0, error: null, offline: null, state: empty() };
 let shell: Shell = { ...SERVER_SHELL, state: empty() };
 
 const listeners = new Set<() => void>();
@@ -119,23 +121,34 @@ export function ensureLoaded(): Promise<void> {
   return loading;
 }
 
+/** Turns the API's reason into the one line that says what to do. */
+function explain(reason: string): string {
+  if (/ops_docs|does not exist|schema cache/i.test(reason)) {
+    return "The database is connected but the ops table is missing: run supabase/migrations/0004_ops.sql in the Supabase SQL editor.";
+  }
+  if (/no database/i.test(reason)) {
+    return "Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to the host's environment, then redeploy.";
+  }
+  return `Could not reach the database (${reason}).`;
+}
+
 async function load() {
   try {
     const res = await fetch("/api/ops", { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = (await res.json()) as { live: boolean; docs: Record<string, Record<string, unknown>> };
-    if (!json.live) throw new Error("no database");
+    const json = (await res.json()) as { live: boolean; docs: Record<string, Record<string, unknown>>; error?: string };
+    if (!json.live) throw new Error(json.error || "no database");
     const state = fromDocs(json.docs);
-    set({ ready: true, live: true, state });
+    set({ ready: true, live: true, offline: null, state });
     // A fresh database: put the term's board on it so the first visit is
     // not an empty room.
     if (state.tasks.length === 0 && !json.docs.meta) {
       SEED.forEach((t) => upsertTask({ ...t }));
     }
-  } catch {
+  } catch (e) {
     const local = readLocal();
     const state = local ?? { ...empty(), tasks: SEED.map((t) => ({ ...t })) };
-    set({ ready: true, live: false, state });
+    set({ ready: true, live: false, offline: explain(e instanceof Error ? e.message : String(e)), state });
     if (!local) writeLocal(state);
   }
 }
