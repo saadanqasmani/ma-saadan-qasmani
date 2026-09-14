@@ -45,7 +45,7 @@ export default async function LettersPage() {
         </p>
       )}
 
-      <ListCheck />
+      <ListCheck buildSha={process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? ""} />
 
       <LetterForm posts={posts.map((p) => ({ slug: p.slug, title: p.title, date: p.date }))} recipients={count} canSend={mailIsConfigured()} />
 

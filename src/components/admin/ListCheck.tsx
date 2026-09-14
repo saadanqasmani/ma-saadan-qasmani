@@ -12,8 +12,9 @@ import { ghostButtonClass } from "@/components/admin/ui";
  * read and the same write against a reserved address, cleans up after
  * itself, and says exactly what the database answered.
  */
-export function ListCheck() {
+export function ListCheck({ buildSha }: { buildSha: string }) {
   const [checks, setChecks] = useState<Check[] | null>(null);
+  const [stale, setStale] = useState(false);
   const [running, start] = useTransition();
 
   return (
@@ -27,13 +28,29 @@ export function ListCheck() {
         </div>
         <button
           type="button"
-          onClick={() => start(async () => setChecks(await checkTheList()))}
+          onClick={() =>
+            start(async () => {
+              const result = await checkTheList();
+              // This page was sent by one deployment; the button just ran on
+              // another. The marks below are drawn by whichever code the
+              // browser is still holding, so say so rather than let someone
+              // read a stale tick.
+              setStale(Boolean(buildSha && result.sha && buildSha !== result.sha));
+              setChecks(result.checks);
+            })
+          }
           disabled={running}
           className={ghostButtonClass}
         >
           {running ? "Checking" : "Check the list"}
         </button>
       </div>
+
+      {stale && (
+        <p className="mt-5 border border-ember/40 bg-ember/5 px-4 py-3 text-sm text-ink-soft">
+          This page was loaded from an older deployment. Reload it before trusting the marks below.
+        </p>
+      )}
 
       {checks && (
         <ul className="mt-5 border-t border-line">

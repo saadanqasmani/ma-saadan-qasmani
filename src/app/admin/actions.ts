@@ -399,7 +399,7 @@ export type Check = { label: string; state: "ok" | "bad" | "unknown"; detail: st
  * against a reserved address, removes it again, and reports whatever
  * Postgres actually said, so a blank failure becomes a named one.
  */
-export async function checkTheList(): Promise<Check[]> {
+export async function checkTheList(): Promise<{ sha: string; checks: Check[] }> {
   const { db } = await requireAdmin();
   const checks: Check[] = [];
   const probe = `probe-${Date.now().toString(36)}@saadanqasmani.invalid`;
@@ -462,5 +462,5 @@ export async function checkTheList(): Promise<Check[]> {
     await db.from("subscribers").delete().eq("email", probe);
   }
 
-  return checks;
+  return { sha: sha ?? "", checks };
 }
