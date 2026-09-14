@@ -112,6 +112,19 @@ export function LetterForm({
         )}
       </div>
 
+      {!ready && (
+        <p className="text-sm text-ink-faint">
+          {subject.trim().length === 0
+            ? "Give the letter a subject and these become available."
+            : "Write something, or pick a journal note above."}
+        </p>
+      )}
+      {!canSend && (
+        <p className="text-sm text-ember">
+          Sending is off on this deployment because RESEND_API_KEY is not set.
+        </p>
+      )}
+
       {state.message && (
         <p className={`text-sm ${state.ok ? "text-verdant" : "text-ember"}`} role="status">
           {state.message}

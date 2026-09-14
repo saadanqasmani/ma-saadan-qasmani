@@ -8,7 +8,7 @@ import { isAllowlistedEmail } from "@/lib/supabase/env";
 import { getResource, type Field } from "@/lib/admin/resources";
 import { getBlogPost } from "@/lib/data";
 import { letterEmail } from "@/lib/email/letter";
-import { sendMail, sendMany, mailIsConfigured, checkResend, fromAddress, type Mail } from "@/lib/email/send";
+import { sendMail, sendMany, mailIsConfigured, checkResend, fromAddress, keyShape, type Mail } from "@/lib/email/send";
 
 export type ActionResult = { ok: boolean; message?: string };
 
@@ -403,6 +403,15 @@ export async function checkTheList(): Promise<Check[]> {
   const { db } = await requireAdmin();
   const checks: Check[] = [];
   const probe = `probe-${Date.now().toString(36)}@saadanqasmani.invalid`;
+
+  // Which build is answering. Without it there is no way to tell a fix that
+  // did not work from a fix that was never deployed.
+  const sha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
+  checks.push({
+    label: "This deployment",
+    state: "unknown",
+    detail: `${sha ? `commit ${sha}` : "no commit recorded (not a Vercel build)"} · mail key ${keyShape()}`,
+  });
 
   const mail = await checkResend();
   checks.push({

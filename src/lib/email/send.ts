@@ -59,6 +59,22 @@ function apiKey(): string {
   return (process.env.RESEND_API_KEY ?? "").trim();
 }
 
+/**
+ * What the key looks like, without being the key.
+ *
+ * A Resend key starts "re_" and is short. A Supabase key starts "eyJ" and
+ * runs to hundreds of characters. Somebody who pasted the wrong value into
+ * the box can see that at a glance here, and nothing secret is printed.
+ */
+export function keyShape(): string {
+  const key = apiKey();
+  if (!key) return "not set";
+  const head = key.slice(0, 3);
+  const raw = process.env.RESEND_API_KEY ?? "";
+  const padded = raw !== raw.trim() ? ", and had spaces around it, which are now ignored" : "";
+  return `starts "${head}", ${key.length} characters${padded}`;
+}
+
 /** False when no key is set, which is the normal state of a local checkout. */
 export function mailIsConfigured(): boolean {
   return Boolean(apiKey());
@@ -211,9 +227,10 @@ export async function checkResend(): Promise<MailCheck> {
           detail: `The key is valid and restricted to sending, which is the safer kind, so whether ${domain} is verified cannot be read from here. Press "Send me a copy" below: that is the real test.`,
         };
       }
+      const said = body.replace(/\s+/g, " ").slice(0, 200) || "(no reason given)";
       return {
         state: "bad",
-        detail: `Resend refused the key (${res.status}). Make a new one at resend.com/api-keys, paste it with no spaces around it, and redeploy.`,
+        detail: `Resend refused the key with ${res.status}. It said: ${said} The key here ${keyShape()}.`,
       };
     }
     if (!res.ok) {
