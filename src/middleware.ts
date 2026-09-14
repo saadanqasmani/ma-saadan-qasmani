@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { GCB_COOKIE, gcbTokenIsValid } from "@/lib/gcb/gate";
+import { TARAKI_COOKIE, tarakiTokenIsValid } from "@/lib/taraki/gate";
 import { IRIS_COOKIE, tokenIsValid } from "@/lib/irisGate";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 
@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
 
   if (pathname === "/iris-explainer.html") return irisGate(request);
   if (pathname.startsWith("/admin")) return adminGate(request);
-  if (pathname.startsWith("/gcb")) return gcbGate(request);
+  if (pathname.startsWith("/taraki")) return tarakiGate(request);
 
   return languageRewrite(request);
 }
@@ -52,7 +52,7 @@ function languageRewrite(request: NextRequest) {
 }
 
 /**
- * Refuses everything under /gcb to anyone without the code.
+ * Refuses everything under /taraki to anyone without the code.
  *
  * A 404 rather than a redirect or a 403: a redirect to an unlock screen
  * announces that there is something there to unlock, and the whole point is
@@ -60,14 +60,14 @@ function languageRewrite(request: NextRequest) {
  * that takes the code, and it is reachable only by someone who already knows
  * to ask for it.
  */
-async function gcbGate(request: NextRequest) {
+async function tarakiGate(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (await gcbTokenIsValid(request.cookies.get(GCB_COOKIE)?.value)) {
+  if (await tarakiTokenIsValid(request.cookies.get(TARAKI_COOKIE)?.value)) {
     return NextResponse.next();
   }
 
-  if (pathname === "/gcb/unlock") return NextResponse.next();
+  if (pathname === "/taraki/unlock") return NextResponse.next();
 
   return new NextResponse(null, { status: 404 });
 }

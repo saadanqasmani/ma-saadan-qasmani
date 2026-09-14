@@ -9,9 +9,9 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         // Belt as well as braces: the middleware already answers 404 to
-        // an uncoded request for /gcb, so a crawler has nothing to index.
+        // an uncoded request for /taraki, so a crawler has nothing to index.
         // Naming it here keeps a well-behaved crawler from asking at all.
-        disallow: ["/admin", "/gcb"],
+        disallow: ["/admin", "/taraki"],
       },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,
