@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { TARAKI_COOKIE, tarakiTokenIsValid } from "@/lib/taraki/gate";
 import { IRIS_COOKIE, tokenIsValid } from "@/lib/irisGate";
+import { OPS_COOKIE, opsTokenIsValid } from "@/lib/ops/gate";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 
 /**
@@ -34,6 +35,7 @@ export async function middleware(request: NextRequest) {
   if (pathname === "/iris-explainer.html") return irisGate(request);
   if (pathname.startsWith("/admin")) return adminGate(request);
   if (pathname.startsWith("/taraki")) return tarakiGate(request);
+  if (pathname.startsWith("/ops")) return opsGate(request);
 
   return languageRewrite(request);
 }
@@ -69,6 +71,13 @@ async function tarakiGate(request: NextRequest) {
 
   if (pathname === "/taraki/unlock") return NextResponse.next();
 
+  return new NextResponse(null, { status: 404 });
+}
+
+/** The workroom. Same rule as Taraki: nothing, not even a login screen. */
+async function opsGate(request: NextRequest) {
+  if (await opsTokenIsValid(request.cookies.get(OPS_COOKIE)?.value)) return NextResponse.next();
+  if (request.nextUrl.pathname === "/ops/unlock") return NextResponse.next();
   return new NextResponse(null, { status: 404 });
 }
 

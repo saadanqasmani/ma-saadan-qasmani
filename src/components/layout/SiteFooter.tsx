@@ -1,5 +1,6 @@
 import { navLinks, novelLink } from "@/content/nav";
 import { EasterEgg } from "@/components/egg/EasterEgg";
+import { Osman } from "@/components/egg/Osman";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
@@ -108,6 +109,7 @@ export function SiteFooter({
             <p className="font-serif italic">{footer.positioning}</p>
             <LocaleSwitcher />
             <EasterEgg />
+            <Osman />
           </div>
         </div>
       </div>
