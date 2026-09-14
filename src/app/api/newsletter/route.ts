@@ -36,5 +36,7 @@ export async function POST(request: Request) {
         );
   }
 
-  return NextResponse.json({ ok: true });
+  // What became of the letter travels back with the success. A reader who
+  // is told "check your inbox" when nothing was sent goes on waiting.
+  return NextResponse.json({ ok: true, welcomed: result.welcomed, outcome: result.outcome });
 }

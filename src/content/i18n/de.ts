@@ -56,6 +56,8 @@ export const de: DictionaryOverlay = {
     sending: "Wird gesendet",
     done: "Sie sind in die Korrespondenz aufgenommen.",
     failed: "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    alreadyOn: "Sie stehen bereits auf der Liste. Der Code stand in der E-Mail, die Sie erhalten haben.",
+    noEmail: "Sie stehen auf der Liste. Die E-Mail konnte gerade nicht versendet werden.",
   },
 
   footer: {

@@ -47,6 +47,8 @@ export function NewsletterForm({
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
+  // What the server did with the letter, so the closing line is true.
+  const [outcome, setOutcome] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -64,9 +66,9 @@ export function NewsletterForm({
       // error page, and parsing that as JSON throws — which used to land in
       // the catch below and look identical to having no connection at all.
       const body = await res.text();
-      let data: { error?: string } | null = null;
+      let data: { error?: string; outcome?: string } | null = null;
       try {
-        data = JSON.parse(body) as { error?: string };
+        data = JSON.parse(body) as { error?: string; outcome?: string };
       } catch {
         data = null;
       }
@@ -80,6 +82,7 @@ export function NewsletterForm({
         return;
       }
       markSubscribed();
+      setOutcome(typeof data?.outcome === "string" ? data.outcome : null);
       setStatus("done");
     } catch (cause) {
       console.error("[newsletter] the request never completed:", cause);
@@ -91,9 +94,18 @@ export function NewsletterForm({
   const light = tone === "light";
 
   if (status === "done") {
+    // Three true endings rather than one hopeful one: the letter went, it
+    // went already, or it did not go and nobody should sit waiting for it.
+    const closing =
+      outcome === "already-welcomed"
+        ? copy.alreadyOn
+        : outcome === "mail-off" || outcome === "send-failed"
+          ? copy.noEmail
+          : copy.done;
+
     return (
       <p className={`font-serif text-xl italic ${light ? "text-canvas-light" : "text-verdant"}`}>
-        {copy.done}
+        {closing}
       </p>
     );
   }

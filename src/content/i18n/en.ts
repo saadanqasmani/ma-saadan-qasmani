@@ -61,6 +61,8 @@ export const en = {
     sending: "Sending",
     done: "You have entered the correspondence.",
     failed: "Something went wrong. Please try again.",
+    alreadyOn: "You are already on the list. The code was in the email you were sent.",
+    noEmail: "You are on the list. The email could not go out just now.",
   },
 
   footer: {

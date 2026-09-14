@@ -304,6 +304,8 @@ export const RESOURCES: Resource[] = [
       { name: "email", label: "Email" },
       { name: "status", label: "Status" },
       { name: "created_at", label: "Joined" },
+      // So a letter that never went out is visible rather than assumed.
+      { name: "welcomed_at", label: "Written to" },
     ],
     fields: [{ name: "email", label: "Email", type: "text" }],
   },

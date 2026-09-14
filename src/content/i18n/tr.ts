@@ -64,6 +64,8 @@ export const tr: DictionaryOverlay = {
     sending: "Gönderiliyor",
     done: "Yazışmaya katıldınız.",
     failed: "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+    alreadyOn: "Zaten listedesiniz. Kod, size gönderilen e-postadaydı.",
+    noEmail: "Listedesiniz. E-posta şu anda gönderilemedi.",
   },
 
   footer: {

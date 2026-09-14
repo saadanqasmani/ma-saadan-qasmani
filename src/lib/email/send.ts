@@ -62,8 +62,15 @@ export function mailIsConfigured(): boolean {
  * Resend. The apex is left to the mailbox that already lives there, so the
  * two cannot break each other's SPF.
  */
-function fromAddress(): string {
+export function fromAddress(): string {
   return process.env.MAIL_FROM || "Saadan Qasmani <hello@send.saadanqasmani.com>";
+}
+
+/** The bare domain a letter would be sent from, for checking against Resend. */
+export function fromDomain(): string {
+  const match = fromAddress().match(/<([^>]+)>/);
+  const address = (match ? match[1] : fromAddress()).trim();
+  return address.split("@")[1]?.toLowerCase() ?? "";
 }
 
 /**
@@ -152,4 +159,56 @@ export async function sendMany(mails: Mail[]): Promise<BatchResult> {
     }
   }
   return result;
+}
+
+/* ---- is Resend going to take a letter from us? ------------------------ */
+
+export type MailCheck = { ok: boolean; detail: string };
+
+/**
+ * Asks Resend, rather than assuming.
+ *
+ * A letter that never arrives has a small number of causes and they are all
+ * on Resend's side of the wall: no key, the wrong key, or a sending domain
+ * that was never verified. Each answers differently to this, so the fault
+ * names itself instead of being guessed at.
+ */
+export async function checkResend(): Promise<MailCheck> {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return { ok: false, detail: "RESEND_API_KEY is not set, so nothing can be sent." };
+
+  const domain = fromDomain();
+
+  try {
+    const res = await fetch("https://api.resend.com/domains", {
+      headers: { Authorization: `Bearer ${key}` },
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+      cache: "no-store",
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      return { ok: false, detail: "Resend refused the key. Copy it again from resend.com/api-keys." };
+    }
+    if (!res.ok) {
+      return { ok: false, detail: `Resend answered ${res.status}.` };
+    }
+
+    const body = (await res.json().catch(() => null)) as { data?: { name?: string; status?: string }[] } | null;
+    const domains = body?.data ?? [];
+    const mine = domains.find((d) => d.name?.toLowerCase() === domain);
+
+    if (!mine) {
+      const known = domains.map((d) => d.name).filter(Boolean).join(", ") || "none";
+      return {
+        ok: false,
+        detail: `Letters are sent from ${domain}, which is not a domain on this Resend account (it has: ${known}). Either add it there or set MAIL_FROM to an address on one of those.`,
+      };
+    }
+    if (mine.status !== "verified") {
+      return { ok: false, detail: `${domain} is on the account but its status is "${mine.status}", not verified. Finish its DNS records in Resend.` };
+    }
+    return { ok: true, detail: `${domain} is verified, and the key works.` };
+  } catch (error) {
+    return { ok: false, detail: `Could not reach Resend: ${error instanceof Error ? error.name : "unknown"}` };
+  }
 }

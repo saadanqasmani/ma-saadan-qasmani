@@ -8,7 +8,7 @@ import { isAllowlistedEmail } from "@/lib/supabase/env";
 import { getResource, type Field } from "@/lib/admin/resources";
 import { getBlogPost } from "@/lib/data";
 import { letterEmail } from "@/lib/email/letter";
-import { sendMail, sendMany, mailIsConfigured, type Mail } from "@/lib/email/send";
+import { sendMail, sendMany, mailIsConfigured, checkResend, fromAddress, type Mail } from "@/lib/email/send";
 
 export type ActionResult = { ok: boolean; message?: string };
 
@@ -404,10 +404,11 @@ export async function checkTheList(): Promise<Check[]> {
   const checks: Check[] = [];
   const probe = `probe-${Date.now().toString(36)}@saadanqasmani.invalid`;
 
+  const mail = await checkResend();
   checks.push({
-    label: "Mail key (RESEND_API_KEY)",
-    ok: mailIsConfigured(),
-    detail: mailIsConfigured() ? "Set." : "Not set: nothing can be sent.",
+    label: `Sending letters (as ${fromAddress()})`,
+    ok: mail.ok,
+    detail: mail.detail,
   });
   checks.push({
     label: "Reply address (MAIL_REPLY_TO)",
@@ -422,6 +423,15 @@ export async function checkTheList(): Promise<Check[]> {
     label: "Reading the list",
     ok: !read.error,
     detail: read.error ? `${read.error.code ?? "?"}: ${read.error.message}` : "The subscribers table answers.",
+  });
+
+  const column = await db.from("subscribers").select("welcomed_at").limit(1);
+  checks.push({
+    label: "Remembering who was written to",
+    ok: !column.error,
+    detail: column.error
+      ? `${column.error.code ?? "?"}: ${column.error.message}. Run supabase/migrations/0006_welcomed_at.sql, or a reader who subscribes twice gets no second letter.`
+      : "The welcomed_at column is there.",
   });
 
   const write = await db.from("subscribers").upsert({ email: probe, status: "active" }, { onConflict: "email" });
