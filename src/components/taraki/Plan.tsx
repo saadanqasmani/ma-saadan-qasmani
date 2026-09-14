@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { documents, providerLabel, type Doc } from "@/content/taraki/documents";
 import { usePoints, Star } from "@/components/taraki/Points";
-import { serverSnapshot, snapshot, subscribe, write } from "@/lib/taraki/browserStore";
+import { serverSnapshot, snapshot, subscribe, targetId, write } from "@/lib/taraki/browserStore";
 
 const STORE = "tk-plan";
 
@@ -50,7 +50,8 @@ export function Plan() {
   function addTarget(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
-    const id = `${Date.now()}`;
+    const id = targetId(name.trim(), country.trim());
+    if (state.targets.some((t) => t.id === id)) return;
     save({ targets: [...state.targets, { id, name: name.trim(), country: country.trim(), done: [] }] });
     award("plan-first-target", 25);
     setName("");

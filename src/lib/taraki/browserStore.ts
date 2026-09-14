@@ -58,3 +58,13 @@ export function write(key: string, value: string) {
   }
   listeners.get(key)?.forEach((l) => l());
 }
+
+/**
+ * An id derived from the name rather than the clock.
+ *
+ * Deterministic, so adding the same university twice is impossible by
+ * construction rather than by a check somebody forgets to write.
+ */
+export function targetId(name: string, country: string): string {
+  return `${name}|${country}`.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}

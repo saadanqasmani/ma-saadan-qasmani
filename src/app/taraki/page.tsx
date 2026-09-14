@@ -2,6 +2,7 @@ import Link from "next/link";
 import { TarakiNav } from "@/components/taraki/TarakiNav";
 import { TarakiMark } from "@/components/taraki/Logo";
 import { countries, hasAnyCosts } from "@/content/taraki/countries";
+import { totalUniversities } from "@/content/taraki/universities";
 
 export default function TarakiHome() {
   const sourced = countries.filter(hasAnyCosts).length;
@@ -76,8 +77,9 @@ export default function TarakiHome() {
       <section className="tk-shell" style={{ paddingBlock: "clamp(2rem, 5vw, 4rem)" }}>
         <h2 className="tk-h1">Where you can go</h2>
         <p className="tk-body" style={{ marginTop: "0.9rem", maxWidth: "60ch" }}>
-          Twelve destinations. {sourced} of them have cost figures with a source attached so far.
-          The rest say so rather than showing you a number nobody checked.
+          {totalUniversities} universities across twelve destinations. {sourced} countries have
+          cost figures with a source attached so far; the rest say so rather than showing you a
+          number nobody checked.
         </p>
 
         <div
