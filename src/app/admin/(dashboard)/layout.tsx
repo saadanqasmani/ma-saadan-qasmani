@@ -12,6 +12,7 @@ const CONTENT_LINKS = [
   { href: "/admin/settings", label: "Site text" },
   { href: "/admin/book", label: "The novel" },
   { href: "/admin/media", label: "Files" },
+  { href: "/admin/letters", label: "Letters" },
 ];
 
 export default async function DashboardLayout({

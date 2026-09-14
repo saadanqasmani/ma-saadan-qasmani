@@ -6,6 +6,9 @@ import { getAdminClient } from "@/lib/supabase/admin";
 import { getAdminUser, getSessionClient } from "@/lib/supabase/auth";
 import { isAllowlistedEmail } from "@/lib/supabase/env";
 import { getResource, type Field } from "@/lib/admin/resources";
+import { getBlogPost } from "@/lib/data";
+import { letterEmail } from "@/lib/email/letter";
+import { sendMail, sendMany, mailIsConfigured, type Mail } from "@/lib/email/send";
 
 export type ActionResult = { ok: boolean; message?: string };
 
@@ -303,4 +306,83 @@ export async function deleteFile(bucket: string, path: string): Promise<void> {
   const { db } = await requireAdmin();
   await db.storage.from(bucket).remove([path]);
   revalidatePath("/admin/media");
+}
+
+/* ---- letters to the list --------------------------------------------- */
+
+export type LetterResult = { ok: boolean; message?: string };
+
+async function buildLetter(formData: FormData, to: string) {
+  const subject = String(formData.get("subject") ?? "").trim();
+  const body = String(formData.get("body") ?? "").trim();
+  const slug = String(formData.get("post_slug") ?? "").trim();
+  const post = slug ? await getBlogPost(slug) : null;
+  if (slug && !post) return { error: "That note is not published, so it cannot be sent." } as const;
+  if (!subject) return { error: "Give it a subject." } as const;
+  if (!body && !post) return { error: "Write something, or pick a note." } as const;
+  return { letter: await letterEmail({ subject, body, post }, to), subject, body, slug: post?.slug ?? null } as const;
+}
+
+/** The letter as one reader will see it. Returns markup, sends nothing. */
+export async function previewLetter(formData: FormData): Promise<{ html?: string; message?: string }> {
+  const { user } = await requireAdmin();
+  const built = await buildLetter(formData, user.email);
+  if ("error" in built) return { message: built.error };
+  return { html: built.letter.html };
+}
+
+/**
+ * Sends the letter: to the signed-in admin alone when mode is "test", to
+ * every active address when mode is "all". Each recipient gets their own
+ * unsubscribe link, and the send is written to the letters table with the
+ * counts that actually went out.
+ */
+export async function sendLetter(_prev: LetterResult, formData: FormData): Promise<LetterResult> {
+  const { user, db } = await requireAdmin();
+  if (!mailIsConfigured()) return { ok: false, message: "RESEND_API_KEY is not set, so nothing can go out." };
+
+  const mode = String(formData.get("mode") ?? "test");
+
+  if (mode === "test") {
+    const built = await buildLetter(formData, user.email);
+    if ("error" in built) return { ok: false, message: built.error };
+    const sent = await sendMail({ to: user.email, ...built.letter });
+    return sent.ok
+      ? { ok: true, message: `A copy is on its way to ${user.email}.` }
+      : { ok: false, message: `Resend refused it: ${sent.reason}` };
+  }
+
+  const { data: rows, error } = await db.from("subscribers").select("email").eq("status", "active");
+  if (error) return { ok: false, message: `Could not read the list: ${error.message}` };
+  const addresses = (rows ?? []).map((r) => String(r.email).trim().toLowerCase()).filter(Boolean);
+  if (addresses.length === 0) return { ok: false, message: "Nobody is on the list yet." };
+
+  // The template is built once per address because the unsubscribe link is
+  // the one thing that differs; everything else is identical.
+  const first = await buildLetter(formData, addresses[0]);
+  if ("error" in first) return { ok: false, message: first.error };
+  const mails: Mail[] = [];
+  for (const to of addresses) {
+    const built = to === addresses[0] ? first : await buildLetter(formData, to);
+    if ("error" in built) continue;
+    mails.push({ to, ...built.letter });
+  }
+
+  const result = await sendMany(mails);
+
+  const record = await db.from("letters").insert({
+    subject: first.subject,
+    body: first.body,
+    html: first.letter.html,
+    post_slug: first.slug,
+    recipients: result.sent,
+    failed: result.failed,
+    sent_by: user.email,
+  });
+  revalidatePath("/admin/letters");
+
+  const kept = record.error ? " (not recorded: the letters table is missing)" : "";
+  if (result.sent === 0) return { ok: false, message: `Nothing went out: ${result.reasons[0] ?? "unknown"}${kept}` };
+  if (result.failed > 0) return { ok: true, message: `Sent to ${result.sent}; ${result.failed} failed (${result.reasons[0]})${kept}.` };
+  return { ok: true, message: `Sent to ${result.sent} ${result.sent === 1 ? "person" : "people"}${kept}.` };
 }

@@ -19,9 +19,36 @@ export type Mail = {
   subject: string;
   html: string;
   text: string;
+  /**
+   * The one-click way out, per recipient. Sent as the List-Unsubscribe
+   * headers mail clients read, so Gmail and the rest can show their own
+   * Unsubscribe button next to the sender's name.
+   */
+  unsubscribeUrl?: string;
 };
 
 export type SendResult = { ok: true; id: string | null } | { ok: false; reason: string };
+
+/** The JSON Resend wants for one message. */
+function payload(mail: Mail) {
+  const replyTo = replyToAddress();
+  return {
+    from: fromAddress(),
+    to: [mail.to],
+    subject: mail.subject,
+    html: mail.html,
+    text: mail.text,
+    ...(replyTo ? { reply_to: replyTo } : {}),
+    ...(mail.unsubscribeUrl
+      ? {
+          headers: {
+            "List-Unsubscribe": `<${mail.unsubscribeUrl}>`,
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+          },
+        }
+      : {}),
+  };
+}
 
 /** False when no key is set, which is the normal state of a local checkout. */
 export function mailIsConfigured(): boolean {
@@ -52,8 +79,6 @@ export async function sendMail(mail: Mail): Promise<SendResult> {
   const key = process.env.RESEND_API_KEY;
   if (!key) return { ok: false, reason: "no-key" };
 
-  const replyTo = replyToAddress();
-
   try {
     const res = await fetch(ENDPOINT, {
       method: "POST",
@@ -61,14 +86,7 @@ export async function sendMail(mail: Mail): Promise<SendResult> {
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        from: fromAddress(),
-        to: [mail.to],
-        subject: mail.subject,
-        html: mail.html,
-        text: mail.text,
-        ...(replyTo ? { reply_to: replyTo } : {}),
-      }),
+      body: JSON.stringify(payload(mail)),
       signal: AbortSignal.timeout(TIMEOUT_MS),
       cache: "no-store",
     });
@@ -89,4 +107,49 @@ export async function sendMail(mail: Mail): Promise<SendResult> {
   } catch (error) {
     return { ok: false, reason: error instanceof Error ? error.name : "unknown" };
   }
+}
+
+/** Resend takes up to this many messages in one call. */
+const BATCH = 100;
+
+export type BatchResult = { sent: number; failed: number; reasons: string[] };
+
+/**
+ * The same letter to many addresses, each with its own unsubscribe link.
+ *
+ * A hundred at a time, one call per hundred, in order. A failed call fails
+ * only its hundred: the count that went out and the count that did not both
+ * come back, so the record of the letter is honest about what happened.
+ */
+export async function sendMany(mails: Mail[]): Promise<BatchResult> {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return { sent: 0, failed: mails.length, reasons: ["no-key"] };
+
+  const result: BatchResult = { sent: 0, failed: 0, reasons: [] };
+  for (let i = 0; i < mails.length; i += BATCH) {
+    const slice = mails.slice(i, i + BATCH);
+    try {
+      const res = await fetch(`${ENDPOINT}/batch`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${key}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(slice.map(payload)),
+        signal: AbortSignal.timeout(TIMEOUT_MS * 2),
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        const detail = await res.text().catch(() => "");
+        result.failed += slice.length;
+        result.reasons.push(`http-${res.status} ${detail.slice(0, 200)}`.trim());
+        continue;
+      }
+      result.sent += slice.length;
+    } catch (error) {
+      result.failed += slice.length;
+      result.reasons.push(error instanceof Error ? error.name : "unknown");
+    }
+  }
+  return result;
 }

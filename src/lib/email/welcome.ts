@@ -17,6 +17,7 @@ import { localeMeta, type Locale } from "@/lib/i18n/config";
 import { getContent } from "@/lib/i18n/content";
 import { absoluteUrl } from "@/lib/i18n/metadata";
 import { journalCode } from "@/lib/journalGate";
+import { unsubscribeUrl } from "@/lib/email/unsubscribe";
 import { siteUrl } from "@/lib/siteUrl";
 
 type WelcomeCopy = {
@@ -34,6 +35,8 @@ type WelcomeCopy = {
   ctaNote: string;
   coverAlt: string;
   footer: string;
+  /** The one-click link's own words. */
+  leave: string;
 };
 
 const copy: Record<Locale, WelcomeCopy> = {
@@ -53,6 +56,7 @@ const copy: Record<Locale, WelcomeCopy> = {
     coverAlt: "Cover of The Highest Branch",
     footer:
       "You are getting this because you left your address at saadanqasmani.com. Reply to this note and I will take you off the list.",
+    leave: "Or unsubscribe with one click.",
   },
   tr: {
     subject: "Ziyaretiniz için teşekkürler, ve işte kodunuz",
@@ -70,6 +74,7 @@ const copy: Record<Locale, WelcomeCopy> = {
     coverAlt: "The Highest Branch'in kapağı",
     footer:
       "Bu notu, saadanqasmani.com adresinde bir adres bıraktığınız için alıyorsunuz. Yanıtlarsanız sizi listeden çıkarırım.",
+    leave: "Ya da tek tıkla listeden çıkın.",
   },
   de: {
     subject: "Danke für Ihren Besuch, und hier ist Ihr Code",
@@ -88,6 +93,7 @@ const copy: Record<Locale, WelcomeCopy> = {
     coverAlt: "Cover von The Highest Branch",
     footer:
       "Sie erhalten diese Nachricht, weil Sie auf saadanqasmani.com eine Adresse hinterlassen haben. Antworten Sie darauf, und ich nehme Sie von der Liste.",
+    leave: "Oder mit einem Klick abmelden.",
   },
   ru: {
     subject: "Спасибо, что заглянули, и вот ваш код",
@@ -105,6 +111,7 @@ const copy: Record<Locale, WelcomeCopy> = {
     coverAlt: "Обложка романа The Highest Branch",
     footer:
       "Вы получили это письмо, потому что оставили адрес на saadanqasmani.com. Ответьте на него, и я уберу вас из списка.",
+    leave: "Или отпишитесь одним нажатием.",
   },
   ar: {
     subject: "شكرًا لزيارتك، وهذا رمزك",
@@ -122,6 +129,7 @@ const copy: Record<Locale, WelcomeCopy> = {
     coverAlt: "غلاف رواية The Highest Branch",
     footer:
       "تصلك هذه الرسالة لأنك تركت عنوانك في saadanqasmani.com. رُدّ عليها وسأرفع اسمك من القائمة.",
+    leave: "أو ألغِ الاشتراك بنقرة واحدة.",
   },
   ur: {
     subject: "تشریف آوری کا شکریہ، اور یہ آپ کا کوڈ ہے",
@@ -139,6 +147,7 @@ const copy: Record<Locale, WelcomeCopy> = {
     coverAlt: "The Highest Branch کا سرورق",
     footer:
       "یہ پیغام آپ کو اِس لیے مل رہا ہے کہ آپ نے saadanqasmani.com پر اپنا پتہ چھوڑا تھا۔ جواب دیجیے، میں آپ کو فہرست سے نکال دوں گا۔",
+    leave: "یا ایک کلک سے فہرست سے نکل جائیں۔",
   },
 };
 
@@ -162,9 +171,11 @@ function profile(label: string): string | null {
  * and the letter reads in full with every image blocked.
  */
 export async function welcomeEmail(
-  locale: Locale
-): Promise<{ subject: string; html: string; text: string }> {
+  locale: Locale,
+  to: string
+): Promise<{ subject: string; html: string; text: string; unsubscribeUrl: string }> {
   const t = copy[locale];
+  const leave = await unsubscribeUrl(to);
   // The signature line is the site's own, translated with everything else.
   const who = (await getContent(locale)).person(await getPerson());
   const meta = localeMeta[locale];
@@ -246,7 +257,7 @@ ${p(t.ctaNote)}
 </td></tr>
 
 <tr><td dir="${meta.dir}" align="${align}" style="padding:0 32px 28px;text-align:${align};">
-<p style="margin:0;padding-top:18px;border-top:1px solid #e4ded3;font:400 12px/1.6 ${sans};color:#a09889;">${escapeHtml(t.footer)}</p>
+<p style="margin:0;padding-top:18px;border-top:1px solid #e4ded3;font:400 12px/1.6 ${sans};color:#a09889;">${escapeHtml(t.footer)} <a href="${escapeHtml(leave)}" style="color:#a09889;text-decoration:underline;">${escapeHtml(t.leave)}</a></p>
 </td></tr>
 
 </table>
@@ -283,7 +294,8 @@ ${p(t.ctaNote)}
     ...(linkedin ? [`LinkedIn: ${linkedin}`] : []),
     "",
     t.footer,
+    `${t.leave}: ${leave}`,
   ].join("\n");
 
-  return { subject: t.subject, html, text };
+  return { subject: t.subject, html, text, unsubscribeUrl: leave };
 }
