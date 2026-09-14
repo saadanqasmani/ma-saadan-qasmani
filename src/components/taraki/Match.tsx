@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { countries, hasAnyCosts } from "@/content/taraki/countries";
 import { countryNotes, universities, SELECTION_SOURCE } from "@/content/taraki/universities";
+import { placeTier } from "@/lib/taraki/wishlist";
 import { usePoints } from "@/components/taraki/Points";
 import { serverSnapshot, snapshot, subscribe, targetId, write } from "@/lib/taraki/browserStore";
 
@@ -22,7 +24,19 @@ type Target = { id: string; name: string; country: string; done: string[] };
 export function Match() {
   const [country, setCountry] = useState<string>("DE");
   const raw = useSyncExternalStore(subscribe(PLAN), snapshot(PLAN), serverSnapshot);
+  const resultRaw = useSyncExternalStore(subscribe("tk-result"), snapshot("tk-result"), serverSnapshot);
   const { award } = usePoints();
+  const [nudged, setNudged] = useState<string | null>(null);
+
+  // What the student's own grades came to, if they have run the calculator.
+  const studentPercent: number | null = useMemo(() => {
+    if (!resultRaw) return null;
+    try {
+      return (JSON.parse(resultRaw) as { percentage: number }).percentage;
+    } catch {
+      return null;
+    }
+  }, [resultRaw]);
 
   const targets: Target[] = useMemo(() => {
     if (!raw) return [];
@@ -40,9 +54,15 @@ export function Match() {
   function add(name: string, el?: DOMRect) {
     if (onList(name)) return;
     const where = meta?.name ?? country;
-    const next = [...targets, { id: targetId(name, where), name, country: where, done: [] }];
+    const uni = list.find((x) => x.name === name);
+    const tier = placeTier(studentPercent, uni?.minimumPercent?.value ?? null);
+    const next = [
+      ...targets,
+      { id: targetId(name, where), name, country: where, tier, done: [] },
+    ];
     write(PLAN, JSON.stringify({ targets: next }));
     award(`match-${name}`, 10, el);
+    setNudged(name);
   }
 
   return (
@@ -103,9 +123,13 @@ export function Match() {
               <h3 className="tk-h2" style={{ fontSize: "1rem" }}>{uni.name}</h3>
               <p className="tk-small" style={{ marginTop: "0.3rem" }}>{uni.city}</p>
 
-              <p className="tk-small" style={{ marginTop: "0.8rem", color: "var(--text-faint)" }}>
-                Entry requirements and fees not loaded yet
-              </p>
+              {uni.tuition ? (
+                <Detail uni={uni} />
+              ) : (
+                <p className="tk-small" style={{ marginTop: "0.8rem", color: "var(--text-faint)" }}>
+                  Fees, deadlines and requirements still being compiled
+                </p>
+              )}
 
               <button
                 type="button"
@@ -122,12 +146,14 @@ export function Match() {
                   cursor: added ? "default" : "pointer",
                 }}
               >
-                {added ? "On your list" : "Add to my list"}
+                {added ? "On your wish list" : "Add to my wish list"}
               </button>
             </div>
           );
         })}
       </div>
+
+      {nudged && <SavedNudge name={nudged} onClose={() => setNudged(null)} />}
 
       <p className="tk-small" style={{ marginTop: "2rem", maxWidth: "62ch" }}>
         Which institutions are listed is drawn from the{" "}
@@ -137,6 +163,80 @@ export function Match() {
         , read {SELECTION_SOURCE.asOf}. No individual ranking is claimed, because a rank quoted
         without the row in front of you is the kind of small invention that costs trust.
       </p>
+    </div>
+  );
+}
+
+
+/** What we actually hold for a university, with its source beside it. */
+function Detail({ uni }: { uni: (typeof universities)[string][number] }) {
+  const fmt = (n: number, c: string) => `${c === "USD" ? "$" : c === "EUR" ? "\u20ac" : c + " "}${n.toLocaleString()}`;
+  return (
+    <div style={{ marginTop: "0.8rem", display: "grid", gap: "0.45rem" }}>
+      {uni.tuition && (
+        <p className="tk-small">
+          <strong style={{ color: "var(--text)" }}>
+            {fmt(uni.tuition.value.low, uni.tuition.value.currency)}
+          </strong>{" "}
+          a year
+        </p>
+      )}
+      {uni.applicationFee && (
+        <p className="tk-small">
+          {fmt(uni.applicationFee.value.amount, uni.applicationFee.value.currency)} to apply
+        </p>
+      )}
+      {uni.deadlines && (
+        <p className="tk-small">
+          Closes {uni.deadlines.value[uni.deadlines.value.length - 1].closes}
+        </p>
+      )}
+      {uni.tuition?.verified && (
+        <a
+          href={uni.tuition.url}
+          target="_blank"
+          rel="noreferrer"
+          className="tk-small"
+          style={{ color: "var(--accent)" }}
+        >
+          From the university, read {uni.tuition.asOf}
+        </a>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Said at the moment it matters: this is saved, but only here.
+ *
+ * Not "log in or lose it", because that would be a threat and it would also
+ * be untrue. It is saved. What an account adds is the same list on another
+ * device, and that is worth saying plainly enough to be believed.
+ */
+function SavedNudge({ name, onClose }: { name: string; onClose: () => void }) {
+  return (
+    <div className="tk-modal" role="dialog" aria-label="Saved" onClick={onClose}>
+      <div className="tk-pane tk-land tk-modal__box" onClick={(e) => e.stopPropagation()}>
+        <span className="tk-label" style={{ color: "var(--free)" }}>Saved</span>
+        <h3 className="tk-h2" style={{ marginTop: "0.8rem", fontSize: "1.2rem" }}>
+          {name} is on your wish list.
+        </h3>
+        <p className="tk-body" style={{ marginTop: "0.75rem" }}>
+          It is saved on this phone. Open Taraki Company on a laptop and it will not be there,
+          and clearing your browser will clear it.
+        </p>
+        <p className="tk-body" style={{ marginTop: "0.75rem" }}>
+          An account fixes both, and keeps your grades with your list so we can sort your
+          universities into dream, likely and safe for you. Accounts open with our own domain.
+          Everything you have used so far stays free either way.
+        </p>
+        <div style={{ marginTop: "1.6rem", display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
+          <button type="button" onClick={onClose} className="tk-btn tk-btn--ghost">
+            Keep going
+          </button>
+          <Link href="/taraki/plan" className="tk-btn tk-btn--primary">See my wish list</Link>
+        </div>
+      </div>
     </div>
   );
 }

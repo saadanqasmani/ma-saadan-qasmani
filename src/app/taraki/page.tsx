@@ -49,7 +49,7 @@ export default function TarakiHome() {
           <div className="tk-rise" style={{ display: "flex", alignItems: "center", gap: "0.7rem" }}>
             <TarakiMark size={34} animate />
             <span className="tk-label" style={{ color: "var(--accent)" }}>
-              Taraki · Free · Starting in Pakistan
+              Taraki Company · Free · Starting in Pakistan
             </span>
           </div>
 
@@ -84,7 +84,7 @@ export default function TarakiHome() {
       <section className="tk-shell" style={{ paddingBlock: "clamp(2rem, 5vw, 3.5rem)" }}>
         <p className="tk-lead" style={{ maxWidth: "54ch" }}>
           Agencies charge families thousands to fill in forms a student can file themselves.
-          Taraki gives you the same answers for nothing. You pay only if you want a person on a
+          Taraki Company gives you the same answers for nothing. You pay only if you want a person on a
           call.
         </p>
       </section>
@@ -122,7 +122,7 @@ export default function TarakiHome() {
             nobody checked.
           </p>
           <p className="tk-small" style={{ marginTop: "1.1rem" }}>
-            Taraki does not predict admission. It shows you your profile against what a
+            Taraki Company does not predict admission. It shows you your profile against what a
             university publishes about the students it admits, and lets you draw your own
             conclusion.
           </p>
@@ -136,7 +136,7 @@ export default function TarakiHome() {
 
       <footer style={{ borderTop: "1px solid var(--line)" }}>
         <div className="tk-shell" style={{ paddingBlock: "2rem", display: "flex", flexWrap: "wrap", gap: "1rem", justifyContent: "space-between" }}>
-          <span className="tk-small">Taraki · Internal build, not public</span>
+          <span className="tk-small">Taraki Company · Internal build, not public</span>
           <span className="tk-small">Nothing here is final</span>
         </div>
       </footer>

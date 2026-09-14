@@ -28,7 +28,7 @@ const body = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Taraki",
+  title: "Taraki Company",
   // Not indexed, not followed, not archived, and no preview text or image
   // offered to anything that asks. The middleware already answers 404 to an
   // uncoded request; this is what a crawler is told if one ever gets past.

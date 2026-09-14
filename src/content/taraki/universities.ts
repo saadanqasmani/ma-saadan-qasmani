@@ -18,13 +18,39 @@
  * the first lie on the site.
  */
 
+/** Anything factual carries where it came from and when. No exceptions. */
+export type Sourced<T> = {
+  value: T;
+  source: string;
+  url: string;
+  asOf: string;
+  /** True when read off the institution's own page, not an aggregator. */
+  verified: boolean;
+  note?: string;
+};
+
+export type Deadline = {
+  label: string;
+  opens?: string;
+  closes: string;
+};
+
 export type University = {
   id: string;
   name: string;
   city: string;
-  /** Filled per university, later, each with a source. */
-  requirements: null;
-  tuition: null;
+  /** Undergraduate, per year, for an international student. */
+  tuition: Sourced<{ low: number; high?: number; currency: string }> | null;
+  applicationFee: Sourced<{ amount: number; currency: string }> | null;
+  deadlines: Sourced<Deadline[]> | null;
+  requirements: Sourced<string[]> | null;
+  /**
+   * The published minimum a student is measured against, as a percentage,
+   * where the institution states one. This is what lets a university sort
+   * itself into dream, likely or safe against a real result rather than a
+   * guess. Null means we cannot sort it yet and will not pretend to.
+   */
+  minimumPercent: Sourced<number> | null;
 };
 
 export const SELECTION_SOURCE = {
@@ -34,15 +60,27 @@ export const SELECTION_SOURCE = {
   note: "Used to choose which institutions to list. No individual rank is asserted.",
 };
 
-function u(name: string, city: string): University {
+function u(name: string, city: string, detail: Partial<University> = {}): University {
   return {
     id: name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
     name,
     city,
-    requirements: null,
     tuition: null,
+    applicationFee: null,
+    deadlines: null,
+    requirements: null,
+    minimumPercent: null,
+    ...detail,
   };
 }
+
+const KOC = "https://international.ku.edu.tr/undergraduate-programs/tuition-and-scholarships/";
+const KOC_APPLY = "https://international.ku.edu.tr/undergraduate-programs/how-to-apply/";
+const SAB = "https://iro.sabanciuniv.edu/en/tuition-fee";
+const SAB_APPLY = "https://iro.sabanciuniv.edu/en/application-requirements";
+const BIL = "https://w3.bilkent.edu.tr/bilkent/international-and-other-students-tuition-fees/";
+const BIL_APPLY = "https://w3.bilkent.edu.tr/international/how-to-apply/";
+const READ = "2026-09-14";
 
 export const universities: Record<string, University[]> = {
   US: [
@@ -155,12 +193,117 @@ export const universities: Record<string, University[]> = {
     u("University of Namur", "Namur"),
   ],
   TR: [
-    u("Koç University", "Istanbul"),
-    u("Sabancı University", "Istanbul"),
+    u("Koç University", "Istanbul", {
+      tuition: {
+        value: { low: 38000, currency: "USD" },
+        source: "Koç University, Tuition and Scholarships",
+        url: KOC,
+        asOf: READ,
+        verified: true,
+        note: "Per year, undergraduate. Koç awards substantial scholarships to international applicants; the sticker price is rarely what a funded student pays.",
+      },
+      deadlines: {
+        value: [
+          { label: "Early", opens: "2026-01-01", closes: "2026-03-01" },
+          { label: "Regular", opens: "2026-03-02", closes: "2026-05-31" },
+          { label: "Late", opens: "2026-06-01", closes: "2026-07-15" },
+        ],
+        source: "Koç University, How to Apply",
+        url: KOC_APPLY,
+        asOf: READ,
+        verified: true,
+        note: "For Fall 2026 entry. Applying early is not only about the deadline: scholarship money is finite.",
+      },
+      requirements: {
+        value: [
+          "High school diploma, or proof you are in your final year",
+          "An accepted exam result. SAT is the most common from international applicants",
+          "SAT scores sent directly by College Board, institution code 1931",
+          "Proof of English proficiency",
+        ],
+        source: "Koç University, International Students",
+        url: KOC_APPLY,
+        asOf: READ,
+        verified: true,
+      },
+    }),
+    u("Sabancı University", "Istanbul", {
+      tuition: {
+        value: { low: 36500, currency: "USD" },
+        source: "Sabancı University International Relations Office",
+        url: SAB,
+        asOf: READ,
+        verified: true,
+        note: "Per year, undergraduate, international rate.",
+      },
+      applicationFee: {
+        value: { amount: 30, currency: "USD" },
+        source: "Sabancı University, Application Requirements",
+        url: SAB_APPLY,
+        asOf: READ,
+        verified: true,
+        note: "The application is not valid until this is paid.",
+      },
+      deadlines: {
+        value: [{ label: "Undergraduate", opens: "2025-12-15", closes: "2026-08-28" }],
+        source: "Sabancı University, Application Requirements",
+        url: SAB_APPLY,
+        asOf: READ,
+        verified: true,
+      },
+      requirements: {
+        value: [
+          "High school diploma or final-year enrolment",
+          "SAT accepted but not compulsory; minimum 1100 of 1600 where submitted",
+          "Other national and international exams accepted in place of SAT",
+          "Proof of English proficiency",
+          "USD 30 application fee",
+        ],
+        source: "Sabancı University, Application Requirements",
+        url: SAB_APPLY,
+        asOf: READ,
+        verified: true,
+      },
+    }),
     u("Middle East Technical University", "Ankara"),
     u("Boğaziçi University", "Istanbul"),
     u("Istanbul Technical University", "Istanbul"),
-    u("Bilkent University", "Ankara"),
+    u("Bilkent University", "Ankara", {
+      tuition: {
+        value: { low: 18400, currency: "USD" },
+        source: "Bilkent University, Tuition Fees for International Students",
+        url: BIL,
+        asOf: READ,
+        verified: true,
+        note: "For students admitted in 2026, academic year 2026-27. Bilkent charges by year of admission, so the figure holds for your cohort.",
+      },
+      applicationFee: {
+        value: { amount: 30, currency: "USD" },
+        source: "Bilkent University, How to Apply",
+        url: BIL_APPLY,
+        asOf: READ,
+        verified: true,
+      },
+      deadlines: {
+        value: [{ label: "Fall 2026-27", opens: "2026-02-02", closes: "2026-07-12" }],
+        source: "Bilkent University, How to Apply",
+        url: BIL_APPLY,
+        asOf: READ,
+        verified: true,
+      },
+      requirements: {
+        value: [
+          "High school diploma or final-year enrolment",
+          "SAT, digital or paper: minimum 1000 of 1600 across Maths and Critical Reading",
+          "Proof of English proficiency",
+          "USD 30 application fee",
+        ],
+        source: "Bilkent University, How to Apply",
+        url: BIL_APPLY,
+        asOf: READ,
+        verified: true,
+      },
+    }),
     u("Hacettepe University", "Ankara"),
     u("Istanbul University", "Istanbul"),
     u("Ankara University", "Ankara"),
@@ -218,3 +361,11 @@ export const countryNotes: Record<string, string> = {
 };
 
 export const totalUniversities = Object.values(universities).reduce((n, list) => n + list.length, 0);
+
+
+/** How much of the detail is actually filled in, counted rather than claimed. */
+export function coverage() {
+  const all = Object.values(universities).flat();
+  const filled = all.filter((x) => x.tuition || x.deadlines || x.requirements).length;
+  return { filled, total: all.length };
+}

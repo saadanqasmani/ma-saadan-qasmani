@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { documents, providerLabel, type Doc } from "@/content/taraki/documents";
 import { usePoints, Star } from "@/components/taraki/Points";
+import { TIER_ORDER, tierMeta, type Tier } from "@/lib/taraki/wishlist";
 import { serverSnapshot, snapshot, subscribe, targetId, write } from "@/lib/taraki/browserStore";
 
 const STORE = "tk-plan";
 
-type Target = { id: string; name: string; country: string; done: string[] };
+type Target = { id: string; name: string; country: string; tier?: Tier; done: string[] };
 type PlanState = { targets: Target[] };
 
 /**
@@ -73,6 +74,10 @@ export function Plan() {
     }
   }
 
+  function setTier(id: string, tier: Tier) {
+    save({ targets: state.targets.map((t) => (t.id === id ? { ...t, tier } : t)) });
+  }
+
   function remove(id: string) {
     save({ targets: state.targets.filter((t) => t.id !== id) });
   }
@@ -82,7 +87,7 @@ export function Plan() {
       {/* Add a university */}
       <form onSubmit={addTarget} className="tk-pane" style={{ padding: "1.5rem" }}>
         <label className="tk-label" style={{ color: "var(--text-faint)" }}>
-          Add a university to your list
+          Add a university to your wish list
         </label>
         <div style={{ marginTop: "0.9rem", display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
           <input
@@ -107,16 +112,38 @@ export function Plan() {
 
       {state.targets.length === 0 && (
         <div className="tk-pane tk-land" style={{ marginTop: "1rem", padding: "2rem", textAlign: "center" }}>
-          <p className="tk-h2" style={{ fontSize: "1.125rem" }}>Nothing on your list yet.</p>
+          <p className="tk-h2" style={{ fontSize: "1.125rem" }}>Your wish list is empty.</p>
           <p className="tk-body" style={{ marginTop: "0.6rem" }}>
             Add the one you think about at night. You can be realistic later.
           </p>
         </div>
       )}
 
-      {/* One card per university */}
+      {state.targets.length > 0 && !state.targets.some((t) => t.tier === "safe") && (
+        <div className="tk-pane tk-land" style={{ marginTop: "1rem", padding: "1.25rem", borderColor: "var(--free)" }}>
+          <span className="tk-label" style={{ color: "var(--free)" }}>One thing missing</span>
+          <p className="tk-body" style={{ marginTop: "0.6rem" }}>
+            Nothing on your list is a safe one yet. Aim as high as you like, but keep at least
+            one university you will certainly get into. A list of eight dreams is not a
+            shortlist, it is a year of waiting with a deadline attached.
+          </p>
+        </div>
+      )}
+
+      {/* Grouped by shelf, then one card per university */}
       <div style={{ marginTop: "1rem", display: "grid", gap: "0.9rem" }}>
-        {state.targets.map((t) => {
+        {TIER_ORDER.filter((tier) =>
+          state.targets.some((t) => (t.tier ?? "unsorted") === tier)
+        ).map((tier) => (
+          <div key={tier}>
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "0.6rem", marginBottom: "0.6rem" }}>
+              <span className="tk-label" style={{ color: tierMeta[tier].tone }}>
+                {tierMeta[tier].label}
+              </span>
+              <span className="tk-small">{tierMeta[tier].blurb}</span>
+            </div>
+            <div style={{ display: "grid", gap: "0.9rem" }}>
+              {state.targets.filter((t) => (t.tier ?? "unsorted") === tier).map((t) => {
           const required = documents.filter((d) => !d.optional);
           const doneRequired = required.filter((d) => t.done.includes(d.id)).length;
           const pct = Math.round((doneRequired / required.length) * 100);
@@ -137,14 +164,28 @@ export function Plan() {
                     {t.country || "Country not set"} · {doneRequired} of {required.length} documents
                   </p>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => remove(t.id)}
-                  className="tk-small"
-                  style={{ all: "unset", cursor: "pointer", color: "var(--text-faint)" }}
-                >
-                  Remove
-                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
+                  {(["dream", "likely", "safe"] as Tier[]).map((opt) => (
+                    <button
+                      key={opt}
+                      type="button"
+                      className="tk-chip"
+                      data-on={(t.tier ?? "unsorted") === opt}
+                      onClick={() => setTier(t.id, opt)}
+                      style={{ minWidth: "auto", padding: "0.35rem 0.65rem", fontSize: "0.75rem" }}
+                    >
+                      {tierMeta[opt].label}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => remove(t.id)}
+                    className="tk-small"
+                    style={{ all: "unset", cursor: "pointer", color: "var(--text-faint)", marginInlineStart: "0.3rem" }}
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
 
               <div className="tk-reveal" data-open={isOpen} style={{ marginTop: isOpen ? "1.5rem" : 0 }}>
@@ -173,7 +214,10 @@ export function Plan() {
               </div>
             </div>
           );
-        })}
+              })}
+            </div>
+          </div>
+        ))}
       </div>
 
       {stuck && <StuckPanel onClose={() => setStuck(null)} />}

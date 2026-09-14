@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { write } from "@/lib/taraki/browserStore";
 import {
   band,
   convertGpa,
@@ -52,6 +53,12 @@ export function Equivalence() {
     // A counter rather than a clock: all the key has to do is differ from
     // the last one so the animation replays.
     setFlash((f) => ({ id: (f?.id ?? 0) + 1, amount }));
+  }
+
+  // Kept so the wish list can sort itself against it later. Nothing about
+  // it leaves the device.
+  function remember(percentage: number, system: SystemId) {
+    write("tk-result", JSON.stringify({ percentage, system }));
   }
 
   function pickSystem(id: SystemId) {
@@ -229,7 +236,7 @@ export function Equivalence() {
       )}
 
       {/* The answer */}
-      {result && chosen && <Result result={result} label={chosen.equivalentTo} onOpen={() => {
+      {result && chosen && <Result result={result} label={chosen.equivalentTo} onSeen={() => remember(result.percentage, chosen.id)} onOpen={() => {
         if (!showWorkings) award(20);
         setShowWorkings((v) => !v);
       }} open={showWorkings} />}
@@ -242,13 +249,17 @@ function Result({
   label,
   open,
   onOpen,
+  onSeen,
 }: {
   result: Conversion;
   label: string;
   open: boolean;
   onOpen: () => void;
+  onSeen: () => void;
 }) {
   const b = band(result.percentage);
+  // Written once the number is on screen, which is the moment it is real.
+  useEffect(onSeen, [onSeen]);
   const tone = b.tone === "high" ? "var(--free)" : b.tone === "mid" ? "var(--accent)" : "var(--paid)";
 
   return (

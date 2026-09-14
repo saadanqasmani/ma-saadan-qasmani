@@ -67,7 +67,7 @@ export function TarakiNav() {
         <div className="tk-shell tk-header__row">
           <Link href="/taraki" className="tk-header__brand">
             <TarakiMark size={26} />
-            <span className="tk-header__name">Taraki</span>
+            <span className="tk-header__name">Taraki Company</span>
           </Link>
 
           {/* Desktop: the four. */}
