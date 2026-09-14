@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GcbMark } from "@/components/gcb/Logo";
+import { ThemeToggle } from "@/components/gcb/ThemeToggle";
 
 const tabs = [
   { href: "/gcb", label: "Home" },
@@ -9,7 +10,9 @@ const tabs = [
   { href: "/gcb/apply", label: "How to apply" },
   { href: "/gcb/scholarships", label: "Scholarships" },
   { href: "/gcb/talk", label: "Talk" },
+  { href: "/gcb/school", label: "Your school" },
   { href: "/gcb/pricing", label: "Pricing" },
+  { href: "/gcb/contact", label: "Contact" },
 ];
 
 export function GcbNav() {
@@ -20,7 +23,7 @@ export function GcbNav() {
         top: 0,
         zIndex: 50,
         backdropFilter: "blur(14px)",
-        background: "rgba(5, 7, 13, 0.72)",
+        background: "var(--nav-bg)",
         borderBottom: "1px solid var(--line)",
       }}
     >
@@ -45,6 +48,7 @@ export function GcbNav() {
         </Link>
 
         <nav style={{ display: "flex", alignItems: "center", gap: "0.35rem", overflowX: "auto" }}>
+          <ThemeToggle />
           {tabs.slice(1).map((t) => (
             <Link
               key={t.href}

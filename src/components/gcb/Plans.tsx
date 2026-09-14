@@ -62,6 +62,7 @@ const plans = [
 
 export function Plans() {
   const [annual, setAnnual] = useState(true);
+  const [asked, setAsked] = useState<string | null>(null);
 
   return (
     <div>
@@ -136,11 +137,24 @@ export function Plans() {
 
             <button
               type="button"
+              onClick={() => setAsked(p.id)}
               className={`gcb-btn ${p.featured ? "gcb-btn--primary" : "gcb-btn--ghost"}`}
               style={{ marginTop: "2rem", width: "100%", justifyContent: "center" }}
             >
               {p.cta}
             </button>
+
+            {asked === p.id && (
+              <div className="gcb-land" style={{ marginTop: "1rem", padding: "0.9rem 1rem", border: "1px solid var(--line)", borderRadius: "11px" }}>
+                <p className="gcb-small" style={{ color: "var(--text-soft)" }}>
+                  {p.id === "free"
+                    ? "Free needs no signing up yet. Everything marked free already works: start with the equivalence calculator."
+                    : p.id === "pro"
+                      ? "Pro is quoted per student. Use the contact page and tell us where you are applying; quoting is not automated yet."
+                      : "Checkout is not connected yet. Card payments are still being set up, so nothing can be charged today. Use the contact page and we will tell you the moment it opens."}
+                </p>
+              </div>
+            )}
           </article>
         ))}
       </div>

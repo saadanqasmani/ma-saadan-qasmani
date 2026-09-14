@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Sora, Inter } from "next/font/google";
+import { PointsProvider } from "@/components/gcb/Points";
 import "./gcb.css";
 
 /*
@@ -42,7 +43,9 @@ export const metadata: Metadata = {
 export default function GcbLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
-      <body className="gcb">{children}</body>
+      <body className="gcb">
+        <PointsProvider>{children}</PointsProvider>
+      </body>
     </html>
   );
 }

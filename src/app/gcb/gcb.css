@@ -11,6 +11,7 @@
  */
 
 .gcb {
+  /* Dark is the default. Light is a full swap, not a tint. */
   --bg: #05070d;
   --surface: #0b101c;
   --surface-2: #121a2b;
@@ -23,9 +24,16 @@
 
   --accent: #5b8cff;
   --accent-deep: #2f62e0;
-  /* What is free, and what costs. Used only for that. */
   --free: #35e0a1;
   --paid: #ffb84d;
+
+  /* The pane. Light passing through something that is not quite solid. */
+  --glass: rgba(255, 255, 255, 0.045);
+  --glass-edge: rgba(255, 255, 255, 0.14);
+  --glass-glow: rgba(91, 140, 255, 0.22);
+  --shadow: rgba(0, 0, 0, 0.9);
+  /* The header sits over whatever is scrolling under it. */
+  --nav-bg: rgba(5, 7, 13, 0.72);
 
   margin: 0;
   background: var(--bg);
@@ -35,6 +43,30 @@
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+.gcb[data-theme="light"] {
+  --bg: #f3f5fa;
+  --surface: #ffffff;
+  --surface-2: #eef1f8;
+  --line: rgba(12, 20, 38, 0.1);
+  --line-strong: rgba(12, 20, 38, 0.22);
+
+  --text: #0c1426;
+  --text-soft: #46516b;
+  --text-faint: #7d879c;
+
+  --accent: #2f62e0;
+  --accent-deep: #1d47b5;
+  --free: #0e9e6a;
+  --paid: #b26a00;
+
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-edge: rgba(12, 20, 38, 0.08);
+  --glass-glow: rgba(47, 98, 224, 0.16);
+  --shadow: rgba(12, 20, 38, 0.22);
+  --nav-bg: rgba(243, 245, 250, 0.78);
 }
 
 .gcb *,
@@ -447,5 +479,115 @@ a:hover .gcb-mark__tip {
   .gcb-pick:hover,
   .gcb-chip[data-on="true"] {
     transform: none;
+  }
+}
+
+/* --- the pane ---------------------------------------------------------
+ * Not a solid box. A sheet of something with a little depth to it: the
+ * ground shows through, the edge catches light, and where the cursor is
+ * the sheet brightens as though it were being lit from that point.
+ * ------------------------------------------------------------------- */
+.gcb-pane {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--glass);
+  border: 1px solid var(--glass-edge);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 24px 50px -34px var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease,
+    border-color 0.45s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* The light under the cursor. --mx/--my are set by the component. */
+.gcb-pane::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  background: radial-gradient(
+    22rem 22rem at var(--mx, 50%) var(--my, 0%),
+    var(--glass-glow),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.gcb-pane[data-lit="true"]::before {
+  opacity: 1;
+}
+
+/* The rim, brightest where the light hits it. */
+.gcb-pane::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    140deg,
+    rgba(255, 255, 255, 0.22),
+    transparent 34%,
+    transparent 66%,
+    rgba(255, 255, 255, 0.1)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.gcb-pane[data-open="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 40px 80px -44px var(--shadow), 0 0 0 1px var(--accent);
+}
+
+/* Contents that sit a touch proud of the sheet they are on. */
+.gcb-pane__lift {
+  transform: translateZ(26px);
+}
+
+/* --- a star, going to the bank ---------------------------------------- */
+@keyframes gcb-star {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.4) rotate(0deg); }
+  12% { opacity: 1; transform: translate(0, -6px) scale(1.15) rotate(20deg); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.5) rotate(200deg); }
+}
+
+.gcb-star {
+  position: fixed;
+  z-index: 90;
+  pointer-events: none;
+  color: var(--free);
+  animation: gcb-star 0.95s cubic-bezier(0.35, 0, 0.2, 1) forwards;
+}
+
+/* The counter, registering the arrival. */
+@keyframes gcb-bank {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+
+.gcb-bank--hit {
+  animation: gcb-bank 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gcb-pane,
+  .gcb-pane::before {
+    transition: none;
+  }
+  .gcb-star {
+    display: none;
+  }
+  .gcb-bank--hit {
+    animation: none;
   }
 }
