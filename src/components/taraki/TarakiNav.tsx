@@ -22,15 +22,17 @@ import { AuthPanel, useAccount } from "@/components/taraki/Account";
  */
 
 const PRIMARY = [
+  { href: "/taraki/career", label: "My career", hint: "Four questions. Start here, before universities." },
   { href: "/taraki/equivalence", label: "My grades", hint: "Convert O Level, A Level, Matric, FSc or IB" },
   { href: "/taraki/match", label: "Universities", hint: "141 of them, across twelve countries" },
   { href: "/taraki/plan", label: "Wish list", hint: "The universities you are going for" },
-  { href: "/taraki/talk", label: "Get help", hint: "Talk to a counsellor or a student out there" },
 ];
 
 const SECONDARY = [
-  { href: "/taraki/apply", label: "How to apply" },
+  { href: "/taraki/profile", label: "My record" },
   { href: "/taraki/costs", label: "What it costs" },
+  { href: "/taraki/talk", label: "Get help" },
+  { href: "/taraki/apply", label: "How to apply" },
   { href: "/taraki/scholarships", label: "Scholarships" },
   { href: "/taraki/pricing", label: "Pricing" },
   { href: "/taraki/contact", label: "Contact" },

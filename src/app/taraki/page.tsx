@@ -2,6 +2,7 @@ import Link from "next/link";
 import { TarakiNav } from "@/components/taraki/TarakiNav";
 import { TarakiMark } from "@/components/taraki/Logo";
 import { totalUniversities } from "@/content/taraki/universities";
+import { totalCareers } from "@/content/taraki/careers";
 
 /**
  * A place to start, not a page to read.
@@ -13,6 +14,11 @@ import { totalUniversities } from "@/content/taraki/universities";
  */
 
 const START = [
+  {
+    href: "/taraki/career",
+    label: "Work out what I actually want to do",
+    hint: "Four questions. Do this before you look at a single university.",
+  },
   {
     href: "/taraki/equivalence",
     label: "Find out what my grades are worth",
@@ -29,9 +35,9 @@ const START = [
     hint: "Dream, likely and safe. Keep them straight.",
   },
   {
-    href: "/taraki/talk",
-    label: "Talk to a real person",
-    hint: "A counsellor, or a student already out there.",
+    href: "/taraki/costs",
+    label: "Add up what it really costs",
+    hint: "Eleven lines, all the years, and the gap at the end.",
   },
 ];
 
@@ -83,12 +89,18 @@ export default function TarakiHome() {
           Agencies charge lakhs to fill in forms you could file yourself. We do the same work for
           free. You pay only if you want a human on a call.
         </p>
+        <p className="tk-lead" style={{ maxWidth: "50ch", marginTop: "1.2rem" }}>
+          And we start one step earlier than they do. Choosing a university before you have any idea
+          what the work is like is how people end up with a degree they never use, and it is the
+          most expensive mistake on this whole list.
+        </p>
       </section>
 
       {/* Free and paid, said before anyone has to ask. */}
       <section className="tk-shell" style={{ paddingBlock: "clamp(1rem, 3vw, 2rem)" }}>
         <div style={{ display: "grid", gap: "0.7rem", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
           {[
+            { tag: "Free", tone: "free", title: "The career, first", body: `${totalCareers} careers read against your own answers, including the ones your subjects have already closed.` },
             { tag: "Free", tone: "free", title: "Grade equivalence", body: "The number a foreign university actually reads, with the arithmetic shown." },
             { tag: "Free", tone: "free", title: "Universities and costs", body: "Where you can apply, and what a year really costs, with a source on every figure." },
             { tag: "Free", tone: "free", title: "The whole application", body: "Every document and every deadline, in one list that ticks off." },

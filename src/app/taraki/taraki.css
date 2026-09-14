@@ -860,3 +860,161 @@ a:hover .tk-mark__trail {
   font-size: 0.8125rem;
   font-weight: 700;
 }
+
+/* --- the career assessment ------------------------------------------- */
+
+/* A row of steps that says how far in you are, and lets you go back. */
+.tk-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.tk-steps li button {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text-faint);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.tk-steps li button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.tk-steps li[data-done="true"] button {
+  color: var(--text-soft);
+  border-color: var(--line-strong);
+}
+.tk-steps li[data-on="true"] button {
+  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* The answer chips. Big enough to hit with a thumb. */
+.tk-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.tk-choice {
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.tk-choice:hover {
+  transform: translateY(-1px);
+  color: var(--text);
+}
+.tk-choice[data-on="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* One to five, self-rated. */
+.tk-scale {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+.tk-scale button {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-faint);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.tk-scale button:hover {
+  color: var(--text);
+}
+.tk-scale button[data-on="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* A text or number field, matching the panels it sits in. */
+.tk-field {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.tk-field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--glass-glow);
+}
+
+/* --- the journey rail -------------------------------------------------- */
+
+.tk-journey {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+.tk-journey li {
+  position: relative;
+  display: flex;
+  gap: 0.9rem;
+  padding: 0 0 1.1rem 0;
+}
+/* The line joining one stage to the next, stopping at the last. */
+.tk-journey li::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 14px;
+  bottom: 0;
+  width: 1px;
+  background: var(--line-strong);
+}
+.tk-journey li:last-child::before {
+  display: none;
+}
+.tk-journey__dot {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 11px;
+  height: 11px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+}
+.tk-journey li[data-done="true"] .tk-journey__dot {
+  background: var(--free);
+  border-color: var(--free);
+}
+.tk-journey li[data-now="true"] .tk-journey__dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--glass-glow);
+}

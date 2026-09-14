@@ -18,10 +18,19 @@
  */
 
 import { serverSnapshot, snapshot, subscribe, write } from "@/lib/taraki/browserStore";
+import { EMPTY_ASSESSMENT, type Assessment } from "@/lib/taraki/careerFit";
 
 export const ACCOUNT = "tk-account";
 
 export type Profile = {
+  /**
+   * The student's own number, for life.
+   *
+   * It does not change when they change school, advisor or country, which
+   * is the whole point of having one: the record follows the student rather
+   * than the institution. Issued once, at sign-up, and never rewritten.
+   */
+  id: string;
   name: string;
   email: string;
   /** Where they are in school, so advice can be timed. */
@@ -33,10 +42,15 @@ export type Profile = {
   englishTest: "ielts" | "toefl" | "duolingo" | "none" | "";
   englishScore: string;
   activities: string[];
+  /** What they can put toward a year, in US dollars. Null means not said. */
+  budgetUsd: number | null;
+  /** The career assessment, kept with the profile so one save covers both. */
+  assessment: Assessment;
   createdAt: string;
 };
 
 export const EMPTY: Profile = {
+  id: "",
   name: "",
   email: "",
   year: "",
@@ -46,13 +60,22 @@ export const EMPTY: Profile = {
   englishTest: "",
   englishScore: "",
   activities: [],
+  budgetUsd: null,
+  assessment: EMPTY_ASSESSMENT,
   createdAt: "",
 };
 
 export function readProfile(raw: string | null): Profile | null {
   if (!raw) return null;
   try {
-    return { ...EMPTY, ...(JSON.parse(raw) as Partial<Profile>) };
+    const saved = JSON.parse(raw) as Partial<Profile>;
+    // Merged field by field: a profile saved before the assessment existed
+    // must not come back with an undefined where an object belongs.
+    return {
+      ...EMPTY,
+      ...saved,
+      assessment: { ...EMPTY_ASSESSMENT, ...(saved.assessment ?? {}) },
+    };
   } catch {
     return null;
   }
@@ -88,7 +111,7 @@ export function gaps(p: Profile): Gap[] {
       id: "grades",
       label: "Convert your grades",
       why: "Without a result there is nothing to compare against what universities ask for.",
-      weight: 40,
+      weight: 25,
     });
   }
   if (p.satTotal === null) {
@@ -96,7 +119,7 @@ export function gaps(p: Profile): Gap[] {
       id: "sat",
       label: "Add a SAT score, or plan to sit it",
       why: "Several universities set a SAT minimum and will not read an application without one.",
-      weight: 25,
+      weight: 12,
     });
   }
   if (!p.englishTest || p.englishTest === "none") {
@@ -104,7 +127,7 @@ export function gaps(p: Profile): Gap[] {
       id: "english",
       label: "Add an English test result",
       why: "Almost every university outside your own country asks for proof of English. Booking one takes about six weeks.",
-      weight: 20,
+      weight: 15,
     });
   }
   if (p.activities.length < 3) {
@@ -112,7 +135,23 @@ export function gaps(p: Profile): Gap[] {
       id: "activities",
       label: "List what you do outside class",
       why: "Three things you stuck at beat eleven you turned up to once, and some countries read this closely.",
-      weight: 10,
+      weight: 6,
+    });
+  }
+  if (!p.assessment.takenAt) {
+    out.push({
+      id: "assessment",
+      label: "Take the career assessment",
+      why: "Fifteen minutes, and it decides everything after it. Choosing a university before a career is how people end up with a degree they do not use.",
+      weight: 25,
+    });
+  }
+  if (p.budgetUsd === null) {
+    out.push({
+      id: "budget",
+      label: "Say what a year can cost",
+      why: "Without a number, a shortlist is just a wish. With one, half the world's universities rule themselves out and the rest get easier to choose between.",
+      weight: 12,
     });
   }
   if (!p.year) {
@@ -126,6 +165,10 @@ export function gaps(p: Profile): Gap[] {
   return out;
 }
 
+/**
+ * The weights add up to exactly 100, so a finished profile is 100 and an
+ * empty one is 0. Any other total and the number is decoration.
+ */
 export function completeness(p: Profile): number {
   const lost = gaps(p).reduce((n, g) => n + g.weight, 0);
   return Math.max(0, 100 - lost);
@@ -137,7 +180,22 @@ export function completeness(p: Profile): number {
  * does not care.
  */
 export async function createAccount(profile: Profile): Promise<Profile> {
-  const next = { ...profile, createdAt: new Date().toISOString() };
+  const next = {
+    ...profile,
+    id: profile.id || newStudentId(),
+    createdAt: new Date().toISOString(),
+  };
   saveProfile(next);
   return next;
+}
+
+/**
+ * A student number that reads like one.
+ *
+ * Unique enough for a device, and the shape the real system will use, so
+ * nothing downstream has to change when it is issued by a server instead.
+ */
+function newStudentId(): string {
+  const n = Date.now() % 100000000;
+  return `PK-STU-${String(n).padStart(8, "0")}`;
 }
