@@ -4,7 +4,7 @@ import { useActionState, useEffect } from "react";
 import { markSubscribed } from "@/components/forms/NewsletterForm";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import {
-  subscribeAndUnlock,
+  subscribeForCode,
   unlockWithCode,
   type GateState,
 } from "@/lib/actions/journal";
@@ -15,14 +15,14 @@ const initial: GateState = { error: null };
 /**
  * What stands in place of the essays until a reader is let in.
  *
- * Two doors, side by side: subscribe here and the page opens on the spot, or
- * enter the code from the email if you have already subscribed. Neither is
- * the "real" one; a reader arriving for the first time should not have to
- * work out which applies to them.
+ * Two halves of one path, side by side. Leave an address on the left and
+ * the code is posted to it; type that code on the right and the page opens.
+ * A reader arriving for the first time starts at the left and ends at the
+ * right, and a reader who already has the code skips straight to it.
  */
 export function JournalGate({ copy }: { copy: Dictionary["journal"]["gate"] }) {
   const [subState, subscribeAction, subscribing] = useActionState(
-    subscribeAndUnlock,
+    subscribeForCode,
     initial
   );
   const [codeState, codeAction, checking] = useActionState(unlockWithCode, initial);
@@ -41,7 +41,7 @@ export function JournalGate({ copy }: { copy: Dictionary["journal"]["gate"] }) {
       <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">{copy.body}</p>
 
       <div className="mt-10 grid gap-10 sm:grid-cols-2">
-        {/* Subscribe, and go straight in. */}
+        {/* Leave an address, and the code is sent to it. */}
         <form action={subscribeAction}>
           <input type="hidden" name="locale" value={locale} />
           <label
@@ -74,8 +74,17 @@ export function JournalGate({ copy }: { copy: Dictionary["journal"]["gate"] }) {
               {copy[subState.error]}
             </p>
           )}
-          <p className="mt-3 text-sm leading-relaxed text-ink-faint">
-            {copy.unlocksNote}
+          <p
+            className={`mt-3 text-sm leading-relaxed ${
+              subState.subscribed ? "font-medium text-verdant" : "text-ink-faint"
+            }`}
+            role={subState.subscribed ? "status" : undefined}
+          >
+            {!subState.subscribed
+              ? copy.unlocksNote
+              : subState.outcome === "mail-off" || subState.outcome === "send-failed"
+                ? copy.sentNoEmail
+                : copy.sent}
           </p>
         </form>
 

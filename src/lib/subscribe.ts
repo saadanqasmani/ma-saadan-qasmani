@@ -111,19 +111,33 @@ export async function subscribe(
     return { ok: true, welcomed: false, outcome: "mail-off" };
   }
 
-  const letter = await welcomeEmail(locale, address);
-  const sent = await sendMail({
-    to: address,
-    subject: letter.subject,
-    html: letter.html,
-    text: letter.text,
-    unsubscribeUrl: letter.unsubscribeUrl,
-  });
+  // Building the letter reads the site's own content and settings, so it can
+  // fail for reasons that have nothing to do with the subscription. It must
+  // not take the subscription down with it: the row is already written, and
+  // the reader did their part.
+  let sent: Awaited<ReturnType<typeof sendMail>>;
+  try {
+    const letter = await welcomeEmail(locale, address);
+    sent = await sendMail({
+      to: address,
+      subject: letter.subject,
+      html: letter.html,
+      text: letter.text,
+      unsubscribeUrl: letter.unsubscribeUrl,
+    });
+  } catch (error) {
+    console.error(`[newsletter] could not build the letter: ${error instanceof Error ? error.message : String(error)}`);
+    return { ok: true, welcomed: false, outcome: "send-failed" };
+  }
 
   if (!sent.ok) {
     console.error(`[newsletter] welcome mail failed: ${sent.reason}`);
     return { ok: true, welcomed: false, outcome: "send-failed" };
   }
+
+  // The id is how to find this exact letter in Resend's log, which is the
+  // only place that knows whether it was delivered.
+  console.log(`[newsletter] welcomed ${address}, resend id ${sent.id ?? "none"}`);
 
   if (tracksWelcomes) {
     const stamp = await supabase

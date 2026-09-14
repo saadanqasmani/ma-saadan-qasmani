@@ -9,7 +9,7 @@ import {
   codeIsCorrect,
   journalToken,
 } from "@/lib/journalGate";
-import { subscribe } from "@/lib/subscribe";
+import { subscribe, type SubscribeOutcome } from "@/lib/subscribe";
 
 /**
  * What went wrong, as a name rather than a sentence.
@@ -19,7 +19,12 @@ import { subscribe } from "@/lib/subscribe";
  */
 export type GateError = "enterCode" | "wrongCode" | "badEmail" | "notConnected" | "failed";
 
-export type GateState = { error: GateError | null; subscribed?: boolean };
+export type GateState = {
+  error: GateError | null;
+  subscribed?: boolean;
+  /** What became of the letter carrying the code. */
+  outcome?: SubscribeOutcome;
+};
 
 async function letThemIn() {
   const store = await cookies();
@@ -32,7 +37,7 @@ async function letThemIn() {
   });
 }
 
-/** For a reader who already has the code from their subscription email. */
+/** The way in: the code from the letter. */
 export async function unlockWithCode(
   _prev: GateState,
   formData: FormData
@@ -47,14 +52,15 @@ export async function unlockWithCode(
 const emailSchema = z.string().email();
 
 /**
- * For a reader subscribing here and now. The page opens immediately.
+ * Subscribing here asks for the code. It does not open the page.
  *
- * The unlock is deliberately tied to the subscription actually recording. The
- * offer is access in exchange for an address to write to, so letting someone
- * in on an address that was never stored would make the second half of that
- * a lie.
+ * Opening it the moment an address was typed made the code decorative:
+ * nobody ever needed it, and an address that could not receive anything was
+ * worth as much as one that could. The letter is the way in now, so the
+ * address has to be real, and what a reader gets for leaving it arrives in
+ * their inbox rather than on the screen.
  */
-export async function subscribeAndUnlock(
+export async function subscribeForCode(
   _prev: GateState,
   formData: FormData
 ): Promise<GateState> {
@@ -63,8 +69,8 @@ export async function subscribeAndUnlock(
     return { error: "badEmail" };
   }
 
-  // The form carries it, so the welcome letter goes out in the language the
-  // reader was reading rather than in mine.
+  // The form carries it, so the letter goes out in the language the reader
+  // was reading rather than in mine.
   const sent = String(formData.get("locale") ?? "");
   const locale = isLocale(sent) ? sent : defaultLocale;
 
@@ -73,6 +79,5 @@ export async function subscribeAndUnlock(
     return { error: result.reason === "not-connected" ? "notConnected" : "failed" };
   }
 
-  await letThemIn();
-  return { error: null, subscribed: true };
+  return { error: null, subscribed: true, outcome: result.outcome };
 }
