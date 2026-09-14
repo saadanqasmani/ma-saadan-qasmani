@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { countries, hasAnyCosts } from "@/content/taraki/countries";
 import { countryNotes, universities, SELECTION_SOURCE } from "@/content/taraki/universities";
 import { placeTier } from "@/lib/taraki/wishlist";
+import { AuthPanel, useAccount } from "@/components/taraki/Account";
+import { assess } from "@/lib/taraki/chances";
 import { usePoints } from "@/components/taraki/Points";
 import { serverSnapshot, snapshot, subscribe, targetId, write } from "@/lib/taraki/browserStore";
 
@@ -27,16 +29,20 @@ export function Match() {
   const resultRaw = useSyncExternalStore(subscribe("tk-result"), snapshot("tk-result"), serverSnapshot);
   const { award } = usePoints();
   const [nudged, setNudged] = useState<string | null>(null);
+  const [asking, setAsking] = useState(false);
+  const [openUni, setOpenUni] = useState<string | null>(null);
+  const account = useAccount();
 
   // What the student's own grades came to, if they have run the calculator.
   const studentPercent: number | null = useMemo(() => {
+    if (account?.percentage != null) return account.percentage;
     if (!resultRaw) return null;
     try {
       return (JSON.parse(resultRaw) as { percentage: number }).percentage;
     } catch {
       return null;
     }
-  }, [resultRaw]);
+  }, [resultRaw, account]);
 
   const targets: Target[] = useMemo(() => {
     if (!raw) return [];
@@ -53,6 +59,11 @@ export function Match() {
 
   function add(name: string, el?: DOMRect) {
     if (onList(name)) return;
+    // The wish list is the signed-in half of the product.
+    if (!account) {
+      setAsking(true);
+      return;
+    }
     const where = meta?.name ?? country;
     const uni = list.find((x) => x.name === name);
     const tier = placeTier(studentPercent, uni?.minimumPercent?.value ?? null);
@@ -133,6 +144,21 @@ export function Match() {
 
               <button
                 type="button"
+                onClick={() => setOpenUni(openUni === uni.id ? null : uni.id)}
+                className="tk-small"
+                style={{ all: "unset", cursor: "pointer", marginTop: "0.9rem", display: "block", color: "var(--accent)" }}
+              >
+                {openUni === uni.id ? "Hide my chances" : "My chances here"}
+              </button>
+
+              <div className="tk-reveal" data-open={openUni === uni.id} style={{ marginTop: openUni === uni.id ? "0.9rem" : 0 }}>
+                <div>
+                  <Chances uni={uni} profile={account} onJoin={() => setAsking(true)} />
+                </div>
+              </div>
+
+              <button
+                type="button"
                 disabled={added}
                 onClick={(e) => add(uni.name, e.currentTarget.getBoundingClientRect())}
                 className={`tk-btn ${added ? "tk-btn--ghost" : "tk-btn--primary"}`}
@@ -154,6 +180,12 @@ export function Match() {
       </div>
 
       {nudged && <SavedNudge name={nudged} onClose={() => setNudged(null)} />}
+      {asking && (
+        <AuthPanel
+          onClose={() => setAsking(false)}
+          reason="Make an account to build your wish list"
+        />
+      )}
 
       <p className="tk-small" style={{ marginTop: "2rem", maxWidth: "62ch" }}>
         Which institutions are listed is drawn from the{" "}
@@ -214,6 +246,16 @@ function Detail({ uni }: { uni: (typeof universities)[string][number] }) {
  * device, and that is worth saying plainly enough to be believed.
  */
 function SavedNudge({ name, onClose }: { name: string; onClose: () => void }) {
+  // Escape closes it, like every other panel here. Anything that covers the
+  // page and ignores the keyboard is a trap.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   return (
     <div className="tk-modal" role="dialog" aria-label="Saved" onClick={onClose}>
       <div className="tk-pane tk-land tk-modal__box" onClick={(e) => e.stopPropagation()}>
@@ -237,6 +279,81 @@ function SavedNudge({ name, onClose }: { name: string; onClose: () => void }) {
           <Link href="/taraki/plan" className="tk-btn tk-btn--primary">See my wish list</Link>
         </div>
       </div>
+    </div>
+  );
+}
+
+
+/**
+ * What this university asks for, beside what you have.
+ *
+ * Line by line, each one sourced. No percentage, because nobody can compute
+ * the odds that a particular student gets into a particular university, and
+ * a number like that would be believed and planned around.
+ */
+function Chances({
+  uni,
+  profile,
+  onJoin,
+}: {
+  uni: (typeof universities)[string][number];
+  profile: ReturnType<typeof useAccount>;
+  onJoin: () => void;
+}) {
+  if (!profile) {
+    return (
+      <div style={{ padding: "0.9rem 1rem", borderRadius: "11px", border: "1px solid var(--line)" }}>
+        <p className="tk-small">
+          Make an account and this shows what they ask for beside what you have, line by line.
+        </p>
+        <button type="button" onClick={onJoin} className="tk-small" style={{ all: "unset", cursor: "pointer", marginTop: "0.5rem", color: "var(--accent)" }}>
+          Make one, it is free
+        </button>
+      </div>
+    );
+  }
+
+  const a = assess(uni, profile);
+
+  return (
+    <div style={{ padding: "0.9rem 1rem", borderRadius: "11px", border: "1px solid var(--line)" }}>
+      <p className="tk-small" style={{ color: "var(--text)" }}>{a.headline}</p>
+
+      {a.checks.length > 0 && (
+        <div style={{ marginTop: "0.8rem", display: "grid", gap: "0.55rem" }}>
+          {a.checks.map((c) => (
+            <div key={c.label}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem" }}>
+                <span className="tk-small" style={{ color: "var(--text)" }}>{c.label}</span>
+                <span
+                  className="tk-small"
+                  style={{
+                    color:
+                      c.status === "over" || c.status === "meets"
+                        ? "var(--free)"
+                        : c.status === "under"
+                          ? "var(--paid)"
+                          : "var(--text-faint)",
+                  }}
+                >
+                  {c.yours} · they ask {c.asked}
+                </span>
+              </div>
+              {c.todo && (
+                <p className="tk-small" style={{ marginTop: "0.2rem", color: "var(--text-soft)" }}>
+                  {c.todo}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {a.nothingToCompare && (
+        <p className="tk-small" style={{ marginTop: "0.6rem" }}>
+          We will not guess. Once this one&apos;s requirements are compiled it will appear here.
+        </p>
+      )}
     </div>
   );
 }

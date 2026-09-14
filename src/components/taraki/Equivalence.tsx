@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { write } from "@/lib/taraki/browserStore";
+import { SaveResultPrompt, useAccount } from "@/components/taraki/Account";
+import { saveProfile } from "@/lib/taraki/account";
 import {
   band,
   convertGpa,
@@ -45,6 +47,7 @@ export function Equivalence() {
   const [showWorkings, setShowWorkings] = useState(false);
   const [xp, setXp] = useState(0);
   const [flash, setFlash] = useState<{ id: number; amount: number } | null>(null);
+  const account = useAccount();
 
   const chosen = systems.find((s) => s.id === system) ?? null;
 
@@ -59,6 +62,9 @@ export function Equivalence() {
   // it leaves the device.
   function remember(percentage: number, system: SystemId) {
     write("tk-result", JSON.stringify({ percentage, system }));
+    // On a profile it is no longer trivia: it is what every university card
+    // measures against.
+    if (account) saveProfile({ ...account, percentage, system });
   }
 
   function pickSystem(id: SystemId) {
@@ -326,6 +332,8 @@ function Result({
           </div>
         </div>
       </div>
+
+      <SaveResultPrompt percentage={result.percentage} />
 
       {/* Never folded away. */}
       <div style={{ marginTop: "2rem", paddingTop: "1.5rem", borderTop: "1px solid var(--line)" }}>

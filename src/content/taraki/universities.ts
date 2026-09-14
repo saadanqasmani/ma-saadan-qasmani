@@ -51,6 +51,8 @@ export type University = {
    * guess. Null means we cannot sort it yet and will not pretend to.
    */
   minimumPercent: Sourced<number> | null;
+  /** A published SAT floor, where the university states one. */
+  satMin: Sourced<number> | null;
 };
 
 export const SELECTION_SOURCE = {
@@ -70,6 +72,7 @@ function u(name: string, city: string, detail: Partial<University> = {}): Univer
     deadlines: null,
     requirements: null,
     minimumPercent: null,
+    satMin: null,
     ...detail,
   };
 }
@@ -264,6 +267,14 @@ export const universities: Record<string, University[]> = {
         asOf: READ,
         verified: true,
       },
+      satMin: {
+        value: 1100,
+        source: "Sabancı University, Application Requirements",
+        url: SAB_APPLY,
+        asOf: READ,
+        verified: true,
+        note: "Where a SAT is submitted. It is not compulsory; other exams are accepted.",
+      },
     }),
     u("Middle East Technical University", "Ankara"),
     u("Boğaziçi University", "Istanbul"),
@@ -302,6 +313,14 @@ export const universities: Record<string, University[]> = {
         url: BIL_APPLY,
         asOf: READ,
         verified: true,
+      },
+      satMin: {
+        value: 1000,
+        source: "Bilkent University, How to Apply",
+        url: BIL_APPLY,
+        asOf: READ,
+        verified: true,
+        note: "Across Maths and Critical Reading.",
       },
     }),
     u("Hacettepe University", "Ankara"),

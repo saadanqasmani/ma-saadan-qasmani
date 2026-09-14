@@ -36,6 +36,9 @@
   --nav-bg: rgba(5, 7, 13, 0.72);
 
   margin: 0;
+  /* The header is sticky, so anything scrolled to must stop below it
+     rather than underneath it. */
+  scroll-padding-top: 78px;
   background: var(--bg);
   color: var(--text);
   font-family: var(--tk-font-body), system-ui, sans-serif;

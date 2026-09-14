@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TarakiMark } from "@/components/taraki/Logo";
 import { ThemeToggle } from "@/components/taraki/ThemeToggle";
+import { AuthPanel, useAccount } from "@/components/taraki/Account";
 
 /**
  * Four places, and everything else behind a menu.
@@ -39,6 +40,7 @@ export function TarakiNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [login, setLogin] = useState(false);
+  const account = useAccount();
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -85,9 +87,15 @@ export function TarakiNav() {
 
           <div className="tk-header__right">
             <ThemeToggle />
-            <button type="button" onClick={() => setLogin(true)} className="tk-login">
-              Log in
-            </button>
+            {account ? (
+              <Link href="/taraki/profile" className="tk-login">
+                {account.name.split(" ")[0] || "Profile"}
+              </Link>
+            ) : (
+              <button type="button" onClick={() => setLogin(true)} className="tk-login">
+                Log in
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -139,44 +147,7 @@ export function TarakiNav() {
         </div>
       )}
 
-      {login && <LoginPanel onClose={() => setLogin(false)} />}
+      {login && <AuthPanel onClose={() => setLogin(false)} />}
     </>
-  );
-}
-
-/**
- * There are no accounts yet, and saying so beats a button that does nothing.
- *
- * It is not an apology either: nothing on the site needs an account, and a
- * student can use all of it right now. What an account will add is the same
- * list on a second device.
- */
-function LoginPanel({ onClose }: { onClose: () => void }) {
-  return (
-    <div className="tk-modal" onClick={onClose} role="dialog" aria-label="Log in">
-      <div className="tk-pane tk-land tk-modal__box" onClick={(e) => e.stopPropagation()}>
-        <span className="tk-label" style={{ color: "var(--accent)" }}>Accounts</span>
-        <h2 className="tk-h2" style={{ marginTop: "0.8rem", fontSize: "1.3rem" }}>
-          You do not need one yet.
-        </h2>
-        <p className="tk-body" style={{ marginTop: "0.8rem" }}>
-          Everything here already works without signing in. Your grades, your university list and
-          your documents are saved on this device as you go.
-        </p>
-        <p className="tk-body" style={{ marginTop: "0.8rem" }}>
-          Accounts arrive with our own domain, so that a student&apos;s exam results are held
-          somewhere built for them rather than borrowed. Until then, one caution: clearing your
-          browser data clears your list.
-        </p>
-        <div style={{ marginTop: "1.75rem", display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
-          <button type="button" onClick={onClose} className="tk-btn tk-btn--ghost">
-            Carry on without one
-          </button>
-          <Link href="/taraki/contact" className="tk-btn tk-btn--primary">
-            Tell me when they open
-          </Link>
-        </div>
-      </div>
-    </div>
   );
 }
