@@ -5,6 +5,7 @@ import { ThemeToggle } from "@/components/gcb/ThemeToggle";
 const tabs = [
   { href: "/gcb", label: "Home" },
   { href: "/gcb/equivalence", label: "Equivalence" },
+  { href: "/gcb/plan", label: "My plan" },
   { href: "/gcb/match", label: "Match" },
   { href: "/gcb/costs", label: "Costs" },
   { href: "/gcb/apply", label: "How to apply" },
