@@ -601,3 +601,259 @@ a:hover .tk-mark__trail {
     animation: none;
   }
 }
+
+/* --- the header -------------------------------------------------------
+ * Four links on a wide screen, a menu button on a narrow one. Nothing
+ * scrolls sideways: a row you have to drag to read is a row most people
+ * never finish reading.
+ * ------------------------------------------------------------------- */
+.tk-header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: var(--nav-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+
+.tk-header__row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 62px;
+}
+
+.tk-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-shrink: 0;
+}
+
+.tk-header__name {
+  font-family: var(--tk-font-display), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.tk-header__links {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+  margin-inline-start: 1.5rem;
+}
+
+.tk-header__right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-inline-start: auto;
+}
+
+.tk-navlink {
+  padding: 0.5rem 0.85rem;
+  border-radius: 9px;
+  font-size: 0.9375rem;
+  color: var(--text-soft);
+  transition: color 0.25s ease, background 0.25s ease;
+}
+
+.tk-navlink:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.tk-navlink[data-on="true"] {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.tk-login {
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.tk-login:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* Two lines that become a cross. */
+.tk-burger {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  gap: 5px;
+  padding: 0;
+}
+
+.tk-burger span {
+  display: block;
+  width: 17px;
+  height: 1.6px;
+  border-radius: 2px;
+  background: var(--text);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+}
+
+.tk-burger span:first-child[data-on="true"] {
+  transform: translateY(3.3px) rotate(45deg);
+}
+
+.tk-burger span:last-child[data-on="true"] {
+  transform: translateY(-3.3px) rotate(-45deg);
+}
+
+@media (min-width: 900px) {
+  .tk-header__links {
+    display: flex;
+  }
+  /* The four are on screen, so the menu is only for the rest. */
+  .tk-burger {
+    width: 34px;
+  }
+}
+
+/* --- the menu ---------------------------------------------------------- */
+.tk-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  /* Solid, not translucent. A menu you can read the page through is a
+     menu you cannot read. */
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+.tk-menu__sheet {
+  padding-block: 5.5rem 3rem;
+  min-height: 100%;
+}
+
+.tk-menu__primary {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.tk-menu__item {
+  display: block;
+  padding: 1.15rem 1.25rem;
+  border-radius: 15px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+}
+
+.tk-menu__item:hover,
+.tk-menu__item:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+
+.tk-menu__secondary {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.tk-menu__link {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-soft);
+  transition: color 0.25s ease, padding-inline-start 0.25s ease;
+}
+
+.tk-menu__link:hover {
+  color: var(--text);
+  padding-inline-start: 0.35rem;
+}
+
+@media (min-width: 700px) {
+  .tk-menu__primary {
+    grid-template-columns: 1fr 1fr;
+  }
+  .tk-menu__secondary {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2rem;
+  }
+}
+
+/* --- a panel over the page --------------------------------------------- */
+.tk-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+}
+
+.tk-modal__box {
+  padding: 1.85rem;
+  width: min(28rem, 100%);
+}
+
+/* --- start here -------------------------------------------------------- */
+.tk-start {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .tk-start {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.tk-start__card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 1.25rem;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.tk-start__card:hover,
+.tk-start__card:focus-visible {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 24px 44px -30px var(--shadow);
+}
+
+.tk-start__num {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--surface-2);
+  color: var(--accent);
+  font-family: var(--tk-font-display), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}

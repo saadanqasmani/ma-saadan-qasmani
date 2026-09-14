@@ -112,7 +112,11 @@ function PointsPortal({
     <div
       style={{
         position: "fixed",
-        top: "14px",
+        // Bottom right, not top: the header already has a logo, a theme
+        // switch, a log in and a menu button, and on a 390px phone the
+        // counter was sitting on top of the menu. Down here it is also
+        // nearer the thumb.
+        bottom: "16px",
         right: "16px",
         zIndex: 80,
         display: "flex",

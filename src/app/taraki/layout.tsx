@@ -43,7 +43,19 @@ export const metadata: Metadata = {
 export default function TarakiLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
-      <body className="tk">
+      <body className="tk" data-theme="light">
+        {/*
+          Set before the first paint, not after.
+          The toggle runs in an effect, which is a frame too late: a reader
+          who chose dark would watch the page flash white on every load.
+          This is the one thing that genuinely has to be inline.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var t=localStorage.getItem('tk-theme');document.body.dataset.theme=t==='dark'?'dark':'light'}catch(e){}",
+          }}
+        />
         <PointsProvider>{children}</PointsProvider>
       </body>
     </html>

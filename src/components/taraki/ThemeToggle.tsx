@@ -12,12 +12,12 @@ const STORE = "tk-theme";
  * palette, so one attribute swaps every colour on the page at once rather
  * than each component deciding for itself.
  *
- * Dark is the default. A student who has told their phone they prefer light
- * gets light on a first visit; after that their choice here wins.
+ * Light on a first visit, which is what most phones are set to and what
+ * reads more easily in daylight. The switch wins from then on.
  */
 export function ThemeToggle() {
   const saved = useSyncExternalStore(subscribe(STORE), snapshot(STORE), serverSnapshot);
-  const theme: "dark" | "light" = saved === "light" ? "light" : "dark";
+  const theme: "dark" | "light" = saved === "dark" ? "dark" : "light";
 
   // The attribute carries the whole palette, so one write swaps every colour
   // on the page at once.
