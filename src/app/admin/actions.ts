@@ -389,7 +389,7 @@ export async function sendLetter(_prev: LetterResult, formData: FormData): Promi
 
 /* ---- is the list actually working? ------------------------------------ */
 
-export type Check = { label: string; ok: boolean; detail: string };
+export type Check = { label: string; state: "ok" | "bad" | "unknown"; detail: string };
 
 /**
  * Reproduces, exactly, what happens when a visitor leaves their address.
@@ -407,12 +407,12 @@ export async function checkTheList(): Promise<Check[]> {
   const mail = await checkResend();
   checks.push({
     label: `Sending letters (as ${fromAddress()})`,
-    ok: mail.ok,
+    state: mail.state,
     detail: mail.detail,
   });
   checks.push({
     label: "Reply address (MAIL_REPLY_TO)",
-    ok: Boolean(process.env.MAIL_REPLY_TO?.trim()),
+    state: process.env.MAIL_REPLY_TO?.trim() ? "ok" : "bad",
     detail: process.env.MAIL_REPLY_TO?.trim()
       ? "Set. Replies reach a real mailbox."
       : "Not set: a reader who replies reaches nobody.",
@@ -421,14 +421,14 @@ export async function checkTheList(): Promise<Check[]> {
   const read = await db.from("subscribers").select("email").limit(1);
   checks.push({
     label: "Reading the list",
-    ok: !read.error,
+    state: read.error ? "bad" : "ok",
     detail: read.error ? `${read.error.code ?? "?"}: ${read.error.message}` : "The subscribers table answers.",
   });
 
   const column = await db.from("subscribers").select("welcomed_at").limit(1);
   checks.push({
     label: "Remembering who was written to",
-    ok: !column.error,
+    state: column.error ? "bad" : "ok",
     detail: column.error
       ? `${column.error.code ?? "?"}: ${column.error.message}. Run supabase/migrations/0006_welcomed_at.sql, or a reader who subscribes twice gets no second letter.`
       : "The welcomed_at column is there.",
@@ -437,7 +437,7 @@ export async function checkTheList(): Promise<Check[]> {
   const write = await db.from("subscribers").upsert({ email: probe, status: "active" }, { onConflict: "email" });
   checks.push({
     label: "Adding an address",
-    ok: !write.error,
+    state: write.error ? "bad" : "ok",
     detail: write.error ? `${write.error.code ?? "?"}: ${write.error.message}` : "A new address can be written.",
   });
 
@@ -447,7 +447,7 @@ export async function checkTheList(): Promise<Check[]> {
     const again = await db.from("subscribers").upsert({ email: probe, status: "active" }, { onConflict: "email" });
     checks.push({
       label: "Adding the same address twice",
-      ok: !again.error,
+      state: again.error ? "bad" : "ok",
       detail: again.error ? `${again.error.code ?? "?"}: ${again.error.message}` : "An address already on the list is updated, not duplicated.",
     });
     await db.from("subscribers").delete().eq("email", probe);

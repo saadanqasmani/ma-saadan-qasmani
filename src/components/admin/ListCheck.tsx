@@ -39,7 +39,14 @@ export function ListCheck() {
         <ul className="mt-5 border-t border-line">
           {checks.map((c) => (
             <li key={c.label} className="grid gap-1 border-b border-line py-3 sm:grid-cols-[1.5rem_1fr]">
-              <span className={c.ok ? "text-verdant" : "text-ember"}>{c.ok ? "✓" : "×"}</span>
+              <span
+                className={
+                  c.state === "ok" ? "text-verdant" : c.state === "bad" ? "text-ember" : "text-azure"
+                }
+                aria-label={c.state === "ok" ? "Working" : c.state === "bad" ? "Broken" : "Cannot tell"}
+              >
+                {c.state === "ok" ? "✓" : c.state === "bad" ? "×" : "?"}
+              </span>
               <div>
                 <p className="text-sm text-ink">{c.label}</p>
                 <p className="mt-0.5 break-words font-mono text-xs text-ink-soft">{c.detail}</p>

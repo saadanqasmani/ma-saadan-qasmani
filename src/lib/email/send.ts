@@ -50,9 +50,18 @@ function payload(mail: Mail) {
   };
 }
 
+/**
+ * The key, without the whitespace a paste can carry. A trailing newline in
+ * the hosting dashboard is invisible there and produces an Authorization
+ * header the API rejects, which looks exactly like a wrong key.
+ */
+function apiKey(): string {
+  return (process.env.RESEND_API_KEY ?? "").trim();
+}
+
 /** False when no key is set, which is the normal state of a local checkout. */
 export function mailIsConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY);
+  return Boolean(apiKey());
 }
 
 /**
@@ -83,7 +92,7 @@ function replyToAddress(): string | undefined {
 }
 
 export async function sendMail(mail: Mail): Promise<SendResult> {
-  const key = process.env.RESEND_API_KEY;
+  const key = apiKey();
   if (!key) return { ok: false, reason: "no-key" };
 
   try {
@@ -129,7 +138,7 @@ export type BatchResult = { sent: number; failed: number; reasons: string[] };
  * come back, so the record of the letter is honest about what happened.
  */
 export async function sendMany(mails: Mail[]): Promise<BatchResult> {
-  const key = process.env.RESEND_API_KEY;
+  const key = apiKey();
   if (!key) return { sent: 0, failed: mails.length, reasons: ["no-key"] };
 
   const result: BatchResult = { sent: 0, failed: 0, reasons: [] };
@@ -163,19 +172,26 @@ export async function sendMany(mails: Mail[]): Promise<BatchResult> {
 
 /* ---- is Resend going to take a letter from us? ------------------------ */
 
-export type MailCheck = { ok: boolean; detail: string };
+/**
+ * Three answers, not two. Some things can be established from here, some
+ * cannot, and reporting "cannot tell" as a failure sends someone off to fix
+ * what was never broken.
+ */
+export type MailCheck = { state: "ok" | "bad" | "unknown"; detail: string };
 
 /**
  * Asks Resend, rather than assuming.
  *
- * A letter that never arrives has a small number of causes and they are all
- * on Resend's side of the wall: no key, the wrong key, or a sending domain
- * that was never verified. Each answers differently to this, so the fault
- * names itself instead of being guessed at.
+ * The domains endpoint is the one that can say whether the sending domain
+ * is verified, but a key created with sending access only is forbidden to
+ * read it and Resend answers 401. That is a healthy key doing exactly what
+ * it should, so it must not be reported as a bad one: the only honest
+ * answer then is that the domain cannot be checked from here, and that
+ * sending a copy is the way to find out.
  */
 export async function checkResend(): Promise<MailCheck> {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return { ok: false, detail: "RESEND_API_KEY is not set, so nothing can be sent." };
+  const key = apiKey();
+  if (!key) return { state: "bad", detail: "RESEND_API_KEY is not set, so nothing can be sent." };
 
   const domain = fromDomain();
 
@@ -187,10 +203,21 @@ export async function checkResend(): Promise<MailCheck> {
     });
 
     if (res.status === 401 || res.status === 403) {
-      return { ok: false, detail: "Resend refused the key. Copy it again from resend.com/api-keys." };
+      const body = await res.text().catch(() => "");
+      // Resend names this one: the key is valid, and allowed to send only.
+      if (/restricted/i.test(body)) {
+        return {
+          state: "unknown",
+          detail: `The key is valid and restricted to sending, which is the safer kind, so whether ${domain} is verified cannot be read from here. Press "Send me a copy" below: that is the real test.`,
+        };
+      }
+      return {
+        state: "bad",
+        detail: `Resend refused the key (${res.status}). Make a new one at resend.com/api-keys, paste it with no spaces around it, and redeploy.`,
+      };
     }
     if (!res.ok) {
-      return { ok: false, detail: `Resend answered ${res.status}.` };
+      return { state: "unknown", detail: `Resend answered ${res.status}, so nothing could be established from here.` };
     }
 
     const body = (await res.json().catch(() => null)) as { data?: { name?: string; status?: string }[] } | null;
@@ -200,15 +227,15 @@ export async function checkResend(): Promise<MailCheck> {
     if (!mine) {
       const known = domains.map((d) => d.name).filter(Boolean).join(", ") || "none";
       return {
-        ok: false,
+        state: "bad",
         detail: `Letters are sent from ${domain}, which is not a domain on this Resend account (it has: ${known}). Either add it there or set MAIL_FROM to an address on one of those.`,
       };
     }
     if (mine.status !== "verified") {
-      return { ok: false, detail: `${domain} is on the account but its status is "${mine.status}", not verified. Finish its DNS records in Resend.` };
+      return { state: "bad", detail: `${domain} is on the account but its status is "${mine.status}", not verified. Finish its DNS records in Resend.` };
     }
-    return { ok: true, detail: `${domain} is verified, and the key works.` };
+    return { state: "ok", detail: `${domain} is verified, and the key works.` };
   } catch (error) {
-    return { ok: false, detail: `Could not reach Resend: ${error instanceof Error ? error.name : "unknown"}` };
+    return { state: "unknown", detail: `Could not reach Resend: ${error instanceof Error ? error.name : "unknown"}` };
   }
 }
