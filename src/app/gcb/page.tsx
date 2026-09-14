@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GcbNav } from "@/components/gcb/GcbNav";
+import { GcbMark } from "@/components/gcb/Logo";
 import { countries, hasAnyCosts } from "@/content/gcb/countries";
 
 export default function GcbHome() {
@@ -13,9 +14,12 @@ export default function GcbHome() {
       <section style={{ position: "relative", overflow: "hidden", paddingBlock: "clamp(4rem, 10vw, 8rem) clamp(3rem, 7vw, 6rem)" }}>
         <div className="gcb-aurora" aria-hidden />
         <div className="gcb-shell" style={{ position: "relative" }}>
-          <p className="gcb-label gcb-rise" style={{ color: "var(--accent)" }}>
-            Free to use · Starting in Pakistan
-          </p>
+          <div className="gcb-rise" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <GcbMark size={38} animate />
+            <span className="gcb-label" style={{ color: "var(--accent)" }}>
+              Global Career Bridge · Starting in Pakistan
+            </span>
+          </div>
 
           <h1 className="gcb-display gcb-rise" style={{ marginTop: "1.5rem", maxWidth: "18ch", animationDelay: "0.06s" }}>
             Applying abroad should not cost a year&apos;s salary.
@@ -28,11 +32,11 @@ export default function GcbHome() {
           </p>
 
           <div className="gcb-rise" style={{ marginTop: "2.5rem", display: "flex", flexWrap: "wrap", gap: "0.9rem", animationDelay: "0.18s" }}>
-            <Link href="/gcb/match" className="gcb-btn gcb-btn--primary">
-              Find your universities
+            <Link href="/gcb/equivalence" className="gcb-btn gcb-btn--primary">
+              Convert my grades
             </Link>
-            <Link href="/gcb/costs" className="gcb-btn gcb-btn--ghost">
-              See what a year costs
+            <Link href="/gcb/pricing" className="gcb-btn gcb-btn--ghost">
+              See what it costs
             </Link>
           </div>
         </div>
@@ -42,6 +46,7 @@ export default function GcbHome() {
       <section className="gcb-shell" style={{ paddingBlock: "clamp(2rem, 5vw, 4rem)" }}>
         <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
           {[
+            { tag: "Free", tone: "free", title: "What your grades are worth", body: "O Level, A Level, Matric, FSc, IB. Tap what you got and see the number a foreign university actually reads." },
             { tag: "Free", tone: "free", title: "Where you can get in", body: "Your grades and profile against what universities actually publish about who they admit." },
             { tag: "Free", tone: "free", title: "What it costs", body: "Tuition, the living costs a visa requires you to prove, and what that comes to in your currency." },
             { tag: "Free", tone: "free", title: "How to apply", body: "Every document, every deadline, every fee. The part agencies charge the most for." },
@@ -133,7 +138,7 @@ export default function GcbHome() {
 
       <footer style={{ borderTop: "1px solid var(--line)" }}>
         <div className="gcb-shell" style={{ paddingBlock: "2rem", display: "flex", flexWrap: "wrap", gap: "1rem", justifyContent: "space-between" }}>
-          <span className="gcb-small">GCB · Internal build, not public</span>
+          <span className="gcb-small">Global Career Bridge · Internal build, not public</span>
           <span className="gcb-small">Nothing here is final</span>
         </div>
       </footer>

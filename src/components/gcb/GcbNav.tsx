@@ -1,12 +1,15 @@
 import Link from "next/link";
+import { GcbMark } from "@/components/gcb/Logo";
 
 const tabs = [
   { href: "/gcb", label: "Home" },
+  { href: "/gcb/equivalence", label: "Equivalence" },
   { href: "/gcb/match", label: "Match" },
   { href: "/gcb/costs", label: "Costs" },
   { href: "/gcb/apply", label: "How to apply" },
   { href: "/gcb/scholarships", label: "Scholarships" },
-  { href: "/gcb/talk", label: "Talk to someone" },
+  { href: "/gcb/talk", label: "Talk" },
+  { href: "/gcb/pricing", label: "Pricing" },
 ];
 
 export function GcbNav() {
@@ -32,7 +35,7 @@ export function GcbNav() {
         }}
       >
         <Link href="/gcb" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-          <Bridge />
+          <GcbMark size={26} />
           <span
             className="gcb-label"
             style={{ letterSpacing: "0.22em", fontSize: "0.8125rem" }}
@@ -60,22 +63,5 @@ export function GcbNav() {
         </nav>
       </div>
     </header>
-  );
-}
-
-/** Two banks and a span. Drawn, so there is no logo file to commission yet. */
-function Bridge() {
-  return (
-    <svg viewBox="0 0 28 28" width="24" height="24" aria-hidden>
-      <path d="M2 19h24" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" />
-      <path
-        d="M4 19c0-7 7-11 10-11s10 4 10 11"
-        fill="none"
-        stroke="var(--text)"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-      <path d="M9 19v-5M14 19v-7M19 19v-5" stroke="var(--text-faint)" strokeWidth="1.3" strokeLinecap="round" />
-    </svg>
   );
 }
