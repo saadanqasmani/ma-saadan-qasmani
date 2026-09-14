@@ -28,6 +28,9 @@ export async function POST(request: Request) {
           { status: 503 }
         )
       : NextResponse.json(
+          // The reader is told nothing useful to an attacker; the detail is
+          // already in the host's log, and the dashboard has a check that
+          // reproduces the same write and names the cause.
           { error: "Something went wrong. Please try again." },
           { status: 500 }
         );

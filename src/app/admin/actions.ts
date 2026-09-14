@@ -386,3 +386,62 @@ export async function sendLetter(_prev: LetterResult, formData: FormData): Promi
   if (result.failed > 0) return { ok: true, message: `Sent to ${result.sent}; ${result.failed} failed (${result.reasons[0]})${kept}.` };
   return { ok: true, message: `Sent to ${result.sent} ${result.sent === 1 ? "person" : "people"}${kept}.` };
 }
+
+/* ---- is the list actually working? ------------------------------------ */
+
+export type Check = { label: string; ok: boolean; detail: string };
+
+/**
+ * Reproduces, exactly, what happens when a visitor leaves their address.
+ *
+ * The subscribe form can only ever tell a reader that something went wrong;
+ * it must not tell them what. This runs the same read and the same write
+ * against a reserved address, removes it again, and reports whatever
+ * Postgres actually said, so a blank failure becomes a named one.
+ */
+export async function checkTheList(): Promise<Check[]> {
+  const { db } = await requireAdmin();
+  const checks: Check[] = [];
+  const probe = `probe-${Date.now().toString(36)}@saadanqasmani.invalid`;
+
+  checks.push({
+    label: "Mail key (RESEND_API_KEY)",
+    ok: mailIsConfigured(),
+    detail: mailIsConfigured() ? "Set." : "Not set: nothing can be sent.",
+  });
+  checks.push({
+    label: "Reply address (MAIL_REPLY_TO)",
+    ok: Boolean(process.env.MAIL_REPLY_TO?.trim()),
+    detail: process.env.MAIL_REPLY_TO?.trim()
+      ? "Set. Replies reach a real mailbox."
+      : "Not set: a reader who replies reaches nobody.",
+  });
+
+  const read = await db.from("subscribers").select("email").limit(1);
+  checks.push({
+    label: "Reading the list",
+    ok: !read.error,
+    detail: read.error ? `${read.error.code ?? "?"}: ${read.error.message}` : "The subscribers table answers.",
+  });
+
+  const write = await db.from("subscribers").upsert({ email: probe, status: "active" }, { onConflict: "email" });
+  checks.push({
+    label: "Adding an address",
+    ok: !write.error,
+    detail: write.error ? `${write.error.code ?? "?"}: ${write.error.message}` : "A new address can be written.",
+  });
+
+  // The second write is the one a returning reader causes, and the one that
+  // fails on its own if the email column has no unique constraint.
+  if (!write.error) {
+    const again = await db.from("subscribers").upsert({ email: probe, status: "active" }, { onConflict: "email" });
+    checks.push({
+      label: "Adding the same address twice",
+      ok: !again.error,
+      detail: again.error ? `${again.error.code ?? "?"}: ${again.error.message}` : "An address already on the list is updated, not duplicated.",
+    });
+    await db.from("subscribers").delete().eq("email", probe);
+  }
+
+  return checks;
+}

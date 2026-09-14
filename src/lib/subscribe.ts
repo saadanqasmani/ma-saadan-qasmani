@@ -13,7 +13,7 @@ import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export type SubscribeResult =
   | { ok: true; welcomed: boolean }
-  | { ok: false; reason: "not-connected" | "failed" };
+  | { ok: false; reason: "not-connected" | "failed"; detail?: string };
 
 /**
  * Records the address, then writes to it if this is the first time.
@@ -36,11 +36,20 @@ export async function subscribe(
 
   const address = email.trim().toLowerCase();
 
-  const { data: existing } = await supabase
+  const { data: existing, error: readError } = await supabase
     .from("subscribers")
     .select("status")
     .eq("email", address)
     .maybeSingle();
+
+  if (readError) {
+    // Whatever Postgres said, said out loud. A missing table, a key that is
+    // not the service role one, a policy: they all arrive here as the same
+    // blank failure otherwise, and the host's log is the only place anyone
+    // can find out which.
+    console.error(`[newsletter] read failed: ${readError.code ?? "?"} ${readError.message}`);
+    return { ok: false, reason: "failed", detail: `${readError.code ?? "?"} ${readError.message}` };
+  }
 
   const firstTime = !existing || existing.status !== "active";
 
@@ -48,7 +57,10 @@ export async function subscribe(
     .from("subscribers")
     .upsert({ email: address, status: "active" }, { onConflict: "email" });
 
-  if (error) return { ok: false, reason: "failed" };
+  if (error) {
+    console.error(`[newsletter] write failed: ${error.code ?? "?"} ${error.message}`);
+    return { ok: false, reason: "failed", detail: `${error.code ?? "?"} ${error.message}` };
+  }
 
   if (!firstTime || !mailIsConfigured()) return { ok: true, welcomed: false };
 

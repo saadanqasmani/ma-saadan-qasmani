@@ -59,15 +59,30 @@ export function NewsletterForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, locale }),
       });
-      const data = await res.json();
+
+      // Read it as text first. A server that fell over answers with an HTML
+      // error page, and parsing that as JSON throws — which used to land in
+      // the catch below and look identical to having no connection at all.
+      const body = await res.text();
+      let data: { error?: string } | null = null;
+      try {
+        data = JSON.parse(body) as { error?: string };
+      } catch {
+        data = null;
+      }
+
       if (!res.ok) {
-        setError(data.error ?? copy.failed);
+        // Said in the console rather than on the page: the reader needs one
+        // calm sentence, and whoever is fixing it needs the status.
+        console.error(`[newsletter] ${res.status} ${data?.error ?? body.slice(0, 200)}`);
+        setError(data?.error ?? copy.failed);
         setStatus("error");
         return;
       }
       markSubscribed();
       setStatus("done");
-    } catch {
+    } catch (cause) {
+      console.error("[newsletter] the request never completed:", cause);
       setError(copy.failed);
       setStatus("error");
     }

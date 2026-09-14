@@ -3,6 +3,7 @@ import { getBlogPosts } from "@/lib/data";
 import { mailIsConfigured } from "@/lib/email/send";
 import { AdminHeading, EmptyState, formatDate } from "@/components/admin/ui";
 import { LetterForm } from "@/components/admin/LetterForm";
+import { ListCheck } from "@/components/admin/ListCheck";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,8 @@ export default async function LettersPage() {
           editor so each send is kept on record.
         </p>
       )}
+
+      <ListCheck />
 
       <LetterForm posts={posts.map((p) => ({ slug: p.slug, title: p.title, date: p.date }))} recipients={count} canSend={mailIsConfigured()} />
 
