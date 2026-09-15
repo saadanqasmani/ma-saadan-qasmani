@@ -526,7 +526,7 @@ export function CopyForClaude({
       await navigator.clipboard.writeText(body);
       setDone(true);
       setTimeout(() => setDone(false), 2000);
-      toast("Copied. Paste it into a Claude chat.", { tone: "blue" });
+      toast("Copied", { tone: "blue" });
     } catch {
       // Clipboard permission can be refused, and a button that silently
       // does nothing is worse than one that hands over the text.
