@@ -17,7 +17,8 @@ import {
   type Task,
 } from "@/lib/ops/model";
 import { addXp, patchTask, removeTask, upsertTask } from "@/lib/ops/store";
-import { Avatar, Chevron, Confirm, FileRow, Inline, Seg, Tick, Upload, nameOf, useCelebrate, whenLabel } from "./ui";
+import { taskPrompt } from "@/lib/ops/brief";
+import { Avatar, Chevron, Confirm, CopyForClaude, FileRow, Inline, Seg, Tick, Upload, nameOf, useCelebrate, whenLabel } from "./ui";
 
 /**
  * One task, and everything you can do to it, on the card itself.
@@ -249,11 +250,15 @@ export function TaskCard({
           <Thread comments={task.comments ?? []} who={who} onPost={comment} />
 
           <div className="card__section row row--between">
+            <CopyForClaude text={() => taskPrompt(task)} label="Work on this with Claude" />
+            {!simple && <Confirm label="Delete" question="Delete this task?" onYes={del} />}
+          </div>
+
+          <div className="row row--between">
             <span className="small muted">
               {task.createdBy ? `Added by ${nameOf(task.createdBy)}` : "On the term board"}
               {task.fromMeeting ? " · from a meeting" : ""}
             </span>
-            {!simple && <Confirm label="Delete" question="Delete this task?" onYes={del} />}
           </div>
         </div>
       )}

@@ -499,6 +499,66 @@ export function FileRow({ name, path, type, note, right }: { name: string; path:
   );
 }
 
+/* ---- handing work to a chat ------------------------------------------ */
+
+/**
+ * Copies text, and says it did.
+ *
+ * The desk is behind a cookie, so nothing outside it can read the board.
+ * This is the way across: the state written out as words, on the clipboard,
+ * ready to paste into a conversation.
+ */
+export function CopyForClaude({
+  text,
+  label = "Copy for Claude",
+  className = "btn btn--sm btn--ghost",
+}: {
+  text: () => string;
+  label?: string;
+  className?: string;
+}) {
+  const { toast } = useCelebrate();
+  const [done, setDone] = useState(false);
+
+  async function copy() {
+    const body = text();
+    try {
+      await navigator.clipboard.writeText(body);
+      setDone(true);
+      setTimeout(() => setDone(false), 2000);
+      toast("Copied. Paste it into a Claude chat.", { tone: "blue" });
+    } catch {
+      // Clipboard permission can be refused, and a button that silently
+      // does nothing is worse than one that hands over the text.
+      toast("Could not reach the clipboard. Use Download instead.");
+    }
+  }
+
+  return (
+    <button type="button" className={className} onClick={copy}>
+      {done ? "Copied" : label}
+    </button>
+  );
+}
+
+/** The same text as a file, for attaching to a Claude project. */
+export function DownloadBrief({ text, filename }: { text: () => string; filename: string }) {
+  function save() {
+    const blob = new Blob([text()], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  return (
+    <button type="button" className="btn btn--sm btn--ghost" onClick={save}>
+      Download
+    </button>
+  );
+}
+
 /* ---- little pieces --------------------------------------------------- */
 
 export function Tick() {

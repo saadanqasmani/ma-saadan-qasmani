@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { daysUntil, pct, type Persona, type Task } from "@/lib/ops/model";
 import { useOps } from "@/lib/ops/store";
+import { boardBrief, briefFilename } from "@/lib/ops/brief";
 import { TaskCard } from "./TaskCard";
-import { Empty, Seg } from "./ui";
+import { CopyForClaude, DownloadBrief, Empty, Seg } from "./ui";
 
 type Filter = "open" | "academic" | "administrative" | "done" | "all";
 
@@ -54,9 +55,13 @@ export function Board({ who, simple = false, focusId, onNew }: { who: Persona; s
             { id: "done", label: `Done · ${done}` },
           ]}
         />
-        <button type="button" className="btn btn--primary" onClick={onNew}>
-          + {who === "osman" ? "Task for Saadan" : "New task"}
-        </button>
+        <div className="row" style={{ gap: 8 }}>
+          <CopyForClaude text={() => boardBrief(state, who)} label="Copy board for Claude" />
+          <DownloadBrief text={() => boardBrief(state, who)} filename={briefFilename()} />
+          <button type="button" className="btn btn--primary" onClick={onNew}>
+            + {who === "osman" ? "Task for Saadan" : "New task"}
+          </button>
+        </div>
       </div>
       {tasks.length === 0 ? (
         <Empty title={filter === "done" ? "Nothing finished yet" : "Nothing here"} body={filter === "open" ? "Every task is done. Add the next one." : undefined}>
