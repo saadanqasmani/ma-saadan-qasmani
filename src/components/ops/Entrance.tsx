@@ -10,94 +10,63 @@ import type { Persona } from "@/lib/ops/model";
  * day when the desk changes hands, so it gets a curtain: the man walks out
  * of thin air, does his one thing, and goes.
  *
- * Both figures are a single still render, cut into three layers along the
- * garment's own armhole seam. The arm is two bones hung off the body, so a
- * gesture is a pair of rotations rather than a frame sequence, which keeps
- * the whole act under 400KB and lets it run on the compositor.
+ * Each act is a short sequence of full renders, played pose to pose. An
+ * earlier version rigged one still into moving limbs and it looked like
+ * what it was, so the poses are now drawn rather than derived: every frame
+ * is the same man photographed from the same place, cut off the wall and
+ * cropped to one shared box, which is what lets them stack and dissolve
+ * without anything sliding.
  *
- * Osman gives the thumbs up, smiles, winks and dissolves. Saadan lights one,
- * draws on it, blows the smoke straight through the fourth wall and is gone
- * before it clears.
+ * Osman brings up a thumbs up, smiles, winks and goes. Saadan takes one
+ * out, lights it, draws on it and blows the smoke through the fourth wall.
+ * The smoke is the render's own; only the last bloom towards the viewer is
+ * the page's.
  */
 
-/** Long enough for the whole act, short enough that nobody waits for it. */
-const RUN = 3400;
-
-function layersOf(who: Persona): string[] {
-  return [
-    `/ops/${who}-body.png`,
-    `/ops/${who}-upper.png`,
-    `/ops/${who}-fore.png`,
-    `/ops/${who}-${who === "osman" ? "fore-thumb" : "fore-cig"}.png`,
-    ...(who === "osman" ? ["/ops/osman-wink.png"] : []),
-  ];
-}
-
-/**
- * Fetch the other one's layers while the desk is idle.
- *
- * The act opens on a blur, which hides a little loading, but not a cold
- * fetch of a third of a megabyte. Only the persona you are not is worth
- * pulling: the one you are has nothing to enter for.
- */
-export function usePreloadEntrance(other: Persona | null) {
-  useEffect(() => {
-    if (!other) return;
-    const idle = window.requestIdleCallback ?? ((fn: () => void) => window.setTimeout(fn, 1200));
-    const id = idle(() => {
-      for (const src of layersOf(other)) {
-        const img = new Image();
-        img.src = src;
-      }
-    });
-    return () => (window.cancelIdleCallback ?? window.clearTimeout)(id as number);
-  }, [other]);
-}
+const ACTS: Record<Persona, { frames: number; run: number }> = {
+  // five poses need the extra half second; three do not
+  saadan: { frames: 5, run: 3800 },
+  osman: { frames: 3, run: 3400 },
+};
 
 export function Entrance({ who, onDone }: { who: Persona | null; onDone: () => void }) {
   useEffect(() => {
     if (!who) return;
-    const t = window.setTimeout(onDone, RUN);
+    const t = window.setTimeout(onDone, ACTS[who].run);
     return () => window.clearTimeout(t);
   }, [who, onDone]);
 
   if (!who) return null;
+  const act = ACTS[who];
 
   return (
-    <div className="ent" data-who={who} onClick={onDone} aria-hidden>
+    <div
+      className="ent"
+      data-who={who}
+      style={{ "--run": `${act.run}ms` } as React.CSSProperties}
+      onClick={onDone}
+      aria-hidden
+    >
       <div className="ent__scrim" />
       <div className="ent__stage">
         <div className="ent__fig">
-          {/* eslint-disable @next/next/no-img-element */}
-          <img className="ent__body" src={`/ops/${who}-body.png`} alt="" draggable={false} />
-          {who === "osman" && <img className="ent__wink" src="/ops/osman-wink.png" alt="" draggable={false} />}
-          <div className="ent__arm">
-            <img src={`/ops/${who}-upper.png`} alt="" draggable={false} />
-            <div className="ent__fa">
-              <img className="ent__fore" src={`/ops/${who}-fore.png`} alt="" draggable={false} />
-              <img
-                className="ent__fore ent__fore--act"
-                src={`/ops/${who}-${who === "osman" ? "fore-thumb" : "fore-cig"}.png`}
-                alt=""
-                draggable={false}
-              />
-              {who === "saadan" && (
-                <>
-                  <span className="ent__flame" />
-                  <span className="ent__ember" />
-                  <span className="ent__wisp" />
-                </>
-              )}
-            </div>
-          </div>
-          {/* eslint-enable @next/next/no-img-element */}
+          {Array.from({ length: act.frames }, (_, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={i}
+              className="ent__f"
+              data-n={i + 1}
+              src={`/ops/${who}-${i + 1}.webp`}
+              alt=""
+              draggable={false}
+            />
+          ))}
         </div>
 
         {who === "saadan" && (
           <>
-            <span className="ent__puff" style={{ animationDelay: "1720ms" }} />
-            <span className="ent__puff" style={{ animationDelay: "1840ms", opacity: 0.7 }} />
-            <span className="ent__puff" style={{ animationDelay: "1980ms", opacity: 0.55 }} />
+            <span className="ent__puff" />
+            <span className="ent__puff ent__puff--late" />
           </>
         )}
 
@@ -120,3 +89,28 @@ const SPARKS = Array.from({ length: 18 }, (_, i) => ({
   d: (i % 6) * 55,
   r: 110 + (i % 4) * 46,
 }));
+
+function framesOf(who: Persona): string[] {
+  return Array.from({ length: ACTS[who].frames }, (_, i) => `/ops/${who}-${i + 1}.webp`);
+}
+
+/**
+ * Fetch the other one's frames while the desk is idle.
+ *
+ * The act opens on a blur, which hides a little loading, but not a cold
+ * fetch of five renders. Only the persona you are not is worth pulling: the
+ * one you are has nothing to enter for.
+ */
+export function usePreloadEntrance(other: Persona | null) {
+  useEffect(() => {
+    if (!other) return;
+    const idle = window.requestIdleCallback ?? ((fn: () => void) => window.setTimeout(fn, 1200));
+    const id = idle(() => {
+      for (const src of framesOf(other)) {
+        const img = new Image();
+        img.src = src;
+      }
+    });
+    return () => (window.cancelIdleCallback ?? window.clearTimeout)(id as number);
+  }, [other]);
+}
