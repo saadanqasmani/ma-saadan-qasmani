@@ -1573,3 +1573,289 @@ select.field {
     display: inline;
   }
 }
+
+/* --- the turn on the way in -------------------------------------------
+   Each figure is one still render cut into body, upper arm and forearm
+   along the garment's own armhole seam. The two arm wrappers carry the
+   joints, so a gesture is a pair of rotations about a transform-origin
+   rather than a sequence of frames. Percentages below are measured off
+   the source art and must move with it. */
+
+.ent {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: end center;
+  overflow: hidden;
+  cursor: pointer;
+}
+.ent__scrim {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 50% 100%, rgba(16, 21, 44, 0.84), rgba(8, 11, 26, 0.96));
+  backdrop-filter: blur(7px) saturate(0.7);
+  animation: ent-scrim 3.4s var(--ease) both;
+}
+.ent__stage {
+  /* one figure height drives the props too, so the smoke leaves his mouth
+     and not a fixed fraction of whatever window this is. */
+  --fig-h: min(86vh, calc(92vw / var(--ar)));
+  position: relative;
+  display: grid;
+  place-items: end center;
+  height: 100%;
+}
+
+.ent[data-who="osman"] {
+  --ar: 0.325;
+  --sx: 27.26%;
+  --sy: 20.19%;
+  --ex: 12.95%;
+  --ey: 36.31%;
+  --mouth: 0.873;
+}
+.ent[data-who="saadan"] {
+  --ar: 0.289;
+  --sx: 30.07%;
+  --sy: 21.1%;
+  --ex: 16.92%;
+  --ey: 36.54%;
+  --mouth: 0.857;
+}
+
+.ent__fig {
+  position: relative;
+  height: var(--fig-h);
+  aspect-ratio: var(--ar);
+  transform-origin: 50% 100%;
+  /* no drop-shadow here: the keyframes set `filter` on every step, so it
+     would be overridden anyway, and a shadow on a figure this size costs a
+     repaint a frame for nothing. */
+  animation: ent-fig 3.4s var(--ease) both;
+}
+.ent__fig img,
+.ent__arm,
+.ent__fa {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+}
+.ent__arm {
+  transform-origin: var(--sx) var(--sy);
+}
+.ent__fa {
+  transform-origin: var(--ex) var(--ey);
+}
+.ent[data-who="osman"] .ent__arm {
+  animation: ent-arm-o 3.4s var(--ease) both;
+}
+.ent[data-who="osman"] .ent__fa {
+  animation: ent-fa-o 3.4s var(--ease) both;
+}
+.ent[data-who="saadan"] .ent__arm {
+  animation: ent-arm-s 3.4s var(--ease) both;
+}
+.ent[data-who="saadan"] .ent__fa {
+  animation: ent-fa-s 3.4s var(--ease) both;
+}
+
+/* The hand changes what it is holding while it is moving, which is the one
+   moment the swap cannot be seen. */
+.ent__fore--act {
+  opacity: 0;
+  animation: ent-swap 3.4s linear both;
+}
+
+.ent__fig img.ent__wink {
+  inset: auto;
+  left: 39.15%;
+  top: 7.56%;
+  width: 11.19%;
+  height: 2.33%;
+  opacity: 0;
+  animation: ent-wink 3.4s steps(1, end) both;
+}
+
+/* the lit end, the first flare off the lighter, and the thread of smoke
+   that comes off it between draws */
+.ent__ember,
+.ent__flame,
+.ent__wisp {
+  position: absolute;
+  left: 41.52%;
+  top: 52.8%;
+  border-radius: 50%;
+}
+.ent__ember {
+  width: 1.9%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, #ffd27a, #ff7a18 45%, rgba(255, 90, 0, 0) 70%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: ent-ember 3.4s var(--ease) both;
+}
+.ent__flame {
+  width: 3.4%;
+  aspect-ratio: 0.6;
+  border-radius: 50% 50% 46% 46% / 62% 62% 38% 38%;
+  background: linear-gradient(to top, #ff7a18, #ffd166 55%, rgba(255, 248, 214, 0.2));
+  transform: translate(-50%, -130%) scale(0);
+  filter: blur(0.4px);
+  animation: ent-flame 3.4s var(--ease) both;
+}
+.ent__wisp {
+  width: 5%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(236, 240, 248, 0.5), rgba(236, 240, 248, 0));
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  animation: ent-wisp 3.4s var(--ease) both;
+}
+
+/* the one he blows at you */
+.ent__puff {
+  position: absolute;
+  left: 49.6%;
+  bottom: calc(var(--fig-h) * var(--mouth));
+  width: 26vmin;
+  aspect-ratio: 1;
+  margin-left: -13vmin;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 245, 252, 0.95), rgba(226, 232, 245, 0.55) 45%, rgba(214, 222, 240, 0) 72%);
+  transform: scale(0.06);
+  opacity: 0;
+  animation: ent-puff 1.5s var(--ease) both;
+}
+
+.ent__sparks {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--fig-h) * 0.5);
+  width: 0;
+  height: 0;
+}
+.ent__sparks i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px;
+  border-radius: 50%;
+  background: var(--yellow, #ffd400);
+  box-shadow: 0 0 10px 2px rgba(255, 212, 0, 0.7);
+  transform: rotate(var(--a)) translateX(0) scale(0);
+  animation: ent-spark 3.4s var(--ease) both;
+  animation-delay: calc(var(--d) * 1ms);
+}
+
+@keyframes ent-scrim {
+  0% { opacity: 0; }
+  10%, 85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes ent-fig {
+  0% { opacity: 0; transform: translateY(9%) scale(0.72); filter: blur(16px); }
+  13% { opacity: 1; transform: translateY(0) scale(1.03); filter: blur(0); }
+  18% { transform: translateY(0) scale(1); }
+  /* a breath in and out while he holds the pose */
+  45% { transform: translateY(-0.6%) scale(1.012); }
+  70% { transform: translateY(0) scale(1); }
+  86% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: translateY(-4%) scale(1.07); filter: blur(14px); }
+}
+
+@keyframes ent-arm-o {
+  0%, 19% { transform: rotate(0deg); }
+  34% { transform: rotate(15deg); }
+  38% { transform: rotate(13deg); }
+  82% { transform: rotate(13deg); }
+  100% { transform: rotate(10deg); }
+}
+@keyframes ent-fa-o {
+  0%, 19% { transform: rotate(0deg); }
+  33% { transform: rotate(-92deg); }
+  38% { transform: rotate(-86deg); }
+  /* the small shake that goes with meaning it */
+  47% { transform: rotate(-90deg); }
+  52% { transform: rotate(-86deg); }
+  82% { transform: rotate(-86deg); }
+  100% { transform: rotate(-78deg); }
+}
+
+@keyframes ent-arm-s {
+  0%, 17% { transform: rotate(0deg); }
+  29% { transform: rotate(24deg); }
+  33% { transform: rotate(22deg); }
+  /* lifts it to his mouth for the draw, then drops it away */
+  44% { transform: rotate(30deg); }
+  56% { transform: rotate(30deg); }
+  68% { transform: rotate(20deg); }
+  100% { transform: rotate(18deg); }
+}
+@keyframes ent-fa-s {
+  0%, 17% { transform: rotate(0deg); }
+  29% { transform: rotate(-78deg); }
+  33% { transform: rotate(-74deg); }
+  44% { transform: rotate(-96deg); }
+  56% { transform: rotate(-96deg); }
+  68% { transform: rotate(-70deg); }
+  100% { transform: rotate(-66deg); }
+}
+
+@keyframes ent-swap {
+  0%, 20% { opacity: 0; }
+  27% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+@keyframes ent-wink {
+  0%, 42% { opacity: 0; }
+  43%, 51% { opacity: 1; }
+  52%, 100% { opacity: 0; }
+}
+
+@keyframes ent-flame {
+  0%, 27% { transform: translate(-50%, -130%) scale(0); opacity: 0; }
+  29% { transform: translate(-50%, -130%) scale(1.1); opacity: 1; }
+  32% { transform: translate(-50%, -134%) scale(0.85); opacity: 1; }
+  36% { transform: translate(-50%, -130%) scale(1); opacity: 1; }
+  40%, 100% { transform: translate(-50%, -130%) scale(0); opacity: 0; }
+}
+@keyframes ent-ember {
+  0%, 30% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  36% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
+  /* brightest at the top of the draw */
+  46%, 54% { transform: translate(-50%, -50%) scale(1.6); opacity: 1; }
+  62% { transform: translate(-50%, -50%) scale(1); opacity: 0.85; }
+  86% { opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+}
+@keyframes ent-wisp {
+  0%, 38% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+  48% { opacity: 0.55; transform: translate(-40%, -160%) scale(1.1); }
+  64% { opacity: 0; transform: translate(-30%, -280%) scale(1.9); }
+  100% { opacity: 0; }
+}
+
+@keyframes ent-puff {
+  0% { opacity: 0; transform: scale(0.06); filter: blur(2px); }
+  12% { opacity: 0.95; }
+  100% { opacity: 0; transform: scale(9); filter: blur(34px); }
+}
+
+@keyframes ent-spark {
+  0% { transform: rotate(var(--a)) translateX(0) scale(0); opacity: 0; }
+  4% { transform: rotate(var(--a)) translateX(calc(var(--r) * 0.35)) scale(1.1); opacity: 1; }
+  16% { transform: rotate(var(--a)) translateX(var(--r)) scale(0.2); opacity: 0; }
+  86% { transform: rotate(var(--a)) translateX(calc(var(--r) * 0.3)) scale(0); opacity: 0; }
+  92% { transform: rotate(var(--a)) translateX(calc(var(--r) * 0.5)) scale(1); opacity: 1; }
+  100% { transform: rotate(var(--a)) translateX(calc(var(--r) * 1.25)) scale(0); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ent {
+    display: none;
+  }
+}

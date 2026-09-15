@@ -7,6 +7,7 @@ import { Asks, asksFor } from "./Asks";
 import { AttendanceView } from "./Attendance";
 import { Board } from "./Board";
 import { Diary, proposalsFor } from "./Diary";
+import { Entrance, usePreloadEntrance } from "./Entrance";
 import { MaterialsView } from "./Materials";
 import { MeetingsView } from "./Meetings";
 import { Approvals, AwardBadges, Overview } from "./OsmanViews";
@@ -57,6 +58,11 @@ function Desk() {
   const [tab, setTab] = useState<string>("");
   const [focus, setFocus] = useState<string | null>(null);
   const [newOpen, setNewOpen] = useState(false);
+  // `run` only ever counts up, so switching back to the same persona still
+  // remounts the entrance and plays it again.
+  const [entering, setEntering] = useState<Persona | null>(null);
+  const [run, setRun] = useState(0);
+  usePreloadEntrance(persona ? (persona === "saadan" ? "osman" : "saadan") : null);
   const { toast, burst } = useCelebrate();
   const { state, ready, live, saving, error, offline } = shell;
 
@@ -111,7 +117,7 @@ function Desk() {
     );
   }
 
-  if (!persona) return <Picker onPick={setPersona} />;
+  if (!persona) return <Picker onPick={(p) => { setPersona(p); show(p); }} />;
 
   const tabs = persona === "saadan" ? SAADAN_TABS : OSMAN_TABS;
   const current = tabs.some((t) => t.id === tab) ? tab : tabs[0].id;
@@ -129,13 +135,21 @@ function Desk() {
   }
 
   function switchTo(p: Persona) {
+    if (p === persona) return;
     setPersona(p);
     setTab("");
     setFocus(null);
+    show(p);
+  }
+
+  function show(p: Persona) {
+    setEntering(p);
+    setRun((n) => n + 1);
   }
 
   return (
     <>
+      <Entrance key={run} who={entering} onDone={() => setEntering(null)} />
       <div className="ops-bg" aria-hidden>
         <i />
         <i />
