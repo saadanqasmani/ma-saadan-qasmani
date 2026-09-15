@@ -25,7 +25,7 @@ import type { Persona } from "@/lib/ops/model";
 
 const ACTS: Record<Persona, { frames: number; run: number }> = {
   // five poses need the extra half second; three do not
-  saadan: { frames: 5, run: 3800 },
+  saadan: { frames: 5, run: 3900 },
   osman: { frames: 3, run: 3400 },
 };
 
@@ -50,17 +50,22 @@ export function Entrance({ who, onDone }: { who: Persona | null; onDone: () => v
       <div className="ent__scrim" />
       <div className="ent__stage">
         <div className="ent__fig">
-          {Array.from({ length: act.frames }, (_, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={i}
-              className="ent__f"
-              data-n={i + 1}
-              src={`/ops/${who}-${i + 1}.webp`}
-              alt=""
-              draggable={false}
-            />
-          ))}
+          {/* the reel carries the cut: one frame is lit at a time, and the
+              change is blurred for a sixteenth of a second the way a fast
+              limb blurs a frame of film */}
+          <div className="ent__reel">
+            {Array.from({ length: act.frames }, (_, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={i}
+                className="ent__f"
+                data-n={i + 1}
+                src={`/ops/${who}-${i + 1}.webp`}
+                alt=""
+                draggable={false}
+              />
+            ))}
+          </div>
         </div>
 
         {who === "saadan" && (

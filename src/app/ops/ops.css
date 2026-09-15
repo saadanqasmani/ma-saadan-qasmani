@@ -1615,11 +1615,13 @@ select.field {
 .ent[data-who="osman"] {
   --ar: 0.33;
   --figar: 0.317;
+  --smear: ent-smear-o;
 }
 .ent[data-who="saadan"] {
   --ar: 0.649;
   --figar: 0.295;
   --mouth: 0.847;
+  --smear: ent-smear-s;
 }
 
 .ent__fig {
@@ -1629,6 +1631,14 @@ select.field {
   transform-origin: 50% 100%;
   animation: ent-fig var(--run) var(--ease) both;
 }
+.ent__reel {
+  position: absolute;
+  inset: 0;
+  /* the cut itself: a blur and a half-pixel of drop through the change of
+     pose, which is what a fast limb does to a frame of film and what stops
+     a hard cut reading as a slide change */
+  animation: var(--smear) var(--run) linear both;
+}
 .ent__f {
   position: absolute;
   inset: 0;
@@ -1637,24 +1647,67 @@ select.field {
   opacity: 0;
   user-select: none;
 }
-.ent__f[data-n="1"] {
-  opacity: 1;
+
+/* Exactly one frame is on at a time. The frames are whole renders of the
+   same man, so leaving an earlier one lit under a later one shows his old
+   arm through the gap beside his new one. steps(1, end) holds each interval
+   at its opening value, which makes every change a clean cut with nothing
+   underneath it. */
+.ent__f {
+  animation-duration: var(--run);
+  animation-timing-function: steps(1, end);
+  animation-fill-mode: both;
 }
+.ent[data-who="saadan"] .ent__f[data-n="1"] { animation-name: ent-s1; }
+.ent[data-who="saadan"] .ent__f[data-n="2"] { animation-name: ent-s2; }
+.ent[data-who="saadan"] .ent__f[data-n="3"] { animation-name: ent-s3; }
+.ent[data-who="saadan"] .ent__f[data-n="4"] { animation-name: ent-s4; }
+.ent[data-who="saadan"] .ent__f[data-n="5"] { animation-name: ent-s5; }
+.ent[data-who="osman"] .ent__f[data-n="1"] { animation-name: ent-o1; }
+.ent[data-who="osman"] .ent__f[data-n="2"] { animation-name: ent-o2; }
+.ent[data-who="osman"] .ent__f[data-n="3"] { animation-name: ent-o3; }
 
-.ent[data-who="saadan"] .ent__f[data-n="2"] { animation: ent-s2 var(--run) linear both; }
-.ent[data-who="saadan"] .ent__f[data-n="3"] { animation: ent-s3 var(--run) linear both; }
-.ent[data-who="saadan"] .ent__f[data-n="4"] { animation: ent-s4 var(--run) linear both; }
-.ent[data-who="saadan"] .ent__f[data-n="5"] { animation: ent-s5 var(--run) linear both; }
-.ent[data-who="osman"] .ent__f[data-n="2"] { animation: ent-o2 var(--run) linear both; }
-.ent[data-who="osman"] .ent__f[data-n="3"] { animation: ent-o3 var(--run) linear both; }
+/* Saadan, over 3900ms: stands, takes one out, brings it up, draws on it,
+   blows. Cuts at 1000, 1500, 2050 and 2600ms. */
+@keyframes ent-s1 { 0% { opacity: 1; } 25.64% { opacity: 0; } }
+@keyframes ent-s2 { 0% { opacity: 0; } 25.64% { opacity: 1; } 38.46% { opacity: 0; } }
+@keyframes ent-s3 { 0% { opacity: 0; } 38.46% { opacity: 1; } 52.56% { opacity: 0; } }
+@keyframes ent-s4 { 0% { opacity: 0; } 52.56% { opacity: 1; } 66.66% { opacity: 0; } }
+@keyframes ent-s5 { 0% { opacity: 0; } 66.66% { opacity: 1; } }
 
-@keyframes ent-s2 { 0%, 24% { opacity: 0; } 27%, 100% { opacity: 1; } }
-@keyframes ent-s3 { 0%, 38% { opacity: 0; } 41%, 100% { opacity: 1; } }
-@keyframes ent-s4 { 0%, 52% { opacity: 0; } 55%, 100% { opacity: 1; } }
-@keyframes ent-s5 { 0%, 66% { opacity: 0; } 69%, 100% { opacity: 1; } }
-@keyframes ent-o2 { 0%, 26% { opacity: 0; } 30%, 100% { opacity: 1; } }
-/* the wink comes and goes; the smile underneath is still there */
-@keyframes ent-o3 { 0%, 47% { opacity: 0; } 50%, 60% { opacity: 1; } 63%, 100% { opacity: 0; } }
+/* Osman, over 3400ms: stands, thumbs up, winks, and back to the smile he
+   leaves on. Cuts at 1050, 1750 and 2200ms. */
+@keyframes ent-o1 { 0% { opacity: 1; } 30.88% { opacity: 0; } }
+@keyframes ent-o2 { 0% { opacity: 0; } 30.88% { opacity: 1; } 51.47% { opacity: 0; } 64.7% { opacity: 1; } }
+@keyframes ent-o3 { 0% { opacity: 0; } 51.47% { opacity: 1; } 64.7% { opacity: 0; } }
+
+@keyframes ent-smear-s {
+  0%, 24.9% { filter: blur(0); transform: translateY(0); }
+  25.64% { filter: blur(3.4px); transform: translateY(0.35%); }
+  26.9% { filter: blur(0); transform: translateY(0); }
+  37.7% { filter: blur(0); transform: translateY(0); }
+  38.46% { filter: blur(3.4px); transform: translateY(-0.3%); }
+  39.7% { filter: blur(0); transform: translateY(0); }
+  51.8% { filter: blur(0); transform: translateY(0); }
+  52.56% { filter: blur(3.8px); transform: translateY(-0.3%); }
+  53.8% { filter: blur(0); transform: translateY(0); }
+  65.9% { filter: blur(0); transform: translateY(0); }
+  66.66% { filter: blur(4.4px); transform: translateY(0.3%); }
+  68.2% { filter: blur(0); transform: translateY(0); }
+  100% { filter: blur(0); transform: translateY(0); }
+}
+@keyframes ent-smear-o {
+  0%, 30.1% { filter: blur(0); transform: translateY(0); }
+  30.88% { filter: blur(3.6px); transform: translateY(0.35%); }
+  32.2% { filter: blur(0); transform: translateY(0); }
+  50.8% { filter: blur(0); }
+  51.47% { filter: blur(1.6px); }
+  52.4% { filter: blur(0); }
+  64% { filter: blur(0); }
+  64.7% { filter: blur(1.6px); }
+  65.6% { filter: blur(0); }
+  100% { filter: blur(0); transform: translateY(0); }
+}
 
 /* the one he blows at you: the render carries the plume, this carries the
    part that arrives on your side of the glass */
@@ -1669,14 +1722,14 @@ select.field {
   background: radial-gradient(circle, rgba(236, 240, 250, 0.9), rgba(214, 222, 240, 0.5) 45%, rgba(200, 210, 232, 0) 72%);
   transform: scale(0.05);
   opacity: 0;
-  animation: ent-puff 1100ms var(--ease) both;
-  animation-delay: 2620ms;
+  animation: ent-puff 1150ms var(--ease) both;
+  animation-delay: 2600ms;
 }
 .ent__puff--late {
   width: 22vmin;
   margin-left: -11vmin;
   opacity: 0;
-  animation-delay: 2790ms;
+  animation-delay: 2780ms;
 }
 
 .ent__sparks {
@@ -1701,7 +1754,7 @@ select.field {
 
 @keyframes ent-scrim {
   0% { opacity: 0; }
-  9%, 88% { opacity: 1; }
+  9%, 89% { opacity: 1; }
   100% { opacity: 0; }
 }
 
@@ -1712,7 +1765,7 @@ select.field {
   /* a breath while he holds it */
   50% { transform: translateY(-0.5%) scale(1.01); }
   75% { transform: translateY(0) scale(1); }
-  88% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  89% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
   100% { opacity: 0; transform: translateY(-3%) scale(1.06); filter: blur(14px); }
 }
 
