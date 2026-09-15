@@ -51,6 +51,7 @@ export function PresenceChip({ who }: { who: Persona }) {
           {meta.glyph}
         </span>
         <span className="presence__label">{meta.label}</span>
+        <span className="presence__short">{meta.short}</span>
         {mine?.since && <span className="presence__since">{sinceLabel(mine.since)}</span>}
       </button>
 

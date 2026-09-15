@@ -137,14 +137,14 @@ export type Presence = {
   note: string;
 };
 
-export const PRESENCE: { id: PresenceState; label: string; glyph: string; here: boolean }[] = [
-  { id: "desk", label: "At my desk", glyph: "●", here: true },
-  { id: "smoke", label: "Out for a smoke", glyph: "◦", here: false },
-  { id: "break", label: "On a break", glyph: "◦", here: false },
-  { id: "lunch", label: "At lunch", glyph: "◦", here: false },
-  { id: "meeting", label: "In a meeting", glyph: "◑", here: false },
-  { id: "out", label: "Out of the office", glyph: "○", here: false },
-  { id: "home", label: "Gone for the day", glyph: "○", here: false },
+export const PRESENCE: { id: PresenceState; label: string; short: string; glyph: string; here: boolean }[] = [
+  { id: "desk", label: "At my desk", short: "Desk", glyph: "●", here: true },
+  { id: "smoke", label: "Out for a smoke", short: "Smoke", glyph: "◦", here: false },
+  { id: "break", label: "On a break", short: "Break", glyph: "◦", here: false },
+  { id: "lunch", label: "At lunch", short: "Lunch", glyph: "◦", here: false },
+  { id: "meeting", label: "In a meeting", short: "Meeting", glyph: "◑", here: false },
+  { id: "out", label: "Out of the office", short: "Out", glyph: "○", here: false },
+  { id: "home", label: "Gone for the day", short: "Home", glyph: "○", here: false },
 ];
 
 export function presenceMeta(state: PresenceState) {

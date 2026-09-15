@@ -18,12 +18,8 @@ import type { Persona } from "@/lib/ops/model";
 export function Avatar({ who, size }: { who: Persona; size?: "lg" }) {
   return (
     <span className={`avatar avatar--${who}${size ? ` avatar--${size}` : ""}`} aria-hidden>
-      {who === "osman" ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src="/osman-face.png" alt="" />
-      ) : (
-        "S"
-      )}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={who === "osman" ? "/osman-face.png" : "/saadan-face.png"} alt="" />
     </span>
   );
 }

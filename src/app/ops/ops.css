@@ -1559,9 +1559,17 @@ select.field {
   font-weight: 500;
 }
 
+.presence__short {
+  display: none;
+}
+
 @media (max-width: 720px) {
-  /* On a phone the label is the first thing to go, not the status itself. */
+  /* On a phone the sentence goes and the one word stays. A bare glyph in
+     the top bar is a riddle; "Smoke" is the answer to it. */
   .presence__label {
     display: none;
+  }
+  .presence__short {
+    display: inline;
   }
 }
