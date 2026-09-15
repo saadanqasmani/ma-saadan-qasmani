@@ -56,7 +56,7 @@ export function Board({ who, simple = false, focusId, onNew }: { who: Persona; s
           ]}
         />
         <div className="row" style={{ gap: 8 }}>
-          <CopyForClaude text={() => boardBrief(state, who)} label="Copy board for Claude" />
+          <CopyForClaude text={() => boardBrief(state, who)} label="Copy board" />
           <DownloadBrief text={() => boardBrief(state, who)} filename={briefFilename()} />
           <button type="button" className="btn btn--primary" onClick={onNew}>
             + {who === "osman" ? "Task for Saadan" : "New task"}
