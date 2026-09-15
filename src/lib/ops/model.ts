@@ -137,14 +137,21 @@ export type Presence = {
   note: string;
 };
 
-export const PRESENCE: { id: PresenceState; label: string; short: string; glyph: string; here: boolean }[] = [
-  { id: "desk", label: "At my desk", short: "Desk", glyph: "●", here: true },
-  { id: "smoke", label: "Out for a smoke", short: "Smoke", glyph: "◦", here: false },
-  { id: "break", label: "On a break", short: "Break", glyph: "◦", here: false },
-  { id: "lunch", label: "At lunch", short: "Lunch", glyph: "◦", here: false },
-  { id: "meeting", label: "In a meeting", short: "Meeting", glyph: "◑", here: false },
-  { id: "out", label: "Out of the office", short: "Out", glyph: "○", here: false },
-  { id: "home", label: "Gone for the day", short: "Home", glyph: "○", here: false },
+/**
+ * Each state in three voices: `label` is how you set it about yourself,
+ * `short` is what fits in a phone's top bar, and `said` is how it reads to
+ * the other one. Lowercasing "At my desk" and putting a name in front of it
+ * produces "Osman is at my desk", which is nonsense, so the third person
+ * form is written out rather than derived.
+ */
+export const PRESENCE: { id: PresenceState; label: string; short: string; said: string; glyph: string; here: boolean }[] = [
+  { id: "desk", label: "At my desk", short: "Desk", said: "is at his desk", glyph: "●", here: true },
+  { id: "smoke", label: "Out for a smoke", short: "Smoke", said: "is out for a smoke", glyph: "◦", here: false },
+  { id: "break", label: "On a break", short: "Break", said: "is on a break", glyph: "◦", here: false },
+  { id: "lunch", label: "At lunch", short: "Lunch", said: "is at lunch", glyph: "◦", here: false },
+  { id: "meeting", label: "In a meeting", short: "Meeting", said: "is in a meeting", glyph: "◑", here: false },
+  { id: "out", label: "Out of the office", short: "Out", said: "is out of the office", glyph: "○", here: false },
+  { id: "home", label: "Gone for the day", short: "Home", said: "has gone for the day", glyph: "○", here: false },
 ];
 
 export function presenceMeta(state: PresenceState) {

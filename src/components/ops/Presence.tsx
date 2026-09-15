@@ -99,7 +99,7 @@ export function PresenceOf({ who }: { who: Persona }) {
         <Avatar who={who} />
         <div className="grow" style={{ minWidth: 0 }}>
           <p style={{ fontWeight: 600 }}>
-            {nameOf(who)} is {meta.label.toLowerCase()}
+            {nameOf(who)} {meta.said}
           </p>
           <p className="small muted">
             {p?.since ? `for ${sinceLabel(p.since)}` : "no status set today"}
