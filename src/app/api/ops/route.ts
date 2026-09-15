@@ -38,7 +38,7 @@ export async function GET(request: Request) {
 }
 
 const writeSchema = z.object({
-  collection: z.enum(["tasks", "meetings", "attendance", "meta", "materials"]),
+  collection: z.enum(["tasks", "meetings", "attendance", "meta", "materials", "asks", "appointments", "presence"]),
   id: z.string().min(1).max(120),
   data: z.record(z.string(), z.unknown()).nullable(),
 });

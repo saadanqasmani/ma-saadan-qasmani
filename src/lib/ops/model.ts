@@ -43,6 +43,31 @@ export type Task = {
   submissions?: Attachment[];
   /** Saadan asks, Osman answers. */
   approval?: "requested" | "approved" | "changes" | null;
+  /** Osman's call on where this sits. Absent means ordinary. */
+  priority?: Priority;
+  /**
+   * Osman leaning on something, in writing.
+   *
+   * Said out loud and dated rather than mentioned in passing, so "I told
+   * you this was urgent" is a thing the board can settle.
+   */
+  nudge?: Nudge | null;
+};
+
+export type Priority = "urgent" | "high" | "normal" | "later";
+
+export const PRIORITIES: { id: Priority; label: string; tone: string }[] = [
+  { id: "urgent", label: "Urgent", tone: "var(--coral)" },
+  { id: "high", label: "High", tone: "var(--yellow-deep)" },
+  { id: "normal", label: "Normal", tone: "var(--ink-soft)" },
+  { id: "later", label: "Later", tone: "var(--ink-faint)" },
+];
+
+export type Nudge = {
+  kind: "faster" | "start-next";
+  by: Persona;
+  at: string;
+  note: string;
 };
 
 export type MeetingItem = {
@@ -77,9 +102,79 @@ export type Meta = {
   badges: string[];
   /** Given by Osman, by hand. */
   awarded: Awarded[];
+  /** The one task actually being worked on, and since when. */
+  working?: { taskId: string; since: string } | null;
 };
 
 export type Material = Attachment;
+
+/**
+ * A small question, answerable without a conversation.
+ *
+ * The thing that actually eats a day is waiting on a yes. So this is a
+ * question with two buttons on it, and a third door for when two buttons
+ * are not enough.
+ */
+export type Ask = {
+  id: string;
+  by: Persona;
+  at: string;
+  text: string;
+  /** Null until answered. */
+  answer: "yes" | "no" | null;
+  answeredAt: string | null;
+  /** Said instead of, or as well as, the button. */
+  reply: string;
+};
+
+/** Where someone is, right now. */
+export type PresenceState = "desk" | "smoke" | "break" | "lunch" | "meeting" | "out" | "home";
+
+export type Presence = {
+  state: PresenceState;
+  /** When they went into this state, so the page can say how long. */
+  since: string;
+  note: string;
+};
+
+export const PRESENCE: { id: PresenceState; label: string; glyph: string; here: boolean }[] = [
+  { id: "desk", label: "At my desk", glyph: "●", here: true },
+  { id: "smoke", label: "Out for a smoke", glyph: "◦", here: false },
+  { id: "break", label: "On a break", glyph: "◦", here: false },
+  { id: "lunch", label: "At lunch", glyph: "◦", here: false },
+  { id: "meeting", label: "In a meeting", glyph: "◑", here: false },
+  { id: "out", label: "Out of the office", glyph: "○", here: false },
+  { id: "home", label: "Gone for the day", glyph: "○", here: false },
+];
+
+export function presenceMeta(state: PresenceState) {
+  return PRESENCE.find((p) => p.id === state) ?? PRESENCE[0];
+}
+
+export const EMPTY_PRESENCE: Presence = { state: "out", since: "", note: "" };
+
+/**
+ * A meeting that has not happened yet.
+ *
+ * Deliberately separate from the Meeting record, which is a log of one that
+ * did. Mixing the two means the thing you have to prepare for and the thing
+ * you have to remember sit in the same list, and neither gets read.
+ */
+export type Appointment = {
+  id: string;
+  title: string;
+  /** Local date and time, as the browser's datetime-local gives it. */
+  at: string;
+  minutes: number;
+  /** Anyone outside the two of them. Free text on purpose. */
+  guests: string;
+  /** Which of the two are in it. */
+  who: Persona[];
+  where: string;
+  by: Persona;
+  note: string;
+  status: "proposed" | "confirmed" | "declined";
+};
 
 export type OpsState = {
   tasks: Task[];
@@ -87,6 +182,9 @@ export type OpsState = {
   attendance: Record<string, Attendance>;
   meta: Meta;
   materials: Material[];
+  asks: Ask[];
+  appointments: Appointment[];
+  presence: Record<string, Presence>;
 };
 
 export const XP: Record<string, number> = {
@@ -199,7 +297,7 @@ export const SEED: Task[] = [
   { id: "ricky-nag", segment: "administrative", title: "Chase Ricky: STAR proceedings & abstract book", desc: "Twice daily by email.", when: "Daily · AM & PM", due: null, status: "in_progress", percent: 0, order: 3, recurring: true, checklist: [{ text: "Morning follow-up sent", done: false }, { text: "Afternoon follow-up sent", done: false }] },
 ];
 
-export const EMPTY_META: Meta = { days: [], xpByDay: {}, badges: [], awarded: [] };
+export const EMPTY_META: Meta = { days: [], xpByDay: {}, badges: [], awarded: [], working: null };
 
 /* ---- helpers, ported as-is ---- */
 

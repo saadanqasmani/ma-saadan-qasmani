@@ -3,6 +3,9 @@
 import { LEVELS, daysUntil, levelFor, notifications, pct, streakOf, todayISO, totalXp } from "@/lib/ops/model";
 import { useOps } from "@/lib/ops/store";
 import { sortForBoard } from "./Board";
+import { nextUp } from "./Diary";
+import { WorkingNow, nudged } from "./NowWorking";
+import { PresenceOf } from "./Presence";
 import { TaskCard } from "./TaskCard";
 import { Empty } from "./ui";
 
@@ -42,6 +45,31 @@ export function Today({ onGo, onNew }: { onGo: (tab: string, focus?: string) => 
           <div className="stat__l">{LEVELS[levelFor(xp)].name}</div>
         </div>
       </div>
+
+      <WorkingNow onGo={onGo} />
+
+      {nudged(state.tasks).length > 0 && (
+        <section className="g g--yellow stack stack--tight">
+          <span className="label" style={{ color: "#7a5c00" }}>Osman has asked for something</span>
+          {nudged(state.tasks).map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className="notice"
+              onClick={() => onGo("board", t.id)}
+              style={{ textAlign: "left" }}
+            >
+              <span className="grow" style={{ minWidth: 0 }}>
+                <span className="notice__t" style={{ display: "block" }}>{t.title}</span>
+                <span className="notice__b">
+                  {t.nudge?.kind === "faster" ? "Push on with this" : "Start this next"}
+                  {t.nudge?.note ? `: ${t.nudge.note}` : ""}
+                </span>
+              </span>
+            </button>
+          ))}
+        </section>
+      )}
 
       <div className="grid grid--2">
         <div className="g stack">
@@ -83,6 +111,11 @@ export function Today({ onGo, onNew }: { onGo: (tab: string, focus?: string) => 
         </div>
       </div>
 
+      <div className="grid grid--2">
+        <PresenceOf who="osman" />
+        <NextMeeting onGo={onGo} />
+      </div>
+
       <div className="stack stack--tight">
         <div className="row row--between">
           <h2 className="h2">This week</h2>
@@ -101,5 +134,37 @@ export function Today({ onGo, onNew }: { onGo: (tab: string, focus?: string) => 
         )}
       </div>
     </div>
+  );
+}
+
+function NextMeeting({ onGo }: { onGo: (tab: string) => void }) {
+  const { state } = useOps();
+  const next = nextUp(state.appointments);
+  if (!next) {
+    return (
+      <div className="g stack stack--tight">
+        <span className="label">Next meeting</span>
+        <p className="hint">Nothing in the diary.</p>
+        <button type="button" className="btn btn--sm btn--ghost" onClick={() => onGo("diary")}>
+          Schedule one
+        </button>
+      </div>
+    );
+  }
+  return (
+    <button
+      type="button"
+      className="g stack stack--tight"
+      onClick={() => onGo("diary")}
+      style={{ textAlign: "left", cursor: "pointer", border: 0 }}
+    >
+      <span className="label">Next meeting</span>
+      <p style={{ fontWeight: 600 }}>{next.title}</p>
+      <p className="small muted">
+        {new Date(next.at).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+        {next.where ? ` · ${next.where}` : ""}
+        {next.status === "proposed" ? " · not confirmed" : ""}
+      </p>
+    </button>
   );
 }

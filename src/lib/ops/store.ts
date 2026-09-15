@@ -3,9 +3,13 @@
 import { useSyncExternalStore } from "react";
 import {
   EMPTY_META,
+  EMPTY_PRESENCE,
   SEED,
   todayISO,
+  type Appointment,
+  type Ask,
   type Attendance,
+  type Presence,
   type Material,
   type Meeting,
   type Meta,
@@ -26,7 +30,7 @@ import {
  * keys) everything still works, on this device only, and the page says so.
  */
 
-type Collection = "tasks" | "meetings" | "attendance" | "meta" | "materials";
+type Collection = "tasks" | "meetings" | "attendance" | "meta" | "materials" | "asks" | "appointments" | "presence";
 
 export type Shell = {
   ready: boolean;
@@ -43,7 +47,16 @@ const LOCAL_KEY = "ops-local-v1";
 const PERSONA_KEY = "ops-persona";
 
 function empty(): OpsState {
-  return { tasks: [], meetings: [], attendance: {}, meta: { ...EMPTY_META }, materials: [] };
+  return {
+    tasks: [],
+    meetings: [],
+    attendance: {},
+    meta: { ...EMPTY_META },
+    materials: [],
+    asks: [],
+    appointments: [],
+    presence: {},
+  };
 }
 
 const SERVER_SHELL: Shell = { ready: false, live: false, saving: 0, error: null, offline: null, state: empty() };
@@ -86,6 +99,12 @@ function fromDocs(docs: Record<string, Record<string, unknown>>): OpsState {
     attendance: (docs.attendance ?? {}) as Record<string, Attendance>,
     meta: { ...EMPTY_META, ...meta, awarded: meta.awarded ?? [] },
     materials: (Object.values(docs.materials ?? {}) as Material[]).sort((a, b) => b.at.localeCompare(a.at)),
+    // Newest question first: an unanswered one at the bottom is an
+    // unanswered one forever.
+    asks: (Object.values(docs.asks ?? {}) as Ask[]).sort((a, b) => b.at.localeCompare(a.at)),
+    // Soonest first, because this list is a diary rather than a history.
+    appointments: (Object.values(docs.appointments ?? {}) as Appointment[]).sort((a, b) => a.at.localeCompare(b.at)),
+    presence: (docs.presence ?? {}) as Record<string, Presence>,
   };
 }
 
@@ -99,6 +118,9 @@ function readLocal(): OpsState | null {
       ...parsed,
       meta: { ...EMPTY_META, ...(parsed.meta ?? {}) },
       materials: parsed.materials ?? [],
+      asks: parsed.asks ?? [],
+      appointments: parsed.appointments ?? [],
+      presence: parsed.presence ?? {},
     };
   } catch {
     return null;
@@ -281,6 +303,50 @@ export function upsertMaterial(material: Material) {
 export function removeMaterial(id: string) {
   setState({ ...shell.state, materials: shell.state.materials.filter((m) => m.id !== id) });
   persist("materials", id, null);
+}
+
+export function upsertAsk(ask: Ask) {
+  const has = shell.state.asks.some((a) => a.id === ask.id);
+  const asks = has ? shell.state.asks.map((a) => (a.id === ask.id ? ask : a)) : [ask, ...shell.state.asks];
+  setState({ ...shell.state, asks });
+  persist("asks", ask.id, ask);
+}
+
+export function removeAsk(id: string) {
+  setState({ ...shell.state, asks: shell.state.asks.filter((a) => a.id !== id) });
+  persist("asks", id, null);
+}
+
+export function upsertAppointment(appt: Appointment) {
+  const has = shell.state.appointments.some((a) => a.id === appt.id);
+  const appointments = (has
+    ? shell.state.appointments.map((a) => (a.id === appt.id ? appt : a))
+    : [...shell.state.appointments, appt]
+  ).sort((a, b) => a.at.localeCompare(b.at));
+  setState({ ...shell.state, appointments });
+  persist("appointments", appt.id, appt);
+}
+
+export function removeAppointment(id: string) {
+  setState({ ...shell.state, appointments: shell.state.appointments.filter((a) => a.id !== id) });
+  persist("appointments", id, null);
+}
+
+/**
+ * Where someone is now.
+ *
+ * One document per person, so the two of them changing status at the same
+ * moment cannot overwrite each other.
+ */
+export function setPresence(who: Persona, state: Presence["state"], note = "") {
+  const next: Presence = { ...EMPTY_PRESENCE, state, since: new Date().toISOString(), note };
+  setState({ ...shell.state, presence: { ...shell.state.presence, [who]: next } });
+  persist("presence", who, next);
+}
+
+/** The one task being worked on right now, or nothing. */
+export function setWorking(taskId: string | null) {
+  patchMeta(() => ({ working: taskId ? { taskId, since: new Date().toISOString() } : null }));
 }
 
 /* ---- who is at the desk ---------------------------------------------- */

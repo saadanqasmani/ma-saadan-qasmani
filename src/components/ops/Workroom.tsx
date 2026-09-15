@@ -3,13 +3,16 @@
 import { useEffect, useState } from "react";
 import { BADGES, LEVELS, awaitingOsman, levelFor, notifications, todayISO, totalXp, type Persona } from "@/lib/ops/model";
 import { ensureLoaded, patchMeta, setPersona, upsertTask, useOps, usePersona } from "@/lib/ops/store";
+import { Asks, asksFor } from "./Asks";
 import { AttendanceView } from "./Attendance";
 import { Board } from "./Board";
+import { Diary, proposalsFor } from "./Diary";
 import { MaterialsView } from "./Materials";
 import { MeetingsView } from "./Meetings";
 import { Approvals, AwardBadges, Overview } from "./OsmanViews";
 import { TaskForm } from "./TaskForm";
 import { Today } from "./Today";
+import { PresenceChip } from "./Presence";
 import { Avatar, CelebrateProvider, nameOf, useCelebrate } from "./ui";
 import { WinsView } from "./Wins";
 
@@ -31,6 +34,8 @@ export function Workroom() {
 const SAADAN_TABS = [
   { id: "today", label: "Today" },
   { id: "board", label: "Board" },
+  { id: "asks", label: "Asks" },
+  { id: "diary", label: "Diary" },
   { id: "meetings", label: "Meetings" },
   { id: "attendance", label: "Attendance" },
   { id: "materials", label: "Reading" },
@@ -39,6 +44,8 @@ const SAADAN_TABS = [
 const OSMAN_TABS = [
   { id: "overview", label: "Overview" },
   { id: "approvals", label: "Approvals" },
+  { id: "asks", label: "Asks" },
+  { id: "diary", label: "Diary" },
   { id: "board", label: "Board" },
   { id: "materials", label: "Reading" },
   { id: "badges", label: "Badges" },
@@ -148,6 +155,7 @@ function Desk() {
               </div>
               <span className="xp__txt">{LEVELS[lvl].name}</span>
             </div>
+            <PresenceChip who={persona} />
             <span className="dot" data-busy={saving > 0} data-bad={!!error} title={error ?? (saving > 0 ? "Saving" : live ? "Saved" : "On this device only")} />
           </div>
           <div className="ops-top__end">
@@ -176,7 +184,16 @@ function Desk() {
 
         <nav className="g tabs" aria-label="Sections">
           {tabs.map((t) => {
-            const n = t.id === "approvals" ? awaitingOsman(state).length : t.id === "today" ? notifications(state).length : 0;
+            const n =
+              t.id === "approvals"
+                ? awaitingOsman(state).length
+                : t.id === "today"
+                  ? notifications(state).length
+                  : t.id === "asks"
+                    ? asksFor(state.asks, persona)
+                    : t.id === "diary"
+                      ? proposalsFor(state.appointments, persona)
+                      : 0;
             return (
               <button key={t.id} type="button" className="tab" data-on={current === t.id} onClick={() => go(t.id)}>
                 {t.label}
@@ -192,6 +209,8 @@ function Desk() {
           {persona === "saadan" && current === "meetings" && <MeetingsView />}
           {current === "attendance" && <AttendanceView />}
           {current === "materials" && <MaterialsView who={persona} />}
+          {current === "asks" && <Asks who={persona} />}
+          {current === "diary" && <Diary who={persona} />}
           {persona === "saadan" && current === "wins" && <WinsView />}
           {persona === "osman" && current === "overview" && <Overview onGo={go} onNew={() => setNewOpen(true)} />}
           {persona === "osman" && current === "approvals" && <Approvals focusId={focus} />}

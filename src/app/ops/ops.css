@@ -1525,3 +1525,43 @@ select.field {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* --- where someone is ------------------------------------------------- */
+
+.presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 0.22s var(--spring), box-shadow 0.22s;
+}
+.presence:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px -8px rgba(20, 30, 70, 0.5);
+}
+.presence__dot {
+  color: var(--ink-faint);
+  font-size: 0.7rem;
+}
+.presence[data-here="true"] .presence__dot {
+  color: #28c76f;
+}
+.presence__since {
+  color: var(--ink-faint);
+  font-weight: 500;
+}
+
+@media (max-width: 720px) {
+  /* On a phone the label is the first thing to go, not the status itself. */
+  .presence__label {
+    display: none;
+  }
+}

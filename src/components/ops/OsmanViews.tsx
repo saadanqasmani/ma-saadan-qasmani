@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { AWARDABLE, LEVELS, awaitingOsman, daysUntil, dueLabel, hoursBetween, levelFor, newId, pct, streakOf, todayISO, totalXp, weekStart, xpOf, type Awarded } from "@/lib/ops/model";
 import { patchMeta, useOps } from "@/lib/ops/store";
+import { asksFor } from "./Asks";
 import { WeekStrip } from "./Attendance";
+import { nextUp, proposalsFor } from "./Diary";
+import { WhatHeIsOn } from "./NowWorking";
+import { PresenceOf } from "./Presence";
 import { sortForBoard } from "./Board";
 import { TaskCard } from "./TaskCard";
 import { Confirm, Empty, useCelebrate, whenLabel } from "./ui";
@@ -50,6 +54,16 @@ export function Overview({ onGo, onNew }: { onGo: (tab: string, focus?: string) 
           </span>
         </button>
       )}
+
+      <div className="grid grid--2">
+        <WhatHeIsOn onGo={onGo} />
+        <div className="stack">
+          <PresenceOf who="saadan" />
+          <NextInDiary onGo={onGo} />
+        </div>
+      </div>
+
+      <WaitingOnYou onGo={onGo} />
 
       <div className="grid grid--stats stagger">
         <div className="g stat">
@@ -281,5 +295,59 @@ export function AwardBadges() {
         </p>
       </div>
     </div>
+  );
+}
+
+/** Questions and meeting proposals sitting on Osman. */
+function WaitingOnYou({ onGo }: { onGo: (tab: string) => void }) {
+  const { state } = useOps();
+  const questions = asksFor(state.asks, "osman");
+  const proposals = proposalsFor(state.appointments, "osman");
+  if (questions === 0 && proposals === 0) return null;
+
+  return (
+    <div className="row" style={{ gap: 10 }}>
+      {questions > 0 && (
+        <button type="button" className="btn btn--yellow" onClick={() => onGo("asks")}>
+          {questions} question{questions === 1 ? "" : "s"} for you
+        </button>
+      )}
+      {proposals > 0 && (
+        <button type="button" className="btn btn--primary" onClick={() => onGo("diary")}>
+          {proposals} meeting{proposals === 1 ? "" : "s"} to confirm
+        </button>
+      )}
+    </div>
+  );
+}
+
+function NextInDiary({ onGo }: { onGo: (tab: string) => void }) {
+  const { state } = useOps();
+  const next = nextUp(state.appointments);
+  if (!next) {
+    return (
+      <div className="g stack stack--tight">
+        <span className="label">Next meeting</span>
+        <p className="hint">Nothing in the diary.</p>
+        <button type="button" className="btn btn--sm btn--ghost" onClick={() => onGo("diary")}>
+          Schedule one
+        </button>
+      </div>
+    );
+  }
+  return (
+    <button
+      type="button"
+      className="g stack stack--tight"
+      onClick={() => onGo("diary")}
+      style={{ textAlign: "left", cursor: "pointer", border: 0 }}
+    >
+      <span className="label">Next meeting</span>
+      <p style={{ fontWeight: 600 }}>{next.title}</p>
+      <p className="small muted">
+        {new Date(next.at).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+        {next.status === "proposed" ? " · not confirmed" : ""}
+      </p>
+    </button>
   );
 }

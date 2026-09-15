@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   DEFAULT_MOVES,
   MOVES,
+  PRIORITIES,
   dueLabel,
   fmtDate,
   newId,
@@ -18,6 +19,7 @@ import {
 } from "@/lib/ops/model";
 import { addXp, patchTask, removeTask, upsertTask } from "@/lib/ops/store";
 import { taskPrompt } from "@/lib/ops/brief";
+import { Direction, NudgeNote } from "./NowWorking";
 import { Avatar, Chevron, Confirm, CopyForClaude, FileRow, Inline, Seg, Tick, Upload, nameOf, useCelebrate, whenLabel } from "./ui";
 
 /**
@@ -145,6 +147,15 @@ export function TaskCard({
             </span>
             {due.txt && <span className={`chip${due.cls ? ` chip--${due.cls}` : ""}`}>{due.txt}</span>}
             {task.recurring && <span className="chip">Daily</span>}
+            {task.priority && task.priority !== "normal" && (
+              <span
+                className="chip"
+                style={{ background: PRIORITIES.find((p) => p.id === task.priority)?.tone, color: task.priority === "later" ? undefined : "#fff" }}
+              >
+                {PRIORITIES.find((p) => p.id === task.priority)?.label}
+              </span>
+            )}
+            {task.nudge && <span className="chip chip--soon">{task.nudge.kind === "faster" ? "Push on" : "Start next"}</span>}
             {task.createdBy === "osman" && <span className="chip chip--osman">From Osman</span>}
             {task.approval === "requested" && <span className="chip chip--soon">Awaiting Osman</span>}
             {task.approval === "approved" && <span className="chip chip--ok">Approved</span>}
@@ -165,6 +176,13 @@ export function TaskCard({
       {open && (
         <div className="card__body">
           <Inline value={task.desc} ariaLabel="Description" multiline onSave={(v) => save({ desc: v })} placeholder="What is this, in a line or two" />
+
+          {who === "saadan" && <NudgeNote task={task} who="saadan" />}
+          {who === "osman" && (
+            <div className="card__section">
+              <Direction task={task} />
+            </div>
+          )}
 
           {!simple && (
             <div className="row row--between">
