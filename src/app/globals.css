@@ -752,3 +752,66 @@ body {
     transform: none;
   }
 }
+
+/* --- the pre-order card ------------------------------------------------
+   White paper lifted off a warm page. The lift is three shadows rather than
+   one: a tight dark contact shadow that fixes it to the surface, a wide soft
+   one that gives it height, and a hairline of white along the top edge where
+   the light would catch a real sheet. One shadow at any size only ever looks
+   like a blur under a rectangle. */
+
+.pop-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid rgba(29, 26, 22, 0.07);
+  border-radius: 2px;
+  box-shadow:
+    0 1px 1px rgba(29, 26, 22, 0.05),
+    0 4px 8px -2px rgba(29, 26, 22, 0.07),
+    0 18px 30px -12px rgba(29, 26, 22, 0.16),
+    0 42px 64px -28px rgba(29, 26, 22, 0.22);
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pop-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9) 18%, rgba(255, 255, 255, 0.9) 82%, transparent);
+  pointer-events: none;
+}
+/* The stack under the near edge: two thin sheets, as if there were a pile of
+   them. Drawn with the card's own corner so it follows the radius. */
+.pop-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 14px -10px;
+  height: 10px;
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(180deg, rgba(29, 26, 22, 0.07), rgba(29, 26, 22, 0.02));
+  z-index: -1;
+  pointer-events: none;
+}
+.pop-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 1px 1px rgba(29, 26, 22, 0.05),
+    0 6px 12px -2px rgba(29, 26, 22, 0.08),
+    0 26px 40px -14px rgba(29, 26, 22, 0.18),
+    0 56px 80px -30px rgba(29, 26, 22, 0.26);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop-card,
+  .pop-card:hover {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* The money column: figures line up under one another whatever the digits. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}

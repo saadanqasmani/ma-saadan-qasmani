@@ -312,8 +312,8 @@ export const en = {
     words: "Words",
     form: "Form",
     status: "Status",
-    availability: "Availability",
-    orderACopy: "Order a copy",
+    availability: "Pre-order",
+    orderACopy: "Claim your copy",
     /** {name} is the author. */
     byline: "{title} — a novel by {name}",
     purchase: {
@@ -324,7 +324,47 @@ export const en = {
       /** {regions} is where Amazon ships it. */
       amazonBody: "Available for readers in {regions} through Amazon.",
       buyOnAmazon: "Buy on Amazon",
-      amazonPending: "The Amazon link will appear here once the book is listed.",
+      amazonPending: "Not listed on Amazon yet. It will be there before publication, and for readers in {regions} that is where it will be sold.",
+      preOrderNote: "pre-order now",
+      preOrderEyebrow: "Pre-order · Türkiye & Pakistan",
+      /** {date} is publication day. */
+      shipsOn: "Ships on publication, {date}",
+      encourage:
+        "It is being printed for Türkiye and Pakistan now, and what is pre-ordered decides how many. Claim a copy and it goes out the week it is bound.",
+      fewer: "One fewer copy",
+      more: "One more copy",
+      perCopy: "per copy",
+      promoLabel: "Promo code",
+      promoPlaceholder: "If you have one",
+      apply: "Apply",
+      /** {percent} is how much the code is worth. */
+      promoOk: "{percent}% off, applied.",
+      promoBad: "That code is not one of ours.",
+      /** {n} copies at {each} apiece. */
+      subtotalLine: "{n} × {each}",
+      discountLine: "Promo code ({percent}% off)",
+      total: "Total",
+      yourDetails: "Where it should go",
+      /** {total} is what will be charged. */
+      payByCard: "Pre-order — pay {total}",
+      reserveInstead: "Or reserve it and pay by hand",
+      reserve: "Reserve my copy",
+      payNote:
+        "The card is taken on Stripe's own page. Nothing about it passes through this site, and nothing about it is kept here.",
+      reserveNote:
+        "No payment is taken here. Your copy is put aside and payment instructions follow by email.",
+      paidTitle: "Your copy is claimed.",
+      paidBody:
+        "Payment received, and a receipt is on its way from Stripe. The book goes out to you the week it comes off the press.",
+      reservedTitle: "Your copy is put aside.",
+      reservedBody:
+        "Nothing has been charged. Payment instructions will reach you by email, and the book goes out the week it comes off the press.",
+      cancelledBody: "The payment was not completed. Nothing has been charged, and your details are still here.",
+      notifyLabel: "Tell me when it is on Amazon",
+      notify: "Notify me",
+      notifyNote:
+        "This is the same short letter I send about the work. One line when the listing goes up, and you can leave whenever you like.",
+      notifyDone: "Noted. You will hear from me the day it is listed.",
     },
   },
 

@@ -292,8 +292,8 @@ export const de: DictionaryOverlay = {
     words: "Wörter",
     form: "Form",
     status: "Status",
-    availability: "Verfügbarkeit",
-    orderACopy: "Ein Exemplar bestellen",
+    availability: "Vorbestellung",
+    orderACopy: "Sichern Sie Ihr Exemplar",
     byline: "{title} — ein Roman von {name}",
     purchase: {
       amazonTab: "EU & Amerika",
@@ -302,8 +302,43 @@ export const de: DictionaryOverlay = {
       directNote: "Direktbestellung",
       amazonBody: "Für Leser in {regions} über Amazon erhältlich.",
       buyOnAmazon: "Bei Amazon kaufen",
-      amazonPending:
-        "Der Amazon-Link erscheint hier, sobald das Buch gelistet ist.",
+      amazonPending: "Noch nicht bei Amazon gelistet. Vor dem Erscheinen wird es dort stehen, und für Leser in {regions} wird es dort verkauft.",
+      preOrderNote: "jetzt vorbestellen",
+      preOrderEyebrow: "Vorbestellung · Türkei & Pakistan",
+      shipsOn: "Versand zum Erscheinen, {date}",
+      encourage:
+        "Für die Türkei und Pakistan wird jetzt gedruckt, und die Vorbestellungen entscheiden über die Auflage. Sichern Sie sich ein Exemplar; es geht in der Woche hinaus, in der es gebunden wird.",
+      fewer: "Ein Exemplar weniger",
+      more: "Ein Exemplar mehr",
+      perCopy: "pro Exemplar",
+      promoLabel: "Aktionscode",
+      promoPlaceholder: "Falls Sie einen haben",
+      apply: "Einlösen",
+      promoOk: "{percent}% Rabatt, angewendet.",
+      promoBad: "Dieser Code ist keiner von unseren.",
+      subtotalLine: "{n} × {each}",
+      discountLine: "Aktionscode ({percent}% Rabatt)",
+      total: "Gesamt",
+      yourDetails: "Wohin es gehen soll",
+      payByCard: "Vorbestellen — {total} zahlen",
+      reserveInstead: "Oder zurücklegen lassen und per Hand zahlen",
+      reserveNote:
+        "Hier wird nichts abgebucht. Ihr Exemplar wird zurückgelegt, die Zahlungshinweise folgen per E-Mail.",
+      reserve: "Exemplar zurücklegen",
+      payNote:
+        "Die Karte wird auf Stripes eigener Seite eingegeben. Nichts davon läuft über diese Website, nichts davon wird hier gespeichert.",
+      paidTitle: "Ihr Exemplar ist gesichert.",
+      paidBody:
+        "Zahlung eingegangen, die Quittung kommt von Stripe. Das Buch geht in der Woche hinaus, in der es aus der Presse kommt.",
+      reservedTitle: "Ihr Exemplar liegt bereit.",
+      reservedBody:
+        "Es wurde nichts abgebucht. Die Zahlungshinweise erreichen Sie per E-Mail, das Buch geht in der Woche hinaus, in der es aus der Presse kommt.",
+      cancelledBody: "Die Zahlung wurde nicht abgeschlossen. Es wurde nichts abgebucht, Ihre Angaben stehen noch.",
+      notifyLabel: "Sagen Sie mir Bescheid, wenn es bei Amazon steht",
+      notify: "Benachrichtigen",
+      notifyNote:
+        "Das ist derselbe kurze Brief, den ich über die Arbeit schreibe. Eine Zeile, sobald der Eintrag steht, und Sie können jederzeit wieder gehen.",
+      notifyDone: "Notiert. Sie hören von mir, sobald es gelistet ist.",
     },
   },
 

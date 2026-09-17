@@ -110,6 +110,11 @@ export const highestBranch = {
   wordCount: 144000,
   chapterCount: 29,
   status: "Releasing 19 October 2026",
+  /** Written out on its own so the checkout line and the card can both say it. */
+  releaseDate: "19 October 2026",
+  /** Cover price of one copy, in US dollars. The server holds the rule; this
+   *  is only what the page prints. */
+  priceUsd: 15,
   synopsis:
     "A boy crosses the pass at seventeen, leaving a forest he knows by its seasons for a country that measures time in semesters. What follows is a fable of arrival, the slow architecture of belonging and its costs, told across the years that turn a student into someone his own mother might not recognize.",
   subject:
@@ -122,7 +127,7 @@ export const highestBranch = {
     },
     direct: {
       regions: "Türkiye & Pakistan",
-      note: "Direct order — payment details are sent manually after review, never automatically.",
+      note: "Pre-order direct — pay online, or reserve a copy and settle it by hand.",
     },
   },
 } as const;

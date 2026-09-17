@@ -67,7 +67,10 @@ export const WORK_CATEGORIES = [
   "Projects",
 ] as const;
 
-export const ORDER_STATUSES = [
+export /** How far the money has got, as against how far the order has. */
+const PAYMENT_STATUSES = ["reserved", "awaiting", "paid", "abandoned"];
+
+const ORDER_STATUSES = [
   "new",
   "reviewing",
   "payment_instructions_sent",
@@ -220,6 +223,8 @@ export const RESOURCES: Resource[] = [
       { name: "full_name", label: "Name" },
       { name: "country", label: "Country" },
       { name: "quantity", label: "Qty" },
+      { name: "total_usd", label: "Total" },
+      { name: "payment_status", label: "Payment" },
       { name: "status", label: "Status" },
       { name: "created_at", label: "Received" },
     ],
@@ -232,6 +237,21 @@ export const RESOURCES: Resource[] = [
       { name: "shipping_address", label: "Shipping address", type: "textarea" },
       { name: "quantity", label: "Quantity", type: "number" },
       { name: "message", label: "Message", type: "textarea" },
+      // What was quoted when the order was placed. Worked out on the server
+      // from the quantity and the code; kept here so a price change later
+      // never rewrites what somebody was actually charged.
+      { name: "unit_price_usd", label: "Price per copy (USD)", type: "number" },
+      { name: "promo_code", label: "Promo code used", type: "text" },
+      { name: "discount_usd", label: "Discount (USD)", type: "number" },
+      { name: "total_usd", label: "Total (USD)", type: "number" },
+      {
+        name: "payment_status",
+        label: "Payment",
+        type: "select",
+        options: PAYMENT_STATUSES,
+        help: "Stripe sets 'paid' by itself. Set it by hand for an order settled another way.",
+      },
+      { name: "stripe_session_id", label: "Stripe session", type: "text", help: "For matching an order to a payment in the Stripe dashboard." },
     ],
   },
   {

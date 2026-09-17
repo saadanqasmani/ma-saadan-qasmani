@@ -5,6 +5,7 @@ import { Counter } from "@/components/ui/Counter";
 import { Contours } from "@/components/art/Contours";
 import { getBook, getPerson } from "@/lib/data";
 import { PurchasePanel } from "@/components/book/PurchasePanel";
+import { checkoutIsConfigured } from "@/lib/book/checkout";
 import { Figure } from "@/components/media/Figure";
 import { Mark } from "@/components/collect/Mark";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -175,7 +176,7 @@ export default async function HighestBranchPage({ params }: Params) {
       </section>
 
       {/* Purchase */}
-      <section id="purchase" className="scroll-mt-24 bg-canvas-light py-20 sm:py-28">
+      <section id="purchase" className="scroll-mt-24 bg-canvas-deep py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <Reveal>
             <p className="eyebrow">{t.availability}</p>
@@ -190,6 +191,8 @@ export default async function HighestBranchPage({ params }: Params) {
               <PurchasePanel
                 copy={t.purchase}
                 forms={dict.forms}
+                locale={locale}
+                canPayOnline={checkoutIsConfigured()}
                 regions={{
                   amazon: content.purchase.amazonRegions,
                   direct: content.purchase.directRegions,

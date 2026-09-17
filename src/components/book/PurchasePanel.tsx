@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { highestBranch } from "@/content/site";
-import { DirectOrderForm } from "@/components/forms/DirectOrderForm";
+import { AmazonNotify } from "@/components/book/AmazonNotify";
+import { PreOrderCard } from "@/components/book/PreOrderCard";
 import type { Dictionary } from "@/content/i18n/en";
 import { fill } from "@/lib/i18n/dictionary";
 
@@ -11,17 +12,24 @@ export function PurchasePanel({
   copy,
   forms,
   regions,
+  locale,
+  canPayOnline,
 }: {
   copy: Dictionary["novel"]["purchase"];
   forms: Dictionary["forms"];
   /** Where the book can be had, in this language. */
   regions: { amazon: string; direct: string; directNote: string };
+  locale: string;
+  /** Whether a card can be taken here yet. Decided on the server. */
+  canPayOnline: boolean;
 }) {
-  const [tab, setTab] = useState<"amazon" | "direct">("amazon");
+  // The two countries it can be pre-ordered in open first: that is the one
+  // thing a reader can act on today.
+  const [tab, setTab] = useState<"direct" | "amazon">("direct");
 
   const tabs = [
+    { id: "direct" as const, label: copy.directTab, note: copy.preOrderNote },
     { id: "amazon" as const, label: copy.amazonTab, note: copy.amazonNote },
-    { id: "direct" as const, label: copy.directTab, note: copy.directNote },
   ];
 
   return (
@@ -61,7 +69,9 @@ export function PurchasePanel({
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
-            {tab === "amazon" ? (
+            {tab === "direct" ? (
+              <PreOrderCard copy={copy} forms={forms} canPayOnline={canPayOnline} />
+            ) : (
               <div className="max-w-xl">
                 <p className="font-serif text-xl leading-relaxed text-ink-soft">
                   {fill(copy.amazonBody, { regions: regions.amazon })}
@@ -79,19 +89,13 @@ export function PurchasePanel({
                     </span>
                   </a>
                 ) : (
-                  <p className="mt-8 border border-dashed border-line px-6 py-5 text-sm text-ink-faint">
-                    {copy.amazonPending}
-                  </p>
+                  <>
+                    <p className="mt-6 border-s-2 border-line ps-4 text-base leading-relaxed text-ink-soft">
+                      {fill(copy.amazonPending, { regions: regions.amazon })}
+                    </p>
+                    <AmazonNotify copy={copy} forms={forms} locale={locale} />
+                  </>
                 )}
-              </div>
-            ) : (
-              <div className="max-w-xl">
-                <p className="font-serif text-xl leading-relaxed text-ink-soft">
-                  {regions.directNote}
-                </p>
-                <div className="mt-10">
-                  <DirectOrderForm copy={forms} />
-                </div>
               </div>
             )}
           </motion.div>
