@@ -379,15 +379,61 @@ export function Upload({ onDone, label = "Drop a file here, or tap to choose" }:
   const [over, setOver] = useState(false);
   const [link, setLink] = useState("");
 
+  /**
+   * Straight into the bucket, not through the server.
+   *
+   * Posting the file to our own route means the host's cap on a request
+   * body decides how big a book may be, and that cap is a few megabytes. So
+   * the server signs one upload and the file goes from here to the bucket
+   * without touching it. The old route is kept as a fallback for the small
+   * things, in case a signature cannot be had.
+   */
   async function send(file: File) {
     setBusy(true);
     setError(null);
     try {
+      const pass = await fetch("/api/ops/upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: file.name, size: file.size }),
+      });
+      const slip = (await pass.json().catch(() => ({}))) as {
+        signedUrl?: string;
+        path?: string;
+        error?: string;
+      };
+
+      if (pass.ok && slip.signedUrl && slip.path) {
+        // Shaped the way the storage client shapes it for a browser file:
+        // a multipart PUT with the cache header as a field and the file
+        // under the empty name. Content-Type is left alone on purpose, so
+        // the browser writes its own multipart boundary.
+        const parcel = new FormData();
+        parcel.append("cacheControl", "3600");
+        parcel.append("", file);
+        const put = await fetch(slip.signedUrl, {
+          method: "PUT",
+          headers: { "x-upsert": "false" },
+          body: parcel,
+        });
+        if (!put.ok) {
+          const said = await put.text().catch(() => "");
+          throw new Error(said.slice(0, 200) || `The bucket refused it (${put.status}).`);
+        }
+        onDone({ path: slip.path, name: file.name, size: file.size, type: file.type });
+        return;
+      }
+
+      // No signature. Small files can still go the old way; a large one
+      // would only fail again, so say what actually happened instead.
+      if (pass.status === 503 || file.size > 4 * 1024 * 1024) {
+        throw new Error(slip.error || "Upload failed.");
+      }
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/ops/upload", { method: "POST", body: fd });
       const json = (await res.json().catch(() => ({}))) as Partial<Uploaded> & { error?: string };
-      if (!res.ok || !json.path) throw new Error(json.error || "Upload failed.");
+      if (!res.ok || !json.path) throw new Error(json.error || slip.error || "Upload failed.");
       onDone({ path: json.path, name: json.name ?? file.name, size: json.size ?? file.size, type: json.type ?? file.type });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed.");

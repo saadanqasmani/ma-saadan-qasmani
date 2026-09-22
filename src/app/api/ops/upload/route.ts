@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { OPS_COOKIE, opsTokenIsValid } from "@/lib/ops/gate";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-const MAX_BYTES = 25 * 1024 * 1024;
+// This route carries the file through the server, so it lives under the
+// host's own cap on a request body. It is the fallback now; anything of any
+// size goes direct through /api/ops/upload-url.
+const MAX_BYTES = 4 * 1024 * 1024;
 
 async function allowed(request: Request): Promise<boolean> {
   const cookie = request.headers.get("cookie") ?? "";
@@ -15,7 +18,13 @@ export async function POST(request: Request) {
   if (!(await allowed(request))) return new NextResponse(null, { status: 404 });
 
   const db = getSupabaseServerClient();
-  if (!db) return NextResponse.json({ error: "Storage is not connected on this deployment." }, { status: 503 });
+  if (!db) return NextResponse.json(
+      {
+        error:
+          "Storage is not connected yet. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to the host's environment and redeploy, then files will upload. A link works in the meantime.",
+      },
+      { status: 503 }
+    );
 
   const form = await request.formData();
   const file = form.get("file");
@@ -23,7 +32,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Choose a file first." }, { status: 400 });
   }
   if (file.size > MAX_BYTES) {
-    return NextResponse.json({ error: "That file is larger than 25 MB." }, { status: 400 });
+    return NextResponse.json({ error: "That file is too large to send this way." }, { status: 400 });
   }
 
   const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
