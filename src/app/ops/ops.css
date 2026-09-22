@@ -1789,3 +1789,196 @@ select.field {
     display: none;
   }
 }
+
+/* --- the library -------------------------------------------------------
+   A shelf is a card with a coloured spine down its leading edge, so a set
+   of them reads as a row of books seen end on and each one is recognisable
+   from across the page without reading its name. */
+
+.shelf {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r);
+  background: var(--white);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(20, 30, 70, 0.04);
+}
+.shelf::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block: 0;
+  width: 6px;
+  background: var(--spine, var(--blue));
+}
+.shelf__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 16px 16px 26px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-align: start;
+  color: inherit;
+  font: inherit;
+  transition: background 0.2s var(--ease);
+}
+.shelf__head:hover {
+  background: var(--bg);
+}
+.shelf__name {
+  display: block;
+  font-family: var(--ops-font-display), system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.shelf__note {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.shelf__body {
+  padding: 0 16px 16px 26px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+/* the swatches on the shelf form */
+.spine {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 1px rgba(20, 30, 70, 0.12) inset;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.spine[data-on="true"] {
+  border-color: var(--ink);
+  transform: scale(1.12);
+}
+
+.book {
+  display: grid;
+  gap: 6px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.book:last-child {
+  border-bottom: 0;
+}
+.book[data-read="true"] .book__t {
+  color: var(--ink-faint);
+}
+.book__k {
+  flex: none;
+  width: 20px;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--ink-faint);
+}
+.book__t {
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+@media (max-width: 720px) {
+  .shelf__head {
+    padding-inline-start: 20px;
+  }
+  .shelf__body {
+    padding-inline-start: 20px;
+  }
+}
+
+/* --- the locker --------------------------------------------------------
+   Finished work, filed whole. Warmer than a shelf and squarer, because it
+   is a record of a thing rather than a thing to read: a gold edge along the
+   top instead of a spine down the side. */
+
+.piece {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r);
+  background: var(--white);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(20, 30, 70, 0.04);
+}
+.piece::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--yellow-deep), var(--yellow));
+}
+.piece__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 18px 16px 16px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-align: start;
+  color: inherit;
+  font: inherit;
+  transition: background 0.2s var(--ease);
+}
+.piece__head:hover {
+  background: var(--bg);
+}
+.piece__k {
+  flex: none;
+  align-self: flex-start;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--yellow-soft);
+  color: #7a5c00;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.piece__t {
+  display: block;
+  font-family: var(--ops-font-display), system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.piece__m {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+}
+.piece__body {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+/* one row per job a part can do, so an empty role still shows what is missing */
+.piece__row {
+  display: grid;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.piece__row:last-of-type {
+  border-bottom: 0;
+}
+.piece__row--empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0.6;
+}
+.piece__row--empty:hover {
+  opacity: 1;
+}

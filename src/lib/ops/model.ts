@@ -183,6 +183,174 @@ export type Appointment = {
   status: "proposed" | "confirmed" | "declined";
 };
 
+/* ---- the library ------------------------------------------------------ */
+
+/**
+ * A shelf, and what stands on it.
+ *
+ * The reading tab is a stream: Osman hands Saadan a thing and they talk
+ * about it. A library is the opposite shape. It is kept rather than sent,
+ * it is arranged by its owner into shelves he names himself, and the point
+ * of the other man being able to see it is that he can go and look without
+ * anyone handing him anything.
+ *
+ * So a shelf belongs to whoever made it and only he renames or clears it,
+ * but either of them may put something on either shelf and either may mark
+ * a thing read. Ownership of the furniture, not of the books.
+ */
+export type ShelfTone = "blue" | "yellow" | "coral" | "green" | "plum" | "sand";
+
+export const SHELF_TONES: { id: ShelfTone; label: string; hex: string }[] = [
+  { id: "blue", label: "Blue", hex: "#3b6fd4" },
+  { id: "yellow", label: "Gold", hex: "#e0a800" },
+  { id: "coral", label: "Coral", hex: "#e06055" },
+  { id: "green", label: "Green", hex: "#2f9e6b" },
+  { id: "plum", label: "Plum", hex: "#8253b0" },
+  { id: "sand", label: "Sand", hex: "#b08968" },
+];
+
+export type Shelf = {
+  id: string;
+  name: string;
+  /** What lives on it, in the owner's words. */
+  note: string;
+  /** Whose shelf it is. Both can see both. */
+  by: Persona;
+  at: string;
+  tone: ShelfTone;
+};
+
+export type BookKind = "book" | "paper" | "notes" | "slides" | "link";
+
+export const BOOK_KINDS: { id: BookKind; label: string; glyph: string }[] = [
+  { id: "book", label: "Book", glyph: "▤" },
+  { id: "paper", label: "Paper", glyph: "▥" },
+  { id: "notes", label: "Notes", glyph: "▦" },
+  { id: "slides", label: "Slides", glyph: "▣" },
+  { id: "link", label: "Link", glyph: "↗" },
+];
+
+export function bookKindMeta(kind: BookKind) {
+  return BOOK_KINDS.find((k) => k.id === kind) ?? BOOK_KINDS[0];
+}
+
+export function shelfTone(tone: ShelfTone): string {
+  return (SHELF_TONES.find((t) => t.id === tone) ?? SHELF_TONES[0]).hex;
+}
+
+export type Book = {
+  id: string;
+  shelfId: string;
+  title: string;
+  author: string;
+  kind: BookKind;
+  /** A file in the ops bucket. Empty for a link or a paper copy. */
+  path: string;
+  fileName: string;
+  fileType: string;
+  /** An address, for what lives somewhere else. */
+  url: string;
+  note: string;
+  by: Persona;
+  at: string;
+  /** Who has actually read it, which is not the same as who put it here. */
+  readBy: Persona[];
+  comments: Comment[];
+};
+
+/** The shelves one person keeps, newest last so the room stays in order. */
+export function shelvesOf(shelves: Shelf[], who: Persona): Shelf[] {
+  return shelves.filter((s) => s.by === who);
+}
+
+export function booksOn(books: Book[], shelfId: string): Book[] {
+  return books.filter((b) => b.shelfId === shelfId);
+}
+
+/** Everything matching a search, across both their shelves. */
+export function findBooks(books: Book[], query: string): Book[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  return books.filter((b) =>
+    [b.title, b.author, b.note].some((field) => field.toLowerCase().includes(q)),
+  );
+}
+
+/* ---- the locker -------------------------------------------------------- */
+
+/**
+ * Finished work, and the parts it is made of.
+ *
+ * A shelf holds loose things: each item stands on its own and is read on its
+ * own. A finished course is not loose. It is a guidebook and a description
+ * and a set of slides that only mean anything together, and filing them as
+ * four unrelated items on a shelf is how you end up hunting for the slides
+ * two terms later.
+ *
+ * So a piece is one record with its parts named by the job they do. The
+ * books it was built from are not copied in: they are already on a shelf,
+ * and a piece points at them, so the book stays one book.
+ */
+export type PieceKind = "course" | "syllabus" | "paper" | "talk" | "report" | "other";
+
+export const PIECE_KINDS: { id: PieceKind; label: string }[] = [
+  { id: "course", label: "Course" },
+  { id: "syllabus", label: "Syllabus" },
+  { id: "paper", label: "Paper" },
+  { id: "talk", label: "Talk" },
+  { id: "report", label: "Report" },
+  { id: "other", label: "Other" },
+];
+
+export type PartRole = "guidebook" | "description" | "slides" | "sources" | "other";
+
+export const PART_ROLES: { id: PartRole; label: string; hint: string }[] = [
+  { id: "guidebook", label: "Guidebook", hint: "The thing somebody teaches from" },
+  { id: "description", label: "Description", hint: "What it is, for a catalogue or a committee" },
+  { id: "slides", label: "Slides", hint: "A lesson, a week, the whole deck" },
+  { id: "sources", label: "Sources", hint: "Readings, a bibliography, the raw material" },
+  { id: "other", label: "Other", hint: "Anything else that belongs with it" },
+];
+
+export function partRoleMeta(role: PartRole) {
+  return PART_ROLES.find((r) => r.id === role) ?? PART_ROLES[PART_ROLES.length - 1];
+}
+
+export function pieceKindMeta(kind: PieceKind) {
+  return PIECE_KINDS.find((k) => k.id === kind) ?? PIECE_KINDS[PIECE_KINDS.length - 1];
+}
+
+export type Part = {
+  id: string;
+  role: PartRole;
+  name: string;
+  /** A file in the ops bucket. Empty when the part is a link. */
+  path: string;
+  fileType: string;
+  url: string;
+  by: Persona;
+  at: string;
+};
+
+export type Piece = {
+  id: string;
+  title: string;
+  kind: PieceKind;
+  /** Free text: "Spring 2026" is as much an answer as a date is. */
+  finished: string;
+  note: string;
+  by: Persona;
+  at: string;
+  /** Ids of books already on a shelf. A piece points; it does not copy. */
+  builtFrom: string[];
+  parts: Part[];
+  comments: Comment[];
+};
+
+export function partsByRole(piece: Piece, role: PartRole): Part[] {
+  return piece.parts.filter((p) => p.role === role);
+}
+
 export type OpsState = {
   tasks: Task[];
   meetings: Meeting[];
@@ -192,6 +360,9 @@ export type OpsState = {
   asks: Ask[];
   appointments: Appointment[];
   presence: Record<string, Presence>;
+  shelves: Shelf[];
+  books: Book[];
+  pieces: Piece[];
 };
 
 export const XP: Record<string, number> = {

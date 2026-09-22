@@ -8,6 +8,7 @@ import { AttendanceView } from "./Attendance";
 import { Board } from "./Board";
 import { Diary, proposalsFor } from "./Diary";
 import { Entrance, usePreloadEntrance } from "./Entrance";
+import { LibraryView, unreadCount } from "./Library";
 import { MaterialsView } from "./Materials";
 import { MeetingsView } from "./Meetings";
 import { Approvals, AwardBadges, Overview } from "./OsmanViews";
@@ -40,6 +41,7 @@ const SAADAN_TABS = [
   { id: "meetings", label: "Meetings" },
   { id: "attendance", label: "Attendance" },
   { id: "materials", label: "Reading" },
+  { id: "library", label: "Library" },
   { id: "wins", label: "Wins" },
 ];
 const OSMAN_TABS = [
@@ -49,6 +51,7 @@ const OSMAN_TABS = [
   { id: "diary", label: "Diary" },
   { id: "board", label: "Board" },
   { id: "materials", label: "Reading" },
+  { id: "library", label: "Library" },
   { id: "badges", label: "Badges" },
 ];
 
@@ -207,7 +210,9 @@ function Desk() {
                     ? asksFor(state.asks, persona)
                     : t.id === "diary"
                       ? proposalsFor(state.appointments, persona)
-                      : 0;
+                      : t.id === "library"
+                        ? unreadCount(state.books, persona)
+                        : 0;
             return (
               <button key={t.id} type="button" className="tab" data-on={current === t.id} onClick={() => go(t.id)}>
                 {t.label}
@@ -223,6 +228,7 @@ function Desk() {
           {persona === "saadan" && current === "meetings" && <MeetingsView />}
           {current === "attendance" && <AttendanceView />}
           {current === "materials" && <MaterialsView who={persona} />}
+          {current === "library" && <LibraryView who={persona} />}
           {current === "asks" && <Asks who={persona} />}
           {current === "diary" && <Diary who={persona} />}
           {persona === "saadan" && current === "wins" && <WinsView />}

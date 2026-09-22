@@ -9,7 +9,10 @@ import {
   type Appointment,
   type Ask,
   type Attendance,
+  type Book,
+  type Piece,
   type Presence,
+  type Shelf,
   type Material,
   type Meeting,
   type Meta,
@@ -30,7 +33,18 @@ import {
  * keys) everything still works, on this device only, and the page says so.
  */
 
-type Collection = "tasks" | "meetings" | "attendance" | "meta" | "materials" | "asks" | "appointments" | "presence";
+type Collection =
+  | "tasks"
+  | "meetings"
+  | "attendance"
+  | "meta"
+  | "materials"
+  | "asks"
+  | "appointments"
+  | "presence"
+  | "shelves"
+  | "books"
+  | "pieces";
 
 export type Shell = {
   ready: boolean;
@@ -53,6 +67,9 @@ function empty(): OpsState {
     attendance: {},
     meta: { ...EMPTY_META },
     materials: [],
+    shelves: [],
+    books: [],
+    pieces: [],
     asks: [],
     appointments: [],
     presence: {},
@@ -99,6 +116,12 @@ function fromDocs(docs: Record<string, Record<string, unknown>>): OpsState {
     attendance: (docs.attendance ?? {}) as Record<string, Attendance>,
     meta: { ...EMPTY_META, ...meta, awarded: meta.awarded ?? [] },
     materials: (Object.values(docs.materials ?? {}) as Material[]).sort((a, b) => b.at.localeCompare(a.at)),
+    // Shelves oldest first, so a room keeps the order it was built in;
+    // books newest first, because the last thing put down is the thing
+    // being looked for.
+    shelves: (Object.values(docs.shelves ?? {}) as Shelf[]).sort((a, b) => a.at.localeCompare(b.at)),
+    books: (Object.values(docs.books ?? {}) as Book[]).sort((a, b) => b.at.localeCompare(a.at)),
+    pieces: (Object.values(docs.pieces ?? {}) as Piece[]).sort((a, b) => b.at.localeCompare(a.at)),
     // Newest question first: an unanswered one at the bottom is an
     // unanswered one forever.
     asks: (Object.values(docs.asks ?? {}) as Ask[]).sort((a, b) => b.at.localeCompare(a.at)),
@@ -118,6 +141,9 @@ function readLocal(): OpsState | null {
       ...parsed,
       meta: { ...EMPTY_META, ...(parsed.meta ?? {}) },
       materials: parsed.materials ?? [],
+      shelves: parsed.shelves ?? [],
+      books: parsed.books ?? [],
+      pieces: parsed.pieces ?? [],
       asks: parsed.asks ?? [],
       appointments: parsed.appointments ?? [],
       presence: parsed.presence ?? {},
@@ -298,6 +324,70 @@ export function upsertMaterial(material: Material) {
     : [material, ...shell.state.materials];
   setState({ ...shell.state, materials });
   persist("materials", material.id, material);
+}
+
+/* ---- the library ------------------------------------------------------ */
+
+export function upsertShelf(shelf: Shelf) {
+  const has = shell.state.shelves.some((s) => s.id === shelf.id);
+  const shelves = has
+    ? shell.state.shelves.map((s) => (s.id === shelf.id ? shelf : s))
+    : [...shell.state.shelves, shelf];
+  setState({ ...shell.state, shelves });
+  persist("shelves", shelf.id, shelf);
+}
+
+/** Take a shelf away, and everything standing on it with it. */
+export function removeShelf(id: string) {
+  const doomed = shell.state.books.filter((b) => b.shelfId === id);
+  setState({
+    ...shell.state,
+    shelves: shell.state.shelves.filter((s) => s.id !== id),
+    books: shell.state.books.filter((b) => b.shelfId !== id),
+  });
+  persist("shelves", id, null);
+  for (const b of doomed) persist("books", b.id, null);
+}
+
+export function upsertBook(book: Book) {
+  const has = shell.state.books.some((b) => b.id === book.id);
+  const books = has
+    ? shell.state.books.map((b) => (b.id === book.id ? book : b))
+    : [book, ...shell.state.books];
+  setState({ ...shell.state, books });
+  persist("books", book.id, book);
+}
+
+export function removeBook(id: string) {
+  setState({ ...shell.state, books: shell.state.books.filter((b) => b.id !== id) });
+  persist("books", id, null);
+}
+
+/** Say you have read it, or take it back. */
+export function toggleRead(book: Book, who: Persona) {
+  const readBy = book.readBy.includes(who)
+    ? book.readBy.filter((p) => p !== who)
+    : [...book.readBy, who];
+  upsertBook({ ...book, readBy });
+}
+
+/** Move a book to another shelf, including one of the other man's. */
+export function moveBook(book: Book, shelfId: string) {
+  upsertBook({ ...book, shelfId });
+}
+
+export function upsertPiece(piece: Piece) {
+  const has = shell.state.pieces.some((p) => p.id === piece.id);
+  const pieces = has
+    ? shell.state.pieces.map((p) => (p.id === piece.id ? piece : p))
+    : [piece, ...shell.state.pieces];
+  setState({ ...shell.state, pieces });
+  persist("pieces", piece.id, piece);
+}
+
+export function removePiece(id: string) {
+  setState({ ...shell.state, pieces: shell.state.pieces.filter((p) => p.id !== id) });
+  persist("pieces", id, null);
 }
 
 export function removeMaterial(id: string) {
