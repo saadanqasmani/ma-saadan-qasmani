@@ -72,7 +72,7 @@ export const ADVISOR_NAV: NavItem[] = [
   { href: "/edviko/advisor/recommendations", label: "Recommendations", built: false },
   { href: "/edviko/advisor/universities", label: "Universities", built: false },
   { href: "/edviko/advisor/deadlines", label: "US deadlines", built: true },
-  { href: "/edviko/advisor/applications", label: "Applications", built: false },
+  { href: "/edviko/advisor/applications", label: "Applications", built: true },
   { href: "/edviko/advisor/documents", label: "Documents", built: false },
   { href: "/edviko/advisor/tasks", label: "Tasks", built: false },
   { href: "/edviko/advisor/meetings", label: "Meetings & messages", built: false },

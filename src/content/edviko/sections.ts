@@ -41,16 +41,6 @@ export const ADVISOR_SECTIONS: Section[] = [
     waiting: "the verification workflow. The data exists; the discipline around refreshing it does not yet.",
   },
   {
-    slug: "applications",
-    title: "Applications",
-    what: [
-      "Every application from planned to decided, with what is blocking each one.",
-      "Deadlines pulled from the university record rather than typed in twice.",
-      "Offers, conditions, deposits and the dates they expire.",
-    ],
-    waiting: "the deadline intelligence being loaded, and a server to hold application state.",
-  },
-  {
     slug: "documents",
     title: "Documents",
     what: [

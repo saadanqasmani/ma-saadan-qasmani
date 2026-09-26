@@ -19,6 +19,7 @@
  */
 
 import { formatId } from "@/lib/edviko/id";
+import type { Application, ApplicationState, Requirement } from "@/lib/edviko/applications";
 import type { CaseEntry } from "@/lib/edviko/cases";
 import type { Advisor, Campus, Communication, Meeting, Request, School, StudentRecord } from "@/lib/edviko/org";
 import type { StageId } from "@/lib/edviko/pipeline";
@@ -302,4 +303,98 @@ export function historyFor(studentId: string): CaseEntry[] {
     days += 3 + Math.floor(rand() * 20);
   }
   return out;
+}
+
+/* ------------------------------------------------------------------ *
+ * Applications
+ *
+ * Generated from the student's own serial, like the case history, so a
+ * caseload has enough applications in it to be worth a screen without
+ * hundreds of rows being typed out by hand. The universities are real and
+ * the countries are real; every application is invented.
+ * ------------------------------------------------------------------ */
+
+const PLACES: { university: string; country: string; round: string; feeUsd: number | null }[] = [
+  { university: "Istanbul Technical University", country: "Türkiye", round: "International, spring", feeUsd: null },
+  { university: "Koç University", country: "Türkiye", round: "International", feeUsd: null },
+  { university: "Boğaziçi University", country: "Türkiye", round: "International", feeUsd: null },
+  { university: "University of Toronto", country: "Canada", round: "Regular", feeUsd: 156 },
+  { university: "McGill University", country: "Canada", round: "Regular", feeUsd: 120 },
+  { university: "Technical University of Munich", country: "Germany", round: "Winter intake", feeUsd: 75 },
+  { university: "University of Manchester", country: "United Kingdom", round: "UCAS", feeUsd: 35 },
+  { university: "University of Melbourne", country: "Australia", round: "Semester 1", feeUsd: 100 },
+  { university: "National University of Singapore", country: "Singapore", round: "International", feeUsd: 20 },
+  { university: "Purdue University", country: "United States", round: "Early Action", feeUsd: 60 },
+  { university: "Arizona State University", country: "United States", round: "Rolling", feeUsd: 85 },
+  { university: "Politecnico di Milano", country: "Italy", round: "Second call", feeUsd: 35 },
+];
+
+const REQUIREMENTS: { id: string; label: string; owner: Requirement["owner"] }[] = [
+  { id: "transcript", label: "Transcript, attested", owner: "school" },
+  { id: "english", label: "English test score", owner: "student" },
+  { id: "passport", label: "Passport copy, valid past the intake", owner: "family" },
+  { id: "statement", label: "Personal statement", owner: "student" },
+  { id: "letter", label: "Recommendation letter", owner: "school" },
+  { id: "fee", label: "Application fee paid", owner: "family" },
+  { id: "form", label: "Application form completed", owner: "student" },
+  { id: "review", label: "Advisor review before sending", owner: "advisor" },
+];
+
+const STATES: ApplicationState[] = [
+  "planned", "planned", "preparing", "preparing", "preparing",
+  "submitted", "submitted", "submitted", "offer", "conditional", "rejected", "accepted",
+];
+
+const CONDITIONS = [
+  "final grades of at least 75%",
+  "an IELTS 6.5 with no band below 6.0",
+  "the original transcript arriving by post",
+  "proof of funds for the first year",
+];
+
+export function applicationsFor(studentId: string): Application[] {
+  const student = STUDENTS.find((s) => s.id === studentId);
+  if (!student || student.applications === 0) return [];
+
+  const serial = Number(studentId.split("-")[4] ?? "0");
+  const rand = seeded(serial * 104729 + 31);
+  const out: Application[] = [];
+  const used = new Set<number>();
+
+  for (let i = 0; i < student.applications; i += 1) {
+    let pick = Math.floor(rand() * PLACES.length);
+    while (used.has(pick)) pick = (pick + 1) % PLACES.length;
+    used.add(pick);
+    const place = PLACES[pick];
+
+    const state = STATES[Math.floor(rand() * STATES.length)];
+    const settled = state === "submitted" || state === "offer" || state === "conditional" || state === "accepted" || state === "rejected";
+
+    const requirements: Requirement[] = REQUIREMENTS.map((r) => ({
+      ...r,
+      // Anything already sent had everything ready by definition. Anything
+      // still being prepared is missing some of it, which is the point.
+      done: settled ? true : rand() > 0.42,
+    }));
+
+    out.push({
+      id: `${studentId}-a${i}`,
+      student: studentId,
+      university: place.university,
+      country: place.country,
+      round: place.round,
+      state,
+      deadlineInDays: rand() > 0.15 ? Math.floor(rand() * 80) - 10 : null,
+      requirements,
+      feeUsd: place.feeUsd,
+      condition: state === "conditional" ? CONDITIONS[Math.floor(rand() * CONDITIONS.length)] : null,
+    });
+  }
+
+  return out;
+}
+
+/** Every application on the campus, for the screens that count them. */
+export function allApplications(students: StudentRecord[] = STUDENTS): Application[] {
+  return students.flatMap((s) => applicationsFor(s.id));
 }

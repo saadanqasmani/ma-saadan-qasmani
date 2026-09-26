@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { Panel, Row, Tag, Tile } from "@/components/edviko/portal/parts";
+import { Dot, Panel, Row, Tag, Tile } from "@/components/edviko/portal/parts";
 import { Recommendations } from "@/components/edviko/advisor/Recommendations";
-import { historyFor } from "@/content/edviko/demo";
+import { applicationsFor, historyFor } from "@/content/edviko/demo";
+import { outstanding, STATE_LABEL, verdictOf } from "@/lib/edviko/applications";
 import { ENTRY_KINDS, SOURCES } from "@/lib/edviko/cases";
 import { advisorCode, campusCode, parseId, relationshipLabel } from "@/lib/edviko/id";
 import { factsOf, type StudentRecord } from "@/lib/edviko/org";
@@ -22,6 +23,7 @@ export function CaseFile({ student, thresholds }: { student: StudentRecord; thre
   const tone = worst(flags.map((f) => f.tone));
   const stage = STAGE_BY_ID[student.stage];
   const history = historyFor(student.id);
+  const applications = applicationsFor(student.id);
   const gap = facts.fundingGapUsd;
 
   return (
@@ -80,6 +82,37 @@ export function CaseFile({ student, thresholds }: { student: StudentRecord; thre
           tone={student.nextDeadlineInDays === null ? undefined : student.nextDeadlineInDays < 3 ? "red" : "amber"}
         />
       </div>
+
+      {applications.length > 0 && (
+        <Panel title="Applications" aside={`${applications.length} on record`} flush>
+          {applications.map((a) => {
+            const v = verdictOf(a);
+            const left = outstanding(a);
+            return (
+              <Row
+                key={a.id}
+                lead={<Dot tone={v.tone} />}
+                title={a.university}
+                sub={
+                  <>
+                    {a.country} · {a.round} · {STATE_LABEL[a.state]} · {v.says}
+                    {left.length > 0 && ` Missing: ${left.map((r) => r.label.toLowerCase()).join(", ")}.`}
+                  </>
+                }
+                end={
+                  <span className="ev-small" style={{ color: "var(--text-faint)", whiteSpace: "nowrap" }}>
+                    {a.deadlineInDays === null
+                      ? "no date"
+                      : a.deadlineInDays < 0
+                        ? `${Math.abs(a.deadlineInDays)}d late`
+                        : `${a.deadlineInDays}d`}
+                  </span>
+                }
+              />
+            );
+          })}
+        </Panel>
+      )}
 
       <Recommendations student={student.id} advisor={student.advisor} />
 
