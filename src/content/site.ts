@@ -115,8 +115,31 @@ export const highestBranch = {
   /** Cover price of one copy, in US dollars. The server holds the rule; this
    *  is only what the page prints. */
   priceUsd: 15,
+  /** One plain sentence, for a search result and a link preview. */
   synopsis:
-    "A boy crosses the pass at seventeen, leaving a forest he knows by its seasons for a country that measures time in semesters. What follows is a fable of arrival, the slow architecture of belonging and its costs, told across the years that turn a student into someone his own mother might not recognize.",
+    "Nobody lies to Sultan. A literary novel about ambition, belonging, identity negotiation and the price of becoming legible in someone else's world.",
+  /**
+   * The proverb the book turns on, in the author's own transliteration
+   * because it is a quotation and not a translation. Pressing it explains
+   * itself to a reader who has not met it before.
+   */
+  proverb: {
+    line: "Dhobi ka katka, na ghar ka, na ghat ka",
+    meaning:
+      "A famous South Asian proverb used for an unrooted person, or someone who is rejected by multiple groups and ends up with nothing.",
+    english: "Neither fish nor fowl, or falling between two stools.",
+    englishLabel: "English equivalent",
+  },
+  /** The description proper, one string a paragraph. */
+  synopsisParagraphs: [
+    "Nobody lies to Sultan. That is how the arrangement works.",
+    "Sultan has spent his whole life in the canopy, holding on with all four hands. In his forest, promises are kept in knotted cord and a family's future is counted in fruit. So when an upright stranger crouches at his height and tells him he has been chosen, his family sells their home, and eleven households pledge seasons they cannot spare to send him over the mountains.",
+    "In the country of stone trees, Sultan is brilliant. He learns to sit still for hours, to lower his voice, to stop hanging at night, to hide the parts of himself people notice first. He rises to the top of his class and into the very institutions that recruited him, and there he begins to see how the arrangement really works. No one in it is cruel. Everyone is simply doing their job.",
+    "The Highest Branch is a literary novel about ambition, belonging, identity negotiation and the price of becoming legible in someone else's world.",
+  ] as readonly string[],
+  /** Where it comes from. Set apart because it is a claim, not a plot. */
+  provenance:
+    "Drawn from the author's personal life experiences, years of research and work with students from more than seventy countries.",
   subject:
     "The international student experience, tracked through a protagonist's life from adolescence through a professional and academic arc abroad.",
   coverImage: "/book-cover.png" as string | null,

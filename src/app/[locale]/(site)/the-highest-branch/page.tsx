@@ -5,6 +5,7 @@ import { Counter } from "@/components/ui/Counter";
 import { Contours } from "@/components/art/Contours";
 import { getBook, getPerson } from "@/lib/data";
 import { PurchasePanel } from "@/components/book/PurchasePanel";
+import { Synopsis } from "@/components/book/Synopsis";
 import { checkoutIsConfigured } from "@/lib/book/checkout";
 import { Figure } from "@/components/media/Figure";
 import { Mark } from "@/components/collect/Mark";
@@ -104,9 +105,12 @@ export default async function HighestBranchPage({ params }: Params) {
           </Reveal>
 
           <Reveal delay={0.75}>
-            <p className="mt-10 max-w-2xl font-serif text-xl leading-relaxed text-ink sm:text-2xl">
-              {highestBranch.synopsis}
-            </p>
+            <Synopsis
+              proverb={content.novel.proverb}
+              paragraphs={content.novel.paragraphs}
+              provenance={content.novel.provenance}
+              closeLabel={dict.forms.close}
+            />
           </Reveal>
         </div>
       </section>

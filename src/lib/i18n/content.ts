@@ -43,6 +43,13 @@ export type ContentOverlay = {
     status?: string;
     synopsis?: string;
     subject?: string;
+    /** The proverb's line is a quotation and stays as it is; only what it
+     *  means is worth saying in another language. */
+    proverbMeaning?: string;
+    proverbEnglish?: string;
+    proverbEnglishLabel?: string;
+    synopsisParagraphs?: readonly string[];
+    provenance?: string;
     amazonRegions?: string;
     directRegions?: string;
     directNote?: string;
@@ -112,6 +119,12 @@ export type Content = {
   person: (base: Person) => Person;
   book: (base: Book) => Book;
   purchase: { amazonRegions: string; directRegions: string; directNote: string };
+  /** The novel's description, which is a shape rather than a sentence. */
+  novel: {
+    proverb: { line: string; meaning: string; english: string; englishLabel: string };
+    paragraphs: readonly string[];
+    provenance: string;
+  };
   instrument: { label: string; definition: string | null };
   researchNote: { before: string; name: string; after: string };
   work: (items: WorkItem[]) => WorkItem[];
@@ -171,6 +184,17 @@ export async function getContent(locale: Locale): Promise<Content> {
       synopsis: pick(b.synopsis, base.synopsis),
       subject: pick(b.subject, base.subject),
     }),
+
+    novel: {
+      proverb: {
+        line: highestBranch.proverb.line,
+        meaning: pick(b.proverbMeaning, highestBranch.proverb.meaning),
+        english: pick(b.proverbEnglish, highestBranch.proverb.english),
+        englishLabel: pick(b.proverbEnglishLabel, highestBranch.proverb.englishLabel),
+      },
+      paragraphs: b.synopsisParagraphs ?? highestBranch.synopsisParagraphs,
+      provenance: pick(b.provenance, highestBranch.provenance),
+    },
 
     purchase: {
       amazonRegions: pick(b.amazonRegions, highestBranch.purchase.amazon.regions),

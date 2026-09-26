@@ -498,7 +498,19 @@ export const deContent: ContentOverlay = {
     tagline: "Denn oben ist da, wo die Dinge herunterfallen.",
     status: "Erscheint am 19. Oktober 2026",
     synopsis:
-      "Mit siebzehn überquert ein Junge den Pass und verlässt einen Wald, den er an seinen Jahreszeiten kennt, für ein Land, das die Zeit in Semestern misst. Was folgt, ist eine Fabel des Ankommens, der langsamen Architektur der Zugehörigkeit und ihres Preises, erzählt über die Jahre hinweg, die aus einem Studenten jemanden machen, den seine eigene Mutter womöglich nicht wiedererkennt.",
+      "Niemand belügt Sultan. Ein literarischer Roman über Ehrgeiz, Zugehörigkeit, ausgehandelte Identität und den Preis dafür, in der Welt eines anderen lesbar zu werden.",
+    proverbMeaning:
+      "Ein bekanntes südasiatisches Sprichwort für einen Menschen ohne Wurzeln, oder für jemanden, den mehrere Gruppen abweisen und der am Ende mit nichts dasteht.",
+    proverbEnglish: "Weder Fisch noch Fleisch; zwischen allen Stühlen sitzen.",
+    proverbEnglishLabel: "Englische Entsprechung",
+    synopsisParagraphs: [
+      "Niemand belügt Sultan. So ist die Abmachung.",
+      "Sultan hat sein ganzes Leben im Kronendach verbracht, mit allen vier Händen festgehalten. In seinem Wald werden Versprechen in geknoteter Schnur aufbewahrt, und die Zukunft einer Familie zählt man in Früchten. Als also ein aufrecht gehender Fremder sich auf seine Höhe hinabkauert und ihm sagt, er sei auserwählt, verkauft seine Familie ihr Haus, und elf Haushalte verpfänden Jahreszeiten, die sie nicht entbehren können, um ihn über die Berge zu schicken.",
+      "Im Land der steinernen Bäume ist Sultan glänzend. Er lernt, stundenlang still zu sitzen, leiser zu sprechen, nachts nicht mehr zu hängen, das zu verbergen, was man an ihm zuerst bemerkt. Er steigt an die Spitze seines Jahrgangs und in eben die Institutionen auf, die ihn angeworben haben, und dort beginnt er zu sehen, wie die Abmachung wirklich funktioniert. Niemand darin ist grausam. Alle tun schlicht ihre Arbeit.",
+      "Der höchste Ast ist ein literarischer Roman über Ehrgeiz, Zugehörigkeit, ausgehandelte Identität und den Preis dafür, in der Welt eines anderen lesbar zu werden.",
+    ],
+    provenance:
+      "Geschöpft aus den eigenen Lebenserfahrungen des Autors, aus jahrelanger Forschung und aus der Arbeit mit Studierenden aus mehr als siebzig Ländern.",
     subject:
       "Die Erfahrung internationaler Studierender, verfolgt am Leben eines Protagonisten von der Jugend bis durch einen beruflichen und akademischen Weg im Ausland.",
     amazonRegions: "Europäische Union & Amerika",

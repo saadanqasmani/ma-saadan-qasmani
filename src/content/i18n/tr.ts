@@ -506,7 +506,19 @@ export const trContent: ContentOverlay = {
     tagline: "Çünkü yukarısı, şeylerin düştüğü yerdir.",
     status: "19 Ekim 2026'da çıkıyor",
     synopsis:
-      "On yedi yaşında bir çocuk geçidi aşar; mevsimlerinden tanıdığı bir ormanı bırakıp zamanı dönemlerle ölçen bir ülkeye gider. Ardından gelen, varışın bir fablıdır: aidiyetin yavaş mimarisi ve bedeli, bir öğrenciyi kendi annesinin bile tanıyamayacağı birine dönüştüren yılların içinden anlatılır.",
+      "Sultan'a kimse yalan söylemez. Hırs, aidiyet, kimlik pazarlığı ve başkasının dünyasında okunabilir hâle gelmenin bedeli üzerine bir edebiyat romanı.",
+    proverbMeaning:
+      "Köksüz biri için, ya da birden fazla gruba ait olamayıp elinde hiçbir şey kalmayan biri için kullanılan meşhur bir Güney Asya atasözü.",
+    proverbEnglish: "Ne o ne bu; iki sandalye arasında kalmak.",
+    proverbEnglishLabel: "İngilizce karşılığı",
+    synopsisParagraphs: [
+      "Sultan'a kimse yalan söylemez. Düzen böyle yürür.",
+      "Sultan bütün ömrünü tepelerde, dört eliyle tutunarak geçirdi. Onun ormanında sözler düğümlü iple saklanır, bir ailenin geleceği meyveyle sayılır. Bu yüzden dimdik duran bir yabancı onun hizasına çömelip seçildiğini söylediğinde, ailesi evini satar ve on bir hane, ayıramayacakları mevsimleri onu dağların ötesine göndermek için rehin verir.",
+      "Taş ağaçlar ülkesinde Sultan parlaktır. Saatlerce kıpırdamadan oturmayı, sesini alçaltmayı, geceleri asılmayı bırakmayı, insanların ilk fark ettiği yanlarını saklamayı öğrenir. Sınıfının en başına, sonra da kendisini devşiren kurumların ta içine yükselir; orada düzenin gerçekte nasıl işlediğini görmeye başlar. İçindekilerin hiçbiri zalim değildir. Herkes sadece işini yapmaktadır.",
+      "En Yüksek Dal; hırs, aidiyet, kimlik pazarlığı ve başkasının dünyasında okunabilir hâle gelmenin bedeli üzerine bir edebiyat romanı.",
+    ],
+    provenance:
+      "Yazarın kendi hayat tecrübesinden, yıllar süren araştırmasından ve yetmişten fazla ülkeden öğrencilerle yaptığı çalışmadan damıtılmıştır.",
     subject:
       "Uluslararası öğrenci deneyimi; bir kahramanın hayatı üzerinden, ergenlikten yurt dışındaki mesleki ve akademik yolculuğuna kadar izlenerek.",
     amazonRegions: "Avrupa Birliği ve Amerika kıtası",
