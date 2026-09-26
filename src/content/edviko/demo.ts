@@ -103,13 +103,42 @@ function seeded(seed: number) {
   };
 }
 
+/**
+ * Caseloads are uneven, because real ones are.
+ *
+ * A campus where every advisor holds exactly the same number of students is
+ * a campus where the allocation screen has nothing to say. These add to the
+ * whole intake, heaviest first.
+ */
+const LOAD = [26, 24, 22, 21, 20, 19, 18, 18];
+
+/**
+ * Most students are fine.
+ *
+ * This is the number that decides whether the traffic lights are worth
+ * anything. An earlier version of this file drew every field independently
+ * at random and produced a campus where three quarters of the students were
+ * red, which is not a busy campus, it is a broken alarm: an advisor who
+ * opens a list of a hundred and thirty emergencies learns to close it.
+ *
+ * So each student is drawn as a whole case instead. Seven in ten are on
+ * track, two in ten need something this month, and one in twelve is in real
+ * trouble — which is roughly what a well-run campus looks like, and is the
+ * distribution the triage has to prove itself against.
+ */
+type Health = "fine" | "watch" | "trouble";
+
 function build(): StudentRecord[] {
   const rand = seeded(20260926);
   const out: StudentRecord[] = [];
-  const count = 168;
 
-  for (let i = 0; i < count; i += 1) {
-    const advisor = ADVISORS[i % ADVISORS.length];
+  const assignment: number[] = [];
+  LOAD.forEach((n, advisorIndex) => {
+    for (let i = 0; i < n; i += 1) assignment.push(advisorIndex);
+  });
+
+  assignment.forEach((advisorIndex, i) => {
+    const advisor = ADVISORS[advisorIndex];
     const serial = String(1 + i).padStart(6, "0");
     const id = formatId({
       country: "PK",
@@ -120,17 +149,62 @@ function build(): StudentRecord[] {
       relationship: 0,
     });
 
+    const draw = rand();
+    const health: Health = draw < 0.7 ? "fine" : draw < 0.92 ? "watch" : "trouble";
+
     const name = `${FIRST[Math.floor(rand() * FIRST.length)]} ${LAST[Math.floor(rand() * LAST.length)]}`;
     const stage = STAGE_SPREAD[Math.floor(rand() * STAGE_SPREAD.length)];
     const grade = GRADES[Math.floor(rand() * GRADES.length)];
     const programme = PROGRAMMES[Math.floor(rand() * PROGRAMMES.length)];
     const track = TRACKS[Math.floor(rand() * TRACKS.length)];
 
-    const assessmentDone = rand() > 0.22;
-    const assessmentReviewed = assessmentDone && rand() > 0.3;
-    const hasDeadline = rand() > 0.35;
-    const budget = rand() > 0.25 ? 8000 + Math.floor(rand() * 22000) : null;
-    const cost = rand() > 0.2 ? 11000 + Math.floor(rand() * 26000) : null;
+    const assessmentDone = health === "trouble" ? rand() > 0.55 : rand() > 0.12;
+    const assessmentReviewed = assessmentDone && (health === "fine" ? rand() > 0.15 : rand() > 0.6);
+
+    const daysQuiet =
+      health === "fine" ? Math.floor(rand() * 11)
+      : health === "watch" ? 11 + Math.floor(rand() * 14)
+      : 26 + Math.floor(rand() * 20);
+
+    const profileCompletion =
+      health === "fine" ? 82 + Math.floor(rand() * 19)
+      : health === "watch" ? 62 + Math.floor(rand() * 22)
+      : 38 + Math.floor(rand() * 30);
+
+    const documentsMissing =
+      health === "fine" ? (rand() > 0.75 ? 1 : 0)
+      : health === "watch" ? 1 + Math.floor(rand() * 2)
+      : 3 + Math.floor(rand() * 3);
+
+    const tasksOverdue =
+      health === "fine" ? 0
+      : health === "watch" ? (rand() > 0.5 ? 1 : 0)
+      : 2 + Math.floor(rand() * 3);
+
+    // A deadline is only a deadline if there is one. Roughly half the
+    // caseload is between rounds at any moment.
+    const hasDeadline = rand() > 0.45;
+    const nextDeadlineInDays = !hasDeadline
+      ? null
+      : health === "fine" ? 20 + Math.floor(rand() * 60)
+      : health === "watch" ? 5 + Math.floor(rand() * 16)
+      : Math.floor(rand() * 9) - 5;
+
+    // Stage standards are generous; only the struggling cases run past them.
+    const daysInStage =
+      health === "fine" ? 1 + Math.floor(rand() * 14)
+      : health === "watch" ? 8 + Math.floor(rand() * 20)
+      : 25 + Math.floor(rand() * 45);
+
+    const budgetUsd = rand() > 0.14 ? 9000 + Math.floor(rand() * 20000) : null;
+    const estimatedCostUsd =
+      budgetUsd === null
+        ? (rand() > 0.3 ? 12000 + Math.floor(rand() * 20000) : null)
+        : health === "fine"
+          ? Math.round(budgetUsd * (0.7 + rand() * 0.3))
+          : health === "watch"
+            ? Math.round(budgetUsd * (1 + rand() * 0.25))
+            : Math.round(budgetUsd * (1.3 + rand() * 0.8));
 
     out.push({
       id,
@@ -140,29 +214,29 @@ function build(): StudentRecord[] {
       advisor: advisor.code,
       campus: CAMPUS.code,
       stage,
-      daysInStage: 1 + Math.floor(rand() * 70),
-      daysQuiet: Math.floor(rand() * 44),
-      profileCompletion: 40 + Math.floor(rand() * 61),
+      daysInStage,
+      daysQuiet,
+      profileCompletion,
       assessmentDone,
       assessmentReviewed,
-      recommendationAwaitingApproval: assessmentReviewed && rand() > 0.82,
+      recommendationAwaitingApproval: assessmentReviewed && rand() > 0.88,
       careerTrack: track,
       shortlist: Math.floor(rand() * 12),
       applications: Math.floor(rand() * 7),
       offers: rand() > 0.72 ? 1 + Math.floor(rand() * 3) : 0,
       scholarships: rand() > 0.85 ? 1 : 0,
-      documentsMissing: Math.floor(rand() * 5),
-      documentsExpired: rand() > 0.9 ? 1 : 0,
-      tasksOverdue: rand() > 0.62 ? 1 + Math.floor(rand() * 3) : 0,
-      parentMeetingDue: rand() > 0.85,
-      prerequisiteConflict: rand() > 0.93,
-      budgetUsd: budget,
-      estimatedCostUsd: cost,
+      documentsMissing,
+      documentsExpired: health === "trouble" && rand() > 0.6 ? 1 : 0,
+      tasksOverdue,
+      parentMeetingDue: rand() > (health === "fine" ? 0.93 : 0.75),
+      prerequisiteConflict: health === "trouble" && rand() > 0.72,
+      budgetUsd,
+      estimatedCostUsd,
       nextDeadlineLabel: hasDeadline ? DEADLINES[Math.floor(rand() * DEADLINES.length)] : null,
-      nextDeadlineInDays: hasDeadline ? Math.floor(rand() * 40) - 4 : null,
+      nextDeadlineInDays,
       nextAction: ACTIONS[Math.floor(rand() * ACTIONS.length)],
     });
-  }
+  });
 
   return out;
 }

@@ -110,6 +110,7 @@ function PointsPortal({
 
   return (
     <div
+      className="ev-bank"
       style={{
         position: "fixed",
         // Bottom right, not top: the header already has a logo, a theme
@@ -119,9 +120,6 @@ function PointsPortal({
         bottom: "16px",
         right: "16px",
         zIndex: 80,
-        display: "flex",
-        alignItems: "center",
-        gap: "0.4rem",
         padding: "0.35rem 0.7rem",
         borderRadius: "99px",
         background: "var(--glass)",

@@ -75,7 +75,7 @@ export function Essay() {
   return (
     <>
       <EdvikoNav />
-      <main className="ev-shell" style={{ paddingBlock: "clamp(2.5rem, 6vw, 4rem) 6rem", display: "grid", gap: "1.5rem" }}>
+      <main className="ev-shell" style={{ maxWidth: "52rem", paddingBlock: "clamp(2.5rem, 6vw, 4rem) 6rem", display: "grid", gap: "1.5rem" }}>
         <header>
           <p className="ev-label" style={{ color: "var(--accent)" }}>The personal essay</p>
           <h1 className="ev-h1" style={{ marginTop: "0.8rem", maxWidth: "24ch" }}>

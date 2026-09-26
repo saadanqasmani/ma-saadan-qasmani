@@ -68,7 +68,7 @@ export function AssessmentPage() {
   return (
     <>
       <EdvikoNav />
-      <main className="ev-shell" style={{ paddingBlock: "clamp(2.5rem, 6vw, 4rem) 6rem", display: "grid", gap: "1.75rem" }}>
+      <main className="ev-shell" style={{ maxWidth: "52rem", paddingBlock: "clamp(2.5rem, 6vw, 4rem) 6rem", display: "grid", gap: "1.75rem" }}>
         <header>
           <p className="ev-label" style={{ color: "var(--accent)" }}>Assessment</p>
           <h1 className="ev-h1" style={{ marginTop: "0.8rem", maxWidth: "22ch" }}>

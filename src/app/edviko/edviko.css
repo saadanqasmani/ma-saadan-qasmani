@@ -1037,6 +1037,17 @@ a:hover .ev-mark__trail {
  * long and a top bar that long is an inventory, not a navigation.
  * ====================================================================== */
 
+.ev-bank {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* The student's points counter has no business on a professional's screen. */
+body[data-portal="true"] .ev-bank {
+  display: none;
+}
+
 .ev-portal {
   display: grid;
   grid-template-columns: 1fr;
@@ -1182,7 +1193,7 @@ a:hover .ev-mark__trail {
 
 .ev-tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(8.25rem, 1fr));
   gap: 0.75rem;
 }
 

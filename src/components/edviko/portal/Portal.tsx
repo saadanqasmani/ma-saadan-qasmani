@@ -43,6 +43,16 @@ export function Portal({
     };
   }, [open]);
 
+  // The points counter belongs to the student's side of the product. An
+  // advisor triaging two hundred cases should not have a score in the corner
+  // of the screen, and on a laptop it was landing on top of the panels.
+  useEffect(() => {
+    document.body.dataset.portal = "true";
+    return () => {
+      delete document.body.dataset.portal;
+    };
+  }, []);
+
   return (
     <div className="ev-portal">
       {open && <div className="ev-scrim" onClick={() => setOpen(false)} aria-hidden />}

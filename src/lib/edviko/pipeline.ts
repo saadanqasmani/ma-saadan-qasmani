@@ -214,7 +214,10 @@ export function flagsFor(f: CaseFacts, t: Thresholds = STANDARD): Flag[] {
     });
   }
 
-  if (f.documentsMissing > 0) {
+  // One missing document is a student who has collected everything but one,
+  // not a case. Raising it as a flag on every such student is how an
+  // exception list becomes wallpaper.
+  if (f.documentsMissing > 1) {
     out.push({
       id: "documents-missing",
       tone: f.documentsMissing > 3 ? "red" : "amber",
