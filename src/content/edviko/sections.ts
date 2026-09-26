@@ -21,16 +21,6 @@ export const ADVISOR_SECTIONS: Section[] = [
     waiting: "the full assessment instrument. The four-question version the students use is a start, not the thing itself.",
   },
   {
-    slug: "recommendations",
-    title: "Recommendations",
-    what: [
-      "Every recommendation across the caseload, with its review date.",
-      "What is due for review because results, money or requirements have changed since it was written.",
-      "Approval queue for a supervisor where the campus asks for one.",
-    ],
-    waiting: "a server. Recommendations are filed on the case file today and live on the device.",
-  },
-  {
     slug: "universities",
     title: "Universities",
     what: [

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Dot, Empty, Meter, Panel, Pipeline, Row, Tag, Tile } from "@/components/edviko/portal/parts";
 import { Greeting } from "@/components/edviko/portal/Greeting";
 import { ADVISORS, CAMPUS, REQUESTS, SCHOOL, STUDENTS, SUPERVISOR } from "@/content/edviko/demo";
@@ -118,7 +119,7 @@ export function CampusHome({ thresholds }: { thresholds: Thresholds }) {
             lead={<Dot tone={r.reds > 3 ? "red" : r.reds > 0 ? "amber" : "green"} />}
             title={
               <>
-                {r.advisor.name}
+                <Link href={`/edviko/campus/counsellors/${r.advisor.code}`}>{r.advisor.name}</Link>
                 {r.advisor.status === "leave" && (
                   <span className="ev-small" style={{ color: "var(--text-faint)", marginInlineStart: "0.5rem" }}>on leave</span>
                 )}

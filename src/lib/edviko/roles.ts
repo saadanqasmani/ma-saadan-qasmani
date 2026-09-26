@@ -95,7 +95,7 @@ export const ADVISOR_NAV: NavItem[] = [
   { href: "/edviko/advisor/students", label: "My students", built: true, group: "Today" },
   { href: "/edviko/advisor/assessments", label: "Assessments", built: true, group: "The work" },
   { href: "/edviko/advisor/applications", label: "Applications", built: true, group: "The work" },
-  { href: "/edviko/advisor/recommendations", label: "Recommendations", built: false, group: "The work" },
+  { href: "/edviko/advisor/recommendations", label: "Recommendations", built: true, group: "The work" },
   { href: "/edviko/advisor/documents", label: "Documents", built: true, group: "The work" },
   { href: "/edviko/advisor/tasks", label: "Tasks", built: true, group: "The work" },
   { href: "/edviko/advisor/meetings", label: "Meetings & messages", built: false, group: "The work" },

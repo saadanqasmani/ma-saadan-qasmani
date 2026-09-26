@@ -51,7 +51,7 @@ export function Counsellors({ thresholds }: { thresholds: Thresholds }) {
           <Row
             key={r.a.code}
             lead={<Dot tone={r.reds > 3 ? "red" : r.reds > 0 ? "amber" : "green"} />}
-            title={r.a.name}
+            title={<Link href={`/edviko/campus/counsellors/${r.a.code}`}>{r.a.name}</Link>}
             sub={
               <>
                 {r.a.code} · {r.count} students · {r.reviewed}/{r.assessed} assessments reviewed ·{" "}
