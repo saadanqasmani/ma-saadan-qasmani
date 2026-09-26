@@ -300,6 +300,10 @@ export const en = {
   },
 
   novel: {
+    toPurchase: "Get the book",
+    warningLabel: "Before you read",
+    warningBody:
+      "The Highest Branch is written for adults. It contains graphic scenes, among them suicide and physical violence, and passages some readers will find distressing. Please take care of yourself with it.",
     aNovel: "A Novel",
     /** The title is set in two lines, the second in colour. */
     titleLead: "The Highest",
@@ -325,8 +329,27 @@ export const en = {
       amazonBody: "Available for readers in {regions} through Amazon.",
       buyOnAmazon: "Buy on Amazon",
       amazonPending: "Not listed on Amazon yet. It will be there before publication, and for readers in {regions} that is where it will be sold.",
+      buyEyebrow: "Buy the book",
+      amazonPrice: "Rest of the world, through Amazon",
+      amazonSoon: "The listing goes up before publication. Leave your address and I will write the day it does.",
+      notShipped: "Amazon doesn't ship to your region?",
+      notShippedTitle: "I will send you one myself",
+      notShippedBody:
+        "Leave your details and I will have a copy printed, work out what it costs to send to you, and write back with the price before anything is agreed.",
+      notShippedDone: "Noted. I will be in touch soon with the price and the postage.",
+      send: "Send it to me",
+      pkTab: "Pakistan",
+      trTab: "Türkiye",
+      pkNote: "PKR 3,000",
+      trNote: "₺799",
+      pkHow: "Leave your details and you will be contacted to pay by EasyPaisa or JazzCash. The book is sent once that is done.",
+      trHow: "Pay by card here, or leave your details and settle it by hand.",
+      shipping: "Postage",
+      shippingFree: "Postage (covered by your code)",
+      shippingNote: "Postage is {amount}, added once per order however many copies.",
+      promoShipping: "Postage on me.",
       preOrderNote: "pre-order now",
-      preOrderEyebrow: "Pre-order · Türkiye & Pakistan",
+      preOrderEyebrow: "Pre-order · {where}",
       /** {date} is publication day. */
       shipsOn: "Ships on publication, {date}",
       encourage:

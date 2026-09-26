@@ -1,69 +1,81 @@
 import "server-only";
+import { REGIONS, type Region } from "@/lib/book/regions";
 
 /**
- * What a copy costs, and what a code takes off it.
+ * What an order comes to, and what a code takes off it.
  *
- * All of this stays on the server. A promo code checked in the browser is a
- * promo code printed in the page source, so the client never learns the code
- * or the rule: it sends what the reader typed and is told the price back.
+ * All of this stays on the server. A code checked in the browser is a code
+ * printed in the page source and a discount anyone can award themselves, so
+ * the client never learns the code or the rule: it sends what the reader
+ * typed and is told the price back.
  */
-
-/** Cover price of one copy, in US dollars. */
-export const BOOK_PRICE_USD = 15;
-
-/** What the code is worth, as a percentage of the subtotal. */
-export const PROMO_PERCENT = 10;
 
 export const MAX_COPIES = 50;
 
 /**
- * The code, overridable without a deploy. It is meant to be passed around
- * rather than kept, so the fallback is the one in use; setting
- * BOOK_PROMO_CODE in the host's environment retires it for a new one.
+ * One code, doing the locally useful thing: a tenth off in Pakistan, where
+ * shipping is not charged, and the shipping in Türkiye, where it is. Either
+ * can be retired without a deploy by setting its own variable, and setting
+ * BOOK_PROMO_CODE alone changes both at once.
  */
-function promoCode(): string {
-  return (process.env.BOOK_PROMO_CODE || "SADDYDADDY19").trim().toUpperCase();
+function codeFor(region: Region): string {
+  const perRegion = region === "pk" ? process.env.BOOK_PROMO_CODE_PK : process.env.BOOK_PROMO_CODE_TR;
+  return (perRegion || process.env.BOOK_PROMO_CODE || "SADDYDADDY19").trim().toUpperCase();
 }
 
 export type Quote = {
+  region: Region;
+  currency: string;
   quantity: number;
-  /** Cover price of one copy. */
   unit: number;
   subtotal: number;
+  /** What postage costs before any code is applied. */
+  shipping: number;
+  /** True when a code took the postage away rather than money off the book. */
+  shippingWaived: boolean;
   discount: number;
   total: number;
-  /** True when the code the reader typed is the code. */
   promoApplied: boolean;
-  /** Set only when a code was typed and it was not the code. */
   promoRejected: boolean;
+  promoKind: string;
   percentOff: number;
 };
 
-/** Money to the cent, so a tenth of fifteen dollars does not arrive as 1.5000000000000002. */
+/** Money to the cent, so a tenth of a price does not arrive as 299.99999. */
 function round(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
-export function quoteFor(quantityInput: unknown, codeInput?: string | null): Quote {
+export function quoteFor(region: Region, quantityInput: unknown, codeInput?: string | null): Quote {
+  const spec = REGIONS[region];
   const quantity = Math.min(MAX_COPIES, Math.max(1, Math.trunc(Number(quantityInput) || 1)));
   const typed = (codeInput ?? "").trim();
-  const promoApplied = typed.length > 0 && typed.toUpperCase() === promoCode();
-  const subtotal = round(BOOK_PRICE_USD * quantity);
-  const discount = promoApplied ? round((subtotal * PROMO_PERCENT) / 100) : 0;
+  const promoApplied = spec.promo !== "none" && typed.length > 0 && typed.toUpperCase() === codeFor(region);
+
+  const subtotal = round(spec.price * quantity);
+  const discount =
+    promoApplied && spec.promo === "percent" ? round((subtotal * spec.percentOff) / 100) : 0;
+  const shippingWaived = promoApplied && spec.promo === "shipping";
+  const shipping = shippingWaived ? 0 : spec.shipping;
 
   return {
+    region,
+    currency: spec.currency,
     quantity,
-    unit: BOOK_PRICE_USD,
+    unit: spec.price,
     subtotal,
+    shipping,
+    shippingWaived,
     discount,
-    total: round(subtotal - discount),
+    total: round(subtotal - discount + shipping),
     promoApplied,
-    promoRejected: typed.length > 0 && !promoApplied,
-    percentOff: PROMO_PERCENT,
+    promoRejected: spec.promo !== "none" && typed.length > 0 && !promoApplied,
+    promoKind: spec.promo,
+    percentOff: spec.percentOff,
   };
 }
 
 /** The code as it should be stored against an order: the real one, or nothing. */
 export function storedCode(quote: Quote): string | null {
-  return quote.promoApplied ? promoCode() : null;
+  return quote.promoApplied ? codeFor(quote.region) : null;
 }

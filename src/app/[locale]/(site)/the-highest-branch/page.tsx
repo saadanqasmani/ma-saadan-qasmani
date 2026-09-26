@@ -6,6 +6,7 @@ import { Contours } from "@/components/art/Contours";
 import { getBook, getPerson } from "@/lib/data";
 import { PurchasePanel } from "@/components/book/PurchasePanel";
 import { Synopsis } from "@/components/book/Synopsis";
+import { ToPurchase } from "@/components/book/ToPurchase";
 import { checkoutIsConfigured } from "@/lib/book/checkout";
 import { Figure } from "@/components/media/Figure";
 import { Mark } from "@/components/collect/Mark";
@@ -197,16 +198,26 @@ export default async function HighestBranchPage({ params }: Params) {
                 forms={dict.forms}
                 locale={locale}
                 canPayOnline={checkoutIsConfigured()}
-                regions={{
-                  amazon: content.purchase.amazonRegions,
-                  direct: content.purchase.directRegions,
-                  directNote: content.purchase.directNote,
-                }}
               />
             </div>
           </Reveal>
         </div>
       </section>
+
+      {/* What is in it. Last, because it is for a reader who has decided to
+          read it, not a line to greet them with. */}
+      <section className="border-t border-line py-14">
+        <div className="mx-auto max-w-7xl px-6 sm:px-10">
+          <Reveal>
+            <div className="max-w-2xl border-s-2 border-ember ps-5">
+              <p className="t-label text-ink-faint">{t.warningLabel}</p>
+              <p className="mt-2 text-base leading-relaxed text-ink-soft">{t.warningBody}</p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <ToPurchase label={t.toPurchase} />
     </>
   );
 }

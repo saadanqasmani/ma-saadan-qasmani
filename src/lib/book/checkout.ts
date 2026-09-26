@@ -44,6 +44,9 @@ export async function createCheckout(order: CheckoutOrder, quote: Quote): Promis
   const secret = key();
   if (!secret) return { ok: false, reason: "not-configured", detail: "STRIPE_SECRET_KEY is not set." };
 
+  // Every currency the shop quotes in is a hundred-subunit currency, so the
+  // smallest unit is the amount times a hundred. A zero-decimal currency
+  // would need its own case; there is none here.
   const cents = Math.round(quote.total * 100);
   const each = Math.round(cents / quote.quantity);
   // Stripe prices a line, not a basket. Where the total divides evenly into
@@ -57,13 +60,14 @@ export async function createCheckout(order: CheckoutOrder, quote: Quote): Promis
     success_url: `${siteUrl}/the-highest-branch?preorder=paid&session={CHECKOUT_SESSION_ID}`,
     cancel_url: `${siteUrl}/the-highest-branch?preorder=cancelled#purchase`,
     "line_items[0][quantity]": divides ? String(quote.quantity) : "1",
-    "line_items[0][price_data][currency]": "usd",
+    "line_items[0][price_data][currency]": quote.currency.toLowerCase(),
     "line_items[0][price_data][unit_amount]": String(divides ? each : cents),
     "line_items[0][price_data][product_data][name]": divides
       ? `${highestBranch.title} — pre-order`
       : `${highestBranch.title} — pre-order (${quote.quantity} copies)`,
     "line_items[0][price_data][product_data][description]":
-      `Ships on publication, ${highestBranch.releaseDate}. ${order.country}.`,
+      `Pre-order. Ships on publication, ${highestBranch.releaseDate}. ${order.country}.` +
+      (quote.shipping > 0 ? " Postage included." : ""),
     "metadata[order_id]": order.id,
     "metadata[quantity]": String(quote.quantity),
     "metadata[promo]": quote.promoApplied ? "yes" : "no",

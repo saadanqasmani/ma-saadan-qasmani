@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { highestBranch } from "@/content/site";
-import { Label, TextInput, TextArea, Select, FormNotice } from "@/components/forms/fields";
+import { REGIONS, money, type Region } from "@/lib/book/regions";
+import { Label, TextInput, TextArea, FormNotice } from "@/components/forms/fields";
 import type { Dictionary } from "@/content/i18n/en";
 import { fill } from "@/lib/i18n/dictionary";
 
@@ -27,24 +28,26 @@ type Quote = {
   /** Whether a card can be taken. Comes back with every quote, so a key
    *  added to the host after this page was built still switches it on. */
   canPayOnline?: boolean;
+  region: Region;
+  currency: "PKR" | "TRY" | "USD";
   quantity: number;
   unit: number;
   subtotal: number;
+  shipping: number;
+  shippingWaived: boolean;
   discount: number;
   total: number;
   promoApplied: boolean;
   promoRejected: boolean;
+  promoKind: string;
   percentOff: number;
 };
-
-const money = (n: number) => `$${n.toFixed(2)}`;
 
 function makeSchema(copy: Dictionary["forms"]) {
   return z.object({
     full_name: z.string().min(1, copy.required),
     email: z.string().email(copy.invalidEmail),
     phone: z.string().min(1, copy.required),
-    country: z.enum(["Türkiye", "Pakistan"]),
     city: z.string().min(1, copy.required),
     shipping_address: z.string().min(1, copy.required),
     message: z.string().optional(),
@@ -67,24 +70,36 @@ function useReturnFlag(): string {
 export function PreOrderCard({
   copy,
   forms,
+  region,
   canPayOnline,
 }: {
   copy: Dictionary["novel"]["purchase"];
   forms: Dictionary["forms"];
+  /** Which country's terms apply: price, postage, and what a code is worth. */
+  region: Region;
   canPayOnline: boolean;
 }) {
+  const spec = REGIONS[region];
+  const country = region === "pk" ? "Pakistan" : "Türkiye";
   const returned = useReturnFlag();
   const [quantity, setQuantity] = useState(1);
   const [promo, setPromo] = useState("");
   const [quote, setQuote] = useState<Quote>({
+    region,
+    currency: spec.currency,
     quantity: 1,
-    unit: highestBranch.priceUsd,
-    subtotal: highestBranch.priceUsd,
+    unit: spec.price,
+    subtotal: spec.price,
+    // Postage is held back until the order is real, so the opening figure
+    // is the price of the book and nothing else.
+    shipping: 0,
+    shippingWaived: false,
     discount: 0,
-    total: highestBranch.priceUsd,
+    total: spec.price,
     promoApplied: false,
     promoRejected: false,
-    percentOff: 10,
+    promoKind: spec.promo,
+    percentOff: spec.percentOff,
   });
   const [checking, setChecking] = useState(false);
   // The page is prerendered, so the flag baked in at build time is only the
@@ -102,7 +117,6 @@ export function PreOrderCard({
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(makeSchema(forms)),
-    defaultValues: { country: "Türkiye" },
   });
 
   /** Ask the server what this costs. Late answers to old questions are dropped. */
@@ -113,7 +127,7 @@ export function PreOrderCard({
       const res = await fetch("/api/book-quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quantity: n, promo: code }),
+        body: JSON.stringify({ region, quantity: n, promo: code }),
       });
       const data = (await res.json()) as Quote;
       if (res.ok && mine === seq.current) {
@@ -125,7 +139,7 @@ export function PreOrderCard({
     } finally {
       if (mine === seq.current) setChecking(false);
     }
-  }, []);
+  }, [region]);
 
   // One quote on arrival: it settles the price and says whether a card can
   // be taken, without the reader having to touch anything first. Written out
@@ -136,7 +150,7 @@ export function PreOrderCard({
     fetch("/api/book-quote", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ quantity: 1 }),
+      body: JSON.stringify({ region, quantity: 1 }),
       signal: stop.signal,
     })
       .then((res) => (res.ok ? (res.json() as Promise<Quote>) : null))
@@ -149,7 +163,7 @@ export function PreOrderCard({
         /* the cover price already on screen is the honest fallback */
       });
     return () => stop.abort();
-  }, []);
+  }, [region]);
 
   function setCopies(n: number) {
     const next = Math.min(50, Math.max(1, n));
@@ -163,7 +177,7 @@ export function PreOrderCard({
     const values = getValues();
     setStatus(mode === "card" ? "paying" : "reserving");
     setServerError(null);
-    const payload = { ...values, quantity, promo: promo.trim() || undefined };
+    const payload = { ...values, region, country, quantity, promo: promo.trim() || undefined };
 
     try {
       const res = await fetch(mode === "card" ? "/api/book-checkout" : "/api/book-orders", {
@@ -192,7 +206,7 @@ export function PreOrderCard({
   if (status === "done" || returned === "paid") {
     return (
       <div className="pop-card p-8 sm:p-10">
-        <p className="eyebrow text-ember">{copy.preOrderEyebrow}</p>
+        <p className="eyebrow text-ember">{fill(copy.preOrderEyebrow, { where: region === "pk" ? copy.pkTab : copy.trTab })}</p>
         <h3 className="mt-4 font-display text-3xl leading-tight">
           {returned === "paid" ? copy.paidTitle : copy.reservedTitle}
         </h3>
@@ -209,18 +223,22 @@ export function PreOrderCard({
   return (
     <div className="pop-card p-7 sm:p-10">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <p className="eyebrow text-ember">{copy.preOrderEyebrow}</p>
+        <p className="eyebrow text-ember">{fill(copy.preOrderEyebrow, { where: region === "pk" ? copy.pkTab : copy.trTab })}</p>
         <p className="t-label text-ink-faint">{fill(copy.shipsOn, { date: highestBranch.releaseDate })}</p>
       </div>
 
       <div className="mt-4 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
         <h3 className="font-display text-3xl leading-none sm:text-4xl">{highestBranch.title}</h3>
         <p className="flex items-baseline gap-2">
-          <span className="tnum font-display text-4xl leading-none">{money(quote.unit)}</span>
+          <span className="tnum font-display text-4xl leading-none">{money(quote.currency, quote.unit)}</span>
           <span className="t-label text-ink-faint">{copy.perCopy}</span>
         </p>
       </div>
       <p className="mt-4 max-w-md font-serif text-lg leading-relaxed text-ink-soft">{copy.encourage}</p>
+      <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-faint">
+        {region === "pk" ? copy.pkHow : copy.trHow}
+        {spec.shipping > 0 && ` ${fill(copy.shippingNote, { amount: money(spec.currency, spec.shipping) })}`}
+      </p>
 
       {returned === "cancelled" && (
         <p className="mt-6 border-s-2 border-ember bg-canvas-light px-4 py-3 text-sm text-ink-soft">
@@ -284,7 +302,9 @@ export function PreOrderCard({
           </div>
           {quote.promoApplied && (
             <p className="mt-2 text-sm text-verdant">
-              {fill(copy.promoOk, { percent: String(quote.percentOff) })}
+              {quote.promoKind === "shipping"
+                ? copy.promoShipping
+                : fill(copy.promoOk, { percent: String(quote.percentOff) })}
             </p>
           )}
           {quote.promoRejected && <p className="mt-2 text-sm text-ember">{copy.promoBad}</p>}
@@ -295,19 +315,33 @@ export function PreOrderCard({
       <dl className="mt-7 border-t border-line pt-6 text-base">
         <div className="flex items-baseline justify-between py-1">
           <dt className="text-ink-soft">
-            {fill(copy.subtotalLine, { n: String(quantity), each: money(quote.unit) })}
+            {fill(copy.subtotalLine, { n: String(quantity), each: money(quote.currency, quote.unit) })}
           </dt>
-          <dd className="tnum">{money(quote.subtotal)}</dd>
+          <dd className="tnum">{money(quote.currency, quote.subtotal)}</dd>
         </div>
         {quote.discount > 0 && (
           <div className="flex items-baseline justify-between py-1 text-verdant">
             <dt>{fill(copy.discountLine, { percent: String(quote.percentOff) })}</dt>
-            <dd className="tnum">−{money(quote.discount)}</dd>
+            <dd className="tnum">−{money(quote.currency, quote.discount)}</dd>
+          </div>
+        )}
+        {/* Postage appears here and nowhere earlier: beside a cover price it
+            reads as part of the price of the book. */}
+        {spec.shipping > 0 && (
+          <div
+            className={`flex items-baseline justify-between py-1 ${
+              quote.shippingWaived ? "text-verdant" : "text-ink-soft"
+            }`}
+          >
+            <dt>{quote.shippingWaived ? copy.shippingFree : copy.shipping}</dt>
+            <dd className="tnum">
+              {quote.shippingWaived ? `−${money(quote.currency, spec.shipping)}` : money(quote.currency, quote.shipping)}
+            </dd>
           </div>
         )}
         <div className="mt-3 flex items-baseline justify-between border-t border-ink/15 pt-3">
           <dt className="t-label font-medium">{copy.total}</dt>
-          <dd className="tnum font-display text-3xl leading-none">{money(quote.total)}</dd>
+          <dd className="tnum font-display text-3xl leading-none">{money(quote.currency, quote.total)}</dd>
         </div>
       </dl>
 
@@ -332,13 +366,6 @@ export function PreOrderCard({
               <Label htmlFor="po-phone" required>{forms.phone}</Label>
               <TextInput id="po-phone" autoComplete="tel" {...register("phone")} />
               {errors.phone && <FormNotice tone="error">{errors.phone.message}</FormNotice>}
-            </div>
-            <div>
-              <Label htmlFor="po-country" required>{forms.country}</Label>
-              <Select id="po-country" {...register("country")}>
-                <option value="Türkiye">Türkiye</option>
-                <option value="Pakistan">Pakistan</option>
-              </Select>
             </div>
             <div>
               <Label htmlFor="po-city" required>{forms.city}</Label>
@@ -369,7 +396,7 @@ export function PreOrderCard({
                   <span className="relative">
                     {status === "paying"
                       ? forms.sending
-                      : fill(copy.payByCard, { total: money(quote.total) })}
+                      : fill(copy.payByCard, { total: money(quote.currency, quote.total) })}
                   </span>
                 </button>
                 <button
