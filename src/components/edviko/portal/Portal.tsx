@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { EdvikoMark } from "@/components/edviko/Logo";
 import { ThemeToggle } from "@/components/edviko/ThemeToggle";
+import { Search } from "@/components/edviko/portal/Search";
 import { endSession, useSession } from "@/components/edviko/auth/session";
 import { write } from "@/lib/edviko/browserStore";
 import { grouped, navFor, ROLES, ROLE_KEY, roleMeta, type Role } from "@/lib/edviko/roles";
@@ -176,6 +177,8 @@ export function Portal({
               {deeper && <> / <span style={{ color: "var(--text)" }}>case file</span></>}
             </p>
           </nav>
+
+          {role !== "family" && <Search />}
 
           <Link href="/edviko/account" className="ev-small" style={{ color: "var(--text-soft)", whiteSpace: "nowrap" }}>
             {account ? account.name.split(" ")[0] : "Sign in"}

@@ -86,7 +86,12 @@ export function AdvisorHome({ thresholds }: { thresholds: Thresholds }) {
           <Greeting fallback={SIGNED_IN_ADVISOR.name} role="advisor" />
         </h1>
         <p className="ev-body" style={{ color: "var(--text-soft)", marginTop: "0.5rem" }}>
-          {total} students assigned. {red === 0 ? "None of them is in trouble this morning." : `${red} need you before anything else.`}
+          {total} students assigned.{" "}
+          {red === 0
+            ? "None of them is in trouble this morning."
+            : red === 1
+              ? "One needs you before anything else."
+              : `${red} of them need you before anything else.`}
         </p>
       </header>
 

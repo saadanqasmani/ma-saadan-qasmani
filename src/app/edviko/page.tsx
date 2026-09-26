@@ -20,6 +20,11 @@ const START = [
     hint: "Four questions. Do this before you look at a single university.",
   },
   {
+    href: "/edviko/assessment",
+    label: "Answer twelve questions with right answers",
+    hint: "Then see where they disagree with what you believe about yourself.",
+  },
+  {
     href: "/edviko/equivalence",
     label: "Find out what my grades are worth",
     hint: "O Level, A Level, Matric, FSc, IB. About a minute.",
@@ -78,8 +83,43 @@ export default function EdvikoHome() {
           </div>
 
           <p className="ev-small ev-rise" style={{ marginTop: "1.25rem", animationDelay: "0.15s" }}>
-            No account needed. Nothing to pay.
+            No account needed to start. <Link href="/edviko/join" style={{ color: "var(--accent)" }}>Make one</Link>{" "}
+            when you want it kept, or <Link href="/edviko/signin" style={{ color: "var(--accent)" }}>sign in</Link>.
           </p>
+        </div>
+      </section>
+
+      {/*
+        The other three people who open this.
+        The front page assumed a student, which left a parent, an advisor and
+        a head of campus with no door of their own and a student's menu to
+        guess from.
+      */}
+      <section className="ev-shell" style={{ paddingBlock: "clamp(1.5rem, 4vw, 2.5rem)" }}>
+        <p className="ev-label" style={{ color: "var(--text-faint)" }}>Not a student?</p>
+        <div style={{ display: "grid", gap: "0.7rem", marginTop: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
+          {[
+            {
+              href: "/edviko/family",
+              label: "I am a parent or guardian",
+              hint: "Where they are, what it will cost, and what is being asked of you.",
+            },
+            {
+              href: "/edviko/advisor",
+              label: "I am a career advisor",
+              hint: "A caseload sorted by who needs you this morning, not by surname.",
+            },
+            {
+              href: "/edviko/campus",
+              label: "I run a campus",
+              hint: "Workload beside outcomes, and where the campus is losing people.",
+            },
+          ].map((d) => (
+            <Link key={d.href} href={d.href} className="ev-card" style={{ padding: "1.2rem", display: "block" }}>
+              <span className="ev-h2" style={{ fontSize: "1.0625rem", display: "block" }}>{d.label}</span>
+              <span className="ev-small" style={{ display: "block", marginTop: "0.35rem" }}>{d.hint}</span>
+            </Link>
+          ))}
         </div>
       </section>
 

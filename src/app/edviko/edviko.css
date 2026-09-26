@@ -1396,3 +1396,51 @@ body[data-portal="true"] .ev-bank {
 .ev-header__right {
   gap: 0.75rem;
 }
+
+/* --- finding a person from anywhere ---------------------------------- */
+
+.ev-search {
+  position: relative;
+  flex: 0 1 18rem;
+  min-width: 0;
+}
+
+.ev-search__field {
+  padding: 0.5rem 0.7rem;
+  font-size: 0.875rem;
+}
+
+.ev-search__out {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  inset-inline: 0;
+  z-index: 70;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  box-shadow: 0 24px 60px -24px var(--shadow);
+  overflow: hidden;
+}
+
+.ev-search__hit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.55rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.ev-search__hit:last-child {
+  border-bottom: 0;
+}
+
+.ev-search__hit:hover {
+  background: var(--surface-2);
+}
+
+/* On a phone the breadcrumb and the search cannot both have the row. */
+@media (max-width: 720px) {
+  .ev-search {
+    display: none;
+  }
+}
