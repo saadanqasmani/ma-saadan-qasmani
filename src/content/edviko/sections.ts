@@ -183,16 +183,6 @@ export const CAMPUS_SECTIONS: Section[] = [
     ],
     waiting: "real cases, and the reporting hierarchy above the campus.",
   },
-  {
-    slug: "settings",
-    title: "Settings",
-    what: [
-      "The thresholds: how long is quiet, how close is a deadline, how long may a case sit at a stage.",
-      "Service standards per stage, which are what the traffic lights read.",
-      "Roles, permissions and what each of them may see.",
-    ],
-    waiting: "accounts. Thresholds without roles are a global variable with a nice screen.",
-  },
 ];
 
 export function findSection(list: Section[], slug: string): Section | null {

@@ -1,17 +1,17 @@
 import { cookies } from "next/headers";
-import { CampusStudents } from "@/components/edviko/campus/Lists";
 import { Portal } from "@/components/edviko/portal/Portal";
 import { CAMPUS_WHO } from "@/components/edviko/portal/who";
+import { Settings } from "@/components/edviko/campus/Settings";
 import { parseThresholds, THRESHOLD_COOKIE } from "@/lib/edviko/thresholds";
 
+export const metadata = { title: "Settings · Edviko" };
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Students · Edviko" };
 
 export default async function Page() {
-  const thresholds = parseThresholds((await cookies()).get(THRESHOLD_COOKIE)?.value);
+  const stored = (await cookies()).get(THRESHOLD_COOKIE)?.value;
   return (
     <Portal role="campus" who={CAMPUS_WHO}>
-      <CampusStudents thresholds={thresholds} />
+      <Settings current={parseThresholds(stored)} />
     </Portal>
   );
 }

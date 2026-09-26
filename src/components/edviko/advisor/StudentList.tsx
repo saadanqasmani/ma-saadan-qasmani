@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Dot, Row, Tag } from "@/components/edviko/portal/parts";
 import { factsOf, type StudentRecord } from "@/lib/edviko/org";
-import { flagsFor, STAGE_BY_ID, worst, type Tone } from "@/lib/edviko/pipeline";
+import { flagsFor, STAGE_BY_ID, worst, type Thresholds, type Tone } from "@/lib/edviko/pipeline";
 
 /**
  * A caseload, sorted by who needs the advisor most.
@@ -14,14 +14,14 @@ import { flagsFor, STAGE_BY_ID, worst, type Tone } from "@/lib/edviko/pipeline";
  * surnames begin with A, and any list of two hundred sorted alphabetically
  * is read only as far as the first screen.
  */
-export function StudentList({ students }: { students: StudentRecord[] }) {
+export function StudentList({ students, thresholds }: { students: StudentRecord[]; thresholds: Thresholds }) {
   const [query, setQuery] = useState("");
   const [only, setOnly] = useState<"all" | Tone>("all");
 
   const rows = useMemo(() => {
     return students
       .map((student) => {
-        const flags = flagsFor(factsOf(student));
+        const flags = flagsFor(factsOf(student), thresholds);
         return {
           student,
           flags,
@@ -40,15 +40,15 @@ export function StudentList({ students }: { students: StudentRecord[] }) {
         );
       })
       .sort((a, b) => b.rank - a.rank || a.student.name.localeCompare(b.student.name));
-  }, [students, query, only]);
+  }, [students, query, only, thresholds]);
 
   const counts = useMemo(() => {
     const t = { red: 0, amber: 0, green: 0 };
     for (const s of students) {
-      t[worst(flagsFor(factsOf(s)).map((f) => f.tone))] += 1;
+      t[worst(flagsFor(factsOf(s), thresholds).map((f) => f.tone))] += 1;
     }
     return t;
-  }, [students]);
+  }, [students, thresholds]);
 
   const filters: { id: "all" | Tone; label: string }[] = [
     { id: "all", label: `Everyone ${students.length}` },

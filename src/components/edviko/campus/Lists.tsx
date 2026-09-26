@@ -2,10 +2,10 @@ import Link from "next/link";
 import { Dot, Empty, Meter, Panel, Row, Tag, Tile } from "@/components/edviko/portal/parts";
 import { ADVISORS, REQUESTS, STUDENTS } from "@/content/edviko/demo";
 import { factsOf, studentsOfAdvisor, type StudentRecord } from "@/lib/edviko/org";
-import { flagsFor, STAGE_BY_ID, worst, type Tone } from "@/lib/edviko/pipeline";
+import { flagsFor, STAGE_BY_ID, worst, type Thresholds, type Tone } from "@/lib/edviko/pipeline";
 
-function toneOf(s: StudentRecord): Tone {
-  return worst(flagsFor(factsOf(s)).map((f) => f.tone));
+function toneOf(s: StudentRecord, t: Thresholds): Tone {
+  return worst(flagsFor(factsOf(s), t).map((f) => f.tone));
 }
 
 /**
@@ -15,10 +15,10 @@ function toneOf(s: StudentRecord): Tone {
  * learns to avoid the students who need them most, and a campus that ranks
  * them that way will not notice until the difficult cases stop being taken.
  */
-export function Counsellors() {
+export function Counsellors({ thresholds }: { thresholds: Thresholds }) {
   const rows = ADVISORS.map((a) => {
     const mine = studentsOfAdvisor(STUDENTS, a.code);
-    const reds = mine.filter((s) => toneOf(s) === "red").length;
+    const reds = mine.filter((s) => toneOf(s, thresholds) === "red").length;
     const quiet = mine.filter((s) => s.daysQuiet >= 14).length;
     return {
       a,
@@ -72,9 +72,9 @@ export function Counsellors() {
 }
 
 /** Every student on the campus, worst first. */
-export function CampusStudents() {
+export function CampusStudents({ thresholds }: { thresholds: Thresholds }) {
   const rows = STUDENTS.map((s) => {
-    const flags = flagsFor(factsOf(s));
+    const flags = flagsFor(factsOf(s), thresholds);
     return {
       s,
       flags,

@@ -87,7 +87,7 @@ export const CAMPUS_NAV: NavItem[] = [
   { href: "/edviko/campus/meetings", label: "Meetings & tasks", built: false },
   { href: "/edviko/campus/communications", label: "Communications", built: false },
   { href: "/edviko/campus/reports", label: "Reports & analytics", built: false },
-  { href: "/edviko/campus/settings", label: "Settings", built: false },
+  { href: "/edviko/campus/settings", label: "Settings", built: true },
 ];
 
 export const STUDENT_NAV: NavItem[] = [

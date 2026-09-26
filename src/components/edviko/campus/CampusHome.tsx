@@ -1,7 +1,7 @@
 import { Dot, Empty, Meter, Panel, Pipeline, Row, Tag, Tile } from "@/components/edviko/portal/parts";
 import { ADVISORS, CAMPUS, REQUESTS, SCHOOL, STUDENTS, SUPERVISOR } from "@/content/edviko/demo";
 import { factsOf, firstName, studentsOfAdvisor, type StudentRecord } from "@/lib/edviko/org";
-import { atOrPast, flagsFor, worst, type Tone } from "@/lib/edviko/pipeline";
+import { atOrPast, flagsFor, worst, type Thresholds, type Tone } from "@/lib/edviko/pipeline";
 
 /**
  * The campus, from above.
@@ -18,14 +18,14 @@ import { atOrPast, flagsFor, worst, type Tone } from "@/lib/edviko/pipeline";
  * students.
  */
 
-function toneOf(s: StudentRecord): Tone {
-  return worst(flagsFor(factsOf(s)).map((f) => f.tone));
+function toneOf(s: StudentRecord, t: Thresholds): Tone {
+  return worst(flagsFor(factsOf(s), t).map((f) => f.tone));
 }
 
-export function CampusHome() {
+export function CampusHome({ thresholds }: { thresholds: Thresholds }) {
   const students = STUDENTS;
   const total = students.length;
-  const tones = new Map(students.map((s) => [s.id, toneOf(s)]));
+  const tones = new Map(students.map((s) => [s.id, toneOf(s, thresholds)]));
   const red = students.filter((s) => tones.get(s.id) === "red");
   const amber = students.filter((s) => tones.get(s.id) === "amber");
 

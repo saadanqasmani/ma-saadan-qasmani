@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Dot, Empty, Meter, Panel, Pipeline, Row, Tag, Tile } from "@/components/edviko/portal/parts";
 import { COMMUNICATIONS, MEETINGS, SIGNED_IN_ADVISOR, STUDENTS } from "@/content/edviko/demo";
 import { factsOf, firstName, studentsOfAdvisor, type StudentRecord } from "@/lib/edviko/org";
-import { atOrPast, flagsFor, worst, type Flag, type Tone } from "@/lib/edviko/pipeline";
+import { atOrPast, flagsFor, worst, type Flag, type Thresholds, type Tone } from "@/lib/edviko/pipeline";
 
 /**
  * The advisor's morning.
@@ -19,9 +19,9 @@ import { atOrPast, flagsFor, worst, type Flag, type Tone } from "@/lib/edviko/pi
 
 type Case = { student: StudentRecord; flags: Flag[]; tone: Tone; rank: number };
 
-function casesOf(students: StudentRecord[]): Case[] {
+function casesOf(students: StudentRecord[], t: Thresholds): Case[] {
   return students.map((student) => {
-    const flags = flagsFor(factsOf(student));
+    const flags = flagsFor(factsOf(student), t);
     return {
       student,
       flags,
@@ -31,9 +31,9 @@ function casesOf(students: StudentRecord[]): Case[] {
   });
 }
 
-export function AdvisorHome() {
+export function AdvisorHome({ thresholds }: { thresholds: Thresholds }) {
   const mine = studentsOfAdvisor(STUDENTS, SIGNED_IN_ADVISOR.code);
-  const cases = casesOf(mine);
+  const cases = casesOf(mine, thresholds);
   const total = mine.length;
 
   const has = (c: Case, id: string) => c.flags.some((f) => f.id === id);

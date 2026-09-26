@@ -5,7 +5,7 @@ import { historyFor } from "@/content/edviko/demo";
 import { ENTRY_KINDS, SOURCES } from "@/lib/edviko/cases";
 import { advisorCode, campusCode, parseId, relationshipLabel } from "@/lib/edviko/id";
 import { factsOf, type StudentRecord } from "@/lib/edviko/org";
-import { flagsFor, STAGE_BY_ID, worst } from "@/lib/edviko/pipeline";
+import { flagsFor, STAGE_BY_ID, worst, type Thresholds } from "@/lib/edviko/pipeline";
 
 /**
  * One student, whole.
@@ -15,10 +15,10 @@ import { flagsFor, STAGE_BY_ID, worst } from "@/lib/edviko/pipeline";
  * case should be able to read this page and take over, which is the test the
  * concept sets and the one a WhatsApp thread fails.
  */
-export function CaseFile({ student }: { student: StudentRecord }) {
+export function CaseFile({ student, thresholds }: { student: StudentRecord; thresholds: Thresholds }) {
   const id = parseId(student.id);
   const facts = factsOf(student);
-  const flags = flagsFor(facts);
+  const flags = flagsFor(facts, thresholds);
   const tone = worst(flags.map((f) => f.tone));
   const stage = STAGE_BY_ID[student.stage];
   const history = historyFor(student.id);
