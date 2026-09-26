@@ -21,16 +21,6 @@ export const ADVISOR_SECTIONS: Section[] = [
     waiting: "the full assessment instrument. The four-question version the students use is a start, not the thing itself.",
   },
   {
-    slug: "assessments",
-    title: "Assessments",
-    what: [
-      "Every assessment on the caseload, with what it shows and whether an advisor has read it.",
-      "Cohort patterns: interest against aptitude, and the students whose results contradict their plan.",
-      "Review queue, so nobody answers fifty questions and hears nothing back.",
-    ],
-    waiting: "the instrument above, and a decision about which parts a parent may see.",
-  },
-  {
     slug: "recommendations",
     title: "Recommendations",
     what: [

@@ -62,7 +62,7 @@ export const ADVISOR_NAV: NavItem[] = [
   { href: "/edviko/advisor", label: "Home", built: true },
   { href: "/edviko/advisor/students", label: "My students", built: true },
   { href: "/edviko/advisor/career-intelligence", label: "Career intelligence", built: false },
-  { href: "/edviko/advisor/assessments", label: "Assessments", built: false },
+  { href: "/edviko/advisor/assessments", label: "Assessments", built: true },
   { href: "/edviko/advisor/recommendations", label: "Recommendations", built: false },
   { href: "/edviko/advisor/universities", label: "Universities", built: false },
   { href: "/edviko/advisor/deadlines", label: "US deadlines", built: true },
@@ -93,6 +93,7 @@ export const CAMPUS_NAV: NavItem[] = [
 export const STUDENT_NAV: NavItem[] = [
   { href: "/edviko", label: "Dashboard", built: true },
   { href: "/edviko/career", label: "Career planner", built: true },
+  { href: "/edviko/assessment", label: "Assessment", built: true },
   { href: "/edviko/equivalence", label: "Academic record", built: true },
   { href: "/edviko/match", label: "Universities", built: true },
   { href: "/edviko/plan", label: "My shortlist", built: true },

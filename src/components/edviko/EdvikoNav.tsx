@@ -29,6 +29,7 @@ const PRIMARY = [
 ];
 
 const SECONDARY = [
+  { href: "/edviko/assessment", label: "Assessment" },
   { href: "/edviko/profile", label: "My record" },
   { href: "/edviko/costs", label: "What it costs" },
   { href: "/edviko/talk", label: "Get help" },
