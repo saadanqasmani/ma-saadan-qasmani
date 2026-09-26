@@ -65,6 +65,7 @@ export const ADVISOR_NAV: NavItem[] = [
   { href: "/edviko/advisor/assessments", label: "Assessments", built: false },
   { href: "/edviko/advisor/recommendations", label: "Recommendations", built: false },
   { href: "/edviko/advisor/universities", label: "Universities", built: false },
+  { href: "/edviko/advisor/deadlines", label: "US deadlines", built: true },
   { href: "/edviko/advisor/applications", label: "Applications", built: false },
   { href: "/edviko/advisor/documents", label: "Documents", built: false },
   { href: "/edviko/advisor/tasks", label: "Tasks", built: false },
@@ -98,6 +99,7 @@ export const STUDENT_NAV: NavItem[] = [
   { href: "/edviko/costs", label: "What it costs", built: true },
   { href: "/edviko/scholarships", label: "Scholarships", built: true },
   { href: "/edviko/apply", label: "Applications", built: true },
+  { href: "/edviko/essay", label: "My essay", built: true },
   { href: "/edviko/profile", label: "My record", built: true },
   { href: "/edviko/talk", label: "My advisor", built: true },
 ];

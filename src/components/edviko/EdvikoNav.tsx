@@ -33,6 +33,7 @@ const SECONDARY = [
   { href: "/edviko/costs", label: "What it costs" },
   { href: "/edviko/talk", label: "Get help" },
   { href: "/edviko/apply", label: "How to apply" },
+  { href: "/edviko/essay", label: "My essay" },
   { href: "/edviko/scholarships", label: "Scholarships" },
   { href: "/edviko/pricing", label: "Pricing" },
   { href: "/edviko/contact", label: "Contact" },
