@@ -41,26 +41,6 @@ export const ADVISOR_SECTIONS: Section[] = [
     waiting: "the verification workflow. The data exists; the discipline around refreshing it does not yet.",
   },
   {
-    slug: "documents",
-    title: "Documents",
-    what: [
-      "A vault per student: transcripts, passports, language certificates, letters, statements.",
-      "Expiry dates and version history, because an expired document fails an application quietly.",
-      "Requests attached to tasks, so asking for a document and chasing it are the same object.",
-    ],
-    waiting: "storage that is legal for minors' identity documents. Not a browser, and not this domain.",
-  },
-  {
-    slug: "tasks",
-    title: "Tasks",
-    what: [
-      "Every task across the caseload with an owner and a due date.",
-      "Reminders at 30, 14, 7, 3 and 1 day, cancelled automatically when the work is done.",
-      "Overdue work escalating to the campus rather than sitting quietly.",
-    ],
-    waiting: "a messaging provider, sender registration and consent to message minors.",
-  },
-  {
     slug: "meetings",
     title: "Meetings and messages",
     what: [
