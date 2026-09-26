@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { TARAKI_COOKIE, tarakiTokenIsValid } from "@/lib/taraki/gate";
+import { EDVIKO_COOKIE, edvikoTokenIsValid } from "@/lib/edviko/gate";
 import { IRIS_COOKIE, tokenIsValid } from "@/lib/irisGate";
 import { OPS_COOKIE, opsTokenIsValid } from "@/lib/ops/gate";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
@@ -32,9 +32,18 @@ import { defaultLocale, isLocale } from "@/lib/i18n/config";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // The product was called Taraki until it became Edviko. Anything still
+  // pointing at the old name is moved rather than lost, and this runs before
+  // the gate so a bookmark does not answer 404 on the way to its new home.
+  if (pathname === "/taraki" || pathname.startsWith("/taraki/")) {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname.replace("/taraki", "/edviko");
+    return NextResponse.redirect(url, 308);
+  }
+
   if (pathname === "/iris-explainer.html") return irisGate(request);
   if (pathname.startsWith("/admin")) return adminGate(request);
-  if (pathname.startsWith("/taraki")) return tarakiGate(request);
+  if (pathname.startsWith("/edviko")) return edvikoGate(request);
   if (pathname.startsWith("/ops")) return opsGate(request);
 
   return languageRewrite(request);
@@ -54,7 +63,7 @@ function languageRewrite(request: NextRequest) {
 }
 
 /**
- * Refuses everything under /taraki to anyone without the code.
+ * Refuses everything under /edviko to anyone without the code.
  *
  * A 404 rather than a redirect or a 403: a redirect to an unlock screen
  * announces that there is something there to unlock, and the whole point is
@@ -62,19 +71,19 @@ function languageRewrite(request: NextRequest) {
  * that takes the code, and it is reachable only by someone who already knows
  * to ask for it.
  */
-async function tarakiGate(request: NextRequest) {
+async function edvikoGate(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (await tarakiTokenIsValid(request.cookies.get(TARAKI_COOKIE)?.value)) {
+  if (await edvikoTokenIsValid(request.cookies.get(EDVIKO_COOKIE)?.value)) {
     return NextResponse.next();
   }
 
-  if (pathname === "/taraki/unlock") return NextResponse.next();
+  if (pathname === "/edviko/unlock") return NextResponse.next();
 
   return new NextResponse(null, { status: 404 });
 }
 
-/** The workroom. Same rule as Taraki: nothing, not even a login screen. */
+/** The workroom. Same rule as Edviko: nothing, not even a login screen. */
 async function opsGate(request: NextRequest) {
   if (await opsTokenIsValid(request.cookies.get(OPS_COOKIE)?.value)) return NextResponse.next();
   if (request.nextUrl.pathname === "/ops/unlock") return NextResponse.next();

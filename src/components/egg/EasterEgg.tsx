@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { stripLocale } from "@/lib/i18n/config";
-import { unlockTaraki, type UnlockState } from "@/lib/actions/taraki";
+import { unlockEdviko, type UnlockState } from "@/lib/actions/edviko";
 
 const initial: UnlockState = { error: null };
 
@@ -23,7 +23,7 @@ export function EasterEgg() {
   const pathname = usePathname();
   const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
-  const [state, action, pending] = useActionState(unlockTaraki, initial);
+  const [state, action, pending] = useActionState(unlockEdviko, initial);
 
   useEffect(() => {
     if (!open) return;
@@ -35,7 +35,7 @@ export function EasterEgg() {
   // already through the gate.
   useEffect(() => {
     if (!state.ok) return;
-    window.open("/taraki", "_blank", "noopener,noreferrer");
+    window.open("/edviko", "_blank", "noopener,noreferrer");
     // Closing fires the dialog's own close event, which is what clears the
     // state. Setting it here as well would be the same job done twice.
     dialog.current?.close();
