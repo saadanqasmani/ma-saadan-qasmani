@@ -8,7 +8,8 @@ import { documents } from "@/content/edviko/documents";
 import { completeness, gaps } from "@/lib/edviko/account";
 import { serverSnapshot, snapshot, subscribe, write } from "@/lib/edviko/browserStore";
 import { isAnswered, listOf, recommend } from "@/lib/edviko/careerFit";
-import { STAGES, currentStage, doneStages, type StageId } from "@/lib/edviko/journey";
+import { currentStage, doneStages, isDerived, phaseProgress, STAGES, type StageId } from "@/lib/edviko/journey";
+import { PHASES, phaseOf } from "@/lib/edviko/pipeline";
 import { tierMeta, type Tier } from "@/lib/edviko/wishlist";
 
 /**
@@ -94,44 +95,71 @@ export function Dashboard() {
         <h2 className="ev-h1" style={{ marginTop: "0.8rem", maxWidth: "18ch" }}>{now.label}</h2>
         <p className="ev-body" style={{ marginTop: "0.7rem", color: "var(--text-soft)", maxWidth: "50ch" }}>{now.means}</p>
         <p className="ev-small" style={{ marginTop: "1.2rem", color: "var(--text-faint)" }}>
-          {done.size} of {STAGES.length} stages behind you · profile {percent}% complete
+          {phaseOf(now.id)?.label ?? "Getting started"} · {done.size} of {STAGES.length} stages behind you ·
+          profile {percent}% complete
         </p>
       </section>
 
       <section className="ev-card" style={{ padding: "clamp(1.2rem, 3vw, 1.8rem)" }}>
         <span className="ev-label" style={{ color: "var(--text-faint)" }}>The whole road</span>
-        <ol className="ev-journey" style={{ marginTop: "1.2rem" }}>
-          {STAGES.map((s) => {
-            const finished = done.has(s.id);
+
+        <div style={{ display: "grid", gap: "1.6rem", marginTop: "1.3rem" }}>
+          {PHASES.map((phase) => {
+            const p = phaseProgress(done, phase.stages);
+            const here = phase.stages.includes(now.id);
             return (
-              <li key={s.id} data-done={finished} data-now={s.id === now.id}>
-                <span className="ev-journey__dot" aria-hidden />
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ display: "flex", gap: "0.7rem", alignItems: "baseline", flexWrap: "wrap" }}>
-                    <span className="ev-body" style={{ fontWeight: 600 }}>{s.label}</span>
-                    {!s.automatic && (
-                      <button
-                        type="button"
-                        className="ev-small"
-                        onClick={() => claim(s.id)}
-                        style={{ background: "none", border: 0, padding: 0, cursor: "pointer", color: finished ? "var(--free)" : "var(--accent)", textDecoration: "underline", textUnderlineOffset: "3px" }}
-                      >
-                        {finished ? "Done. Undo?" : "Mark done"}
-                      </button>
-                    )}
-                    {s.automatic && finished && (
-                      <span className="ev-small" style={{ color: "var(--free)" }}>Done</span>
-                    )}
-                  </div>
-                  <p className="ev-small" style={{ color: "var(--text-faint)" }}>{s.means}</p>
+              <div key={phase.id}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "baseline", flexWrap: "wrap" }}>
+                  <span
+                    className="ev-body"
+                    style={{ fontWeight: 600, color: here ? "var(--accent)" : p.done === p.of ? "var(--free)" : "var(--text)" }}
+                  >
+                    {phase.label}
+                  </span>
+                  <span className="ev-small" style={{ color: "var(--text-faint)", fontVariantNumeric: "tabular-nums" }}>
+                    {p.done} of {p.of}
+                  </span>
                 </div>
-              </li>
+                <p className="ev-small" style={{ color: "var(--text-faint)", marginTop: "0.2rem" }}>{phase.means}</p>
+
+                <ol className="ev-journey" style={{ marginTop: "0.9rem" }}>
+                  {phase.stages.map((id) => {
+                    const stage = STAGES.find((x) => x.id === id)!;
+                    const finished = done.has(id);
+                    const derived = isDerived(id);
+                    return (
+                      <li key={id} data-done={finished} data-now={id === now.id}>
+                        <span className="ev-journey__dot" aria-hidden />
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ display: "flex", gap: "0.7rem", alignItems: "baseline", flexWrap: "wrap" }}>
+                            <span className="ev-body" style={{ fontWeight: 600 }}>{stage.label}</span>
+                            {!derived && (
+                              <button
+                                type="button"
+                                className="ev-small"
+                                onClick={() => claim(id)}
+                                style={{ background: "none", border: 0, padding: 0, cursor: "pointer", color: finished ? "var(--free)" : "var(--accent)", textDecoration: "underline", textUnderlineOffset: "3px" }}
+                              >
+                                {finished ? "Done. Undo?" : "Mark done"}
+                              </button>
+                            )}
+                            {derived && finished && <span className="ev-small" style={{ color: "var(--free)" }}>Done</span>}
+                          </div>
+                          <p className="ev-small" style={{ color: "var(--text-faint)" }}>{stage.means}</p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </div>
             );
           })}
-        </ol>
-        <p className="ev-small" style={{ marginTop: "1.2rem", color: "var(--text-faint)" }}>
+        </div>
+
+        <p className="ev-small" style={{ marginTop: "1.4rem", color: "var(--text-faint)" }}>
           The stages without a button are worked out from what you have already done here, so they cannot drift away
-          from the truth. The rest happen out in the world, so you tell us.
+          from the truth. The rest happen out in the world, so you tell us. Your advisor sees these same twenty
+          stages, which is why the two of you can never be looking at different pictures.
         </p>
       </section>
 

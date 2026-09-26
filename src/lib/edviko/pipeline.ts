@@ -348,3 +348,68 @@ export function atOrPast(stages: StageId[], id: StageId): number {
   const floor = stageOrder(id);
   return stages.filter((s) => stageOrder(s) >= floor).length;
 }
+
+/**
+ * The same twenty stages, grouped into the seven a student can hold in their
+ * head at once.
+ *
+ * One spine, two readings. An advisor managing two hundred cases needs every
+ * stage, because the difference between "shortlist built" and "money
+ * counted" is the difference between two pieces of work. A seventeen year
+ * old looking at their own life needs to know roughly where they are, and a
+ * twenty-item checklist of their own future is a way of making somebody feel
+ * behind rather than oriented.
+ *
+ * Grouping rather than a second list, so the two views can never disagree
+ * about what has happened.
+ */
+export type Phase = { id: string; label: string; means: string; stages: StageId[] };
+
+export const PHASES: Phase[] = [
+  {
+    id: "start",
+    label: "Getting started",
+    means: "There is a record, and it has enough in it to advise you on.",
+    stages: ["registered", "profile"],
+  },
+  {
+    id: "knowing",
+    label: "Knowing yourself",
+    means: "What you are good at, what you want, and somebody professional having read it back to you.",
+    stages: ["assessment", "assessment-reviewed", "career-analysis", "career-recommendation"],
+  },
+  {
+    id: "choosing",
+    label: "Choosing",
+    means: "A degree, a country and a list of universities, each with a reason to be on it.",
+    stages: ["degree", "country", "university"],
+  },
+  {
+    id: "paying",
+    label: "Paying for it",
+    means: "The whole cost counted, and the gap between it and your family's money named out loud.",
+    stages: ["financial", "scholarship"],
+  },
+  {
+    id: "applying",
+    label: "Applying",
+    means: "Documents, essays and referees ready, and applications actually sent.",
+    stages: ["application-prep", "applied"],
+  },
+  {
+    id: "getting-in",
+    label: "Getting in",
+    means: "An offer, a visa, and everything that has to happen before the flight.",
+    stages: ["admission", "visa", "pre-departure"],
+  },
+  {
+    id: "there",
+    label: "Being there",
+    means: "Enrolled, and the years after it, which are the reason for all of the above.",
+    stages: ["enrolled", "internship", "graduation", "outcome"],
+  },
+];
+
+export function phaseOf(stage: StageId): Phase | null {
+  return PHASES.find((p) => p.stages.includes(stage)) ?? null;
+}
