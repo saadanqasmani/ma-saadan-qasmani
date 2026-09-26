@@ -34,29 +34,27 @@ function goToPurchase() {
 }
 
 export function ToPurchase({ label }: { label: string }) {
-  const [show, setShow] = useState(false);
+  // True from the first paint, so the button is in the HTML the page
+  // arrives with rather than appearing once something has been scrolled.
+  // The only thing that takes it away is having got where it points.
+  const [show, setShow] = useState(true);
 
   useEffect(() => {
     const target = document.getElementById("purchase");
     if (!target) return;
 
-    // Hidden at the very top, where the page's own scroll cue is enough,
-    // and hidden again once the shop is on screen.
-    const arrived = new IntersectionObserver(
-      ([entry]) => setShow(!entry.isIntersecting && window.scrollY > 240),
-      { rootMargin: "-10% 0px -55% 0px" },
-    );
-    arrived.observe(target);
-
-    const onScroll = () => {
+    const look = () => {
       const rect = target.getBoundingClientRect();
-      setShow(window.scrollY > 240 && rect.top > window.innerHeight * 0.45);
+      // Gone once the shop is up: an arrow pointing down at what you are
+      // already reading is only in the way.
+      setShow(rect.top > window.innerHeight * 0.45);
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    look();
+    window.addEventListener("scroll", look, { passive: true });
+    window.addEventListener("resize", look);
     return () => {
-      arrived.disconnect();
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", look);
+      window.removeEventListener("resize", look);
     };
   }, []);
 
