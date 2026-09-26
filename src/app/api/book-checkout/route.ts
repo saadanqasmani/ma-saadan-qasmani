@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { quoteFor, storedCode } from "@/lib/book/pricing";
+import { recordOrder } from "@/lib/book/store";
 import { createCheckout } from "@/lib/book/checkout";
 
 /**
@@ -48,31 +49,41 @@ export async function POST(request: Request) {
   const { promo, region, ...order } = parsed.data;
   const quote = quoteFor(region, order.quantity, promo);
 
-  const { data: row, error } = await supabase
-    .from("book_orders")
-    .insert({
-      ...order,
-      region,
-      currency: quote.currency,
-      unit_price_usd: quote.unit,
-      shipping_amount: quote.shipping,
-      quantity_priced: quote.quantity,
-      promo_code: storedCode(quote),
-      discount_usd: quote.discount,
-      total_usd: quote.total,
-      payment_status: "awaiting",
-    })
-    .select("id")
-    .single();
+  const written = await recordOrder(supabase, order, {
+    region,
+    currency: quote.currency,
+    unit_price_usd: quote.unit,
+    shipping_amount: quote.shipping,
+    quantity_priced: quote.quantity,
+    promo_code: storedCode(quote),
+    discount_usd: quote.discount,
+    total_usd: quote.total,
+    payment_status: "awaiting",
+  });
 
-  if (error || !row) {
-    console.error(`[pre-order] could not write the order: ${error?.message ?? "no row came back"}`);
+  if (!written.ok || !written.id) {
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+  }
+  const orderId = written.id;
+
+  // A table without the money columns cannot hold a payment either: the
+  // webhook would have nowhere to mark it paid. Better to take the order
+  // and settle it by hand than to take a card against a row that cannot
+  // record the result.
+  if (written.degraded) {
+    return NextResponse.json(
+      {
+        error:
+          "Card payment isn't ready on this deployment yet. Your pre-order has been recorded and you will be sent payment instructions.",
+        recorded: true,
+      },
+      { status: 503 }
+    );
   }
 
   const session = await createCheckout(
     {
-      id: row.id as string,
+      id: orderId,
       email: order.email,
       fullName: order.full_name,
       country: order.country,
@@ -87,7 +98,7 @@ export async function POST(request: Request) {
     console.error(`[pre-order] checkout unavailable (${session.reason}): ${session.detail}`);
     // The order is real whatever Stripe said, so it is kept and marked back
     // to a reservation rather than left pretending to be mid-payment.
-    await supabase.from("book_orders").update({ payment_status: "reserved" }).eq("id", row.id);
+    await supabase.from("book_orders").update({ payment_status: "reserved" }).eq("id", orderId);
     return NextResponse.json(
       {
         error:
@@ -103,7 +114,7 @@ export async function POST(request: Request) {
   await supabase
     .from("book_orders")
     .update({ stripe_session_id: session.sessionId })
-    .eq("id", row.id);
+    .eq("id", orderId);
 
   return NextResponse.json({ ok: true, url: session.url });
 }

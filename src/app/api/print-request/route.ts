@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { recordAsMessage, recordOrder } from "@/lib/book/store";
 
 /**
  * A reader Amazon will not reach, asking to be sent one anyway.
@@ -36,19 +37,36 @@ export async function POST(request: Request) {
     );
   }
 
-  const { error } = await supabase.from("book_orders").insert({
-    ...parsed.data,
-    quantity: parsed.data.quantity ?? 1,
+  const { quantity, ...who } = parsed.data;
+  const written = await recordOrder(
+    supabase,
+    { ...who, quantity: quantity ?? 1, city: "—" },
     // Not a country the shop covers, so it goes in as a request rather than
     // an order: no currency, no total, nothing owed until it is worked out.
-    region: "world",
-    city: "—",
-    payment_status: "quote-requested",
-  });
+    { region: "world", payment_status: "quote-requested" }
+  );
 
-  if (error) {
-    console.error(`[print request] could not write it down: ${error.message}`);
-    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+  if (!written.ok) {
+    // The order table has only ever accepted two countries, and this reader
+    // is in a third. Rather than lose them, the request arrives as a
+    // message, which the same inbox shows.
+    const filed = await recordAsMessage(supabase, {
+      name: who.full_name,
+      email: who.email,
+      subject: `Print to order — ${who.country}`,
+      body: [
+        `Wants ${quantity ?? 1} copy or copies of The Highest Branch, shipped to ${who.country}.`,
+        `Phone: ${who.phone}`,
+        `Address: ${who.shipping_address}`,
+        who.message ? `Said: ${who.message}` : "",
+        "Amazon does not reach them. Work out the postage and write back with a price.",
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    });
+    if (!filed) {
+      return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+    }
   }
 
   return NextResponse.json({ ok: true });

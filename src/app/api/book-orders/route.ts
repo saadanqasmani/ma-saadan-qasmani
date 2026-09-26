@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { quoteFor, storedCode } from "@/lib/book/pricing";
+import { recordOrder } from "@/lib/book/store";
 
 const schema = z.object({
   full_name: z.string().min(1).max(200),
@@ -40,8 +41,8 @@ export async function POST(request: Request) {
   // here. Saadan reviews each order and sends payment instructions himself.
   const { promo, region, ...order } = parsed.data;
   const quote = quoteFor(region, order.quantity, promo);
-  const { error } = await supabase.from("book_orders").insert({
-    ...order,
+
+  const written = await recordOrder(supabase, order, {
     region,
     currency: quote.currency,
     unit_price_usd: quote.unit,
@@ -53,7 +54,7 @@ export async function POST(request: Request) {
     payment_status: "reserved",
   });
 
-  if (error) {
+  if (!written.ok) {
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
 
