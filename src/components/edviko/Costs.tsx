@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useAccount } from "@/components/edviko/Account";
 import { countries, hasAnyCosts } from "@/content/edviko/countries";
 import {
+  BANDS,
   KIND_LABEL,
   LINES,
+  bandOf,
   emptyLines,
   money,
   moneyOf,
@@ -43,6 +45,8 @@ export function CostCalculator() {
   const [years, setYears] = useState(4);
   const [scholarship, setScholarship] = useState(0);
   const [inflation, setInflation] = useState(0);
+  const [contingency, setContingency] = useState(5);
+  const [fx, setFx] = useState(0);
   const [budget, setBudget] = useState<number | null>(account?.budgetUsd ?? null);
 
   function pickCountry(next: string) {
@@ -51,8 +55,9 @@ export function CostCalculator() {
   }
 
   const currency = filled.currency ?? "EUR";
-  const plan: Plan = { countryCode: code, currency, years, scholarship, budget, inflation, lines };
+  const plan: Plan = { countryCode: code, currency, years, scholarship, budget, inflation, contingency, fx, lines };
   const totals = totalsFor(plan);
+  const band = bandOf(totals);
   const proof = country.costs.proofOfFunds;
 
   return (
@@ -172,12 +177,33 @@ export function CostCalculator() {
             one did, and no plan that ignores it survives contact with a fee letter.
           </p>
         </div>
+
+        <Slider
+          id="ev-cont"
+          label="Set aside for the year that goes wrong"
+          value={contingency}
+          max={20}
+          onChange={setContingency}
+          note="A laptop dies, a visa is refused and refiled, somebody is ill and a flight is bought at three days' notice. Every one of those is ordinary. Five percent is the least this should ever be."
+        />
+
+        <Slider
+          id="ev-fx"
+          label="If your own currency slips this much a year"
+          value={fx}
+          max={25}
+          onChange={setFx}
+          note="The line that ends more degrees than tuition does, and the one nobody quotes. The fee did not rise; the rupee fell. Leaving it at zero is not neutrality, it is an assumption."
+        />
       </div>
 
       <div className="ev-card" style={{ padding: "clamp(1.4rem, 3vw, 2rem)", borderColor: "var(--accent)" }}>
         <span className="ev-label" style={{ color: "var(--accent)" }}>The answer</span>
         <div style={{ marginTop: "1.2rem", display: "grid", gap: "1rem" }}>
-          <Total label="One year" value={money(totals.perYear, currency)} />
+          <Total label="One year, before anything goes wrong" value={money(totals.perYear, currency)} />
+          {contingency > 0 && (
+            <Total label={`Set aside, ${contingency}% of a year`} value={money(totals.contingencyPerYear, currency)} />
+          )}
           <Total label={`All ${years} years`} value={money(totals.whole, currency)} />
           {scholarship > 0 && <Total label="After the scholarship" value={money(totals.afterScholarship, currency)} />}
           {totals.gap !== null && (
@@ -189,6 +215,37 @@ export function CostCalculator() {
             />
           )}
         </div>
+
+        {fx > 0 && (
+          <Total
+            label={`All ${years} years, if your currency slips ${fx}% a year`}
+            value={money(totals.ifCurrencySlips, currency)}
+            tone="var(--paid)"
+          />
+        )}
+
+        {band && (
+          <div style={{ marginTop: "1.4rem", paddingTop: "1.2rem", borderTop: "1px solid var(--line)" }}>
+            <span
+              className="ev-label"
+              style={{ color: band === "comfortable" ? "var(--free)" : band === "out-of-reach" ? "var(--red)" : "var(--paid)" }}
+            >
+              {BANDS[band].label}
+            </span>
+            <p className="ev-body" style={{ marginTop: "0.5rem", color: "var(--text-soft)" }}>{BANDS[band].means}</p>
+            {totals.scholarshipToClose !== null && (
+              <p className="ev-small" style={{ marginTop: "0.6rem", color: "var(--text-soft)" }}>
+                A scholarship of {money(totals.scholarshipToClose, currency)} a year closes it exactly. Today you have
+                {" "}{money(scholarship, currency)}.
+              </p>
+            )}
+            {fx > 0 && totals.gapIfCurrencySlips !== null && totals.gapIfCurrencySlips > (totals.gap ?? 0) && (
+              <p className="ev-small" style={{ marginTop: "0.4rem", color: "var(--paid)" }}>
+                If the currency moves as you assumed, the gap becomes {money(totals.gapIfCurrencySlips, currency)}.
+              </p>
+            )}
+          </div>
+        )}
 
         {totals.gap === null && (
           <p className="ev-small" style={{ marginTop: "1.2rem", color: "var(--text-faint)" }}>
@@ -246,6 +303,42 @@ function Field({ label, value, onChange }: { label: string; value: number; onCha
         onChange={(e) => onChange(Math.max(0, Number(e.target.value) || 0))}
         style={{ marginTop: "0.4rem" }}
       />
+    </div>
+  );
+}
+
+function Slider({
+  id,
+  label,
+  value,
+  max,
+  onChange,
+  note,
+}: {
+  id: string;
+  label: string;
+  value: number;
+  max: number;
+  onChange: (n: number) => void;
+  note: string;
+}) {
+  return (
+    <div>
+      <label className="ev-body" htmlFor={id} style={{ fontWeight: 600 }}>{label}</label>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", marginTop: "0.4rem" }}>
+        <input
+          id={id}
+          type="range"
+          min={0}
+          max={max}
+          step={1}
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          style={{ flex: 1, accentColor: "var(--accent)" }}
+        />
+        <span className="ev-body" style={{ minWidth: "3ch", fontVariantNumeric: "tabular-nums" }}>{value}%</span>
+      </div>
+      <p className="ev-small" style={{ marginTop: "0.3rem", color: "var(--text-faint)" }}>{note}</p>
     </div>
   );
 }
