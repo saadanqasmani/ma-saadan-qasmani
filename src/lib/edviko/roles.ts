@@ -76,7 +76,7 @@ export const ADVISOR_NAV: NavItem[] = [
   { href: "/edviko/advisor/documents", label: "Documents", built: false },
   { href: "/edviko/advisor/tasks", label: "Tasks", built: false },
   { href: "/edviko/advisor/meetings", label: "Meetings & messages", built: false },
-  { href: "/edviko/advisor/analytics", label: "Analytics", built: false },
+  { href: "/edviko/advisor/analytics", label: "Analytics", built: true },
   { href: "/edviko/advisor/reports", label: "Reports", built: false },
 ];
 
@@ -92,7 +92,7 @@ export const CAMPUS_NAV: NavItem[] = [
   { href: "/edviko/campus/assessments", label: "Assessments", built: false },
   { href: "/edviko/campus/meetings", label: "Meetings & tasks", built: false },
   { href: "/edviko/campus/communications", label: "Communications", built: false },
-  { href: "/edviko/campus/reports", label: "Reports & analytics", built: false },
+  { href: "/edviko/campus/reports", label: "Reports & analytics", built: true },
   { href: "/edviko/campus/settings", label: "Settings", built: true },
 ];
 

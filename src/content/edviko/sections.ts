@@ -80,26 +80,6 @@ export const ADVISOR_SECTIONS: Section[] = [
     ],
     waiting: "the same messaging work, plus a calendar the school already uses.",
   },
-  {
-    slug: "analytics",
-    title: "Analytics",
-    what: [
-      "The KPI set: profile completion, assessment completion, days to recommendation, deadline compliance, submission rate, offer rate, scholarship rate, enrolment conversion.",
-      "Drill-down from any number to the named students behind it.",
-      "Trend against the same month last year, once there is a last year.",
-    ],
-    waiting: "real cases. Analytics on a demo campus is decoration.",
-  },
-  {
-    slug: "reports",
-    title: "Reports",
-    what: [
-      "A case summary another advisor could take over from, exported as a document.",
-      "Parent-facing progress reports that say what was advised and why.",
-      "Campus and school reporting packs on a schedule.",
-    ],
-    waiting: "the document pipeline, and a decision about what a parent sees by default.",
-  },
 ];
 
 export const CAMPUS_SECTIONS: Section[] = [
@@ -172,16 +152,6 @@ export const CAMPUS_SECTIONS: Section[] = [
       "Consent and opt-out per channel, per guardian.",
     ],
     waiting: "a provider, sender registration and a lawful basis for messaging minors.",
-  },
-  {
-    slug: "reports",
-    title: "Reports and analytics",
-    what: [
-      "Campus pack: pipeline, workload, outcomes, risks, affordability.",
-      "School and country rollups above this one, with access following the role.",
-      "Export for a board meeting without anybody rebuilding it in a spreadsheet.",
-    ],
-    waiting: "real cases, and the reporting hierarchy above the campus.",
   },
 ];
 
