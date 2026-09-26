@@ -9,7 +9,7 @@
  * forty components later.
  */
 
-export type Role = "student" | "advisor" | "campus";
+export type Role = "student" | "advisor" | "campus" | "family";
 
 export type RoleMeta = {
   id: Role;
@@ -38,6 +38,12 @@ export const ROLES: RoleMeta[] = [
     question: "Where is this campus losing people?",
     home: "/edviko/campus",
   },
+  {
+    id: "family",
+    label: "Parent or guardian",
+    question: "What is happening, what will it cost, and what do I have to do?",
+    home: "/edviko/family",
+  },
 ];
 
 export const ROLE_KEY = "ev-role";
@@ -47,7 +53,7 @@ export function roleMeta(id: Role): RoleMeta {
 }
 
 export function isRole(value: string | null): value is Role {
-  return value === "student" || value === "advisor" || value === "campus";
+  return value === "student" || value === "advisor" || value === "campus" || value === "family";
 }
 
 /** One entry in a portal's sidebar. */
@@ -105,7 +111,16 @@ export const STUDENT_NAV: NavItem[] = [
   { href: "/edviko/talk", label: "My advisor", built: true },
 ];
 
+export const FAMILY_NAV: NavItem[] = [
+  { href: "/edviko/family", label: "Where they are", built: true },
+  { href: "/edviko/family/costs", label: "What it costs", built: false },
+  { href: "/edviko/family/documents", label: "What we need from you", built: false },
+  { href: "/edviko/family/meetings", label: "Meetings", built: false },
+  { href: "/edviko/family/messages", label: "Messages", built: false },
+];
+
 export function navFor(role: Role): NavItem[] {
+  if (role === "family") return FAMILY_NAV;
   if (role === "advisor") return ADVISOR_NAV;
   if (role === "campus") return CAMPUS_NAV;
   return STUDENT_NAV;
