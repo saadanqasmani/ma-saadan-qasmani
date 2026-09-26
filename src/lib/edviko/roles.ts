@@ -56,67 +56,93 @@ export function isRole(value: string | null): value is Role {
   return value === "student" || value === "advisor" || value === "campus" || value === "family";
 }
 
-/** One entry in a portal's sidebar. */
+/**
+ * One entry in a portal's sidebar.
+ *
+ * Grouped, because twelve equal items in a column is an inventory rather
+ * than a navigation: a person reading one has to check every line to find
+ * the thing they came for. Four headings turn the same twelve into three or
+ * four quick decisions.
+ */
 export type NavItem = {
   href: string;
   label: string;
   /** False while the section is a statement of intent rather than a screen. */
   built: boolean;
+  /** The heading it sits under. */
+  group: string;
 };
 
+/** The order the headings appear in, which is the order the work happens. */
+export const GROUP_ORDER = ["Today", "The work", "Reference", "Looking back", "The campus", "Records", "Running it", "Your child"];
+
+export function grouped(items: NavItem[]): { group: string; items: NavItem[] }[] {
+  const out: { group: string; items: NavItem[] }[] = [];
+  for (const item of items) {
+    const found = out.find((g) => g.group === item.group);
+    if (found) found.items.push(item);
+    else out.push({ group: item.group, items: [item] });
+  }
+  return out.sort((a, b) => {
+    const ai = GROUP_ORDER.indexOf(a.group);
+    const bi = GROUP_ORDER.indexOf(b.group);
+    return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
+  });
+}
+
 export const ADVISOR_NAV: NavItem[] = [
-  { href: "/edviko/advisor", label: "Home", built: true },
-  { href: "/edviko/advisor/students", label: "My students", built: true },
-  { href: "/edviko/advisor/career-intelligence", label: "Career intelligence", built: false },
-  { href: "/edviko/advisor/assessments", label: "Assessments", built: true },
-  { href: "/edviko/advisor/recommendations", label: "Recommendations", built: false },
-  { href: "/edviko/advisor/universities", label: "Universities", built: false },
-  { href: "/edviko/advisor/deadlines", label: "US deadlines", built: true },
-  { href: "/edviko/advisor/applications", label: "Applications", built: true },
-  { href: "/edviko/advisor/documents", label: "Documents", built: false },
-  { href: "/edviko/advisor/tasks", label: "Tasks", built: false },
-  { href: "/edviko/advisor/meetings", label: "Meetings & messages", built: false },
-  { href: "/edviko/advisor/analytics", label: "Analytics", built: true },
-  { href: "/edviko/advisor/reports", label: "Reports", built: false },
+  { href: "/edviko/advisor", label: "Today", built: true, group: "Today" },
+  { href: "/edviko/advisor/students", label: "My students", built: true, group: "Today" },
+  { href: "/edviko/advisor/assessments", label: "Assessments", built: true, group: "The work" },
+  { href: "/edviko/advisor/applications", label: "Applications", built: true, group: "The work" },
+  { href: "/edviko/advisor/recommendations", label: "Recommendations", built: false, group: "The work" },
+  { href: "/edviko/advisor/documents", label: "Documents", built: false, group: "The work" },
+  { href: "/edviko/advisor/tasks", label: "Tasks", built: false, group: "The work" },
+  { href: "/edviko/advisor/meetings", label: "Meetings & messages", built: false, group: "The work" },
+  { href: "/edviko/advisor/deadlines", label: "US deadlines", built: true, group: "Reference" },
+  { href: "/edviko/advisor/universities", label: "Universities", built: false, group: "Reference" },
+  { href: "/edviko/advisor/career-intelligence", label: "Career intelligence", built: false, group: "Reference" },
+  { href: "/edviko/advisor/analytics", label: "Analytics", built: true, group: "Looking back" },
+  { href: "/edviko/advisor/reports", label: "Reports", built: false, group: "Looking back" },
 ];
 
 export const CAMPUS_NAV: NavItem[] = [
-  { href: "/edviko/campus", label: "Dashboard", built: true },
-  { href: "/edviko/campus/counsellors", label: "Career counsellors", built: true },
-  { href: "/edviko/campus/students", label: "Students", built: true },
-  { href: "/edviko/campus/requests", label: "Student requests", built: true },
-  { href: "/edviko/campus/allocation", label: "Advisor allocation", built: false },
-  { href: "/edviko/campus/records", label: "Academic records", built: false },
-  { href: "/edviko/campus/applications", label: "Applications & offers", built: false },
-  { href: "/edviko/campus/documents", label: "Documents", built: false },
-  { href: "/edviko/campus/assessments", label: "Assessments", built: false },
-  { href: "/edviko/campus/meetings", label: "Meetings & tasks", built: false },
-  { href: "/edviko/campus/communications", label: "Communications", built: false },
-  { href: "/edviko/campus/reports", label: "Reports & analytics", built: true },
-  { href: "/edviko/campus/settings", label: "Settings", built: true },
+  { href: "/edviko/campus", label: "Today", built: true, group: "The campus" },
+  { href: "/edviko/campus/counsellors", label: "Career counsellors", built: true, group: "The campus" },
+  { href: "/edviko/campus/students", label: "Students", built: true, group: "The campus" },
+  { href: "/edviko/campus/requests", label: "Requests", built: true, group: "The campus" },
+  { href: "/edviko/campus/records", label: "Academic records", built: false, group: "Records" },
+  { href: "/edviko/campus/applications", label: "Applications & offers", built: false, group: "Records" },
+  { href: "/edviko/campus/assessments", label: "Assessments", built: false, group: "Records" },
+  { href: "/edviko/campus/documents", label: "Documents", built: false, group: "Records" },
+  { href: "/edviko/campus/allocation", label: "Advisor allocation", built: false, group: "Running it" },
+  { href: "/edviko/campus/meetings", label: "Meetings & tasks", built: false, group: "Running it" },
+  { href: "/edviko/campus/communications", label: "Communications", built: false, group: "Running it" },
+  { href: "/edviko/campus/settings", label: "Settings", built: true, group: "Running it" },
+  { href: "/edviko/campus/reports", label: "Reports & analytics", built: true, group: "Looking back" },
 ];
 
 export const STUDENT_NAV: NavItem[] = [
-  { href: "/edviko", label: "Dashboard", built: true },
-  { href: "/edviko/career", label: "Career planner", built: true },
-  { href: "/edviko/assessment", label: "Assessment", built: true },
-  { href: "/edviko/equivalence", label: "Academic record", built: true },
-  { href: "/edviko/match", label: "Universities", built: true },
-  { href: "/edviko/plan", label: "My shortlist", built: true },
-  { href: "/edviko/costs", label: "What it costs", built: true },
-  { href: "/edviko/scholarships", label: "Scholarships", built: true },
-  { href: "/edviko/apply", label: "Applications", built: true },
-  { href: "/edviko/essay", label: "My essay", built: true },
-  { href: "/edviko/profile", label: "My record", built: true },
-  { href: "/edviko/talk", label: "My advisor", built: true },
+  { href: "/edviko", label: "Dashboard", built: true, group: "Today" },
+  { href: "/edviko/career", label: "Career planner", built: true, group: "The work" },
+  { href: "/edviko/assessment", label: "Assessment", built: true, group: "The work" },
+  { href: "/edviko/equivalence", label: "Academic record", built: true, group: "The work" },
+  { href: "/edviko/match", label: "Universities", built: true, group: "The work" },
+  { href: "/edviko/plan", label: "My shortlist", built: true, group: "The work" },
+  { href: "/edviko/costs", label: "What it costs", built: true, group: "The work" },
+  { href: "/edviko/scholarships", label: "Scholarships", built: true, group: "The work" },
+  { href: "/edviko/apply", label: "Applications", built: true, group: "The work" },
+  { href: "/edviko/essay", label: "My essay", built: true, group: "The work" },
+  { href: "/edviko/profile", label: "My record", built: true, group: "Reference" },
+  { href: "/edviko/talk", label: "My advisor", built: true, group: "Reference" },
 ];
 
 export const FAMILY_NAV: NavItem[] = [
-  { href: "/edviko/family", label: "Where they are", built: true },
-  { href: "/edviko/family/costs", label: "What it costs", built: false },
-  { href: "/edviko/family/documents", label: "What we need from you", built: false },
-  { href: "/edviko/family/meetings", label: "Meetings", built: false },
-  { href: "/edviko/family/messages", label: "Messages", built: false },
+  { href: "/edviko/family", label: "Where they are", built: true, group: "Your child" },
+  { href: "/edviko/family/costs", label: "What it costs", built: false, group: "Your child" },
+  { href: "/edviko/family/documents", label: "What we need from you", built: false, group: "Your child" },
+  { href: "/edviko/family/meetings", label: "Meetings", built: false, group: "Your child" },
+  { href: "/edviko/family/messages", label: "Messages", built: false, group: "Your child" },
 ];
 
 export function navFor(role: Role): NavItem[] {

@@ -1,6 +1,7 @@
 import { Dot, Empty, Meter, Panel, Pipeline, Row, Tag, Tile } from "@/components/edviko/portal/parts";
+import { Greeting } from "@/components/edviko/portal/Greeting";
 import { ADVISORS, CAMPUS, REQUESTS, SCHOOL, STUDENTS, SUPERVISOR } from "@/content/edviko/demo";
-import { factsOf, firstName, studentsOfAdvisor, type StudentRecord } from "@/lib/edviko/org";
+import { factsOf, studentsOfAdvisor, type StudentRecord } from "@/lib/edviko/org";
 import { atOrPast, flagsFor, worst, type Thresholds, type Tone } from "@/lib/edviko/pipeline";
 
 /**
@@ -89,7 +90,7 @@ export function CampusHome({ thresholds }: { thresholds: Thresholds }) {
     <div style={{ display: "grid", gap: "1.25rem" }}>
       <header>
         <h1 className="ev-h1" style={{ fontSize: "clamp(1.6rem, 3vw, 2.25rem)" }}>
-          Good morning, {firstName(SUPERVISOR.name)}
+          <Greeting fallback={SUPERVISOR.name} role="campus" />
         </h1>
         <p className="ev-body" style={{ color: "var(--text-soft)", marginTop: "0.5rem" }}>
           {SCHOOL.name} · {CAMPUS.name} · {CAMPUS.code}

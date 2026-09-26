@@ -706,7 +706,15 @@ a:hover .ev-mark__trail {
   background: transparent;
   cursor: pointer;
   display: grid;
-  place-items: center;
+  /*
+   * The rows are stated rather than left to the browser. Without them the
+   * two bars sat further apart than the 3.3px each one is nudged when the
+   * menu opens, so the cross never closed and the button read as a chevron
+   * pointing at nothing.
+   */
+  grid-template-rows: 1.6px 1.6px;
+  justify-items: center;
+  align-content: center;
   gap: 5px;
   padding: 0;
 }
@@ -1357,3 +1365,34 @@ body[data-portal="true"] .ev-bank {
 .ev-meter__fill[data-tone="red"] { background: var(--red); }
 .ev-meter__fill[data-tone="amber"] { background: var(--amber); }
 .ev-meter__fill[data-tone="green"] { background: var(--free); }
+
+/* --- knowing where you are ------------------------------------------- */
+
+/*
+ * The current page, marked in every list it appears in. It was marked in
+ * the desktop bar and nowhere else, so the phone menu and the portal
+ * sidebar both left a reader to work it out from the heading.
+ */
+.ev-menu__link[data-on="true"] {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.ev-menu__item[data-on="true"] {
+  border-color: var(--accent);
+}
+
+.ev-side__who {
+  display: block;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.ev-side__who:hover {
+  border-color: var(--line-strong);
+  background: var(--surface);
+}
+
+/* The sign-in pair beside the theme switch, without crowding it. */
+.ev-header__right {
+  gap: 0.75rem;
+}

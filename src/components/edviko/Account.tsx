@@ -2,13 +2,7 @@
 
 import { useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
-import {
-  accountStore,
-  createAccount,
-  EMPTY,
-  readProfile,
-  type Profile,
-} from "@/lib/edviko/account";
+import { accountStore, readProfile, type Profile } from "@/lib/edviko/account";
 
 /** The signed-in student, or null. Used everywhere something is gated. */
 export function useAccount(): Profile | null {
@@ -21,11 +15,13 @@ export function useAccount(): Profile | null {
 }
 
 /**
- * Sign up, or sign in.
+ * The prompt that appears when something needs an account.
  *
- * Deliberately three fields. Every extra box on a sign-up form loses people,
- * and everything else about a student can be filled in later from their
- * profile, where it is obvious why it is being asked.
+ * It used to make one here and now, with a name and an email and no
+ * password, which was the right call while there was nothing else. Now that
+ * there is a real sign-up it points at it instead: two ways to create an
+ * account is how a product ends up with two kinds of account, one of which
+ * cannot be signed into on the next visit.
  */
 export function AuthPanel({
   onClose,
@@ -34,54 +30,35 @@ export function AuthPanel({
   onClose: () => void;
   reason?: string;
 }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim() || !email.trim()) return;
-    setBusy(true);
-    await createAccount({ ...EMPTY, name: name.trim(), email: email.trim() });
-    setBusy(false);
-    onClose();
-  }
-
   return (
-    <div className="ev-modal" role="dialog" aria-label="Create your account" onClick={onClose}>
-      <form className="ev-pane ev-land ev-modal__box" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
+    <div className="ev-modal" role="dialog" aria-label="An account is needed" onClick={onClose}>
+      <div className="ev-pane ev-land ev-modal__box" onClick={(e) => e.stopPropagation()}>
         <span className="ev-label" style={{ color: "var(--accent)" }}>Free, always</span>
         <h2 className="ev-h2" style={{ marginTop: "0.7rem", fontSize: "1.3rem" }}>
-          {reason ?? "Make an account"}
+          {reason ?? "This needs an account"}
         </h2>
         <p className="ev-body" style={{ marginTop: "0.7rem" }}>
-          It keeps your wish list, and it is what lets us tell you your chances at each
-          university instead of just listing them.
+          An account keeps your wish list and your record, and it is what lets us tell you your
+          chances at each university rather than only listing them.
         </p>
 
-        <label className="ev-label" htmlFor="a-name" style={{ display: "block", marginTop: "1.4rem", color: "var(--text-faint)" }}>
-          Your name
-        </label>
-        <input id="a-name" value={name} onChange={(e) => setName(e.target.value)} required style={field} />
+        <Link href="/edviko/join" className="ev-btn ev-btn--primary" style={{ marginTop: "1.5rem", width: "100%", justifyContent: "center" }}>
+          Create an account
+        </Link>
 
-        <label className="ev-label" htmlFor="a-email" style={{ display: "block", marginTop: "1rem", color: "var(--text-faint)" }}>
-          Email
-        </label>
-        <input id="a-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={field} />
-
-        <button type="submit" disabled={busy} className="ev-btn ev-btn--primary" style={{ marginTop: "1.5rem", width: "100%", justifyContent: "center" }}>
-          {busy ? "One moment" : "Create my account"}
-        </button>
+        <p className="ev-small" style={{ marginTop: "1rem", textAlign: "center" }}>
+          Already have one? <Link href="/edviko/signin" style={{ color: "var(--accent)" }}>Sign in</Link>.
+        </p>
 
         <button type="button" onClick={onClose} className="ev-small" style={{ all: "unset", cursor: "pointer", display: "block", marginTop: "1rem", textAlign: "center", width: "100%", color: "var(--text-faint)" }}>
           Not now
         </button>
 
         <p className="ev-small" style={{ marginTop: "1.25rem", paddingTop: "1rem", borderTop: "1px solid var(--line)" }}>
-          Early build: your account is held on this device only. Nothing is sent anywhere and no
-          password is set. It moves to a real account when we launch on our own domain.
+          Early build: an account is held in this browser only. Nothing is sent anywhere, and it will
+          not be there on another device until this has a server behind it.
         </p>
-      </form>
+      </div>
     </div>
   );
 }
@@ -151,15 +128,3 @@ export function SaveResultPrompt({ percentage }: { percentage: number }) {
   );
 }
 
-const field: React.CSSProperties = {
-  width: "100%",
-  marginTop: "0.5rem",
-  padding: "0.75rem 0.9rem",
-  background: "var(--surface)",
-  border: "1px solid var(--line)",
-  borderRadius: "11px",
-  color: "var(--text)",
-  fontFamily: "inherit",
-  fontSize: "1rem",
-  outline: "none",
-};

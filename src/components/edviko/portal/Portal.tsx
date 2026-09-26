@@ -5,22 +5,24 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { EdvikoMark } from "@/components/edviko/Logo";
 import { ThemeToggle } from "@/components/edviko/ThemeToggle";
+import { endSession, useSession } from "@/components/edviko/auth/session";
 import { write } from "@/lib/edviko/browserStore";
-import { navFor, ROLES, ROLE_KEY, roleMeta, type Role } from "@/lib/edviko/roles";
+import { grouped, navFor, ROLES, ROLE_KEY, roleMeta, type Role } from "@/lib/edviko/roles";
 
 /**
- * The frame the advisor and campus screens live in.
+ * The frame the advisor, campus and family screens live in.
  *
- * A sidebar, because these lists are twelve and fourteen items long and a
- * top bar that long is an inventory rather than a navigation. It is fixed
- * on a phone and sticky on a laptop, and the sections that are not built yet
- * are in the list, greyed, rather than hidden: a person deciding whether to
- * buy this should be able to see the shape of the whole thing, and a person
- * using it should never click into a half-working screen.
+ * A sidebar, because these lists are a dozen items long and a top bar that
+ * long is an inventory rather than a navigation. Grouped under headings, so
+ * finding something is three or four quick decisions instead of reading
+ * twelve lines. Sections that are not built yet stay in the list, greyed:
+ * somebody deciding whether to buy this should see the shape of the whole
+ * thing, and somebody using it should never be dropped into a half-working
+ * screen.
  *
- * The role switch at the bottom is not a login. There are no accounts yet,
- * and the panel says so rather than implying a security boundary that does
- * not exist.
+ * The top bar always says where you are and who you are. Both were missing,
+ * and on a system with four kinds of user and a role switch, "which of these
+ * am I looking at" is a question the screen should never make anybody ask.
  */
 export function Portal({
   role,
@@ -33,8 +35,18 @@ export function Portal({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { account } = useSession();
   const items = navFor(role);
+  const groups = grouped(items);
   const meta = roleMeta(role);
+
+  // A real account, when one is signed in on this device and it is the same
+  // kind of person as the screen being looked at. Otherwise the demo's own.
+  const mine = account && roleMatches(account.role, role);
+  const person = mine ? { name: account.name, line: who.line, code: account.code } : who;
+
+  const here = [...items].sort((a, b) => b.href.length - a.href.length).find((i) => pathname === i.href || pathname.startsWith(`${i.href}/`));
+  const deeper = here ? pathname !== here.href : false;
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -63,32 +75,41 @@ export function Portal({
           <span className="ev-font-display" style={{ fontWeight: 600, letterSpacing: "-0.01em" }}>Edviko</span>
         </Link>
 
-        <div className="ev-side__who">
+        <Link href="/edviko/account" className="ev-side__who">
           <p className="ev-label" style={{ color: "var(--accent)" }}>{meta.label}</p>
-          <p style={{ fontWeight: 600, marginTop: "0.35rem" }}>{who.name}</p>
-          <p className="ev-small" style={{ color: "var(--text-faint)" }}>{who.line}</p>
+          <p style={{ fontWeight: 600, marginTop: "0.35rem" }}>{person.name}</p>
+          <p className="ev-small" style={{ color: "var(--text-faint)" }}>{person.line}</p>
           <p className="ev-small" style={{ color: "var(--text-faint)", marginTop: "0.35rem", fontVariantNumeric: "tabular-nums" }}>
-            {who.code}
+            {person.code}
           </p>
-        </div>
+          {!mine && (
+            <p className="ev-small" style={{ color: "var(--paid)", marginTop: "0.5rem" }}>
+              Demo account. Sign in to see your own.
+            </p>
+          )}
+        </Link>
 
-        <nav style={{ display: "grid", gap: "0.15rem" }}>
-          {items.map((item) => {
-            const on = item.href === pathname;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="ev-side__link"
-                data-on={on}
-                data-soon={!item.built}
-                onClick={() => setOpen(false)}
-              >
-                <span>{item.label}</span>
-                {!item.built && <span className="ev-small" style={{ opacity: 0.7 }}>soon</span>}
-              </Link>
-            );
-          })}
+        <nav style={{ display: "grid", gap: "1rem" }}>
+          {groups.map((g) => (
+            <div key={g.group}>
+              <p className="ev-label" style={{ color: "var(--text-faint)", padding: "0 0.75rem 0.4rem" }}>{g.group}</p>
+              <div style={{ display: "grid", gap: "0.15rem" }}>
+                {g.items.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="ev-side__link"
+                    data-on={item.href === pathname || (here?.href === item.href && deeper)}
+                    data-soon={!item.built}
+                    onClick={() => setOpen(false)}
+                  >
+                    <span>{item.label}</span>
+                    {!item.built && <span className="ev-small" style={{ opacity: 0.7 }}>soon</span>}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
         </nav>
 
         <div className="ev-side__foot">
@@ -107,8 +128,26 @@ export function Portal({
               </Link>
             ))}
           </div>
+
+          {account ? (
+            <button
+              type="button"
+              onClick={() => endSession()}
+              className="ev-side__link"
+              style={{ width: "100%", marginTop: "0.6rem", fontSize: "0.875rem", background: "none", border: 0, cursor: "pointer", textAlign: "start" }}
+            >
+              Sign out
+            </button>
+          ) : (
+            <div style={{ display: "grid", gap: "0.2rem", marginTop: "0.6rem" }}>
+              <Link href="/edviko/signin" className="ev-side__link" style={{ fontSize: "0.875rem" }}>Sign in</Link>
+              <Link href="/edviko/join" className="ev-side__link" style={{ fontSize: "0.875rem" }}>Join Edviko</Link>
+            </div>
+          )}
+
           <p className="ev-small" style={{ color: "var(--text-faint)", marginTop: "0.75rem" }}>
-            A view, not an account. Nobody has signed in yet, and nothing here is private until they can.
+            Switching role is a view, not a permission. When there are accounts, each of these shows
+            only what that person is allowed to see.
           </p>
         </div>
       </aside>
@@ -124,11 +163,32 @@ export function Portal({
           >
             <span aria-hidden>{open ? "✕" : "☰"}</span>
           </button>
-          <p className="ev-small" style={{ color: "var(--text-faint)", flex: 1 }}>{meta.question}</p>
+
+          <nav aria-label="Where you are" style={{ flex: 1, minWidth: 0 }}>
+            <p className="ev-small" style={{ color: "var(--text-faint)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <Link href={meta.home} style={{ color: "var(--text-soft)" }}>{meta.label}</Link>
+              {here && here.href !== meta.home && (
+                <>
+                  {" / "}
+                  <Link href={here.href} style={{ color: deeper ? "var(--text-soft)" : "var(--text)" }}>{here.label}</Link>
+                </>
+              )}
+              {deeper && <> / <span style={{ color: "var(--text)" }}>case file</span></>}
+            </p>
+          </nav>
+
+          <Link href="/edviko/account" className="ev-small" style={{ color: "var(--text-soft)", whiteSpace: "nowrap" }}>
+            {account ? account.name.split(" ")[0] : "Sign in"}
+          </Link>
           <ThemeToggle />
         </div>
         {children}
       </main>
     </div>
   );
+}
+
+/** A family account belongs on the family screens, and so on. */
+function roleMatches(accountRole: string, role: Role): boolean {
+  return accountRole === role;
 }

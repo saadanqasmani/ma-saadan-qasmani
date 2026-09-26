@@ -5,10 +5,12 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EdvikoMark } from "@/components/edviko/Logo";
 import { ThemeToggle } from "@/components/edviko/ThemeToggle";
-import { AuthPanel, useAccount } from "@/components/edviko/Account";
+import { useAccount } from "@/components/edviko/Account";
+import { useSession } from "@/components/edviko/auth/session";
+import { grouped, STUDENT_NAV } from "@/lib/edviko/roles";
 
 /**
- * Four places, and everything else behind a menu.
+ * Four places in the bar, and everything else behind a menu that is sorted.
  *
  * It was eleven tabs in a row, which on a phone meant scrolling sideways
  * through a list with no shape to it. Eleven equal things are not a
@@ -16,9 +18,13 @@ import { AuthPanel, useAccount } from "@/components/edviko/Account";
  * know where to begin.
  *
  * These four are the questions a student actually arrives with, in the order
- * they arrive: what are my grades worth, where could I go, what do I do now,
- * and can someone help me. Everything else is real but secondary, and lives
- * in the menu where it can be found rather than in the way.
+ * they arrive: what am I for, what are my grades worth, where could I go,
+ * and what am I going for. Everything else is real but secondary, and the
+ * menu groups it rather than listing it, so the page somebody wants is a
+ * heading away rather than a scan of a dozen lines.
+ *
+ * The bar also says who is signed in, or offers the two ways not to be.
+ * "Am I signed in" is a question no screen should make anybody ask.
  */
 
 const PRIMARY = [
@@ -28,23 +34,15 @@ const PRIMARY = [
   { href: "/edviko/plan", label: "Wish list", hint: "The universities you are going for" },
 ];
 
-const SECONDARY = [
-  { href: "/edviko/assessment", label: "Assessment" },
-  { href: "/edviko/profile", label: "My record" },
-  { href: "/edviko/costs", label: "What it costs" },
-  { href: "/edviko/talk", label: "Get help" },
-  { href: "/edviko/apply", label: "How to apply" },
-  { href: "/edviko/essay", label: "My essay" },
-  { href: "/edviko/scholarships", label: "Scholarships" },
-  { href: "/edviko/pricing", label: "Pricing" },
-  { href: "/edviko/contact", label: "Contact" },
-];
+const PRIMARY_HREFS = PRIMARY.map((p) => p.href);
 
 export function EdvikoNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [login, setLogin] = useState(false);
-  const account = useAccount();
+  const profile = useAccount();
+  const { account } = useSession();
+
+  const name = account?.name ?? profile?.name ?? null;
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -55,14 +53,13 @@ export function EdvikoNav() {
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setOpen(false);
-        setLogin(false);
-      }
+      if (e.key === "Escape") setOpen(false);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  const rest = grouped(STUDENT_NAV.filter((i) => !PRIMARY_HREFS.includes(i.href) && i.href !== "/edviko"));
 
   return (
     <>
@@ -91,14 +88,13 @@ export function EdvikoNav() {
 
           <div className="ev-header__right">
             <ThemeToggle />
-            {account ? (
-              <Link href="/edviko/profile" className="ev-login">
-                {account.name.split(" ")[0] || "Profile"}
-              </Link>
+            {name ? (
+              <Link href="/edviko/account" className="ev-login">{name.split(" ")[0]}</Link>
             ) : (
-              <button type="button" onClick={() => setLogin(true)} className="ev-login">
-                Log in
-              </button>
+              <>
+                <Link href="/edviko/signin" className="ev-small" style={{ color: "var(--text-soft)" }}>Sign in</Link>
+                <Link href="/edviko/join" className="ev-login">Join</Link>
+              </>
             )}
             <button
               type="button"
@@ -126,6 +122,7 @@ export function EdvikoNav() {
                     href={t.href}
                     onClick={() => setOpen(false)}
                     className="ev-menu__item ev-land"
+                    data-on={pathname.startsWith(t.href)}
                     style={{ animationDelay: `${i * 0.045}s` }}
                   >
                     <span className="ev-h2" style={{ fontSize: "1.35rem" }}>{t.label}</span>
@@ -136,22 +133,44 @@ export function EdvikoNav() {
                 ))}
               </div>
 
-              <p className="ev-label" style={{ marginTop: "2rem", color: "var(--text-faint)" }}>
-                Everything else
-              </p>
+              {rest.map((g) => (
+                <div key={g.group}>
+                  <p className="ev-label" style={{ marginTop: "2rem", color: "var(--text-faint)" }}>
+                    {g.group === "The work" ? "The rest of the plan" : g.group === "Reference" ? "Your record" : g.group}
+                  </p>
+                  <div className="ev-menu__secondary">
+                    {g.items.map((t) => (
+                      <Link
+                        key={t.href}
+                        href={t.href}
+                        onClick={() => setOpen(false)}
+                        className="ev-body ev-menu__link"
+                        data-on={pathname === t.href}
+                      >
+                        {t.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              <p className="ev-label" style={{ marginTop: "2rem", color: "var(--text-faint)" }}>Edviko</p>
               <div className="ev-menu__secondary">
-                {SECONDARY.map((t) => (
-                  <Link key={t.href} href={t.href} onClick={() => setOpen(false)} className="ev-body ev-menu__link">
-                    {t.label}
-                  </Link>
-                ))}
+                <Link href="/edviko/pricing" onClick={() => setOpen(false)} className="ev-body ev-menu__link">Pricing</Link>
+                <Link href="/edviko/contact" onClick={() => setOpen(false)} className="ev-body ev-menu__link">Contact</Link>
+                {name ? (
+                  <Link href="/edviko/account" onClick={() => setOpen(false)} className="ev-body ev-menu__link">Your account</Link>
+                ) : (
+                  <>
+                    <Link href="/edviko/signin" onClick={() => setOpen(false)} className="ev-body ev-menu__link">Sign in</Link>
+                    <Link href="/edviko/join" onClick={() => setOpen(false)} className="ev-body ev-menu__link">Join Edviko</Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
         </div>
       )}
-
-      {login && <AuthPanel onClose={() => setLogin(false)} />}
     </>
   );
 }
