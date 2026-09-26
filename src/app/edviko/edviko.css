@@ -26,6 +26,9 @@
   --accent-deep: #2f62e0;
   --free: #35e0a1;
   --paid: #ffb84d;
+  /* The traffic lights. Amber is the paid gold; red is its own. */
+  --amber: #ffb84d;
+  --red: #ff6b6b;
 
   /* The pane. Light passing through something that is not quite solid. */
   --glass: rgba(255, 255, 255, 0.045);
@@ -64,6 +67,8 @@
   --accent-deep: #1d47b5;
   --free: #0e9e6a;
   --paid: #b26a00;
+  --amber: #b26a00;
+  --red: #c0392b;
 
   --glass: rgba(255, 255, 255, 0.55);
   --glass-edge: rgba(12, 20, 38, 0.08);
@@ -1018,3 +1023,326 @@ a:hover .ev-mark__trail {
   border-color: var(--accent);
   box-shadow: 0 0 0 4px var(--glass-glow);
 }
+
+/* ======================================================================
+ * The portals
+ *
+ * Three people look at this system and ask three different questions. The
+ * student asks where they are. The advisor asks which of two hundred
+ * students needs them this morning. The supervisor asks where the campus is
+ * losing people. Same tokens, same type scale, same card: only the answer
+ * changes.
+ *
+ * A sidebar rather than a top bar, because these lists are fourteen items
+ * long and a top bar that long is an inventory, not a navigation.
+ * ====================================================================== */
+
+.ev-portal {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+}
+
+@media (min-width: 1024px) {
+  .ev-portal {
+    grid-template-columns: 17rem 1fr;
+  }
+}
+
+.ev-side {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 90;
+  width: min(17rem, 84vw);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.1rem 0.85rem 1.6rem;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+  transform: translateX(-102%);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ev-side[data-open="true"] {
+  transform: none;
+  box-shadow: 0 0 80px -10px var(--shadow);
+}
+
+@media (min-width: 1024px) {
+  .ev-side {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.ev-side__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.6rem 1rem;
+}
+
+.ev-side__who {
+  margin: 0 0.35rem 0.9rem;
+  padding: 0.75rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+
+.ev-side__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  color: var(--text-soft);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.ev-side__link:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.ev-side__link[data-on="true"] {
+  background: var(--accent);
+  color: #04070f;
+  font-weight: 600;
+}
+
+.ev-side__link[data-soon="true"] {
+  color: var(--text-faint);
+}
+
+.ev-side__foot {
+  margin-top: auto;
+  padding: 1rem 0.75rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.ev-portal__main {
+  min-width: 0;
+  padding: 1rem 1rem 5rem;
+}
+
+@media (min-width: 768px) {
+  .ev-portal__main {
+    padding: 1.5rem 2rem 6rem;
+  }
+}
+
+.ev-top {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.ev-top__burger {
+  display: inline-flex;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+  .ev-top__burger {
+    display: none;
+  }
+}
+
+.ev-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+  background: rgba(2, 4, 10, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+@media (min-width: 1024px) {
+  .ev-scrim {
+    display: none;
+  }
+}
+
+/* --- the tiles across the top ---------------------------------------- */
+
+.ev-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.75rem;
+}
+
+.ev-tile {
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  transition: border-color 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ev-tile:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+
+.ev-tile__n {
+  font-family: var(--ev-font-display), system-ui, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.ev-tile__n[data-tone="red"] { color: var(--red); }
+.ev-tile__n[data-tone="amber"] { color: var(--amber); }
+.ev-tile__n[data-tone="green"] { color: var(--free); }
+
+/* --- panels ----------------------------------------------------------- */
+
+.ev-panel {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.ev-panel__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.ev-panel__body {
+  padding: 1.15rem;
+}
+
+.ev-cols {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1100px) {
+  .ev-cols[data-cols="2"] { grid-template-columns: 1.6fr 1fr; }
+  .ev-cols[data-cols="3"] { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* --- rows of people --------------------------------------------------- */
+
+.ev-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.ev-row:last-child {
+  border-bottom: 0;
+}
+
+.ev-face {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-soft);
+}
+
+.ev-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ev-dot[data-tone="red"] { background: var(--red); }
+.ev-dot[data-tone="amber"] { background: var(--amber); }
+.ev-dot[data-tone="green"] { background: var(--free); }
+
+.ev-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.ev-tag[data-tone="red"] { color: var(--red); border-color: color-mix(in srgb, var(--red) 45%, transparent); }
+.ev-tag[data-tone="amber"] { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 45%, transparent); }
+.ev-tag[data-tone="green"] { color: var(--free); border-color: color-mix(in srgb, var(--free) 45%, transparent); }
+
+/* --- the pipeline ----------------------------------------------------- */
+
+.ev-pipe {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.35rem;
+  scrollbar-width: thin;
+}
+
+.ev-pipe__step {
+  flex: 1 0 7.25rem;
+  padding: 0.7rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+.ev-pipe__bar {
+  height: 3px;
+  margin-top: 0.55rem;
+  border-radius: 999px;
+  background: var(--accent);
+  opacity: 0.85;
+}
+
+/* --- a small horizontal bar, used for caseloads and funnels ----------- */
+
+.ev-meter {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.ev-meter__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.ev-meter__fill[data-tone="red"] { background: var(--red); }
+.ev-meter__fill[data-tone="amber"] { background: var(--amber); }
+.ev-meter__fill[data-tone="green"] { background: var(--free); }
