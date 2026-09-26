@@ -40,6 +40,16 @@ export const ADVISOR_SECTIONS: Section[] = [
     ],
     waiting: "the same messaging work, plus a calendar the school already uses.",
   },
+  {
+    slug: "reports",
+    title: "Reports",
+    what: [
+      "A case summary another advisor could take the student over from, as a document.",
+      "Parent-facing progress reports that say what was advised and why, not only what has been done.",
+      "The campus pack on a schedule, rather than rebuilt by hand each term.",
+    ],
+    waiting: "a document pipeline, and a decision about what a parent sees by default. The numbers behind them are already on Analytics.",
+  },
 ];
 
 export const CAMPUS_SECTIONS: Section[] = [

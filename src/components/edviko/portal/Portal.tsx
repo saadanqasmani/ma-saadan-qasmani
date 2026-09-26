@@ -174,7 +174,14 @@ export function Portal({
                   <Link href={here.href} style={{ color: deeper ? "var(--text-soft)" : "var(--text)" }}>{here.label}</Link>
                 </>
               )}
-              {deeper && <> / <span style={{ color: "var(--text)" }}>case file</span></>}
+              {deeper && (
+                <>
+                  {" / "}
+                  <span style={{ color: "var(--text)" }}>
+                    {here?.href.endsWith("/students") ? "case file" : here?.href.endsWith("/counsellors") ? "caseload" : "detail"}
+                  </span>
+                </>
+              )}
             </p>
           </nav>
 
