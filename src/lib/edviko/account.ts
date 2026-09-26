@@ -18,6 +18,7 @@
  */
 
 import { serverSnapshot, snapshot, subscribe, write } from "@/lib/edviko/browserStore";
+import { formatId, fromLegacy, provisionalSerial, STUDENT } from "@/lib/edviko/id";
 import { EMPTY_ASSESSMENT, type Assessment } from "@/lib/edviko/careerFit";
 
 export const ACCOUNT = "ev-account";
@@ -31,6 +32,12 @@ export type Profile = {
    * than the institution. Issued once, at sign-up, and never rewritten.
    */
   id: string;
+  /**
+   * Where the student's campus is, as a two-letter country. It is the first
+   * segment of their Edviko code, so it is recorded on the profile rather
+   * than assumed at the point the code is printed.
+   */
+  country: string;
   name: string;
   email: string;
   /** Where they are in school, so advice can be timed. */
@@ -51,6 +58,7 @@ export type Profile = {
 
 export const EMPTY: Profile = {
   id: "",
+  country: "PK",
   name: "",
   email: "",
   year: "",
@@ -71,11 +79,16 @@ export function readProfile(raw: string | null): Profile | null {
     const saved = JSON.parse(raw) as Partial<Profile>;
     // Merged field by field: a profile saved before the assessment existed
     // must not come back with an undefined where an object belongs.
-    return {
+    const merged = {
       ...EMPTY,
       ...saved,
       assessment: { ...EMPTY_ASSESSMENT, ...(saved.assessment ?? {}) },
     };
+    // A profile issued before the code had a shape carries the old one. It
+    // is read into the canonical shape here, once, so nothing downstream has
+    // to know that two formats ever existed.
+    const canonical = merged.id ? fromLegacy(merged.id, merged.country) : null;
+    return canonical ? { ...merged, id: formatId(canonical) } : merged;
   } catch {
     return null;
   }
@@ -182,7 +195,7 @@ export function completeness(p: Profile): number {
 export async function createAccount(profile: Profile): Promise<Profile> {
   const next = {
     ...profile,
-    id: profile.id || newStudentId(),
+    id: profile.id || newStudentId(profile.country),
     createdAt: new Date().toISOString(),
   };
   saveProfile(next);
@@ -192,10 +205,19 @@ export async function createAccount(profile: Profile): Promise<Profile> {
 /**
  * A student number that reads like one.
  *
- * Unique enough for a device, and the shape the real system will use, so
- * nothing downstream has to change when it is issued by a server instead.
+ * The real shape, with the school, campus and advisor left at zero because
+ * a student who signed themselves up has not been placed at one yet. The
+ * serial is issued on the device and is provisional until a server issues
+ * the real one; the shape does not change when it does, so no screen that
+ * prints it has to be rewritten.
  */
-function newStudentId(): string {
-  const n = Date.now() % 100000000;
-  return `PK-STU-${String(n).padStart(8, "0")}`;
+function newStudentId(country: string): string {
+  return formatId({
+    country: (country || "PK").toUpperCase(),
+    school: "000",
+    campus: "00",
+    advisor: "00",
+    serial: provisionalSerial(),
+    relationship: STUDENT,
+  });
 }
