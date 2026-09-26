@@ -3,8 +3,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { GalleryTrigger } from "@/components/media/GalleryTrigger";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
-import { getContent } from "@/lib/i18n/content";
-import { getDictionary } from "@/lib/i18n/dictionary";
+import { getContent } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n/server";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 import { localeAlternates } from "@/lib/i18n/metadata";
 

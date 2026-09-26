@@ -45,7 +45,13 @@ export function merge<T>(base: T, over: unknown): T {
   return out as T;
 }
 
-export async function getDictionary(locale: Locale): Promise<Dictionary> {
+/**
+ * English underneath, the translation over it. This module is imported by
+ * client components for `fill` and the types, so it stays free of anything
+ * that only runs on a server; the dashboard's edits are layered on in
+ * lib/i18n/server.ts.
+ */
+export async function baseDictionary(locale: Locale): Promise<Dictionary> {
   if (locale === defaultLocale) return en;
   return merge(en, await overlays[locale]());
 }

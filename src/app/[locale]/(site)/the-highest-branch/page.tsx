@@ -12,8 +12,8 @@ import { Figure } from "@/components/media/Figure";
 import { Mark } from "@/components/collect/Mark";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { bookJsonLd, personJsonLd } from "@/lib/seo/jsonLd";
-import { getContent } from "@/lib/i18n/content";
-import { fill, getDictionary } from "@/lib/i18n/dictionary";
+import { getContent } from "@/lib/i18n/server";
+import { fill, getDictionary } from "@/lib/i18n/server";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 import { localeAlternates } from "@/lib/i18n/metadata";
 
@@ -198,6 +198,7 @@ export default async function HighestBranchPage({ params }: Params) {
                 forms={dict.forms}
                 locale={locale}
                 canPayOnline={checkoutIsConfigured()}
+                amazonUrl={content.purchase.amazonUrl}
               />
             </div>
           </Reveal>

@@ -5,8 +5,8 @@ import { MarginaliaPanel } from "@/components/collect/MarginaliaPanel";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { BookAnnouncement } from "@/components/book/BookAnnouncement";
 import { getBook } from "@/lib/data";
-import { getDictionary } from "@/lib/i18n/dictionary";
-import { getContent } from "@/lib/i18n/content";
+import { getDictionary } from "@/lib/i18n/server";
+import { getContent } from "@/lib/i18n/server";
 import { isLocale, defaultLocale } from "@/lib/i18n/config";
 
 /** The public site: paper grain, header, footer, and the Marginalia. */
@@ -39,7 +39,7 @@ export default async function SiteLayout({
           copy={dict.marginalia}
           newsletter={dict.newsletter}
         >
-          <SiteHeader nav={dict.nav} chrome={dict.header} />
+          <SiteHeader nav={dict.nav} chrome={dict.header} logo={content.brand.logo} />
           <main id="main-content" className="flex-1">
             {children}
           </main>

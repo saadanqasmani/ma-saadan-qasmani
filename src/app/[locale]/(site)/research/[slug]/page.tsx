@@ -8,8 +8,8 @@ import { getPerson, getResearchItem, getResearchItems } from "@/lib/data";
 import { researchJsonLd } from "@/lib/seo/jsonLd";
 import { collaborators } from "@/content/site";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
-import { getContent } from "@/lib/i18n/content";
-import { getDictionary } from "@/lib/i18n/dictionary";
+import { getContent } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n/server";
 import { defaultLocale, isLocale, locales } from "@/lib/i18n/config";
 import { localeAlternates } from "@/lib/i18n/metadata";
 

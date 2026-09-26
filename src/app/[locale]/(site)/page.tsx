@@ -13,8 +13,8 @@ import { SocialRow } from "@/components/layout/SocialRow";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { personJsonLd, websiteJsonLd } from "@/lib/seo/jsonLd";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
-import { getContent } from "@/lib/i18n/content";
-import { getDictionary } from "@/lib/i18n/dictionary";
+import { getContent } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n/server";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 
 const AREA_TONE: Record<string, string> = {

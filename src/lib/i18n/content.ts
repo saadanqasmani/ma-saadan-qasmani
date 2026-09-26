@@ -1,4 +1,5 @@
 import {
+  brand,
   highestBranch,
   instruments,
   researchNote,
@@ -118,7 +119,13 @@ export type Content = {
    */
   person: (base: Person) => Person;
   book: (base: Book) => Book;
-  purchase: { amazonRegions: string; directRegions: string; directNote: string };
+  purchase: {
+    amazonRegions: string;
+    directRegions: string;
+    directNote: string;
+    /** Null until the listing exists. Fillable from the dashboard. */
+    amazonUrl: string | null;
+  };
   /** The novel's description, which is a shape rather than a sentence. */
   novel: {
     proverb: { line: string; meaning: string; english: string; englishLabel: string };
@@ -131,20 +138,53 @@ export type Content = {
   research: (items: ResearchItem[]) => TranslatedResearchItem[];
   marks: Mark[];
   mediaSet: (key: string) => MediaSet | null;
+  /** The two drawings that belong to no section: the mark and the Journal's. */
+  brand: typeof brand;
   iris: typeof iris;
   icd: typeof icd;
   recruitment: typeof recruitment;
 };
 
+/** The same rule the dictionary uses: objects merge, everything else wins. */
+function mergeOverlay<T>(base: T, over: unknown): T {
+  if (over === undefined || over === null) return base;
+  if (Array.isArray(base) || Array.isArray(over)) return over as T;
+  if (typeof base !== "object" || typeof over !== "object") return over as T;
+  const out: Record<string, unknown> = { ...(base as Record<string, unknown>) };
+  for (const [key, value] of Object.entries(over as Record<string, unknown>)) {
+    out[key] = key in out ? mergeOverlay(out[key], value) : value;
+  }
+  return out as T;
+}
+
 function pick<T>(translated: T | undefined, original: T): T {
   return translated === undefined ? original : translated;
 }
 
-export async function getContent(locale: Locale): Promise<Content> {
-  const overlay: ContentOverlay = locale === defaultLocale ? {} : await overlays[locale]();
+/**
+ * The records the site renders, which are the files unless the dashboard
+ * has edited them. Passed in rather than imported here so that the editing
+ * happens in one place, on the server, above this module.
+ */
+export type Records = {
+  book: typeof highestBranch;
+  media: typeof mediaSets;
+  brand: typeof brand;
+};
+
+export async function getContent(
+  locale: Locale,
+  edits?: ContentOverlay,
+  records?: Records
+): Promise<Content> {
+  const fromFile: ContentOverlay = locale === defaultLocale ? {} : await overlays[locale]();
+  // The dashboard's edits arrive from lib/i18n/server.ts rather than being
+  // fetched here, so this module stays importable by a client component.
+  const overlay: ContentOverlay = edits ? mergeOverlay(fromFile, edits) : fromFile;
   const translated = Object.keys(overlay).length > 0;
 
   const p = overlay.person ?? {};
+  const rec = records ?? { book: highestBranch, media: mediaSets, brand };
   const b = overlay.book ?? {};
 
   return {
@@ -187,19 +227,20 @@ export async function getContent(locale: Locale): Promise<Content> {
 
     novel: {
       proverb: {
-        line: highestBranch.proverb.line,
-        meaning: pick(b.proverbMeaning, highestBranch.proverb.meaning),
-        english: pick(b.proverbEnglish, highestBranch.proverb.english),
-        englishLabel: pick(b.proverbEnglishLabel, highestBranch.proverb.englishLabel),
+        line: rec.book.proverb.line,
+        meaning: pick(b.proverbMeaning, rec.book.proverb.meaning),
+        english: pick(b.proverbEnglish, rec.book.proverb.english),
+        englishLabel: pick(b.proverbEnglishLabel, rec.book.proverb.englishLabel),
       },
-      paragraphs: b.synopsisParagraphs ?? highestBranch.synopsisParagraphs,
-      provenance: pick(b.provenance, highestBranch.provenance),
+      paragraphs: b.synopsisParagraphs ?? rec.book.synopsisParagraphs,
+      provenance: pick(b.provenance, rec.book.provenance),
     },
 
     purchase: {
-      amazonRegions: pick(b.amazonRegions, highestBranch.purchase.amazon.regions),
-      directRegions: pick(b.directRegions, highestBranch.purchase.direct.regions),
-      directNote: pick(b.directNote, highestBranch.purchase.direct.note),
+      amazonUrl: rec.book.purchase.amazon.url,
+      amazonRegions: pick(b.amazonRegions, rec.book.purchase.amazon.regions),
+      directRegions: pick(b.directRegions, rec.book.purchase.direct.regions),
+      directNote: pick(b.directNote, rec.book.purchase.direct.note),
     },
 
     instrument: {
@@ -226,7 +267,7 @@ export async function getContent(locale: Locale): Promise<Content> {
     }),
 
     mediaSet: (key) => {
-      const set = mediaSets[key];
+      const set = rec.media[key];
       if (!set) return null;
       const t = overlay.media?.[key];
       if (!t) return set;
@@ -239,6 +280,7 @@ export async function getContent(locale: Locale): Promise<Content> {
         })),
       };
     },
+    brand: rec.brand,
     iris: merge(iris, overlay.iris),
     icd: merge(icd, overlay.icd),
     recruitment: merge(recruitment, overlay.recruitment),

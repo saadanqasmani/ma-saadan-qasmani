@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getWorkItems } from "@/lib/data";
 import { WorkList } from "@/components/work/WorkList";
-import { getContent } from "@/lib/i18n/content";
-import { getDictionary } from "@/lib/i18n/dictionary";
+import { getContent } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n/server";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 import { localeAlternates } from "@/lib/i18n/metadata";
 

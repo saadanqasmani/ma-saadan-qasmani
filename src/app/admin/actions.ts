@@ -6,6 +6,8 @@ import { getAdminClient } from "@/lib/supabase/admin";
 import { getAdminUser, getSessionClient } from "@/lib/supabase/auth";
 import { isAllowlistedEmail } from "@/lib/supabase/env";
 import { getResource, type Field } from "@/lib/admin/resources";
+import { isLocale } from "@/lib/i18n/config";
+import { SHARED } from "@/lib/content/overrides";
 import { getBlogPost } from "@/lib/data";
 import { letterEmail } from "@/lib/email/letter";
 import { sendMail, sendMany, mailIsConfigured, checkResend, fromAddress, keyShape, type Mail } from "@/lib/email/send";
@@ -470,4 +472,44 @@ export async function checkTheList(): Promise<{ sha: string; checks: Check[] }> 
   }
 
   return { sha: sha ?? "", checks };
+}
+
+
+/* ---- the site's own words --------------------------------------------- */
+
+/**
+ * Save or clear one string, in one language.
+ *
+ * An empty box is not an empty string: it means "use what the repository
+ * says", so the row is deleted rather than written blank. That makes every
+ * edit reversible without anyone having to remember what was there.
+ */
+export async function saveText(
+  path: string,
+  locale: string,
+  value: string
+): Promise<{ ok: boolean; error?: string }> {
+  const { db } = await requireAdmin();
+
+  // `*` is the language of a thing that has no language: a photograph, a
+  // mark, a link. Anything else must be a language the site actually has, so
+  // a stray value cannot quietly fill the table with rows nothing reads.
+  if (locale !== SHARED && !isLocale(locale)) {
+    return { ok: false, error: "Unknown language." };
+  }
+
+  const trimmed = value.trim();
+  const write = trimmed
+    ? db.from("site_text").upsert({ path, locale, value: trimmed, updated_at: new Date().toISOString() })
+    : db.from("site_text").delete().eq("path", path).eq("locale", locale);
+
+  const { error } = await write;
+  if (error) {
+    console.error(`[site text] could not save ${path} (${locale}): ${error.message}`);
+    return { ok: false, error: error.message };
+  }
+
+  // Every page reads the dictionary, so every page is stale now.
+  revalidatePath("/", "layout");
+  return { ok: true };
 }

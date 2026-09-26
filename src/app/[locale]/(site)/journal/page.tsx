@@ -8,7 +8,7 @@ import { JournalGate } from "@/components/journal/JournalGate";
 import { cookies } from "next/headers";
 import { JOURNAL_COOKIE, tokenIsValid } from "@/lib/journalGate";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
-import { getDictionary } from "@/lib/i18n/dictionary";
+import { getContent, getDictionary } from "@/lib/i18n/server";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 import { localeAlternates } from "@/lib/i18n/metadata";
 
@@ -30,7 +30,11 @@ export default async function JournalPage({ params }: Params) {
   const { locale: raw } = await params;
   const locale = isLocale(raw) ? raw : defaultLocale;
 
-  const [blogPosts, dict] = await Promise.all([getBlogPosts(), getDictionary(locale)]);
+  const [blogPosts, dict, content] = await Promise.all([
+    getBlogPosts(),
+    getDictionary(locale),
+    getContent(locale),
+  ]);
   const t = dict.journal;
   // Read on the server, so a locked reader is never sent the writing.
   const unlocked = await tokenIsValid((await cookies()).get(JOURNAL_COOKIE)?.value);
@@ -44,18 +48,20 @@ export default async function JournalPage({ params }: Params) {
         accentTone="azure"
         lede={t.lede}
         aside={
-          <Reveal delay={0.3}>
-            {/* Decorative: the page's title already says what this is. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/journal-cover.png"
-              alt=""
-              aria-hidden
-              width={1289}
-              height={802}
-              className="h-auto w-full max-w-xl"
-            />
-          </Reveal>
+          content.brand.journalCover ? (
+            <Reveal delay={0.3}>
+              {/* Decorative: the page's title already says what this is. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={content.brand.journalCover}
+                alt=""
+                aria-hidden
+                width={1289}
+                height={802}
+                className="h-auto w-full max-w-xl"
+              />
+            </Reveal>
+          ) : undefined
         }
       />
 

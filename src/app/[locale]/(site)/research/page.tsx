@@ -8,8 +8,8 @@ import { Mark } from "@/components/collect/Mark";
 import { ResearchConstellation } from "@/components/art/ResearchConstellation";
 import { Reveal } from "@/components/ui/Reveal";
 import { collaborators } from "@/content/site";
-import { getContent } from "@/lib/i18n/content";
-import { getDictionary } from "@/lib/i18n/dictionary";
+import { getContent } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n/server";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 import { localeAlternates } from "@/lib/i18n/metadata";
 

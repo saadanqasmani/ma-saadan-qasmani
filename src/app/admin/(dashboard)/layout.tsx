@@ -9,7 +9,8 @@ import { signOut } from "@/app/admin/actions";
 export const dynamic = "force-dynamic";
 
 const CONTENT_LINKS = [
-  { href: "/admin/settings", label: "Site text" },
+  { href: "/admin/text", label: "Words and pictures" },
+  { href: "/admin/settings", label: "Site settings" },
   { href: "/admin/book", label: "The novel" },
   { href: "/admin/media", label: "Files" },
   { href: "/admin/letters", label: "Letters" },

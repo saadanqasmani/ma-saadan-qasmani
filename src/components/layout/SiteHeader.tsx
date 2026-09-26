@@ -16,9 +16,12 @@ import { cn } from "@/lib/utils";
 export function SiteHeader({
   nav,
   chrome,
+  logo,
 }: {
   nav: Dictionary["nav"];
   chrome: Dictionary["header"];
+  /** The mark, as the content layer has it: swappable from the dashboard. */
+  logo?: string | null;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -59,7 +62,7 @@ export function SiteHeader({
             className="group flex items-center gap-2.5"
             aria-label={chrome.home}
           >
-            <Logo className="h-10 w-auto" />
+            <Logo className="h-10 w-auto" src={logo} />
             <span className="font-display text-lg tracking-tight">Saadan Qasmani</span>
           </LocaleLink>
 

@@ -20,6 +20,11 @@ export const brand = {
    * full resolution lives in /assets and is not served.
    */
   logo: "/logo.png" as string | null,
+  /**
+   * The drawing beside the Journal's title. Decorative: the heading already
+   * says what the page is, so it carries no alt text.
+   */
+  journalCover: "/journal-cover.png" as string | null,
 };
 
 export const person = {

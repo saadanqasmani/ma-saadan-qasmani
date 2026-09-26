@@ -22,6 +22,15 @@ export type Locale = (typeof locales)[number];
 
 export const defaultLocale = "en" as const satisfies Locale;
 
+/**
+ * The language of a thing that has no language.
+ *
+ * A photograph is the same photograph in Urdu as in English, so an edit to
+ * one is filed under this rather than under whichever language happened to
+ * be open at the time, and it is read beneath every language.
+ */
+export const sharedLocale = "*";
+
 /** The locales that carry a URL prefix. English does not. */
 export const prefixedLocales = locales.filter((l) => l !== defaultLocale);
 

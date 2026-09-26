@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import "../globals.css";
 import { getPerson } from "@/lib/data";
-import { getContent } from "@/lib/i18n/content";
+import { getContent } from "@/lib/i18n/server";
 import { fontClassNames } from "@/lib/i18n/fonts";
 import { isLocale, localeMeta, locales, type Locale } from "@/lib/i18n/config";
 import { localeAlternates } from "@/lib/i18n/metadata";

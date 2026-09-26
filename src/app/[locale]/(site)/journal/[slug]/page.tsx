@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 import { JOURNAL_COOKIE, tokenIsValid } from "@/lib/journalGate";
 import { JournalGate } from "@/components/journal/JournalGate";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
-import { getDictionary } from "@/lib/i18n/dictionary";
+import { getDictionary } from "@/lib/i18n/server";
 import { defaultLocale, isLocale, locales } from "@/lib/i18n/config";
 import { localeAlternates } from "@/lib/i18n/metadata";
 

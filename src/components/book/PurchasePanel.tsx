@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { highestBranch } from "@/content/site";
 import { AmazonNotify } from "@/components/book/AmazonNotify";
 import { PreOrderCard } from "@/components/book/PreOrderCard";
 import { ShipToMe } from "@/components/book/ShipToMe";
@@ -23,12 +22,19 @@ export function PurchasePanel({
   forms,
   locale,
   canPayOnline,
+  amazonUrl,
 }: {
   copy: Dictionary["novel"]["purchase"];
   forms: Dictionary["forms"];
   locale: string;
   /** Whether a card can be taken here yet. Decided on the server. */
   canPayOnline: boolean;
+  /**
+   * The listing, once it exists. It arrives from the content layer rather
+   * than being read from the file here, so that pasting it into the
+   * dashboard is enough to turn the waiting note into a button.
+   */
+  amazonUrl?: string | null;
 }) {
   const [region, setRegion] = useState<Region>("pk");
 
@@ -49,9 +55,9 @@ export function PurchasePanel({
           <p className="tnum font-display text-4xl leading-none">{priceOf("world")}</p>
         </div>
 
-        {highestBranch.purchase.amazon.url ? (
+        {amazonUrl ? (
           <a
-            href={highestBranch.purchase.amazon.url}
+            href={amazonUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="t-label group relative mt-7 inline-flex overflow-hidden bg-ink px-8 py-4 text-canvas-light"
