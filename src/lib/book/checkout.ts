@@ -34,6 +34,12 @@ export type CheckoutOrder = {
   city: string;
   address: string;
   phone: string;
+  /**
+   * The language the reader was reading in. It rides along in Stripe's
+   * metadata so that the receipt, which is sent from the webhook minutes
+   * later and has no browser to ask, comes back in the same language.
+   */
+  locale?: string;
 };
 
 export type CheckoutResult =
@@ -69,6 +75,7 @@ export async function createCheckout(order: CheckoutOrder, quote: Quote): Promis
       `Pre-order. Ships on publication, ${highestBranch.releaseDate}. ${order.country}.` +
       (quote.shipping > 0 ? " Postage included." : ""),
     "metadata[order_id]": order.id,
+    "metadata[locale]": order.locale ?? "en",
     "metadata[quantity]": String(quote.quantity),
     "metadata[promo]": quote.promoApplied ? "yes" : "no",
     "payment_intent_data[metadata][order_id]": order.id,

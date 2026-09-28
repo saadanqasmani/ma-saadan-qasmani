@@ -7,9 +7,9 @@ import {
   EmptyState,
   StatusBadge,
   buttonClass,
-  formatDate,
 } from "@/components/admin/ui";
 import { InboxRow } from "@/components/admin/InboxRow";
+import { formatCell } from "@/lib/admin/format";
 
 export const dynamic = "force-dynamic";
 
@@ -84,11 +84,9 @@ export default async function ResourceListPage({
                       ) : (
                         <span className="text-xs text-ink-faint">Draft</span>
                       )
-                    ) : c.name.includes("_at") ? (
-                      formatDate(row[c.name] as string)
                     ) : (
                       <span className={c.name === resource.titleField ? "font-serif text-base" : ""}>
-                        {String(row[c.name] ?? "")}
+                        {formatCell(row, c)}
                       </span>
                     )}
                   </td>

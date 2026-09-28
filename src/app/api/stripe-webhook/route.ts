@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminClient } from "@/lib/supabase/admin";
+import { confirmOrder, linesFromRow, localeOf } from "@/lib/book/confirm";
 
 /**
  * Stripe telling us the money arrived.
@@ -80,19 +81,60 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "no database" }, { status: 503 });
   }
 
+  const locale = localeOf(session?.metadata?.locale);
+
   if (event.type === "checkout.session.completed" && session?.payment_status === "paid" && orderId) {
-    const { error } = await db
+    // Updated and read back in one call, so the receipt is built from the row
+    // as it now stands rather than from what the webhook happened to carry.
+    const { data, error } = await db
       .from("book_orders")
       .update({ payment_status: "paid", paid_at: new Date().toISOString(), status: "payment_received" })
-      .eq("id", orderId);
+      .eq("id", orderId)
+      .select("*")
+      .maybeSingle();
+
     if (error) console.error(`[pre-order] could not mark ${orderId} paid: ${error.message}`);
     else console.log(`[pre-order] ${orderId} paid.`);
+
+    if (data) await sendConfirmation(data, "paid", locale);
   } else if (event.type === "checkout.session.expired" && orderId) {
     // The reader walked away from the payment page. The order stands as a
-    // reservation; it is not deleted and it is not treated as paid.
-    await db.from("book_orders").update({ payment_status: "reserved" }).eq("id", orderId);
+    // reservation; it is not deleted and it is not treated as paid — and
+    // they are told that, rather than being left with a tab they closed and
+    // no idea whether anything was recorded.
+    const { data } = await db
+      .from("book_orders")
+      .update({ payment_status: "reserved" })
+      .eq("id", orderId)
+      .select("*")
+      .maybeSingle();
+
+    if (data) await sendConfirmation(data, "reserved", locale);
   }
 
   // Anything else is acknowledged and ignored, so Stripe stops retrying it.
   return NextResponse.json({ received: true });
+}
+
+/** One order row, turned into the letter its reader should get. */
+async function sendConfirmation(
+  row: Record<string, unknown>,
+  kind: "paid" | "reserved",
+  locale: ReturnType<typeof localeOf>
+): Promise<void> {
+  const email = String(row.email ?? "");
+  if (!email) return;
+
+  await confirmOrder({
+    kind,
+    locale,
+    id: String(row.id ?? ""),
+    name: String(row.full_name ?? ""),
+    email,
+    country: String(row.country ?? ""),
+    city: String(row.city ?? ""),
+    address: String(row.shipping_address ?? ""),
+    quantity: Number(row.quantity) || 1,
+    lines: linesFromRow(row),
+  });
 }

@@ -15,9 +15,12 @@ import type { Dictionary } from "@/content/i18n/en";
 export function ShipToMe({
   copy,
   forms,
+  locale,
 }: {
   copy: Dictionary["novel"]["purchase"];
   forms: Dictionary["forms"];
+  /** Carried into the request so the acknowledgement arrives in this language. */
+  locale: string;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
@@ -40,7 +43,7 @@ export function ShipToMe({
       const res = await fetch("/api/print-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Object.fromEntries(data)),
+        body: JSON.stringify({ ...Object.fromEntries(data), locale }),
       });
       const json = await res.json();
       if (!res.ok) {

@@ -6,6 +6,8 @@
  * visitors send him: read-only apart from a status and private notes.
  */
 
+import type { CellFormat, Column } from "@/lib/admin/format";
+
 export type FieldType =
   | "text"
   | "textarea"
@@ -26,6 +28,12 @@ export type Field = {
   options?: readonly string[];
   help?: string;
   bucket?: "media" | "papers";
+  /** How to read the value out. Money is never shown without its currency. */
+  format?: CellFormat;
+  /** For money: the column in the same row holding the currency it is in. */
+  currencyFrom?: string;
+  /** Kept out of the form, because nothing here writes it. */
+  readOnly?: boolean;
 };
 
 export type Resource = {
@@ -35,7 +43,7 @@ export type Resource = {
   singular: string;
   mode: "crud" | "inbox";
   titleField: string;
-  listColumns: { name: string; label: string }[];
+  listColumns: Column[];
   fields: Field[];
   statusField?: string;
   statusOptions?: readonly string[];
@@ -68,7 +76,12 @@ export const WORK_CATEGORIES = [
 ] as const;
 
 export /** How far the money has got, as against how far the order has. */
-const PAYMENT_STATUSES = ["reserved", "awaiting", "paid", "abandoned"];
+/**
+ * Every value the code actually writes into payment_status, including the
+ * one it was missing: a print-to-order request has no price yet, so it is
+ * neither reserved nor awaiting payment.
+ */
+const PAYMENT_STATUSES = ["reserved", "awaiting", "paid", "quote-requested", "abandoned"];
 
 const ORDER_STATUSES = [
   "new",
@@ -221,9 +234,10 @@ export const RESOURCES: Resource[] = [
     revalidate: [],
     listColumns: [
       { name: "full_name", label: "Name" },
+      { name: "region", label: "Where", format: "region" },
       { name: "country", label: "Country" },
       { name: "quantity", label: "Qty" },
-      { name: "total_usd", label: "Total" },
+      { name: "total_usd", label: "Total", format: "money", currencyFrom: "currency" },
       { name: "payment_status", label: "Payment" },
       { name: "status", label: "Status" },
       { name: "created_at", label: "Received" },
@@ -237,13 +251,22 @@ export const RESOURCES: Resource[] = [
       { name: "shipping_address", label: "Shipping address", type: "textarea" },
       { name: "quantity", label: "Quantity", type: "number" },
       { name: "message", label: "Message", type: "textarea" },
+      // Where the order came from, which decides what happens to it: a
+      // Pakistani order is settled by hand, a Turkish one may already have
+      // been paid by card, and a print-to-order request has no price yet.
+      { name: "region", label: "How it settles", type: "text", format: "regionLong", readOnly: true },
+      { name: "currency", label: "Currency", type: "text", readOnly: true },
       // What was quoted when the order was placed. Worked out on the server
       // from the quantity and the code; kept here so a price change later
-      // never rewrites what somebody was actually charged.
-      { name: "unit_price_usd", label: "Price per copy (USD)", type: "number" },
-      { name: "promo_code", label: "Promo code used", type: "text" },
-      { name: "discount_usd", label: "Discount (USD)", type: "number" },
-      { name: "total_usd", label: "Total (USD)", type: "number" },
+      // never rewrites what somebody was actually charged. The columns are
+      // named _usd for historical reasons and hold whatever `currency` says,
+      // which is why every one of them is printed with it.
+      { name: "quantity_priced", label: "Copies priced", type: "number", readOnly: true },
+      { name: "unit_price_usd", label: "Price per copy", type: "number", format: "money", currencyFrom: "currency", readOnly: true },
+      { name: "shipping_amount", label: "Postage", type: "number", format: "money", currencyFrom: "currency", readOnly: true },
+      { name: "promo_code", label: "Promo code used", type: "text", readOnly: true },
+      { name: "discount_usd", label: "Discount", type: "number", format: "money", currencyFrom: "currency", readOnly: true },
+      { name: "total_usd", label: "Total", type: "number", format: "money", currencyFrom: "currency", readOnly: true },
       {
         name: "payment_status",
         label: "Payment",
@@ -251,6 +274,7 @@ export const RESOURCES: Resource[] = [
         options: PAYMENT_STATUSES,
         help: "Stripe sets 'paid' by itself. Set it by hand for an order settled another way.",
       },
+      { name: "paid_at", label: "Paid", type: "date", format: "date", readOnly: true },
       { name: "stripe_session_id", label: "Stripe session", type: "text", help: "For matching an order to a payment in the Stripe dashboard." },
     ],
   },

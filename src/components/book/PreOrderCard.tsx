@@ -72,12 +72,15 @@ export function PreOrderCard({
   forms,
   region,
   canPayOnline,
+  locale,
 }: {
   copy: Dictionary["novel"]["purchase"];
   forms: Dictionary["forms"];
   /** Which country's terms apply: price, postage, and what a code is worth. */
   region: Region;
   canPayOnline: boolean;
+  /** Carried into the order so the confirmation arrives in this language. */
+  locale: string;
 }) {
   const spec = REGIONS[region];
   const country = region === "pk" ? "Pakistan" : "Türkiye";
@@ -177,7 +180,7 @@ export function PreOrderCard({
     const values = getValues();
     setStatus(mode === "card" ? "paying" : "reserving");
     setServerError(null);
-    const payload = { ...values, region, country, quantity, promo: promo.trim() || undefined };
+    const payload = { ...values, region, country, quantity, promo: promo.trim() || undefined, locale };
 
     try {
       const res = await fetch(mode === "card" ? "/api/book-checkout" : "/api/book-orders", {

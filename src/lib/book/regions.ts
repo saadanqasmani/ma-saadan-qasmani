@@ -86,6 +86,24 @@ export function money(currency: RegionSpec["currency"], amount: number): string 
   return `${SYMBOLS[currency]}${n}`;
 }
 
+/**
+ * The same rule for a currency the shop does not itself sell in.
+ *
+ * The admin screens and the order confirmations read currencies off stored
+ * rows, and a row can hold a code from before the three-shop split or from
+ * a print-to-order arrangement. An unknown code is printed beside its
+ * number rather than dropped, because a bare number is the one thing worse
+ * than an unfamiliar symbol.
+ */
+export function moneyIn(currency: string, amount: number): string {
+  const known = currency in SYMBOLS;
+  const n = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: currency === "PKR" ? 0 : 2,
+  }).format(amount);
+  return known ? `${SYMBOLS[currency as RegionSpec["currency"]]}${n}` : `${currency} ${n}`;
+}
+
 export function priceOf(region: Region): string {
   const spec = REGIONS[region];
   return money(spec.currency, spec.price);

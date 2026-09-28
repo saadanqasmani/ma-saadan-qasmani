@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { getResource, humanizeStatus } from "@/lib/admin/resources";
 import { updateInbox, type ActionResult } from "@/app/admin/actions";
 import { StatusBadge, buttonClass, formatDate } from "@/components/admin/ui";
+import { formatCell } from "@/lib/admin/format";
 
 const initial: ActionResult = { ok: false };
 
@@ -44,7 +45,7 @@ export function InboxRow({
                 // Dates carry their own label. Two bare dates side by side
                 // say nothing about which is which, and an empty one is
                 // indistinguishable from a column that is not there at all.
-                if (!c.name.includes("_at")) return String(row[c.name] ?? "");
+                if (!c.name.includes("_at") && c.format !== "date") return formatCell(row, c);
                 const when = formatDate(row[c.name] as string);
                 return `${c.label}: ${when || "not yet"}`;
               })
@@ -66,12 +67,16 @@ export function InboxRow({
             {resource.fields.map((f) => {
               const value = row[f.name];
               if (value === null || value === undefined || value === "") return null;
+              // A zero postage or a zero discount is not a fact about the
+              // order, it is a line that was not charged. Nine of them on a
+              // record make the ones that were charged harder to find.
+              if (f.format === "money" && Number(value) === 0) return null;
               return (
                 <div key={f.name} className={f.type === "textarea" ? "sm:col-span-2" : ""}>
                   <dt className="t-label text-ink-faint">
                     {f.label}
                   </dt>
-                  <dd className="mt-1 whitespace-pre-wrap text-sm text-ink">{String(value)}</dd>
+                  <dd className="mt-1 whitespace-pre-wrap text-sm text-ink">{formatCell(row, f)}</dd>
                 </div>
               );
             })}

@@ -4,6 +4,7 @@ import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { quoteFor, storedCode } from "@/lib/book/pricing";
 import { recordOrder } from "@/lib/book/store";
 import { createCheckout } from "@/lib/book/checkout";
+import { confirmOrder, linesOf, localeOf } from "@/lib/book/confirm";
 
 /**
  * Take a pre-order and send the reader to Stripe to pay for it.
@@ -29,6 +30,8 @@ const schema = z.object({
   quantity: z.coerce.number().int().min(1).max(50),
   message: z.string().max(2000).optional(),
   promo: z.string().max(64).optional(),
+  /** Carried into Stripe's metadata so the receipt comes back in this language. */
+  locale: z.string().max(5).optional(),
 });
 
 export async function POST(request: Request) {
@@ -46,7 +49,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { promo, region, ...order } = parsed.data;
+  const { promo, region, locale, ...order } = parsed.data;
   const quote = quoteFor(region, order.quantity, promo);
 
   const written = await recordOrder(supabase, order, {
@@ -90,6 +93,7 @@ export async function POST(request: Request) {
       city: order.city,
       address: order.shipping_address,
       phone: order.phone,
+      locale: localeOf(locale),
     },
     quote
   );
@@ -99,6 +103,22 @@ export async function POST(request: Request) {
     // The order is real whatever Stripe said, so it is kept and marked back
     // to a reservation rather than left pretending to be mid-payment.
     await supabase.from("book_orders").update({ payment_status: "reserved" }).eq("id", orderId);
+
+    // The card could not be taken, but the order stands, so the reader gets
+    // the same letter a reservation gets rather than silence and a red box.
+    await confirmOrder({
+      kind: "reserved",
+      locale: localeOf(locale),
+      id: orderId,
+      name: order.full_name,
+      email: order.email,
+      country: order.country,
+      city: order.city,
+      address: order.shipping_address,
+      quantity: order.quantity,
+      lines: linesOf(quote),
+    });
+
     return NextResponse.json(
       {
         error:

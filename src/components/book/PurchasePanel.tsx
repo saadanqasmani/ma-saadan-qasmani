@@ -74,7 +74,7 @@ export function PurchasePanel({
           </>
         )}
 
-        <ShipToMe copy={copy} forms={forms} />
+        <ShipToMe copy={copy} forms={forms} locale={locale} />
       </div>
 
       {/* the two countries it is sold in directly */}
@@ -110,7 +110,7 @@ export function PurchasePanel({
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             >
-              <PreOrderCard copy={copy} forms={forms} region={region} canPayOnline={canPayOnline} />
+              <PreOrderCard copy={copy} forms={forms} region={region} canPayOnline={canPayOnline} locale={locale} />
             </motion.div>
           </AnimatePresence>
         </div>
