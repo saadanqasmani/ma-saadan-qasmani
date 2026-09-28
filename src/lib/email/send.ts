@@ -20,6 +20,11 @@ export type Mail = {
   html: string;
   text: string;
   /**
+   * Who a reply should go to, when it is not the site's usual address. An
+   * order alert sets it to the buyer, so answering the alert answers them.
+   */
+  replyTo?: string;
+  /**
    * The one-click way out, per recipient. Sent as the List-Unsubscribe
    * headers mail clients read, so Gmail and the rest can show their own
    * Unsubscribe button next to the sender's name.
@@ -31,7 +36,7 @@ export type SendResult = { ok: true; id: string | null } | { ok: false; reason: 
 
 /** The JSON Resend wants for one message. */
 function payload(mail: Mail) {
-  const replyTo = replyToAddress();
+  const replyTo = mail.replyTo ?? replyToAddress();
   return {
     from: fromAddress(),
     to: [mail.to],

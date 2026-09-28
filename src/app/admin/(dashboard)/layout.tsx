@@ -12,6 +12,7 @@ const CONTENT_LINKS = [
   { href: "/admin/text", label: "Words and pictures" },
   { href: "/admin/settings", label: "Site settings" },
   { href: "/admin/book", label: "The novel" },
+  { href: "/admin/preorders", label: "Pre-order readiness" },
   { href: "/admin/media", label: "Files" },
   { href: "/admin/letters", label: "Letters" },
 ];

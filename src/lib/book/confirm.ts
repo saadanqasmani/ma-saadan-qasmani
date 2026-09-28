@@ -1,5 +1,6 @@
 import "server-only";
 import { orderEmail, type OrderKind, type OrderLines } from "@/lib/email/order";
+import { alertAddress, orderAlertEmail } from "@/lib/email/orderAlert";
 import { mailIsConfigured, sendMail } from "@/lib/email/send";
 import { defaultLocale, isLocale, type Locale } from "@/lib/i18n/config";
 
@@ -28,6 +29,10 @@ export type Confirmation = {
   address: string;
   quantity: number;
   lines: OrderLines | null;
+  phone?: string;
+  message?: string;
+  /** True when the order went in without its money columns. */
+  degraded?: boolean;
 };
 
 export async function confirmOrder(order: Confirmation): Promise<void> {
@@ -59,6 +64,36 @@ export async function confirmOrder(order: Confirmation): Promise<void> {
         `[order] confirmation NOT sent for ${order.id ?? "an order"} to ${order.email}: ${sent.reason}`
       );
     }
+
+    // And the other half of the promise. Pakistan and Türkiye are settled by
+    // hand, so an order nobody is told about is an order that never gets its
+    // payment instructions — which the reader has just been promised.
+    const alert = orderAlertEmail({
+      kind: order.kind,
+      id: order.id,
+      name: order.name,
+      email: order.email,
+      phone: order.phone,
+      country: order.country,
+      city: order.city,
+      address: order.address,
+      quantity: order.quantity,
+      lines: order.lines,
+      message: order.message,
+      locale: order.locale,
+      degraded: order.degraded,
+    });
+
+    if (!alert) {
+      console.warn(
+        `[order] nobody to alert about ${order.id ?? "an order"}: set ORDER_ALERT_EMAIL or ADMIN_EMAILS.`
+      );
+      return;
+    }
+
+    const told = await sendMail(alert);
+    if (told.ok) console.log(`[order] alert sent to ${alertAddress()} for ${order.id ?? "an order"}.`);
+    else console.error(`[order] alert NOT sent for ${order.id ?? "an order"}: ${told.reason}`);
   } catch (error) {
     console.error(
       `[order] confirmation threw for ${order.id ?? "an order"}: ${error instanceof Error ? error.message : String(error)}`

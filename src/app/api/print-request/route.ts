@@ -84,6 +84,9 @@ export async function POST(request: Request) {
     address: who.shipping_address,
     quantity: quantity ?? 1,
     lines: null,
+    phone: who.phone,
+    message: who.message,
+    degraded: written.ok ? written.degraded : false,
   });
 
   return NextResponse.json({ ok: true });

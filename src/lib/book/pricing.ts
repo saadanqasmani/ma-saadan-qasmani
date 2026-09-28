@@ -23,6 +23,11 @@ function codeFor(region: Region): string {
   return (perRegion || process.env.BOOK_PROMO_CODE || "SADDYDADDY19").trim().toUpperCase();
 }
 
+/** What the code is right now, for the readiness screen. */
+export function liveCode(region: Region): string {
+  return codeFor(region);
+}
+
 export type Quote = {
   region: Region;
   currency: string;

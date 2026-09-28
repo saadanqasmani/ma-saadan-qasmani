@@ -117,6 +117,12 @@ export const highestBranch = {
   status: "Releasing 19 October 2026",
   /** Written out on its own so the checkout line and the card can both say it. */
   releaseDate: "19 October 2026",
+  /**
+   * The same day as a date rather than a sentence, so it can be written the
+   * way each language writes a date. The line above stays because it is what
+   * English prints and what a machine-free fallback needs.
+   */
+  releaseIso: "2026-10-19",
   /** Cover price of one copy, in US dollars. The server holds the rule; this
    *  is only what the page prints. */
   priceUsd: 15,

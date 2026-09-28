@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { highestBranch } from "@/content/site";
 import { REGIONS, money, type Region } from "@/lib/book/regions";
+import { releaseDateIn } from "@/lib/book/release";
 import { Label, TextInput, TextArea, FormNotice } from "@/components/forms/fields";
 import type { Dictionary } from "@/content/i18n/en";
 import { fill } from "@/lib/i18n/dictionary";
@@ -227,7 +228,7 @@ export function PreOrderCard({
     <div className="pop-card p-7 sm:p-10">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <p className="eyebrow text-ember">{fill(copy.preOrderEyebrow, { where: region === "pk" ? copy.pkTab : copy.trTab })}</p>
-        <p className="t-label text-ink-faint">{fill(copy.shipsOn, { date: highestBranch.releaseDate })}</p>
+        <p className="t-label text-ink-faint">{fill(copy.shipsOn, { date: releaseDateIn(locale) })}</p>
       </div>
 
       <div className="mt-4 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">

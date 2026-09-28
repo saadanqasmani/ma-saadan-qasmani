@@ -76,6 +76,9 @@ export async function POST(request: Request) {
     address: order.shipping_address,
     quantity: order.quantity,
     lines: linesOf(quote),
+    phone: order.phone,
+    message: order.message,
+    degraded: written.degraded,
   });
 
   return NextResponse.json({ ok: true });

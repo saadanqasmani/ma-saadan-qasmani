@@ -136,5 +136,7 @@ async function sendConfirmation(
     address: String(row.shipping_address ?? ""),
     quantity: Number(row.quantity) || 1,
     lines: linesFromRow(row),
+    phone: String(row.phone ?? ""),
+    message: String(row.message ?? ""),
   });
 }
