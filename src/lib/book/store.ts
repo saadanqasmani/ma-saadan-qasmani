@@ -20,6 +20,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 const NO_SUCH_COLUMN = "42703";
 /** Postgres for "that violates a CHECK", which here means the country list. */
 const CHECK_FAILED = "23514";
+/** Postgres for "no such table", which means the migrations were never run. */
+const NO_SUCH_TABLE = "42P01";
 
 /** The columns the table has had since the beginning. */
 type BaseOrder = {
@@ -37,7 +39,24 @@ export type OrderExtras = Record<string, string | number | null>;
 
 export type Recorded =
   | { ok: true; id: string | null; degraded: boolean }
-  | { ok: false; reason: "no-such-column" | "bad-country" | "other"; detail: string };
+  | { ok: false; reason: Refusal; detail: string };
+
+export type Refusal = "no-such-table" | "bad-country" | "other";
+
+/** What the reason means, for a log line and for the alert that follows it. */
+export const REFUSAL_MEANS: Record<Refusal, string> = {
+  "no-such-table":
+    "the book_orders table does not exist on this database. Run supabase/migrations/0001_init.sql and the rest in order.",
+  "bad-country":
+    "the orders table still refuses any country but Pakistan and Türkiye. Run supabase/migrations/0008_regions.sql.",
+  other: "the database refused the row.",
+};
+
+function refusalOf(code: string | undefined): Refusal {
+  if (code === NO_SUCH_TABLE) return "no-such-table";
+  if (code === CHECK_FAILED) return "bad-country";
+  return "other";
+}
 
 function asNote(extras: OrderExtras): string {
   return Object.entries(extras)
@@ -62,12 +81,11 @@ export async function recordOrder(
   }
 
   if (full.error.code !== NO_SUCH_COLUMN) {
-    console.error(`[order] insert refused (${full.error.code}): ${full.error.message}`);
-    return {
-      ok: false,
-      reason: full.error.code === CHECK_FAILED ? "bad-country" : "other",
-      detail: full.error.message,
-    };
+    const reason = refusalOf(full.error.code);
+    console.error(
+      `[order] insert refused (${full.error.code}): ${full.error.message} — ${REFUSAL_MEANS[reason]}`
+    );
+    return { ok: false, reason, detail: full.error.message };
   }
 
   console.error(
@@ -83,12 +101,11 @@ export async function recordOrder(
     .maybeSingle();
 
   if (plain.error) {
-    console.error(`[order] and the plain insert failed too (${plain.error.code}): ${plain.error.message}`);
-    return {
-      ok: false,
-      reason: plain.error.code === CHECK_FAILED ? "bad-country" : "other",
-      detail: plain.error.message,
-    };
+    const reason = refusalOf(plain.error.code);
+    console.error(
+      `[order] and the plain insert failed too (${plain.error.code}): ${plain.error.message} — ${REFUSAL_MEANS[reason]}`
+    );
+    return { ok: false, reason, detail: plain.error.message };
   }
 
   return { ok: true, id: (plain.data?.id as string) ?? null, degraded: true };

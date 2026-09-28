@@ -49,6 +49,10 @@ export type Alert = {
   locale: string;
   /** True when the order went in without its money columns. */
   degraded?: boolean;
+  /** False when the database refused the row and this letter is the record. */
+  recorded?: boolean;
+  /** Why it was refused, in words. */
+  refusal?: string;
 };
 
 const HEADLINE: Record<OrderKind, string> = {
@@ -76,7 +80,10 @@ export function alertSubject(alert: Alert): string {
   const what = `${alert.quantity} cop${alert.quantity === 1 ? "y" : "ies"}`;
   const where = alert.city ? `${alert.city}, ${alert.country}` : alert.country;
   const total = alert.lines ? ` · ${moneyIn(alert.lines.currency, alert.lines.total)}` : "";
-  return `${HEADLINE[alert.kind]}: ${what} to ${where}${total}`;
+  // The warning goes in the subject as well, because this is the one letter
+  // that must not be skimmed and archived.
+  const kept = alert.recorded === false ? "KEEP THIS — " : "";
+  return `${kept}${HEADLINE[alert.kind]}: ${what} to ${where}${total}`;
 }
 
 export function orderAlertEmail(alert: Alert): Mail | null {
@@ -116,6 +123,7 @@ export function orderAlertEmail(alert: Alert): Mail | null {
 <p style="margin:0 0 6px;font:400 11px/1 ${sans};letter-spacing:.18em;text-transform:uppercase;color:#9c3b1b;">${escapeHtml(HEADLINE[alert.kind])}</p>
 <p style="margin:0 0 18px;font:700 20px/1.3 ${sans};color:#1b1a17;">${escapeHtml(alertSubject(alert).replace(/^[^:]+:\s*/, ""))}</p>
 <p style="margin:0 0 20px;font:400 15px/1.6 ${sans};color:#1b1a17;">${escapeHtml(WHAT_TO_DO[alert.kind])}</p>
+${alert.recorded === false ? `<p style="margin:0 0 20px;padding:12px 14px;background:#fbeae4;border:1px solid #e8c4b6;font:600 14px/1.6 ${sans};color:#9c3b1b;">This order is NOT in the database. This email is the only copy of it — keep it. ${escapeHtml(alert.refusal ?? "The database refused the row.")}</p>` : ""}
 ${alert.degraded ? `<p style="margin:0 0 20px;font:400 14px/1.6 ${sans};color:#9c3b1b;">The money columns are missing from the orders table, so the figures went into the notes rather than their own columns. Run the migrations.</p>` : ""}
 </td></tr>
 <tr><td style="padding:0 26px;"><div style="height:1px;background:#e4ded3;"></div></td></tr>
@@ -143,6 +151,9 @@ ${alert.message ? `<p style="margin:16px 0 0;font:400 14px/1.6 ${sans};color:#1b
     `${HEADLINE[alert.kind]} — ${highestBranch.title}`,
     "",
     WHAT_TO_DO[alert.kind],
+    ...(alert.recorded === false
+      ? ["", `NOT IN THE DATABASE. This email is the only copy of this order — keep it. ${alert.refusal ?? "The database refused the row."}`]
+      : []),
     ...(alert.degraded ? ["", "The orders table is missing its money columns; the figures are in the notes. Run the migrations."] : []),
     "",
     ...rows.map(([k, v]) => `${k}: ${v}`),

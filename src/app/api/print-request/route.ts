@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { recordAsMessage, recordOrder } from "@/lib/book/store";
+import { recordAsMessage, recordOrder, REFUSAL_MEANS, type Recorded } from "@/lib/book/store";
 import { confirmOrder, localeOf } from "@/lib/book/confirm";
 
 /**
@@ -32,49 +32,48 @@ export async function POST(request: Request) {
   }
 
   const supabase = getSupabaseServerClient();
-  if (!supabase) {
-    return NextResponse.json(
-      { error: "This isn't connected yet. Please check back soon." },
-      { status: 503 }
-    );
-  }
-
   const { quantity, locale, ...who } = parsed.data;
-  const written = await recordOrder(
-    supabase,
-    { ...who, quantity: quantity ?? 1, city: "—" },
-    // Not a country the shop covers, so it goes in as a request rather than
-    // an order: no currency, no total, nothing owed until it is worked out.
-    { region: "world", payment_status: "quote-requested" }
-  );
 
+  const written: Recorded = supabase
+    ? await recordOrder(
+        supabase,
+        { ...who, quantity: quantity ?? 1, city: "—" },
+        // Not a country the shop covers, so it goes in as a request rather
+        // than an order: no currency, no total, nothing owed until it is
+        // worked out.
+        { region: "world", payment_status: "quote-requested" }
+      )
+    : { ok: false, reason: "other", detail: "no database is configured" };
+
+  let filed = false;
   if (!written.ok) {
     // The order table has only ever accepted two countries, and this reader
     // is in a third. Rather than lose them, the request arrives as a
     // message, which the same inbox shows.
-    const filed = await recordAsMessage(supabase, {
-      name: who.full_name,
-      email: who.email,
-      subject: `Print to order — ${who.country}`,
-      body: [
-        `Wants ${quantity ?? 1} copy or copies of The Highest Branch, shipped to ${who.country}.`,
-        `Phone: ${who.phone}`,
-        `Address: ${who.shipping_address}`,
-        who.message ? `Said: ${who.message}` : "",
-        "Amazon does not reach them. Work out the postage and write back with a price.",
-      ]
-        .filter(Boolean)
-        .join("\n"),
-    });
-    if (!filed) {
-      return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
-    }
+    filed = supabase
+      ? await recordAsMessage(supabase, {
+          name: who.full_name,
+          email: who.email,
+          subject: `Print to order — ${who.country}`,
+          body: [
+            `Wants ${quantity ?? 1} copy or copies of The Highest Branch, shipped to ${who.country}.`,
+            `Phone: ${who.phone}`,
+            `Address: ${who.shipping_address}`,
+            who.message ? `Said: ${who.message}` : "",
+            "Amazon does not reach them. Work out the postage and write back with a price.",
+            "",
+            `The orders table refused this row: ${REFUSAL_MEANS[written.reason]}`,
+          ]
+            .filter(Boolean)
+            .join("\n"),
+        })
+      : false;
   }
 
   // Sent whichever way it was filed. The reader asked; what the database
   // happened to accept is not their concern. No price in it, because there
   // is not one yet.
-  await confirmOrder({
+  const sent = await confirmOrder({
     kind: "quote",
     locale: localeOf(locale),
     id: written.ok ? written.id : null,
@@ -87,7 +86,14 @@ export async function POST(request: Request) {
     phone: who.phone,
     message: who.message,
     degraded: written.ok ? written.degraded : false,
+    recorded: written.ok || filed,
+    refusal: written.ok ? undefined : REFUSAL_MEANS[written.reason],
   });
 
-  return NextResponse.json({ ok: true });
+  // Kept if it is anywhere: the orders table, the message inbox, or Saadan's
+  // own email. Only if none of those took it is the reader told to try again.
+  if (written.ok || filed || sent.alerted) return NextResponse.json({ ok: true });
+
+  console.error("[order] LOST a print-to-order request; nothing would take it.");
+  return NextResponse.json({ code: "not-recorded" }, { status: 500 });
 }

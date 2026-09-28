@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { quoteFor, storedCode } from "@/lib/book/pricing";
-import { recordOrder } from "@/lib/book/store";
+import { recordAsMessage, recordOrder, REFUSAL_MEANS, type Recorded } from "@/lib/book/store";
 import { createCheckout } from "@/lib/book/checkout";
 import { confirmOrder, linesOf, localeOf } from "@/lib/book/confirm";
 
@@ -42,46 +42,98 @@ export async function POST(request: Request) {
   }
 
   const supabase = getSupabaseServerClient();
-  if (!supabase) {
-    return NextResponse.json(
-      { error: "Pre-ordering isn't connected yet. Please check back soon." },
-      { status: 503 }
-    );
-  }
-
   const { promo, region, locale, ...order } = parsed.data;
   const quote = quoteFor(region, order.quantity, promo);
 
-  const written = await recordOrder(supabase, order, {
-    region,
-    currency: quote.currency,
-    unit_price_usd: quote.unit,
-    shipping_amount: quote.shipping,
-    quantity_priced: quote.quantity,
-    promo_code: storedCode(quote),
-    discount_usd: quote.discount,
-    total_usd: quote.total,
-    payment_status: "awaiting",
-  });
+  const written: Recorded = supabase
+    ? await recordOrder(supabase, order, {
+        region,
+        currency: quote.currency,
+        unit_price_usd: quote.unit,
+        shipping_amount: quote.shipping,
+        quantity_priced: quote.quantity,
+        promo_code: storedCode(quote),
+        discount_usd: quote.discount,
+        total_usd: quote.total,
+        payment_status: "awaiting",
+      })
+    : { ok: false, reason: "other", detail: "no database is configured" };
 
+  // No row means no card: the webhook would have nowhere to record that the
+  // money arrived. The order itself is not lost — it becomes a reservation,
+  // kept the same way the reserve path keeps one, and the reader is told
+  // that instructions are coming rather than that something went wrong.
   if (!written.ok || !written.id) {
-    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+    const why = written.ok ? "" : REFUSAL_MEANS[written.reason];
+
+    const filed =
+      supabase && !written.ok
+        ? await recordAsMessage(supabase, {
+            name: order.full_name,
+            email: order.email,
+            subject: `PRE-ORDER not recorded — ${order.quantity} to ${order.city}, ${order.country}`,
+            body: [
+              `${order.quantity} cop${order.quantity === 1 ? "y" : "ies"} of The Highest Branch, card attempt.`,
+              `Quoted: ${quote.currency} ${quote.total}${quote.promoApplied ? " (code applied)" : ""}.`,
+              `Phone: ${order.phone}`,
+              `Address: ${order.shipping_address}, ${order.city}, ${order.country}`,
+              "",
+              `The orders table refused this row: ${why}`,
+            ].join("\n"),
+          })
+        : false;
+
+    const sent = await confirmOrder({
+      kind: "reserved",
+      locale: localeOf(locale),
+      id: null,
+      name: order.full_name,
+      email: order.email,
+      country: order.country,
+      city: order.city,
+      address: order.shipping_address,
+      quantity: order.quantity,
+      lines: linesOf(quote),
+      phone: order.phone,
+      message: order.message,
+      recorded: false,
+      refusal: why,
+    });
+
+    if (filed || sent.alerted) {
+      console.error(`[pre-order] card path kept outside book_orders. Message: ${filed}. Alert: ${sent.alerted}. ${why}`);
+      return NextResponse.json({ ok: true, reserved: true });
+    }
+
+    console.error(`[pre-order] LOST a card order. ${why}`);
+    return NextResponse.json({ code: "not-recorded" }, { status: 500 });
   }
   const orderId = written.id;
+  // A row was written, so there is a database. Stated once for the compiler,
+  // which cannot see that through the branch above.
+  const db = supabase!;
 
   // A table without the money columns cannot hold a payment either: the
   // webhook would have nowhere to mark it paid. Better to take the order
   // and settle it by hand than to take a card against a row that cannot
   // record the result.
   if (written.degraded) {
-    return NextResponse.json(
-      {
-        error:
-          "Card payment isn't ready on this deployment yet. Your pre-order has been recorded and you will be sent payment instructions.",
-        recorded: true,
-      },
-      { status: 503 }
-    );
+    await confirmOrder({
+      kind: "reserved",
+      locale: localeOf(locale),
+      id: orderId,
+      name: order.full_name,
+      email: order.email,
+      country: order.country,
+      city: order.city,
+      address: order.shipping_address,
+      quantity: order.quantity,
+      lines: linesOf(quote),
+      phone: order.phone,
+      message: order.message,
+      degraded: true,
+    });
+    return NextResponse.json({ ok: true, reserved: true });
   }
 
   const session = await createCheckout(
@@ -102,7 +154,7 @@ export async function POST(request: Request) {
     console.error(`[pre-order] checkout unavailable (${session.reason}): ${session.detail}`);
     // The order is real whatever Stripe said, so it is kept and marked back
     // to a reservation rather than left pretending to be mid-payment.
-    await supabase.from("book_orders").update({ payment_status: "reserved" }).eq("id", orderId);
+    await db.from("book_orders").update({ payment_status: "reserved" }).eq("id", orderId);
 
     // The card could not be taken, but the order stands, so the reader gets
     // the same letter a reservation gets rather than silence and a red box.
@@ -121,19 +173,13 @@ export async function POST(request: Request) {
       message: order.message,
     });
 
-    return NextResponse.json(
-      {
-        error:
-          session.reason === "not-configured"
-            ? "Card payment isn't switched on yet. Your pre-order has been recorded and you will be sent payment instructions."
-            : "The payment page could not be opened. Your pre-order has been recorded and you will be sent payment instructions.",
-        recorded: true,
-      },
-      { status: 503 }
-    );
+    // A reservation is a real outcome, so it is a success rather than an
+    // error with a consolation attached. The page already has the reserved
+    // wording, in the reader's own language.
+    return NextResponse.json({ ok: true, reserved: true });
   }
 
-  await supabase
+  await db
     .from("book_orders")
     .update({ stripe_session_id: session.sessionId })
     .eq("id", orderId);

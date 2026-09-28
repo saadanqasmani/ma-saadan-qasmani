@@ -33,14 +33,25 @@ export type Confirmation = {
   message?: string;
   /** True when the order went in without its money columns. */
   degraded?: boolean;
+  /**
+   * False when the database refused the row entirely. The letters still go
+   * out — an order that exists only in two inboxes is an order — and the
+   * alert says so in its first line, because it is then the only copy.
+   */
+  recorded?: boolean;
+  /** Why the database refused it, for the alert. */
+  refusal?: string;
 };
 
-export async function confirmOrder(order: Confirmation): Promise<void> {
+/** What got out. The caller decides what to tell the reader from this. */
+export type Sent = { confirmed: boolean; alerted: boolean };
+
+export async function confirmOrder(order: Confirmation): Promise<Sent> {
   if (!mailIsConfigured()) {
     console.warn(
       `[order] no mail is configured, so ${order.email} was not sent a confirmation for ${order.id ?? "an order"}.`
     );
-    return;
+    return { confirmed: false, alerted: false };
   }
 
   try {
@@ -82,22 +93,27 @@ export async function confirmOrder(order: Confirmation): Promise<void> {
       message: order.message,
       locale: order.locale,
       degraded: order.degraded,
+      recorded: order.recorded !== false,
+      refusal: order.refusal,
     });
 
     if (!alert) {
       console.warn(
         `[order] nobody to alert about ${order.id ?? "an order"}: set ORDER_ALERT_EMAIL or ADMIN_EMAILS.`
       );
-      return;
+      return { confirmed: sent.ok, alerted: false };
     }
 
     const told = await sendMail(alert);
     if (told.ok) console.log(`[order] alert sent to ${alertAddress()} for ${order.id ?? "an order"}.`);
     else console.error(`[order] alert NOT sent for ${order.id ?? "an order"}: ${told.reason}`);
+
+    return { confirmed: sent.ok, alerted: told.ok };
   } catch (error) {
     console.error(
       `[order] confirmation threw for ${order.id ?? "an order"}: ${error instanceof Error ? error.message : String(error)}`
     );
+    return { confirmed: false, alerted: false };
   }
 }
 
