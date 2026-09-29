@@ -156,8 +156,17 @@ export const highestBranch = {
   coverImage: "/book-cover.png" as string | null,
   purchase: {
     amazon: {
-      url: null as string | null, // PLACEHOLDER — awaiting real Amazon link
+      /** The paperback listing. Null until it goes up on publication day. */
+      url: null as string | null,
       regions: "European Union & the Americas",
+    },
+    /**
+     * The Kindle edition, which is up and taking pre-orders now. It is
+     * offered second and with a word of discouragement, because the book
+     * was set for paper and reads better there.
+     */
+    ebook: {
+      url: "https://www.amazon.com/dp/B0HK7T7HLJ" as string | null,
     },
     direct: {
       regions: "Türkiye & Pakistan",

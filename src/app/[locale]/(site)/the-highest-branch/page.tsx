@@ -204,6 +204,7 @@ export default async function HighestBranchPage({ params }: Params) {
                 locale={locale}
                 canPayOnline={checkoutIsConfigured()}
                 amazonUrl={content.purchase.amazonUrl}
+                ebookUrl={content.purchase.ebookUrl}
               />
             </div>
           </Reveal>

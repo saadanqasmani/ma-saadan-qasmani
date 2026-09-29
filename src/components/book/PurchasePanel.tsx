@@ -28,6 +28,7 @@ export function PurchasePanel({
   locale,
   canPayOnline,
   amazonUrl,
+  ebookUrl,
 }: {
   copy: Dictionary["novel"]["purchase"];
   forms: Dictionary["forms"];
@@ -40,6 +41,8 @@ export function PurchasePanel({
    * dashboard is enough to turn the waiting note into a button.
    */
   amazonUrl?: string | null;
+  /** The Kindle edition, which is up and taking pre-orders already. */
+  ebookUrl?: string | null;
 }) {
   const [door, setDoor] = useState<Door>("tr");
 
@@ -97,6 +100,7 @@ export function PurchasePanel({
               forms={forms}
               locale={locale}
               amazonUrl={amazonUrl}
+              ebookUrl={ebookUrl}
             />
           ) : (
             <PreOrderCard
@@ -116,26 +120,30 @@ export function PurchasePanel({
 /**
  * Everywhere Amazon reaches, and then the places it does not.
  *
- * No form to fill in here while the listing is still to come: an address
- * for the day it goes up, and, under it, the one door for a reader Amazon
- * will not deliver to at all.
+ * The paperback first, because that is the book: it was set for a six by
+ * nine page and the ending lands differently when you can see how little
+ * is left in your right hand. The Kindle edition is offered under it and
+ * plainly, for a reader who would rather not wait until October, and the
+ * last door is for the reader Amazon will not deliver to at all.
  */
 function Elsewhere({
   copy,
   forms,
   locale,
   amazonUrl,
+  ebookUrl,
 }: {
   copy: Dictionary["novel"]["purchase"];
   forms: Dictionary["forms"];
   locale: string;
   amazonUrl?: string | null;
+  ebookUrl?: string | null;
 }) {
   return (
     <div className="p-6 sm:p-8">
       <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
         <div>
-          <p className="eyebrow text-ember">{copy.buyEyebrow}</p>
+          <p className="eyebrow text-ember">{copy.paperbackLabel}</p>
           <p className="t-label mt-2.5 text-ink-faint">{copy.amazonPrice}</p>
         </div>
         <p className="tnum font-display text-3xl leading-none sm:text-4xl">{priceOf("world")}</p>
@@ -158,6 +166,26 @@ function Elsewhere({
           </p>
           <AmazonNotify copy={copy} forms={forms} locale={locale} />
         </>
+      )}
+
+      {/* The ebook, which is already up. Second, and said plainly: it is
+          the same book and a worse way to read it. */}
+      {ebookUrl && (
+        <div className="mt-8 border-t border-line pt-6">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+            <p className="t-label font-medium text-ink">{copy.ebookLabel}</p>
+            <p className="t-label text-verdant">{copy.ebookLive}</p>
+          </div>
+          <p className="mt-3 text-base leading-relaxed text-ink-soft">{copy.waitForPaper}</p>
+          <a
+            href={ebookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="t-label mt-5 inline-flex border border-ink px-6 py-3 text-ink transition-colors hover:bg-ink hover:text-canvas-light"
+          >
+            {copy.ebookButton}
+          </a>
+        </div>
       )}
 
       {/* The reader Amazon does not reach. Set off by a rule, because it is

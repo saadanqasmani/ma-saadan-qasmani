@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { NewsletterForm, hasSubscribed } from "@/components/forms/NewsletterForm";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import type { Dictionary } from "@/content/i18n/en";
-import { stripLocale } from "@/lib/i18n/config";
+import { defaultLocale, stripLocale } from "@/lib/i18n/config";
 
 /**
  * Remembered for the length of one visit, not for good.
@@ -51,7 +51,14 @@ export function BookAnnouncement({
   const pathname = usePathname();
 
   // Nobody needs to be told about the novel on the novel's own page.
-  const onNovelPage = stripLocale(pathname || "/").startsWith("/the-highest-branch");
+  //
+  // English is served unprefixed, so `stripLocale` leaves an explicit
+  // `/en/...` alone — and that alias is a real address somebody can land
+  // on. Both spellings are checked, or the panel opens over the shop.
+  const here = stripLocale(pathname || "/");
+  const onNovelPage =
+    here.startsWith("/the-highest-branch") ||
+    here.startsWith(`/${defaultLocale}/the-highest-branch`);
 
   const remember = useCallback(() => {
     try {

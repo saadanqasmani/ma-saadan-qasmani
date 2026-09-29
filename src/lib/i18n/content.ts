@@ -125,6 +125,8 @@ export type Content = {
     directNote: string;
     /** Null until the listing exists. Fillable from the dashboard. */
     amazonUrl: string | null;
+    /** The Kindle edition, which is already up. */
+    ebookUrl: string | null;
   };
   /** The novel's description, which is a shape rather than a sentence. */
   novel: {
@@ -238,6 +240,7 @@ export async function getContent(
 
     purchase: {
       amazonUrl: rec.book.purchase.amazon.url,
+      ebookUrl: rec.book.purchase.ebook.url,
       amazonRegions: pick(b.amazonRegions, rec.book.purchase.amazon.regions),
       directRegions: pick(b.directRegions, rec.book.purchase.direct.regions),
       directNote: pick(b.directNote, rec.book.purchase.direct.note),
