@@ -128,6 +128,7 @@ async function sendConfirmation(
   await confirmOrder({
     kind,
     locale,
+    region: row.region === "tr" || row.region === "pk" ? row.region : null,
     id: String(row.id ?? ""),
     name: String(row.full_name ?? ""),
     email,

@@ -25,11 +25,12 @@ const VISIT = "thb-announcement-visit";
  * arrive first. It closes on Escape, on the backdrop, and on its own button,
  * and stays closed for the rest of that visit.
  *
- * It opens once per visit, and says one of two things. To someone who has
- * never left an address it makes the same offer as before, because the offer
- * has not been answered. To someone already on the list it drops the form
- * and becomes a reminder that the date is coming — asking a subscriber to
- * subscribe is the fastest way to look like you are not paying attention.
+ * It opens once per visit and asks for the pre-order, because in Türkiye
+ * and Pakistan that is a thing a reader can act on today. Under it, for
+ * everywhere else, is the address form for the day the Amazon listing goes
+ * up. To someone already on that list the form is dropped and a line takes
+ * its place: asking a subscriber to subscribe is the fastest way to look
+ * like you are not paying attention.
  *
  * A native <dialog> rather than a div: focus goes in and stays in, Escape
  * works, and the rest of the page is inert for a screen reader without any
@@ -147,42 +148,54 @@ export function BookAnnouncement({
           <p className="t-body mt-3.5 text-canvas-light/85">
             {copy.body}
           </p>
+          {/* The pre-order, first and as a button: it is the thing being
+              asked for, and two countries can act on it today. */}
+          <LocaleLink
+            href="/the-highest-branch#purchase"
+            onClick={close}
+            className="t-label group relative mt-5 inline-flex overflow-hidden bg-canvas-light px-7 py-3.5 text-ink"
+          >
+            <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
+            <span className="relative transition-colors group-hover:text-canvas-light">
+              {copy.preOrder}
+            </span>
+          </LocaleLink>
+
+          {/* And under it, the rest of the world, who cannot yet. */}
           {subscribed ? (
-            <p className="mt-4 flex items-start gap-2.5 text-sm leading-relaxed text-canvas-light/70">
+            <p className="mt-6 flex items-start gap-2.5 text-sm leading-relaxed text-canvas-light/70">
               <span aria-hidden className="mt-2 block h-px w-4 shrink-0 bg-ember-light" />
               {copy.onList}
             </p>
           ) : (
-            <>
-              <p className="mt-4 text-sm leading-relaxed text-canvas-light/70">{copy.ask}</p>
+            <div className="mt-6 border-t border-canvas-light/15 pt-5">
+              <p className="text-sm leading-relaxed text-canvas-light/70">{copy.ask}</p>
 
-              <div className="mt-5">
+              <div className="mt-4">
                 <NewsletterForm
                   tone="light"
                   copy={{ ...newsletter, subscribe: copy.submit, sending: copy.sending, done: copy.done, placeholder: copy.placeholder }}
                 />
               </div>
-            </>
+            </div>
           )}
 
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
             <LocaleLink
               href="/the-highest-branch"
               onClick={close}
-              className="t-label group inline-flex items-center gap-2 text-canvas-light transition-opacity hover:opacity-75"
+              className="t-label group inline-flex items-center gap-2 text-canvas-light/70 transition-colors hover:text-canvas-light"
             >
               <span className="inline-block h-px w-5 bg-current transition-all duration-300 group-hover:w-8" />
               {copy.readMore}
             </LocaleLink>
-            {!subscribed && (
-              <button
-                type="button"
-                onClick={close}
-                className="t-label text-canvas-light/55 transition-colors hover:text-canvas-light"
-              >
-                {copy.later}
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={close}
+              className="t-label text-canvas-light/55 transition-colors hover:text-canvas-light"
+            >
+              {copy.later}
+            </button>
           </div>
         </div>
       </div>

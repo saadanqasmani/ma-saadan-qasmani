@@ -64,7 +64,7 @@ export function ShipToMe({
         type="button"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        className="t-label mt-5 text-ink-faint underline decoration-dotted underline-offset-4 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ember"
+        className="t-label text-ink-faint underline decoration-dotted underline-offset-4 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ember"
       >
         {copy.notShipped}
       </button>

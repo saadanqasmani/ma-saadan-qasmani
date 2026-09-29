@@ -209,7 +209,7 @@ export function PreOrderCard({
 
   if (status === "done" || returned === "paid") {
     return (
-      <div className="pop-card p-7 sm:p-9">
+      <div className="p-6 sm:p-8">
         <p className="eyebrow text-ember">{fill(copy.preOrderEyebrow, { where: region === "pk" ? copy.pkTab : copy.trTab })}</p>
         <h3 className="mt-4 font-display text-3xl leading-tight">
           {returned === "paid" ? copy.paidTitle : copy.reservedTitle}
@@ -225,7 +225,7 @@ export function PreOrderCard({
   const busy = status === "paying" || status === "reserving";
 
   return (
-    <div className="pop-card p-6 sm:p-8">
+    <div className="p-6 sm:p-8">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <p className="eyebrow text-ember">{fill(copy.preOrderEyebrow, { where: region === "pk" ? copy.pkTab : copy.trTab })}</p>
         <p className="t-label text-ink-faint">{fill(copy.shipsOn, { date: releaseDateIn(locale) })}</p>
@@ -240,7 +240,7 @@ export function PreOrderCard({
       </div>
       <p className="mt-4 font-serif text-base leading-relaxed text-ink-soft sm:text-lg">{copy.encourage}</p>
       <p className="mt-3 text-sm leading-relaxed text-ink-faint">
-        {region === "pk" ? copy.pkHow : copy.trHow}
+        {region === "pk" ? copy.pkHow : payOnline ? copy.trHowCard : copy.trHow}
         {spec.shipping > 0 && ` ${fill(copy.shippingNote, { amount: money(spec.currency, spec.shipping) })}`}
       </p>
 

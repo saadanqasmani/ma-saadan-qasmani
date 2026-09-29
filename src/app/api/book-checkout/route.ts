@@ -86,6 +86,7 @@ export async function POST(request: Request) {
     const sent = await confirmOrder({
       kind: "reserved",
       locale: localeOf(locale),
+      region,
       id: null,
       name: order.full_name,
       email: order.email,
@@ -121,6 +122,7 @@ export async function POST(request: Request) {
     await confirmOrder({
       kind: "reserved",
       locale: localeOf(locale),
+      region,
       id: orderId,
       name: order.full_name,
       email: order.email,
@@ -161,6 +163,7 @@ export async function POST(request: Request) {
     await confirmOrder({
       kind: "reserved",
       locale: localeOf(locale),
+      region,
       id: orderId,
       name: order.full_name,
       email: order.email,

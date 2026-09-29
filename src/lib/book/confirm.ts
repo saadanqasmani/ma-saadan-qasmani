@@ -1,5 +1,5 @@
 import "server-only";
-import { orderEmail, type OrderKind, type OrderLines } from "@/lib/email/order";
+import { orderEmail, type OrderKind, type OrderLines, type OrderRegion } from "@/lib/email/order";
 import { alertAddress, orderAlertEmail } from "@/lib/email/orderAlert";
 import { mailIsConfigured, sendMail } from "@/lib/email/send";
 import { defaultLocale, isLocale, type Locale } from "@/lib/i18n/config";
@@ -21,6 +21,12 @@ import { defaultLocale, isLocale, type Locale } from "@/lib/i18n/config";
 export type Confirmation = {
   kind: OrderKind;
   locale: Locale;
+  /**
+   * Which country's terms the order was placed under. It decides the
+   * payment instructions the letter carries, which in Pakistan and Türkiye
+   * is the whole point of the letter.
+   */
+  region?: OrderRegion | null;
   id: string | null;
   name: string;
   email: string;
@@ -58,6 +64,7 @@ export async function confirmOrder(order: Confirmation): Promise<Sent> {
     const mail = orderEmail({
       kind: order.kind,
       locale: order.locale,
+      region: order.region,
       name: order.name,
       email: order.email,
       country: order.country,

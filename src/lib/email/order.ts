@@ -27,9 +27,35 @@ import { moneyIn } from "@/lib/book/regions";
 import { localeMeta, type Locale } from "@/lib/i18n/config";
 import { absoluteUrl } from "@/lib/i18n/metadata";
 import { siteUrl } from "@/lib/siteUrl";
-import type { Mail } from "@/lib/email/send";
+import { replyAddress, type Mail } from "@/lib/email/send";
 
 export type OrderKind = "reserved" | "paid" | "quote";
+
+/** Which country's terms the order was placed under. */
+export type OrderRegion = "pk" | "tr" | "world";
+
+/**
+ * Where the money actually goes.
+ *
+ * It lives here, in a module nothing on the client imports, rather than in
+ * the content tree: an account number belongs in the one letter that needs
+ * it and nowhere a crawler can reach. Nothing on the site displays it. The
+ * reader is told it has been emailed, and it has.
+ */
+const SETTLEMENT: Record<"pk" | "tr", { method: string; label: string; value: string; holder?: string }> = {
+  tr: {
+    method: "bank",
+    label: "IBAN",
+    value: "TR56 0001 0090 1010 3999 9050 01",
+    holder: "Muhammad Ahmed Saadan Qasmani",
+  },
+  pk: {
+    method: "jazzcash",
+    label: "JazzCash",
+    value: "0333 3012347",
+    holder: "Muhammad Ahmed Saadan Qasmani",
+  },
+};
 
 export type OrderLines = {
   currency: string;
@@ -45,6 +71,12 @@ export type OrderLines = {
 export type OrderMail = {
   kind: OrderKind;
   locale: Locale;
+  /**
+   * Decides which payment instructions the letter carries. Absent on a
+   * print-to-order request, which has no price agreed and so nothing to
+   * pay yet.
+   */
+  region?: OrderRegion | null;
   name: string;
   email: string;
   country: string;
@@ -67,6 +99,12 @@ type Copy = {
   thanksPaid: string;
   thanksQuote: string;
   nextReserved: string;
+  payHeading: string;
+  payBank: string;
+  payJazzCash: string;
+  payHolder: string;
+  payReference: string;
+  payReceipt: string;
   nextPaid: string;
   nextQuote: string;
   orderHeading: string;
@@ -99,7 +137,13 @@ const copy: Record<Locale, Copy> = {
     thanksReserved: "Thank you for pre-ordering The Highest Branch. Your copies are set aside.",
     thanksPaid: "Thank you. Your payment has gone through and your order is confirmed.",
     thanksQuote: "Thank you for asking. Amazon does not reach your country, so this one is arranged by hand.",
-    nextReserved: "I will write to you with payment instructions. Nothing is owed until then, and no card or bank detail is held on this site.",
+    nextReserved: "Nothing has been charged. The details for paying are below, and your copy goes out the week the book comes off the press.",
+    payHeading: "How to pay",
+    payBank: "Send the total to this account by bank transfer.",
+    payJazzCash: "Send the total to this JazzCash number.",
+    payHolder: "Account name",
+    payReference: "Put your own name in the transfer note, so I can match the payment to your order.",
+    payReceipt: "Then email the receipt to {email} and I will confirm it the same day.",
     nextPaid: "Nothing more is needed from you. You will hear from me again when the book ships.",
     nextQuote: "I will work out what postage to your address costs and write back with a price before anything is owed.",
     orderHeading: "Your order",
@@ -125,7 +169,13 @@ const copy: Record<Locale, Copy> = {
     thanksReserved: "En Yüksek Dal için ön sipariş verdiğiniz için teşekkür ederim. Kitaplarınız ayrıldı.",
     thanksPaid: "Teşekkür ederim. Ödemeniz alındı ve siparişiniz onaylandı.",
     thanksQuote: "Sorduğunuz için teşekkür ederim. Amazon ülkenize göndermiyor, bu yüzden bu sipariş elden düzenlenecek.",
-    nextReserved: "Ödeme talimatlarını size yazacağım. O ana kadar bir borcunuz yok ve bu sitede hiçbir kart veya banka bilgisi tutulmuyor.",
+    nextReserved: "Hiçbir tahsilat yapılmadı. Ödeme bilgileri aşağıda; kitap baskıdan çıktığı hafta kopyanız yola çıkar.",
+    payHeading: "Nasıl ödenir",
+    payBank: "Toplam tutarı havale veya EFT ile bu hesaba gönderin.",
+    payJazzCash: "Toplam tutarı bu JazzCash numarasına gönderin.",
+    payHolder: "Hesap adı",
+    payReference: "Havale açıklamasına kendi adınızı yazın ki ödemeyi siparişinizle eşleştirebileyim.",
+    payReceipt: "Sonra dekontu {email} adresine gönderin; aynı gün onaylayayım.",
     nextPaid: "Sizden başka bir şey gerekmiyor. Kitap kargoya verildiğinde tekrar yazacağım.",
     nextQuote: "Adresinize kargonun ne tuttuğunu hesaplayıp, herhangi bir ödeme söz konusu olmadan önce fiyatı size yazacağım.",
     orderHeading: "Siparişiniz",
@@ -151,7 +201,13 @@ const copy: Record<Locale, Copy> = {
     thanksReserved: "Vielen Dank für Ihre Vorbestellung von The Highest Branch. Ihre Exemplare sind zurückgelegt.",
     thanksPaid: "Vielen Dank. Ihre Zahlung ist eingegangen und Ihre Bestellung ist bestätigt.",
     thanksQuote: "Danke für Ihre Anfrage. Amazon liefert nicht in Ihr Land, deshalb wird diese Bestellung von Hand abgewickelt.",
-    nextReserved: "Ich schreibe Ihnen mit den Zahlungsanweisungen. Bis dahin ist nichts fällig, und auf dieser Seite werden keine Karten- oder Bankdaten gespeichert.",
+    nextReserved: "Es wurde nichts abgebucht. Die Zahlungsangaben stehen unten, und Ihr Exemplar geht in der Woche raus, in der das Buch aus der Presse kommt.",
+    payHeading: "So zahlen Sie",
+    payBank: "Überweisen Sie den Gesamtbetrag auf dieses Konto.",
+    payJazzCash: "Senden Sie den Gesamtbetrag an diese JazzCash-Nummer.",
+    payHolder: "Kontoinhaber",
+    payReference: "Schreiben Sie Ihren Namen in den Verwendungszweck, damit ich die Zahlung Ihrer Bestellung zuordnen kann.",
+    payReceipt: "Schicken Sie mir dann den Beleg an {email}, und ich bestätige ihn noch am selben Tag.",
     nextPaid: "Von Ihnen wird nichts weiter gebraucht. Sie hören wieder von mir, wenn das Buch verschickt wird.",
     nextQuote: "Ich rechne das Porto zu Ihrer Adresse aus und melde mich mit einem Preis, bevor irgendetwas fällig wird.",
     orderHeading: "Ihre Bestellung",
@@ -177,7 +233,13 @@ const copy: Record<Locale, Copy> = {
     thanksReserved: "Спасибо за предзаказ «The Highest Branch». Ваши экземпляры отложены.",
     thanksPaid: "Спасибо. Оплата прошла, заказ подтверждён.",
     thanksQuote: "Спасибо за обращение. Amazon не доставляет в вашу страну, поэтому этот заказ оформляется вручную.",
-    nextReserved: "Я напишу вам с указаниями по оплате. До этого момента ничего платить не нужно, и никакие карточные или банковские данные на сайте не хранятся.",
+    nextReserved: "Ничего не списано. Реквизиты для оплаты ниже, а книга уедет к вам на той неделе, когда сойдёт с печатного станка.",
+    payHeading: "Как оплатить",
+    payBank: "Переведите всю сумму на этот счёт банковским переводом.",
+    payJazzCash: "Отправьте всю сумму на этот номер JazzCash.",
+    payHolder: "Имя владельца счёта",
+    payReference: "Укажите своё имя в назначении платежа, чтобы я мог сопоставить его с вашим заказом.",
+    payReceipt: "Затем пришлите квитанцию на {email}, и я подтвержу её в тот же день.",
     nextPaid: "От вас больше ничего не требуется. Я напишу снова, когда книга будет отправлена.",
     nextQuote: "Я рассчитаю стоимость доставки по вашему адресу и напишу с ценой, прежде чем что-либо нужно будет платить.",
     orderHeading: "Ваш заказ",
@@ -203,7 +265,13 @@ const copy: Record<Locale, Copy> = {
     thanksReserved: "شكرًا لطلبك المسبق لكتاب The Highest Branch. نسخك محجوزة.",
     thanksPaid: "شكرًا لك. تم استلام الدفع وتأكيد طلبك.",
     thanksQuote: "شكرًا لسؤالك. أمازون لا تصل إلى بلدك، لذلك سيُرتَّب هذا الطلب يدويًا.",
-    nextReserved: "سأكتب إليك بتعليمات الدفع. لا شيء مستحق قبل ذلك، ولا تُحفظ أي بيانات بطاقة أو بنك على هذا الموقع.",
+    nextReserved: "لم يُخصم شيء. تفاصيل الدفع في الأسفل، ونسختك تخرج إليك في الأسبوع الذي يُطبع فيه الكتاب.",
+    payHeading: "كيفية الدفع",
+    payBank: "حوّل المبلغ الإجمالي إلى هذا الحساب.",
+    payJazzCash: "أرسل المبلغ الإجمالي إلى رقم JazzCash هذا.",
+    payHolder: "اسم صاحب الحساب",
+    payReference: "اكتب اسمك في ملاحظة التحويل حتى أتمكن من مطابقة الدفعة بطلبك.",
+    payReceipt: "ثم أرسل الإيصال إلى {email} وسأؤكّده في اليوم نفسه.",
     nextPaid: "لا حاجة لشيء آخر منك. سأكتب إليك مرة أخرى عند شحن الكتاب.",
     nextQuote: "سأحسب تكلفة الشحن إلى عنوانك وأكتب إليك بالسعر قبل أن يُستحق أي مبلغ.",
     orderHeading: "طلبك",
@@ -229,7 +297,13 @@ const copy: Record<Locale, Copy> = {
     thanksReserved: "The Highest Branch کا پیشگی آرڈر دینے کا شکریہ۔ آپ کی کاپیاں الگ رکھ دی گئی ہیں۔",
     thanksPaid: "شکریہ۔ آپ کی ادائیگی موصول ہو گئی ہے اور آرڈر تصدیق شدہ ہے۔",
     thanksQuote: "پوچھنے کا شکریہ۔ ایمازون آپ کے ملک میں نہیں بھیجتا، اس لیے یہ آرڈر ہاتھ سے ترتیب دیا جائے گا۔",
-    nextReserved: "میں آپ کو ادائیگی کی تفصیل لکھ کر بھیجوں گا۔ اس سے پہلے کچھ واجب الادا نہیں، اور اس سائٹ پر کوئی کارڈ یا بینک تفصیل محفوظ نہیں کی جاتی۔",
+    nextReserved: "کچھ وصول نہیں کیا گیا۔ ادائیگی کی تفصیل نیچے ہے، اور جس ہفتے کتاب چھپ کر آئے گی اُسی ہفتے آپ کی کاپی روانہ ہو جائے گی۔",
+    payHeading: "ادائیگی کیسے کریں",
+    payBank: "کل رقم بینک ٹرانسفر کے ذریعے اِس اکاؤنٹ میں بھیجیے۔",
+    payJazzCash: "کل رقم اِس جاز کیش نمبر پر بھیجیے۔",
+    payHolder: "اکاؤنٹ کا نام",
+    payReference: "ٹرانسفر کے نوٹ میں اپنا نام ضرور لکھیے تاکہ میں ادائیگی کو آپ کے آرڈر سے ملا سکوں۔",
+    payReceipt: "پھر رسید {email} پر بھیج دیجیے، میں اُسی دن تصدیق کر دوں گا۔",
     nextPaid: "اب آپ سے مزید کچھ درکار نہیں۔ کتاب روانہ ہوتے وقت میں دوبارہ لکھوں گا۔",
     nextQuote: "میں آپ کے پتے تک ڈاک خرچ نکال کر، کسی رقم کے واجب ہونے سے پہلے قیمت لکھ بھیجوں گا۔",
     orderHeading: "آپ کا آرڈر",
@@ -307,6 +381,22 @@ ${row(t.total, money(l.total, l.currency), true)}
 ${l.promoApplied ? `<p style="margin:10px 0 0;font:400 14px/1.5 ${sans};color:#6b655c;">${escapeHtml(t.promoNote)}</p>` : ""}`
     : `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${row(t.copies, String(order.quantity))}</table>`;
 
+  /**
+   * The part a reader in Türkiye or Pakistan opens this letter for.
+   *
+   * Only on a reservation: a card that already went through has nothing to
+   * pay, and a print-to-order request has no agreed price to pay yet. The
+   * account itself is set left to right and kept off one line, because an
+   * IBAN read back wrong is a payment that lands somewhere else.
+   */
+  const settle =
+    order.kind === "reserved" && (order.region === "tr" || order.region === "pk")
+      ? SETTLEMENT[order.region]
+      : null;
+  const settleHow = settle ? (settle.method === "bank" ? t.payBank : t.payJazzCash) : "";
+  const receiptTo = replyAddress();
+  const settleReceipt = settle ? t.payReceipt.replace("{email}", receiptTo) : "";
+
   const where = [order.address, order.city, order.country].filter(Boolean).join(", ");
   const ref = shortRef(order.reference);
   const novel = absoluteUrl("/the-highest-branch", order.locale);
@@ -336,9 +426,26 @@ ${summary}
 
 <tr><td style="padding:0 32px;">${rule}</td></tr>
 
+${settle ? `<tr><td dir="${meta.dir}" align="${align}" style="padding:0 32px;text-align:${align};">
+<p style="margin:0 0 14px;font:400 11px/1 ${sans};letter-spacing:.16em;text-transform:uppercase;color:#9c3b1b;">${escapeHtml(t.payHeading)}</p>
+${p(settleHow, "0 0 14px")}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f3ee;border:1px solid #e4ded3;">
+<tr><td dir="ltr" align="left" style="padding:16px 18px;text-align:left;">
+<p style="margin:0 0 4px;font:400 11px/1 ${sans};letter-spacing:.14em;text-transform:uppercase;color:#6b655c;">${escapeHtml(settle.label)}</p>
+<p style="margin:0;font:700 18px/1.45 ${sans};color:#1b1a17;word-break:break-word;">${escapeHtml(settle.value)}</p>
+${settle.holder ? `<p style="margin:12px 0 4px;font:400 11px/1 ${sans};letter-spacing:.14em;text-transform:uppercase;color:#6b655c;">${escapeHtml(t.payHolder)}</p>
+<p style="margin:0;font:400 16px/1.45 ${sans};color:#1b1a17;">${escapeHtml(settle.holder)}</p>` : ""}
+</td></tr>
+</table>
+${p(t.payReference, "16px 0 10px")}
+${p(settleReceipt, "0")}
+</td></tr>
+
+<tr><td style="padding:0 32px;">${rule}</td></tr>` : ""}
+
 <tr><td dir="${meta.dir}" align="${align}" style="padding:0 32px;text-align:${align};">
 <p style="margin:0 0 6px;font:400 11px/1 ${sans};letter-spacing:.16em;text-transform:uppercase;color:#6b655c;">${escapeHtml(t.shipTo)}</p>
-<p style="margin:0 0 18px;font:400 15px/1.6 ${sans};color:#1b1a17;white-space:pre-wrap;">${escapeHtml(where)}</p>
+<p dir="auto" style="margin:0 0 18px;font:400 15px/1.6 ${sans};color:#1b1a17;white-space:pre-wrap;">${escapeHtml(where)}</p>
 ${p(t.released, "0 0 8px")}
 ${ref ? `<p style="margin:0;font:400 14px/1.6 ${sans};color:#6b655c;">${escapeHtml(t.reference)}: <span dir="ltr">${escapeHtml(ref)}</span></p>` : ""}
 </td></tr>
@@ -381,7 +488,18 @@ ${p(t.question, "0 0 16px")}
           .filter(Boolean)
           .join("\n")
       : `${t.copies}: ${order.quantity}`,
-    "",
+    ...(settle
+      ? [
+          "---",
+          t.payHeading,
+          settleHow,
+          `${settle.label}: ${settle.value}`,
+          ...(settle.holder ? [`${t.payHolder}: ${settle.holder}`] : []),
+          t.payReference,
+          settleReceipt,
+          "",
+        ]
+      : []),
     `${t.shipTo}: ${where}`,
     t.released,
     ...(ref ? [`${t.reference}: ${ref}`] : []),

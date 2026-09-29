@@ -112,6 +112,27 @@ function replyToAddress(): string | undefined {
   return value || undefined;
 }
 
+/**
+ * The address to print inside a letter, when the letter asks for something
+ * back — a payment receipt, say.
+ *
+ * Unlike the reply-to header, this cannot be omitted: a letter that tells
+ * somebody to send a receipt and does not say where would be worse than
+ * one that names the wrong mailbox, so it falls through every address the
+ * deployment knows about before giving up on the sending domain.
+ */
+export function replyAddress(): string {
+  const reply = process.env.MAIL_REPLY_TO?.trim();
+  if (reply) return reply;
+  const alert = process.env.ORDER_ALERT_EMAIL?.trim();
+  if (alert) return alert;
+  const first = (process.env.ADMIN_EMAILS ?? "").split(",")[0]?.trim();
+  if (first) return first;
+  const from = fromAddress();
+  const match = from.match(/<([^>]+)>/);
+  return (match ? match[1] : from).trim();
+}
+
 export async function sendMail(mail: Mail): Promise<SendResult> {
   const key = apiKey();
   if (!key) return { ok: false, reason: "no-key" };
