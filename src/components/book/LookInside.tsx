@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
-import { aboutTheAuthor, contents, dedication, sections, type Line } from "@/content/book/interior";
+import { aboutTheAuthor, contents, sections, type Line } from "@/content/book/interior";
 import { goToPurchase } from "@/components/book/ToPurchase";
 import type { Dictionary } from "@/content/i18n/en";
 
@@ -177,23 +177,6 @@ function TitlePlate() {
   );
 }
 
-function DedicationPlate() {
-  return (
-    <div className="tb-sheet" style={geometry}>
-      <div className="tb-plate" style={{ justifyContent: "center" }}>
-        <div style={{ fontSize: 14.5, lineHeight: "26px", fontStyle: "italic" }}>
-          {dedication.body.map((line, i) => (
-            <p key={i} style={{ margin: 0 }}>{marked(line, `d${i}`)}</p>
-          ))}
-        </div>
-        <p style={{ marginTop: 52, fontSize: 13.5, lineHeight: "24px", opacity: 0.8 }}>
-          {dedication.postscript}
-        </p>
-      </div>
-    </div>
-  );
-}
-
 function ContentsPlate({ label }: { label: string }) {
   return (
     <div className="tb-sheet" style={geometry}>
@@ -294,7 +277,76 @@ function LockedPlate({
 
 /* --- the phone, where a facsimile would be unreadable ------------------ */
 
-function Poured({
+/**
+ * The printed page a section opens on, for the folio at the foot of a leaf.
+ * Read off the book's own contents rather than counted, because on a phone
+ * a section is one leaf however many printed pages it runs to.
+ */
+function folioOf(heading: string): number | null {
+  return contents.find((row) => row.title === heading)?.page ?? null;
+}
+
+/** One leaf: a section, on its own sheet of paper, with its folio. */
+function Leaf({
+  id,
+  children,
+  folio,
+}: {
+  id?: string;
+  children: React.ReactNode;
+  folio?: number | null;
+}) {
+  return (
+    <section id={id} className="tb-leaf">
+      {children}
+      {folio != null && (
+        <p className="tb-leaf__folio" aria-hidden>
+          {folio}
+        </p>
+      )}
+    </section>
+  );
+}
+
+/** A section's text, poured at a size a thumb can read. */
+function Poured({ lines }: { lines: readonly Line[] }) {
+  return (
+    <>
+      {lines.map((line, i) => {
+        if (line.tag === "gap") return <div key={i} className="h-5" aria-hidden />;
+        if (line.tag === "sub")
+          return (
+            <p key={i} className="tb-open mb-2 mt-7 text-center text-xs font-semibold uppercase tracking-[0.12em]">
+              {line.text}
+            </p>
+          );
+        if (line.tag === "quote")
+          return (
+            <p key={i} className="tb-open my-5 px-3 italic">
+              {marked(line.text, `q${i}`)}
+            </p>
+          );
+        return (
+          <p key={i} className={opensFlush(lines, i) ? "tb-open" : undefined}>
+            {marked(line.text, `s${i}`)}
+          </p>
+        );
+      })}
+    </>
+  );
+}
+
+/**
+ * The book on a phone.
+ *
+ * A six by nine facsimile shrunk to a phone is six-point type, so the same
+ * text is set at a size a thumb can read. What is kept is the thing that
+ * makes it a book rather than a web page: every section is its own leaf of
+ * paper, with the printed folio at its foot, and you turn to the next one
+ * rather than falling through a single column a thousand lines long. The
+ * strip along the top says where you are and goes straight to any of them.
+ */
+function Leaves({
   copy,
   onPreOrder,
 }: {
@@ -302,104 +354,118 @@ function Poured({
   onPreOrder: () => void;
 }) {
   const first = contents.find((row) => row.chapter === 1);
+  const [here, setHere] = useState<string | null>(null);
+
+  /**
+   * Which leaf is being read. An observer rather than a scroll handler:
+   * it fires when a leaf crosses into the top third of the reader and
+   * nowhere else, so the strip moves once per section instead of on every
+   * pixel of thumb.
+   */
+  const watch = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
+    const seen = new Map<string, number>();
+    const eye = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) seen.set(e.target.id, e.intersectionRatio);
+        let best: string | null = null;
+        let most = 0;
+        for (const [id, ratio] of seen) {
+          if (ratio > most) {
+            most = ratio;
+            best = id;
+          }
+        }
+        if (most > 0) setHere(best);
+      },
+      { threshold: [0, 0.15, 0.4, 0.75, 1] }
+    );
+    for (const leaf of node.querySelectorAll("section[id]")) eye.observe(leaf);
+    return () => eye.disconnect();
+  }, []);
+  const marks = [
+    { id: "tb-contents", label: copy.contents },
+    ...sections.map((s) => ({ id: `tb-${s.id}`, label: s.heading })),
+    { id: "tb-about", label: aboutTheAuthor.heading },
+  ];
+
   return (
-    <div className="tb-scroll space-y-10 bg-[#fffdf9] px-6 py-10 sm:px-9" lang="en">
-      <div className="text-center">
-        <p className="font-display text-3xl leading-tight">THE HIGHEST BRANCH</p>
-        <p className="mt-2 italic opacity-70">a novel</p>
-        <p className="mt-6 text-sm tracking-[0.08em]">M. A. SAADAN QASMANI</p>
-      </div>
-
-      <div className="border-y border-ink/10 py-8 italic">
-        {dedication.body.map((line, i) => (
-          <p key={i} className="tb-open">{marked(line, `pd${i}`)}</p>
-        ))}
-        <p className="tb-open mt-5 text-[0.92em] opacity-80">{dedication.postscript}</p>
-      </div>
-
-      <div>
-        <p className="text-center text-xs uppercase tracking-[0.18em] opacity-70">{copy.contents}</p>
-        <ol className="mt-5 list-none space-y-1 p-0 text-[0.82em] leading-snug">
-          {contents.map((row) => (
-            <li key={row.title} className="flex items-baseline gap-2">
-              {row.chapter !== undefined && <span className="w-5 shrink-0 text-end opacity-55">{row.chapter}</span>}
-              <span className={row.chapter === undefined ? "ms-7 italic" : undefined}>{row.title}</span>
-              <span aria-hidden className="-translate-y-1 flex-1 border-b border-dotted border-ink/25" />
-              <span className="opacity-70">{row.page}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-
-      {sections.map((section) => (
-        <div key={section.id}>
-          <p className="mt-4 text-center font-display text-2xl">{section.heading}</p>
-          <div className="mt-6 space-y-0">
-            {section.lines.map((line, i) => {
-              if (line.tag === "gap") return <div key={i} className="h-5" aria-hidden />;
-              if (line.tag === "sub")
-                return (
-                  <p key={i} className="tb-open mt-6 mb-2 text-center text-xs font-semibold uppercase tracking-[0.12em]">
-                    {line.text}
-                  </p>
-                );
-              if (line.tag === "quote")
-                return (
-                  <p key={i} className="tb-open my-5 px-4 italic">
-                    {marked(line.text, `q${i}`)}
-                  </p>
-                );
-              return (
-                <p key={i} className={opensFlush(section.lines, i) ? "tb-open" : undefined}>
-                  {marked(line.text, `s${i}`)}
-                </p>
-              );
-            })}
-          </div>
-        </div>
-      ))}
-
-      <div className="border-t border-ink/10 pt-8">
-        <p className="text-center font-display text-3xl opacity-40" aria-hidden>
-          {first?.chapter}
-        </p>
-        <p className="mt-2 text-center font-display text-xl opacity-40" aria-hidden>
-          {first?.title}
-        </p>
-        <div className="mt-6 space-y-2" aria-hidden>
-          {REDACTION.slice(0, 6).map((w, i) => (
-            <div key={i} className="h-2 rounded-sm bg-ink/10" style={{ width: `${w}%` }} />
-          ))}
-        </div>
-        <div className="mt-8 border border-ink/10 bg-canvas-light p-6 text-center">
-          <p className="font-display text-xl leading-tight">{copy.lockedTitle}</p>
-          <p className="mt-2 text-sm leading-relaxed opacity-75">{copy.lockedBody}</p>
+    <>
+      <nav className="tb-marks" aria-label={copy.contents}>
+        {marks.map((m) => (
           <button
+            key={m.id}
             type="button"
-            onClick={onPreOrder}
-            className="t-label group relative mt-5 inline-flex overflow-hidden bg-ink px-7 py-3.5 text-canvas-light"
+            aria-current={here === m.id}
+            onClick={() => document.getElementById(m.id)?.scrollIntoView({ block: "start", behavior: "smooth" })}
           >
-            <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
-            <span className="relative">{copy.preOrderNow}</span>
+            {m.label}
           </button>
-        </div>
-      </div>
+        ))}
+      </nav>
 
-      <div className="border-t border-ink/10 pt-8">
-        <p className="text-center font-display text-2xl">{aboutTheAuthor.heading}</p>
-        <div className="mt-6">
-          {aboutTheAuthor.lines.map((line, i) =>
-            line.tag === "gap" ? (
-              <div key={i} className="h-5" aria-hidden />
-            ) : (
-              <p key={i} className={opensFlush(aboutTheAuthor.lines, i) ? "tb-open" : undefined}>
-                {marked(line.text ?? "", `a${i}`)}
-              </p>
-            )
-          )}
-        </div>
+      <div ref={watch} className="tb-scroll flex flex-col gap-4 px-3 py-4" lang="en">
+        <Leaf>
+          <div className="py-10 text-center">
+            <p className="font-display text-3xl leading-tight">THE HIGHEST BRANCH</p>
+            <p className="mt-2 italic opacity-70">a novel</p>
+            <p className="mt-8 text-sm tracking-[0.08em]">M. A. SAADAN QASMANI</p>
+          </div>
+        </Leaf>
+
+        <Leaf id="tb-contents">
+          <p className="text-center text-xs uppercase tracking-[0.18em] opacity-70">{copy.contents}</p>
+          <ol className="mt-5 list-none space-y-1 p-0 text-[0.8em] leading-snug">
+            {contents.map((row) => (
+              <li key={row.title} className="flex items-baseline gap-2">
+                {row.chapter !== undefined && <span className="w-5 shrink-0 text-end opacity-55">{row.chapter}</span>}
+                <span className={row.chapter === undefined ? "ms-7 italic" : undefined}>{row.title}</span>
+                <span aria-hidden className="-translate-y-1 flex-1 border-b border-dotted border-ink/25" />
+                <span className="opacity-70">{row.page}</span>
+              </li>
+            ))}
+          </ol>
+        </Leaf>
+
+        {sections.map((section) => (
+          <Leaf key={section.id} id={`tb-${section.id}`} folio={folioOf(section.heading)}>
+            <p className="mb-9 mt-3 text-center font-display text-2xl">{section.heading}</p>
+            <Poured lines={section.lines} />
+          </Leaf>
+        ))}
+
+        <Leaf>
+          <p className="text-center font-display text-3xl opacity-40" aria-hidden>
+            {first?.chapter}
+          </p>
+          <p className="mt-2 text-center font-display text-xl opacity-40" aria-hidden>
+            {first?.title}
+          </p>
+          <div className="mt-7 space-y-2.5" aria-hidden>
+            {REDACTION.slice(0, 6).map((w, i) => (
+              <div key={i} className="h-2 rounded-sm bg-ink/10" style={{ width: `${w}%` }} />
+            ))}
+          </div>
+          <div className="mt-8 border border-ink/10 bg-canvas-light p-6 text-center">
+            <p className="font-display text-xl leading-tight">{copy.lockedTitle}</p>
+            <p className="mt-2 text-sm leading-relaxed opacity-75">{copy.lockedBody}</p>
+            <button
+              type="button"
+              onClick={onPreOrder}
+              className="t-label group relative mt-5 inline-flex w-full justify-center overflow-hidden bg-ink px-7 py-3.5 text-canvas-light"
+            >
+              <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
+              <span className="relative">{copy.preOrderNow}</span>
+            </button>
+          </div>
+        </Leaf>
+
+        <Leaf id="tb-about" folio={folioOf(aboutTheAuthor.heading)}>
+          <p className="mb-9 mt-3 text-center font-display text-2xl">{aboutTheAuthor.heading}</p>
+          <Poured lines={aboutTheAuthor.lines} />
+        </Leaf>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -457,7 +523,6 @@ function Paged({
       </div>
 
       <TitlePlate />
-      <DedicationPlate />
       <ContentsPlate label={copy.contents} />
       {sections.map((section) => (
         <Sheets
@@ -482,6 +547,21 @@ function Paged({
 }
 
 /* --- the cover, and the dialog behind it -------------------------------- */
+
+/** An open book, drawn small: the one mark that says what the button does. */
+function OpenBook() {
+  return (
+    <svg viewBox="0 0 20 16" className="h-4 w-4 shrink-0" fill="none" aria-hidden focusable="false">
+      <path
+        d="M10 3.6S8.2 2 5.2 2H1.6v11h3.6c3 0 4.8 1.4 4.8 1.4m0-10.8S11.8 2 14.8 2h3.6v11h-3.6c-3 0-4.8 1.4-4.8 1.4m0-10.8v10.8"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 export function LookInside({
   src,
@@ -534,13 +614,30 @@ export function LookInside({
           ) : (
             <span className="block aspect-[529/830] w-full" />
           )}
-          <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center bg-ink/80 py-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+          {/* Hover only. Where there is no pointer to hover with, the
+              button underneath is the one that says so, and a band across
+              the foot of the cover would sit on the author's name. */}
+          <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-ink/85 py-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+            <OpenBook />
             <span className="t-label text-canvas-light">{copy.open}</span>
           </span>
         </span>
       </button>
 
-      <p className="mt-4 max-w-[17rem] text-sm leading-relaxed text-ink-faint lg:max-w-none">
+      {/* And a control of its own underneath, because a picture that also
+          happens to be a button is a thing people are used to being wrong
+          about. */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-haspopup="dialog"
+        className="t-label group mt-4 inline-flex w-full max-w-[14rem] items-center justify-center gap-2.5 border border-ink px-5 py-3.5 text-ink transition-colors hover:bg-ink hover:text-canvas-light sm:max-w-[17rem] lg:max-w-none"
+      >
+        <OpenBook />
+        {copy.open}
+      </button>
+
+      <p className="mt-3.5 max-w-[17rem] text-sm leading-relaxed text-ink-faint lg:max-w-none">
         {copy.coverHint}
       </p>
 
@@ -578,11 +675,7 @@ export function LookInside({
           {open && (
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-canvas-deep">
               {narrow ? (
-                <div className="mx-auto max-w-xl px-3 py-6">
-                  <div className="pop-card overflow-hidden">
-                    <Poured copy={copy} onPreOrder={preOrder} />
-                  </div>
-                </div>
+                <Leaves copy={copy} onPreOrder={preOrder} />
               ) : (
                 <Paged copy={copy} onPreOrder={preOrder} />
               )}

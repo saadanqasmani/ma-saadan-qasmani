@@ -26,18 +26,6 @@ export type Section = {
   lines: Line[];
 };
 
-/** For Osman, on the page that is only for him. */
-export const dedication = {
-  body: [
-    "For Osman Gültekin, on his forty-fifth birthday.",
-    "There is no part of this that is only mine.",
-    "Most of the questions are mine, most of the answers are yours.",
-    "I’m sure many wonder why I keep coming back to your office on random Thursdays.",
-    "This is the answer, and it *only* took four hundred pages.",
-  ] as const,
-  postscript: "P.S. Nobody laughs at your jokes. I always will.",
-};
-
 /**
  * What the book holds, with the page each thing starts on.
  *
