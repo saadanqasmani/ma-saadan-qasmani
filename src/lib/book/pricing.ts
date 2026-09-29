@@ -46,9 +46,18 @@ export type Quote = {
   percentOff: number;
 };
 
-/** Money to the cent, so a tenth of a price does not arrive as 299.99999. */
-function round(n: number): number {
-  return Math.round(n * 100) / 100;
+/**
+ * Money, rounded the way the currency is actually quoted.
+ *
+ * Dollars go to the cent, so a tenth of a price does not arrive as
+ * 299.99999. Rupees and lira are quoted whole in this shop and printed
+ * whole on the page, so they are rounded whole here too: ten per cent off
+ * 2,999 is 300, not 299.90, and the total is 2,699 rather than a figure
+ * with a tenth of a rupee in it that no one can hand over.
+ */
+function round(n: number, currency: Quote["currency"]): number {
+  if (currency === "USD") return Math.round(n * 100) / 100;
+  return Math.round(n);
 }
 
 export function quoteFor(region: Region, quantityInput: unknown, codeInput?: string | null): Quote {
@@ -57,9 +66,11 @@ export function quoteFor(region: Region, quantityInput: unknown, codeInput?: str
   const typed = (codeInput ?? "").trim();
   const promoApplied = spec.promo !== "none" && typed.length > 0 && typed.toUpperCase() === codeFor(region);
 
-  const subtotal = round(spec.price * quantity);
+  const subtotal = round(spec.price * quantity, spec.currency);
   const discount =
-    promoApplied && spec.promo === "percent" ? round((subtotal * spec.percentOff) / 100) : 0;
+    promoApplied && spec.promo === "percent"
+      ? round((subtotal * spec.percentOff) / 100, spec.currency)
+      : 0;
   const shippingWaived = promoApplied && spec.promo === "shipping";
   const shipping = shippingWaived ? 0 : spec.shipping;
 
@@ -72,7 +83,7 @@ export function quoteFor(region: Region, quantityInput: unknown, codeInput?: str
     shipping,
     shippingWaived,
     discount,
-    total: round(subtotal - discount + shipping),
+    total: round(subtotal - discount + shipping, spec.currency),
     promoApplied,
     promoRejected: spec.promo !== "none" && typed.length > 0 && !promoApplied,
     promoKind: spec.promo,

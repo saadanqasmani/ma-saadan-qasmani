@@ -353,7 +353,7 @@ export const en = {
       send: "Send it to me",
       pkTab: "Pakistan",
       trTab: "Türkiye",
-      pkNote: "PKR 3,000",
+      pkNote: "PKR 2,999",
       trNote: "₺799",
       pkHow: "Leave your details and you will be contacted to pay by EasyPaisa or JazzCash. The book is sent once that is done.",
       trHow: "Pay by card here, or leave your details and settle it by hand.",

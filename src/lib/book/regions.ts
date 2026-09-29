@@ -32,7 +32,7 @@ export const REGIONS: Record<Region, RegionSpec> = {
   pk: {
     id: "pk",
     currency: "PKR",
-    price: 3000,
+    price: 2999,
     shipping: 0,
     promo: "percent",
     percentOff: 10,
@@ -79,7 +79,7 @@ const SYMBOLS: Record<RegionSpec["currency"], string> = {
 export function money(currency: RegionSpec["currency"], amount: number): string {
   const n = new Intl.NumberFormat("en-US", {
     // A round figure is written round: 799 lira, not 799.00. Cents appear
-    // when there are cents, which is what 15.99 needs and 3,000 does not.
+    // when there are cents, which is what 15.99 needs and 2,999 does not.
     minimumFractionDigits: 0,
     maximumFractionDigits: currency === "PKR" ? 0 : 2,
   }).format(amount);

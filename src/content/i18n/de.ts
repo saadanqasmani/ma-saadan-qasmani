@@ -330,7 +330,7 @@ export const de: DictionaryOverlay = {
       send: "Schicken Sie mir eins",
       pkTab: "Pakistan",
       trTab: "Türkei",
-      pkNote: "PKR 3.000",
+      pkNote: "PKR 2.999",
       trNote: "799 ₺",
       pkHow: "Hinterlassen Sie Ihre Angaben; Sie werden zur Zahlung per EasyPaisa oder JazzCash kontaktiert. Danach geht das Buch hinaus.",
       trHow: "Hier mit Karte zahlen, oder Angaben hinterlassen und per Hand begleichen.",

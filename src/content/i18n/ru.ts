@@ -329,7 +329,7 @@ export const ru: DictionaryOverlay = {
       send: "Пришлите мне",
       pkTab: "Пакистан",
       trTab: "Турция",
-      pkNote: "3 000 PKR",
+      pkNote: "2 999 PKR",
       trNote: "799 ₺",
       pkHow: "Оставьте данные — с вами свяжутся для оплаты через EasyPaisa или JazzCash. После этого книга уйдёт к вам.",
       trHow: "Оплатите картой здесь или оставьте данные и рассчитайтесь вручную.",

@@ -112,7 +112,7 @@ export const highestBranch = {
   tagline: "Because up is where things fall from.",
   /** How the author is credited on the cover, which differs from the site's byline. */
   coverByline: "M. A. Saadan Qasmani",
-  wordCount: 144000,
+  wordCount: 160000,
   chapterCount: 29,
   status: "Releasing 19 October 2026",
   /** Written out on its own so the checkout line and the card can both say it. */
