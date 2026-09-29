@@ -209,7 +209,7 @@ export function PreOrderCard({
 
   if (status === "done" || returned === "paid") {
     return (
-      <div className="pop-card p-8 sm:p-10">
+      <div className="pop-card p-7 sm:p-9">
         <p className="eyebrow text-ember">{fill(copy.preOrderEyebrow, { where: region === "pk" ? copy.pkTab : copy.trTab })}</p>
         <h3 className="mt-4 font-display text-3xl leading-tight">
           {returned === "paid" ? copy.paidTitle : copy.reservedTitle}
@@ -225,21 +225,21 @@ export function PreOrderCard({
   const busy = status === "paying" || status === "reserving";
 
   return (
-    <div className="pop-card p-7 sm:p-10">
+    <div className="pop-card p-6 sm:p-8">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <p className="eyebrow text-ember">{fill(copy.preOrderEyebrow, { where: region === "pk" ? copy.pkTab : copy.trTab })}</p>
         <p className="t-label text-ink-faint">{fill(copy.shipsOn, { date: releaseDateIn(locale) })}</p>
       </div>
 
       <div className="mt-4 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
-        <h3 className="font-display text-3xl leading-none sm:text-4xl">{highestBranch.title}</h3>
+        <h3 className="font-display text-2xl leading-none sm:text-3xl">{highestBranch.title}</h3>
         <p className="flex items-baseline gap-2">
-          <span className="tnum font-display text-4xl leading-none">{money(quote.currency, quote.unit)}</span>
+          <span className="tnum font-display text-3xl leading-none">{money(quote.currency, quote.unit)}</span>
           <span className="t-label text-ink-faint">{copy.perCopy}</span>
         </p>
       </div>
-      <p className="mt-4 max-w-md font-serif text-lg leading-relaxed text-ink-soft">{copy.encourage}</p>
-      <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-faint">
+      <p className="mt-4 font-serif text-base leading-relaxed text-ink-soft sm:text-lg">{copy.encourage}</p>
+      <p className="mt-3 text-sm leading-relaxed text-ink-faint">
         {region === "pk" ? copy.pkHow : copy.trHow}
         {spec.shipping > 0 && ` ${fill(copy.shippingNote, { amount: money(spec.currency, spec.shipping) })}`}
       </p>
@@ -251,7 +251,7 @@ export function PreOrderCard({
       )}
 
       {/* the counter and the code */}
-      <div className="mt-8 grid gap-6 border-t border-line pt-7 sm:grid-cols-2">
+      <div className="mt-7 grid gap-5 border-t border-line pt-6 sm:grid-cols-[auto_1fr]">
         <div>
           <span className="t-label mb-2 block font-medium text-ink-faint">{forms.quantity}</span>
           <div className="inline-flex items-stretch border border-line">
@@ -316,7 +316,7 @@ export function PreOrderCard({
       </div>
 
       {/* what it comes to */}
-      <dl className="mt-7 border-t border-line pt-6 text-base">
+      <dl className="mt-6 border-t border-line pt-5 text-base">
         <div className="flex items-baseline justify-between py-1">
           <dt className="text-ink-soft">
             {fill(copy.subtotalLine, { n: String(quantity), each: money(quote.currency, quote.unit) })}
@@ -345,17 +345,17 @@ export function PreOrderCard({
         )}
         <div className="mt-3 flex items-baseline justify-between border-t border-ink/15 pt-3">
           <dt className="t-label font-medium">{copy.total}</dt>
-          <dd className="tnum font-display text-3xl leading-none">{money(quote.currency, quote.total)}</dd>
+          <dd className="tnum font-display text-2xl leading-none sm:text-3xl">{money(quote.currency, quote.total)}</dd>
         </div>
       </dl>
 
       {/* who it goes to */}
       <form onSubmit={handleSubmit(() => void send(payOnline ? "card" : "reserve"))} noValidate>
-        <fieldset disabled={busy} className="mt-8 border-t border-line pt-7">
+        <fieldset disabled={busy} className="mt-7 border-t border-line pt-6">
           <legend className="sr-only">{copy.yourDetails}</legend>
-          <p className="t-label mb-5 font-medium text-ink-faint">{copy.yourDetails}</p>
+          <p className="t-label mb-4 font-medium text-ink-faint">{copy.yourDetails}</p>
 
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <Label htmlFor="po-name" required>{forms.fullName}</Label>
               <TextInput id="po-name" autoComplete="name" {...register("full_name")} />
@@ -378,23 +378,23 @@ export function PreOrderCard({
             </div>
             <div className="sm:col-span-2">
               <Label htmlFor="po-address" required>{forms.shippingAddress}</Label>
-              <TextArea id="po-address" rows={2} autoComplete="street-address" {...register("shipping_address")} />
+              <TextArea id="po-address" rows={2} autoComplete="street-address" className="min-h-[4.5rem]" {...register("shipping_address")} />
               {errors.shipping_address && (
                 <FormNotice tone="error">{errors.shipping_address.message}</FormNotice>
               )}
             </div>
             <div className="sm:col-span-2">
               <Label htmlFor="po-message">{forms.optionalMessage}</Label>
-              <TextArea id="po-message" rows={2} {...register("message")} />
+              <TextArea id="po-message" rows={2} className="min-h-[3.25rem]" {...register("message")} />
             </div>
           </div>
 
-          <div className="mt-9 flex flex-col gap-4">
+          <div className="mt-7 flex flex-col items-start gap-3.5">
             {payOnline ? (
               <>
                 <button
                   type="submit"
-                  className="t-label group relative overflow-hidden bg-ink px-8 py-4 text-canvas-light transition-opacity disabled:opacity-50"
+                  className="t-label group relative w-full overflow-hidden bg-ink px-7 py-3.5 text-center text-canvas-light transition-opacity disabled:opacity-50 sm:w-auto"
                 >
                   <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                   <span className="relative">
@@ -416,7 +416,7 @@ export function PreOrderCard({
               <>
                 <button
                   type="submit"
-                  className="t-label group relative overflow-hidden bg-ink px-8 py-4 text-canvas-light transition-opacity disabled:opacity-50"
+                  className="t-label group relative w-full overflow-hidden bg-ink px-7 py-3.5 text-center text-canvas-light transition-opacity disabled:opacity-50 sm:w-auto"
                 >
                   <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
                   <span className="relative">{busy ? forms.sending : copy.reserve}</span>

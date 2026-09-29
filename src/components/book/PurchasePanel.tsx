@@ -44,15 +44,15 @@ export function PurchasePanel({
   ];
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-10">
       {/* Amazon: the rest of the world, one link, no tabs */}
-      <div className="pop-card p-7 sm:p-9">
+      <div className="pop-card p-6 sm:p-8">
         <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
           <div>
             <p className="eyebrow text-ember">{copy.buyEyebrow}</p>
             <p className="mt-3 t-label text-ink-faint">{copy.amazonPrice}</p>
           </div>
-          <p className="tnum font-display text-4xl leading-none">{priceOf("world")}</p>
+          <p className="tnum font-display text-3xl leading-none sm:text-4xl">{priceOf("world")}</p>
         </div>
 
         {amazonUrl ? (
@@ -60,7 +60,7 @@ export function PurchasePanel({
             href={amazonUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="t-label group relative mt-7 inline-flex overflow-hidden bg-ink px-8 py-4 text-canvas-light"
+            className="t-label group relative mt-6 inline-flex overflow-hidden bg-ink px-7 py-3.5 text-canvas-light"
           >
             <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
             <span className="relative">{copy.buyOnAmazon}</span>
@@ -79,21 +79,26 @@ export function PurchasePanel({
 
       {/* the two countries it is sold in directly */}
       <div>
-        <div className="flex flex-wrap gap-3">
+        <div
+          role="tablist"
+          aria-label={copy.directTab}
+          className="inline-flex w-full items-stretch border border-line bg-canvas-light p-1"
+        >
           {tabs.map((t) => {
             const active = region === t.id;
             return (
               <button
                 key={t.id}
                 type="button"
+                role="tab"
                 onClick={() => setRegion(t.id)}
-                aria-pressed={active}
-                className={`group flex-1 basis-40 border p-5 text-start transition-colors ${
-                  active ? "border-ink bg-ink text-canvas-light" : "border-line bg-canvas-light hover:border-ink"
+                aria-selected={active}
+                className={`flex-1 px-4 py-2.5 text-center transition-colors ${
+                  active ? "bg-ink text-canvas-light" : "text-ink-soft hover:text-ink"
                 }`}
               >
-                <span className="block text-lg font-medium">{t.label}</span>
-                <span className={`t-label mt-1 block ${active ? "text-canvas-light/60" : "text-ink-faint"}`}>
+                <span className="block text-base font-medium leading-tight">{t.label}</span>
+                <span className={`t-label mt-0.5 block ${active ? "text-canvas-light/60" : "text-ink-faint"}`}>
                   {t.note}
                 </span>
               </button>
@@ -101,7 +106,7 @@ export function PurchasePanel({
           })}
         </div>
 
-        <div className="mt-6">
+        <div className="mt-5">
           <AnimatePresence mode="wait">
             <motion.div
               key={region}

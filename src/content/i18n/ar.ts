@@ -284,6 +284,18 @@ export const ar: DictionaryOverlay = {
   },
 
   novel: {
+    preview: {
+      eyebrow: "نسخة للقراءة",
+      title: "The Highest Branch",
+      open: "انظر في الداخل",
+      coverHint: "افتح الكتاب: صفحة العنوان، والمحتويات، وكلمة المؤلف، ولمن كُتب، والمقدّمة كاملة.",
+      contents: "المحتويات",
+      lockedTitle: "البقية في الكتاب.",
+      lockedBody:
+        "هنا ينتهي ما يُعطى مجانًا. الفصل الأول يبدأ من هنا، وبعده أربعمائة وأربعون صفحة.",
+      preOrderNow: "اطلبه مسبقًا الآن",
+      preOrderAside: "الآن باكستان وتركيا، وفي كل مكان آخر عبر أمازون.",
+    },
     toPurchase: "احصل على الكتاب",
     warningLabel: "قبل أن تقرأ",
     warningBody:

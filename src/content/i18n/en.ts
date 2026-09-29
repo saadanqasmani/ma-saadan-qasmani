@@ -316,6 +316,19 @@ export const en = {
     words: "Words",
     form: "Form",
     status: "Status",
+    /** The cover at the top of the page, and the book behind it. */
+    preview: {
+      eyebrow: "Reading copy",
+      title: "The Highest Branch",
+      open: "Look inside",
+      coverHint: "Open the book: the title page, the contents, the author\u2019s note, who it is for, and the whole of the prologue.",
+      contents: "Contents",
+      lockedTitle: "The rest is in the book.",
+      lockedBody:
+        "That is the end of what is given away. Chapter one begins here, and there are four hundred and forty pages after it.",
+      preOrderNow: "Pre-order now",
+      preOrderAside: "Pakistan and Türkiye now, everywhere else through Amazon.",
+    },
     availability: "Pre-order",
     orderACopy: "Claim your copy",
     /** {name} is the author. */

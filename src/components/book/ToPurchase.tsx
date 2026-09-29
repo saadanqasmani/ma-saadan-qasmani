@@ -20,7 +20,7 @@ const HEADER = 88;
  * flight: aim once and you land a couple of hundred pixels short. So it
  * aims, waits for the page to stop moving, and corrects.
  */
-function goToPurchase() {
+export function goToPurchase() {
   const el = document.getElementById("purchase");
   if (!el) return;
   const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -31,6 +31,27 @@ function goToPurchase() {
     const drift = el.getBoundingClientRect().top - HEADER;
     if (Math.abs(drift) > 16) window.scrollTo({ top: window.scrollY + drift, behavior });
   }, 650);
+}
+
+/**
+ * The button that takes a reader from the cover at the top of the page to
+ * the shop at the bottom of it. The same movement as the floating one
+ * below, set in the page rather than over it.
+ */
+export function ToPurchaseButton({ label, className }: { label: string; className?: string }) {
+  return (
+    <button
+      type="button"
+      onClick={goToPurchase}
+      className={
+        className ??
+        "t-label group relative inline-flex overflow-hidden bg-ink px-8 py-4 text-canvas-light"
+      }
+    >
+      <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
+      <span className="relative">{label}</span>
+    </button>
+  );
 }
 
 export function ToPurchase({ label }: { label: string }) {

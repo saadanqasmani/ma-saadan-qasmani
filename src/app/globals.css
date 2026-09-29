@@ -914,3 +914,167 @@ body {
     transform: none;
   }
 }
+
+/* --- the book, opened ---------------------------------------------------
+   A facsimile of the printed interior: 6 inches by 9, the trim the novel is
+   set in, rendered a little larger than life so the type is readable on a
+   screen without stopping being the type that is on the page.
+
+   Every vertical measure in the flow is a whole number of leadings. That is
+   what lets a page be a clipped window onto one continuous column of text
+   rather than a separately typeset block: a break can only ever fall
+   between two lines, never through one. It is the same reason a printed
+   book is set to a baseline grid, arrived at for the same reason. */
+
+.tb-sheet {
+  position: relative;
+  /* The interior is an English book whatever language the site is being
+     read in, so it is set left to right even on an Arabic or Urdu page. */
+  direction: ltr;
+  width: var(--pg-w);
+  height: var(--pg-h);
+  margin-inline: auto;
+  background: #fffdf9;
+  border: 1px solid rgba(29, 26, 22, 0.08);
+  box-shadow:
+    0 1px 1px rgba(29, 26, 22, 0.05),
+    0 10px 20px -8px rgba(29, 26, 22, 0.12),
+    0 30px 50px -24px rgba(29, 26, 22, 0.18);
+}
+
+/* The window a page looks through. Its height is a whole number of lines,
+   and the column inside it is pulled up by whole pages. */
+.tb-win {
+  position: absolute;
+  inset-inline-start: var(--pg-px);
+  top: var(--pg-pt);
+  width: calc(var(--pg-w) - 2 * var(--pg-px));
+  height: var(--pg-ch);
+  overflow: hidden;
+}
+
+.tb-flow {
+  font-family: var(--font-latin-serif), Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #23211c;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  /* The novel is in English wherever the interface happens to be, so the
+     column is set left to right and measured the same on every locale. */
+  direction: ltr;
+}
+
+.tb-flow p {
+  margin: 0;
+  text-indent: 1.35em;
+}
+/* No indent on the first line of a section or after a break: an indent
+   marks a continuation, and there is nothing yet to continue. */
+.tb-flow p.tb-open {
+  text-indent: 0;
+}
+.tb-flow .tb-gap {
+  height: 20px;
+}
+.tb-flow .tb-sub {
+  margin: 20px 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  text-indent: 0;
+}
+.tb-flow .tb-quote {
+  margin: 20px 0;
+  padding-inline: 26px;
+  font-style: italic;
+  text-indent: 0;
+  text-align: left;
+}
+.tb-flow .tb-head {
+  margin: 80px 0 60px;
+  font-family: var(--font-latin-display), Georgia, serif;
+  font-size: 27px;
+  line-height: 40px;
+  font-weight: 400;
+  text-align: center;
+  text-indent: 0;
+  letter-spacing: 0.01em;
+}
+
+/* Running head and folio sit in the margins, where a printer puts them. */
+.tb-run {
+  position: absolute;
+  top: 26px;
+  inset-inline: var(--pg-px);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-latin-sans), system-ui, sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(35, 33, 28, 0.42);
+}
+.tb-folio {
+  position: absolute;
+  bottom: 28px;
+  inset-inline: 0;
+  text-align: center;
+  font-family: var(--font-latin-serif), Georgia, serif;
+  font-size: 12px;
+  color: rgba(35, 33, 28, 0.5);
+}
+
+/* The front matter, which is set by hand rather than poured. */
+.tb-plate {
+  position: absolute;
+  overflow: hidden;
+  inset: var(--pg-pt) var(--pg-px) 64px;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-latin-serif), Georgia, serif;
+  color: #23211c;
+  direction: ltr;
+}
+
+/* Chapter one, withheld. Bars rather than blurred lorem, because a reader
+   should be able to see at a glance that nothing is being shown, not
+   squint at something that might be words. */
+.tb-redact {
+  flex: none;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+.tb-redact i {
+  display: block;
+  height: 7px;
+  border-radius: 1px;
+  background: rgba(35, 33, 28, 0.13);
+}
+
+/* On a phone the facsimile would be six-point type, so the same text is
+   poured into one readable column instead. Same paper, same face. */
+.tb-scroll {
+  font-family: var(--font-latin-serif), Georgia, serif;
+  font-size: 17px;
+  line-height: 1.68;
+  color: #23211c;
+  text-align: left;
+  direction: ltr;
+}
+.tb-scroll p {
+  margin: 0;
+  text-indent: 1.3em;
+}
+.tb-scroll p.tb-open {
+  text-indent: 0;
+}
+
+/* The reader fills the window: a page is a page, not a panel in a page. */
+.tb-dialog {
+  inset: 0;
+}

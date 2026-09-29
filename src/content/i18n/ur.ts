@@ -283,6 +283,18 @@ export const ur: DictionaryOverlay = {
   },
 
   novel: {
+    preview: {
+      eyebrow: "مطالعے کا نسخہ",
+      title: "The Highest Branch",
+      open: "اندر جھانکیے",
+      coverHint: "کتاب کھولیے: سرورق، فہرست، مصنف کا نوٹ، یہ کس کے لیے ہے، اور مکمل تمہید۔",
+      contents: "فہرست",
+      lockedTitle: "باقی سب کتاب میں ہے۔",
+      lockedBody:
+        "مفت حصہ یہاں ختم ہوتا ہے۔ پہلا باب یہیں سے شروع ہوتا ہے، اور اُس کے بعد چار سو چالیس صفحات ہیں۔",
+      preOrderNow: "ابھی پیشگی آرڈر کریں",
+      preOrderAside: "فی الحال پاکستان اور ترکیہ، باقی ہر جگہ ایمیزون کے ذریعے۔",
+    },
     toPurchase: "کتاب حاصل کریں",
     warningLabel: "پڑھنے سے پہلے",
     warningBody:

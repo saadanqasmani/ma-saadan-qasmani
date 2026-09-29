@@ -6,9 +6,9 @@ import { Contours } from "@/components/art/Contours";
 import { getBook, getPerson } from "@/lib/data";
 import { PurchasePanel } from "@/components/book/PurchasePanel";
 import { Synopsis } from "@/components/book/Synopsis";
-import { ToPurchase } from "@/components/book/ToPurchase";
+import { ToPurchase, ToPurchaseButton } from "@/components/book/ToPurchase";
+import { LookInside } from "@/components/book/LookInside";
 import { checkoutIsConfigured } from "@/lib/book/checkout";
-import { Figure } from "@/components/media/Figure";
 import { Mark } from "@/components/collect/Mark";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { bookJsonLd, personJsonLd } from "@/lib/seo/jsonLd";
@@ -75,37 +75,58 @@ export default async function HighestBranchPage({ params }: Params) {
           resolves against it by @id. */}
       <JsonLd data={[bookJsonLd(highestBranch), personJsonLd(person)]} />
 
-      {/* Title sequence */}
-      <section className="relative flex min-h-[88vh] items-center overflow-hidden border-b border-line">
-        <Contours className="pointer-events-none absolute -right-[18%] top-0 h-full w-[110%] opacity-45 lg:-right-[6%] lg:w-[68%] lg:opacity-100" />
+      {/* Title sequence. The book itself is in it, at the top of the page,
+          because it is the thing being sold and a reader should be able to
+          see it and act on it without scrolling for either. */}
+      <section className="relative overflow-hidden border-b border-line py-16 sm:py-20 lg:py-24">
+        <Contours className="pointer-events-none absolute -right-[18%] top-0 h-full w-[110%] opacity-25 lg:-right-[10%] lg:w-[58%] lg:opacity-60" />
 
         <div className="relative mx-auto w-full max-w-7xl px-6 sm:px-10">
-          <Reveal>
-            <p className="eyebrow flex items-center gap-1">
-              <span className="inline-block h-px w-8 bg-ember" /> {t.aNovel}
-              <Mark id="branch" className="-my-2 ms-1" />
-            </p>
-          </Reveal>
+          <div className="grid items-center gap-12 lg:grid-cols-[1fr_20rem] lg:gap-16 xl:grid-cols-[1fr_22rem]">
+            <div>
+              <Reveal>
+                <p className="eyebrow flex items-center gap-1">
+                  <span className="inline-block h-px w-8 bg-ember" /> {t.aNovel}
+                  <Mark id="branch" className="-my-2 ms-1" />
+                </p>
+              </Reveal>
 
-          <h1 className="t-display mt-6 italic">
-            <SplitText text={t.titleLead} delay={0.1} />
-            <br />
-            <SplitText text={t.titleAccent} delay={0.25} className="text-ember" />
-          </h1>
+              <h1 className="t-display mt-6 italic">
+                <SplitText text={t.titleLead} delay={0.1} />
+                <br />
+                <SplitText text={t.titleAccent} delay={0.25} className="text-ember" />
+              </h1>
 
-          <Reveal delay={0.5}>
-            <p className="mt-6 max-w-sm font-serif text-xl italic leading-snug text-ink-soft sm:text-2xl">
-              {highestBranch.tagline}
-            </p>
-          </Reveal>
+              <Reveal delay={0.5}>
+                <p className="mt-6 max-w-sm font-serif text-xl italic leading-snug text-ink-soft sm:text-2xl">
+                  {highestBranch.tagline}
+                </p>
+              </Reveal>
 
-          <Reveal delay={0.65}>
-            <p className="t-label mt-8 text-ink-soft">
-              {person.name}
-            </p>
-          </Reveal>
+              <Reveal delay={0.65}>
+                <p className="t-label mt-8 text-ink-soft">{person.name}</p>
+              </Reveal>
 
-          <Reveal delay={0.75}>
+              <Reveal delay={0.75}>
+                <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+                  <ToPurchaseButton label={t.preview.preOrderNow} />
+                  <p className="t-label text-ink-faint">{t.preview.preOrderAside}</p>
+                </div>
+              </Reveal>
+            </div>
+
+            {/* The cover, first on a phone: the product before the prose. */}
+            <Reveal delay={0.35} className="order-first lg:order-none">
+              <LookInside
+                src={highestBranch.coverImage}
+                alt={fill(t.coverAlt, { title: highestBranch.title })}
+                copy={t.preview}
+                closeLabel={dict.forms.close}
+              />
+            </Reveal>
+          </div>
+
+          <Reveal delay={0.85}>
             <Synopsis
               proverb={content.novel.proverb}
               paragraphs={content.novel.paragraphs}
@@ -119,80 +140,64 @@ export default async function HighestBranchPage({ params }: Params) {
       {/* The facts */}
       <section className="border-b border-line py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
-          <div className="grid gap-16 lg:grid-cols-[0.32fr_1fr]">
-            <div className="space-y-8">
-              <Reveal>
-                <p className="eyebrow">{t.theBook}</p>
-              </Reveal>
-              <Figure
-                src={highestBranch.coverImage}
-                alt={fill(t.coverAlt, { title: highestBranch.title })}
-                label={t.coverLabel}
-                spec="Cover artwork · 1600 × 2400 px"
-                ratio="529 / 830"
-                tone="ember"
-              />
+          <Reveal>
+            <p className="eyebrow">{t.theBook}</p>
+          </Reveal>
+
+          <SplitText
+            text={highestBranch.subject}
+            as="p"
+            stagger={0.015}
+            className="mt-8 max-w-3xl font-serif text-2xl leading-[1.5] sm:text-3xl"
+          />
+
+          <dl className="mt-16 grid max-w-3xl gap-x-8 gap-y-12 sm:grid-cols-3">
+            <Reveal>
+              <div>
+                <dt className="eyebrow">{t.chapters}</dt>
+                <dd className="mt-3 font-display text-5xl sm:text-6xl">
+                  <Counter to={highestBranch.chapterCount} />
+                </dd>
+              </div>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <div>
+                <dt className="eyebrow">{t.words}</dt>
+                <dd className="mt-3 font-display text-5xl sm:text-6xl">
+                  <Counter to={highestBranch.wordCount} format />
+                </dd>
+              </div>
+            </Reveal>
+            <Reveal delay={0.16}>
+              <div>
+                <dt className="eyebrow">{t.form}</dt>
+                <dd className="mt-3 font-serif text-xl leading-snug">{highestBranch.genre}</dd>
+              </div>
+            </Reveal>
+          </dl>
+
+          <Reveal delay={0.2}>
+            <div className="mt-14 max-w-xl border-t border-line pt-8">
+              <p className="eyebrow">{t.status}</p>
+              <p className="mt-3 text-sm leading-relaxed text-ink-soft">{highestBranch.status}</p>
             </div>
-
-            <div>
-              <SplitText
-                text={highestBranch.subject}
-                as="p"
-                stagger={0.015}
-                className="max-w-3xl font-serif text-2xl leading-[1.5] sm:text-3xl"
-              />
-
-              <dl className="mt-16 grid gap-x-8 gap-y-12 sm:grid-cols-3">
-                <Reveal>
-                  <div>
-                    <dt className="eyebrow">{t.chapters}</dt>
-                    <dd className="mt-3 font-display text-5xl sm:text-6xl">
-                      <Counter to={highestBranch.chapterCount} />
-                    </dd>
-                  </div>
-                </Reveal>
-                <Reveal delay={0.08}>
-                  <div>
-                    <dt className="eyebrow">{t.words}</dt>
-                    <dd className="mt-3 font-display text-5xl sm:text-6xl">
-                      <Counter to={highestBranch.wordCount} format />
-                    </dd>
-                  </div>
-                </Reveal>
-                <Reveal delay={0.16}>
-                  <div>
-                    <dt className="eyebrow">{t.form}</dt>
-                    <dd className="mt-3 font-serif text-xl leading-snug">{highestBranch.genre}</dd>
-                  </div>
-                </Reveal>
-              </dl>
-
-              <Reveal delay={0.2}>
-                <div className="mt-14 border-t border-line pt-8">
-                  <p className="eyebrow">{t.status}</p>
-                  <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft">
-                    {highestBranch.status}
-                  </p>
-                </div>
-              </Reveal>
-            </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Purchase */}
       <section id="purchase" className="scroll-mt-24 bg-canvas-deep py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-6 sm:px-10">
+        <div className="mx-auto max-w-3xl px-6 sm:px-10">
           <Reveal>
             <p className="eyebrow">{t.availability}</p>
           </Reveal>
           <SplitText
             text={t.orderACopy}
             as="h2"
-            className="mt-5 font-display text-4xl leading-none sm:text-6xl"
+            className="mt-5 font-display text-4xl leading-none sm:text-5xl"
           />
           <Reveal delay={0.15}>
-            <div className="mt-14">
+            <div className="mt-10">
               <PurchasePanel
                 copy={t.purchase}
                 forms={dict.forms}

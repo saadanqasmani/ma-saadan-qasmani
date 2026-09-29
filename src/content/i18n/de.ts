@@ -282,6 +282,18 @@ export const de: DictionaryOverlay = {
   },
 
   novel: {
+    preview: {
+      eyebrow: "Leseexemplar",
+      title: "The Highest Branch",
+      open: "Blick ins Buch",
+      coverHint: "Öffnen Sie das Buch: Titelseite, Inhalt, Vorwort des Autors, für wen es geschrieben ist, und der vollständige Prolog.",
+      contents: "Inhalt",
+      lockedTitle: "Der Rest steht im Buch.",
+      lockedBody:
+        "Hier endet, was frei zu lesen ist. Kapitel eins beginnt an dieser Stelle, und danach folgen vierhundertvierzig Seiten.",
+      preOrderNow: "Jetzt vorbestellen",
+      preOrderAside: "Jetzt Pakistan und Türkei, überall sonst über Amazon.",
+    },
     toPurchase: "Zum Buch",
     warningLabel: "Bevor Sie lesen",
     warningBody:
