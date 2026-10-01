@@ -371,6 +371,7 @@ export const en = {
       shippingFree: "Postage (covered by your code)",
       shippingNote: "Postage is {amount}, added once per order however many copies.",
       promoShipping: "Postage on me.",
+      promoBoth: "{percent}% off, and postage on me.",
       preOrderNote: "pre-order now",
       preOrderEyebrow: "Pre-order · {where}",
       /** {date} is publication day. */

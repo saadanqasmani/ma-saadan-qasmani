@@ -347,6 +347,7 @@ export const ru: DictionaryOverlay = {
       shippingFree: "Доставка (покрыта вашим кодом)",
       shippingNote: "Доставка — {amount}, добавляется один раз на заказ, сколько бы экземпляров в нём ни было.",
       promoShipping: "Доставка за мой счёт.",
+      promoBoth: "Скидка {percent}%, и доставка за мой счёт.",
       preOrderNote: "предзаказ",
       preOrderEyebrow: "Предзаказ · {where}",
       shipsOn: "Отправка в день выхода, {date}",

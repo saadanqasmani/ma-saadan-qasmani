@@ -42,6 +42,7 @@ type Quote = {
   promoRejected: boolean;
   promoKind: string;
   percentOff: number;
+  promoCode?: string | null;
 };
 
 function makeSchema(copy: Dictionary["forms"]) {
@@ -104,6 +105,7 @@ export function PreOrderCard({
     promoRejected: false,
     promoKind: spec.promo,
     percentOff: spec.percentOff,
+    promoCode: null,
   });
   const [checking, setChecking] = useState(false);
   // The page is prerendered, so the flag baked in at build time is only the
@@ -308,7 +310,9 @@ export function PreOrderCard({
             <p className="mt-2 text-sm text-verdant">
               {quote.promoKind === "shipping"
                 ? copy.promoShipping
-                : fill(copy.promoOk, { percent: String(quote.percentOff) })}
+                : quote.promoKind === "both"
+                  ? fill(copy.promoBoth, { percent: String(quote.percentOff) })
+                  : fill(copy.promoOk, { percent: String(quote.percentOff) })}
             </p>
           )}
           {quote.promoRejected && <p className="mt-2 text-sm text-ember">{copy.promoBad}</p>}

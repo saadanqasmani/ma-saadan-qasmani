@@ -349,6 +349,7 @@ export const ur: DictionaryOverlay = {
       shippingFree: "ڈاک خرچ (آپ کے کوڈ نے پورا کر دیا)",
       shippingNote: "ڈاک خرچ {amount} ہے، جتنے بھی نسخے ہوں، فی آرڈر ایک بار۔",
       promoShipping: "ڈاک خرچ میری طرف سے۔",
+      promoBoth: "{percent}% رعایت، اور ڈاک خرچ میری طرف سے۔",
       preOrderNote: "ابھی پیشگی آرڈر",
       preOrderEyebrow: "پیشگی آرڈر · {where}",
       shipsOn: "اشاعت کے دن روانہ، {date}",

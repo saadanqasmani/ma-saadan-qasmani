@@ -1,7 +1,7 @@
 import "server-only";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { checkoutIsConfigured } from "@/lib/book/checkout";
-import { liveCode } from "@/lib/book/pricing";
+import { liveCodes } from "@/lib/book/pricing";
 import { REGIONS } from "@/lib/book/regions";
 import { alertAddress } from "@/lib/email/orderAlert";
 import { fromAddress, mailIsConfigured } from "@/lib/email/send";
@@ -170,15 +170,22 @@ function environmentChecks(): Check[] {
   }
 
   for (const id of ["pk", "tr"] as const) {
-    const spec = REGIONS[id];
     const where = id === "pk" ? "Pakistan" : "Türkiye";
-    const worth = spec.promo === "percent" ? `${spec.percentOff}% off` : "free postage";
+    // A region can take more than one code, worth different things, so each
+    // is spelled out with what it actually does.
+    const worth = (o: { percentOff: number; freeShipping: boolean }) =>
+      o.percentOff > 0 && o.freeShipping
+        ? `${o.percentOff}% off and free postage`
+        : o.percentOff > 0
+          ? `${o.percentOff}% off`
+          : "free postage";
+    const live = liveCodes(id);
     checks.push({
       id: `code-${id}`,
-      label: `${where}: the promo code`,
+      label: live.length > 1 ? `${where}: the promo codes` : `${where}: the promo code`,
       level: "ready",
-      says: `${liveCode(id)} — ${worth}. Typed in any case; anything else is refused with a message.`,
-      fix: "Change it with BOOK_PROMO_CODE_PK or BOOK_PROMO_CODE_TR without a deploy.",
+      says: `${live.map((o) => `${o.code} (${worth(o)})`).join(", ")}. Typed in any case; anything else is refused with a message.`,
+      fix: "The standing code changes with BOOK_PROMO_CODE_PK or BOOK_PROMO_CODE_TR without a deploy. A named code is in the source.",
     });
   }
 

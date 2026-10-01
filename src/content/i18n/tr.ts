@@ -355,6 +355,7 @@ export const tr: DictionaryOverlay = {
       shippingFree: "Kargo (kodunuz karşıladı)",
       shippingNote: "Kargo {amount}; kaç adet alırsanız alın, sipariş başına bir kez eklenir.",
       promoShipping: "Kargo benden.",
+      promoBoth: "%{percent} indirim, kargo da benden.",
       preOrderNote: "şimdi ön sipariş",
       preOrderEyebrow: "Ön sipariş · {where}",
       shipsOn: "Yayımlandığında gönderilir, {date}",

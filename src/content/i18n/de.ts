@@ -348,6 +348,7 @@ export const de: DictionaryOverlay = {
       shippingFree: "Versand (durch Ihren Code gedeckt)",
       shippingNote: "Der Versand kostet {amount} und wird einmal pro Bestellung berechnet, gleich wie viele Exemplare.",
       promoShipping: "Versand geht auf mich.",
+      promoBoth: "{percent} % Rabatt, und das Porto geht auf mich.",
       preOrderNote: "jetzt vorbestellen",
       preOrderEyebrow: "Vorbestellung · {where}",
       shipsOn: "Versand zum Erscheinen, {date}",

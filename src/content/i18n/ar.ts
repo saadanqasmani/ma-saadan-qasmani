@@ -350,6 +350,7 @@ export const ar: DictionaryOverlay = {
       shippingFree: "الشحن (غطّاه رمزك)",
       shippingNote: "الشحن {amount}، يُضاف مرة واحدة لكل طلب مهما بلغ عدد النسخ.",
       promoShipping: "الشحن عليّ.",
+      promoBoth: "خصم {percent}%، والشحن عليّ.",
       preOrderNote: "اطلبه مسبقًا",
       preOrderEyebrow: "طلب مسبق · {where}",
       shipsOn: "يُشحن يوم الصدور، {date}",
