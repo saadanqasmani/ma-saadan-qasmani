@@ -32,8 +32,19 @@ function Form({
   const to = from + 0.2;
   const tallest = index === FORMS.length - 1;
 
+  /**
+   * Where this form stands when nothing is allowed to move.
+   *
+   * Somebody who has asked for less motion used to get the city and only
+   * the city: a row of towers, no forest, and no way to tell that the
+   * section was ever about a change. So the sweep is frozen rather than
+   * skipped. The row is read left to right instead of over time, which is
+   * the same sentence in a form that holds still.
+   */
+  const still = index / Math.max(1, FORMS.length - 1);
+
   const d = useTransform(progress, (v) => {
-    const k = reduced ? 1 : Math.min(1, Math.max(0, (v - from) / (to - from)));
+    const k = reduced ? still : Math.min(1, Math.max(0, (v - from) / (to - from)));
     return morphPath(index, k * k * (3 - 2 * k));
   });
   const cityOpacity = useTransform(progress, [from + 0.04, to], [0, 1]);
@@ -47,7 +58,7 @@ function Form({
       <motion.path
         d={d}
         fill={tallest ? "var(--ember)" : "var(--azure)"}
-        style={reduced ? { fillOpacity: tallest ? 0.9 : 0.12 } : { fillOpacity }}
+        style={reduced ? { fillOpacity: still * (tallest ? 0.9 : 0.12) } : { fillOpacity }}
         stroke="none"
       />
       <motion.path
@@ -56,7 +67,7 @@ function Form({
         stroke="var(--verdant)"
         strokeWidth={1.8}
         strokeLinejoin="round"
-        style={reduced ? { opacity: 0 } : { opacity: forestOpacity }}
+        style={reduced ? { opacity: 1 - still } : { opacity: forestOpacity }}
       />
       <motion.path
         d={d}
@@ -64,12 +75,12 @@ function Form({
         stroke={tallest ? "var(--ember)" : "var(--ink)"}
         strokeWidth={1.8}
         strokeLinejoin="round"
-        style={reduced ? { opacity: 1 } : { opacity: cityOpacity }}
+        style={reduced ? { opacity: still } : { opacity: cityOpacity }}
       />
 
       <motion.g
         fill="var(--verdant)"
-        style={reduced ? { opacity: 0 } : { opacity: forestOpacity }}
+        style={reduced ? { opacity: 1 - still } : { opacity: forestOpacity }}
       >
         {leaves(index).map((l, i) => (
           <circle key={i} cx={l.x} cy={l.y} r={2.2} opacity={0.6} />
@@ -78,7 +89,7 @@ function Form({
 
       <motion.g
         fill={tallest ? "var(--canvas)" : "var(--ink)"}
-        style={reduced ? { opacity: 0.45 } : { opacity: cityOpacity }}
+        style={reduced ? { opacity: still } : { opacity: cityOpacity }}
       >
         {windows(index).map((w, i) => (
           <rect key={i} x={w.x} y={w.y} width={w.w} height={w.h} opacity={0.45} />

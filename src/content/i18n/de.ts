@@ -480,6 +480,7 @@ export const de: DictionaryOverlay = {
     constellation: "Eine Konstellation aus Forschungsfeldern und Papieren",
     constellationHint:
       "Fahren Sie über einen Knoten, um ein Papier durch sein Feld zurückzuverfolgen.",
+    constellationHintTouch: "Tippen Sie auf einen Knoten, um eine Arbeit bis zu ihrem Feld zurückzuverfolgen.",
     globe:
       "Eine Karte der östlichen Hemisphäre mit Routen von Istanbul nach Deutschland, Katar, in die Vereinigten Arabischen Emirate, nach Pakistan, Nepal und in den Irak",
     branch:

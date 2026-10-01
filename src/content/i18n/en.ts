@@ -519,6 +519,7 @@ export const en = {
       "Three partner tiers, with movement upward earned on conversion, responsiveness and referral quality",
     constellation: "A constellation of research areas and papers",
     constellationHint: "Hover a node to trace a paper back through its field.",
+    constellationHintTouch: "Tap a node to trace a paper back through its field.",
     globe:
       "A map of the eastern hemisphere with routes from Istanbul to Germany, Qatar, the United Arab Emirates, Pakistan, Nepal and Iraq",
     branch:

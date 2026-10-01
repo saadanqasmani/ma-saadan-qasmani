@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
+import { useIsTouch, useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import type { ResearchItem } from "@/content/site";
 import type { Dictionary } from "@/content/i18n/en";
 
@@ -36,6 +37,16 @@ export function ResearchConstellation({
   copy: Dictionary["art"];
 }) {
   const reduced = useReducedMotion();
+  /**
+   * The figure is drawn in a 528-unit frame that fills whatever width it is
+   * given. On a phone that is about 340 pixels, so a four-and-a-half unit
+   * node lands at three pixels across: the papers vanish and the spokes run
+   * out to nothing. Everything drawn is scaled up there, which costs the
+   * figure nothing because the nodes are spread two hundred units apart.
+   */
+  const compact = useMediaQuery("(max-width: 640px)");
+  const touch = useIsTouch();
+  const s = compact ? 1.9 : 1;
   const [active, setActive] = useState<string | null>(null);
   const [activeArea, setActiveArea] = useState<number | null>(null);
   /**
@@ -114,7 +125,7 @@ export function ResearchConstellation({
               x2={a.x}
               y2={a.y}
               stroke={lit ? TONES[a.index % 3] : "var(--line-strong)"}
-              strokeWidth={lit ? 1.8 : 1}
+              strokeWidth={(lit ? 1.8 : 1) * s}
               opacity={anyActive && !lit ? 0.25 : 1}
               initial={reduced ? undefined : { pathLength: 0 }}
               whileInView={reduced ? undefined : { pathLength: 1 }}
@@ -136,7 +147,7 @@ export function ResearchConstellation({
               x2={p.x}
               y2={p.y}
               stroke={lit ? TONES[p.areaIndex % 3] : "var(--line-strong)"}
-              strokeWidth={lit ? 1.6 : 0.9}
+              strokeWidth={(lit ? 1.6 : 0.9) * s}
               opacity={anyActive && !lit ? 0.2 : 0.9}
               initial={reduced ? undefined : { pathLength: 0 }}
               whileInView={reduced ? undefined : { pathLength: 1 }}
@@ -154,12 +165,12 @@ export function ResearchConstellation({
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           style={{ transformOrigin: `${CX}px ${CY}px` }}
         >
-          <circle cx={CX} cy={CY} r={26} fill="var(--canvas)" stroke="var(--ink)" strokeWidth={1.4} />
+          <circle cx={CX} cy={CY} r={26 * s} fill="var(--canvas)" stroke="var(--ink)" strokeWidth={1.4 * s} />
           <text
             x={CX}
-            y={CY + 5}
+            y={CY + 5 * s}
             textAnchor="middle"
-            fontSize={13}
+            fontSize={13 * s}
             fontWeight={600}
             className="fill-ink font-sans"
           >
@@ -187,11 +198,11 @@ export function ResearchConstellation({
               transition={{ duration: 0.5, delay: 0.35 + a.index * 0.07 }}
               style={{ transformOrigin: `${a.x}px ${a.y}px` }}
             >
-              <circle cx={a.x} cy={a.y} r={20} fill="transparent" />
+              <circle cx={a.x} cy={a.y} r={Math.max(20, 11 * s)} fill="transparent" />
               <circle
                 cx={a.x}
                 cy={a.y}
-                r={lit ? 8 : 5.5}
+                r={(lit ? 8 : 5.5) * s}
                 fill={TONES[a.index % 3]}
                 opacity={anyActive && !lit ? 0.3 : 1}
                 className="transition-all duration-300"
@@ -221,21 +232,21 @@ export function ResearchConstellation({
               transition={{ duration: 0.5, delay: 0.8 + i * 0.05 }}
               style={{ transformOrigin: `${p.x}px ${p.y}px` }}
             >
-              <circle cx={p.x} cy={p.y} r={22} fill="transparent" />
+              <circle cx={p.x} cy={p.y} r={Math.max(22, 12 * s)} fill="transparent" />
               {lit && (
                 <circle
                   cx={p.x}
                   cy={p.y}
-                  r={14}
+                  r={14 * s}
                   stroke={TONES[p.areaIndex % 3]}
-                  strokeWidth={1}
+                  strokeWidth={1 * s}
                   opacity={0.6}
                 />
               )}
               <circle
                 cx={p.x}
                 cy={p.y}
-                r={lit ? 7 : 4.5}
+                r={(lit ? 7 : 4.5) * s}
                 fill={lit ? TONES[p.areaIndex % 3] : "var(--ink)"}
                 opacity={dim ? 0.22 : 1}
                 className="transition-all duration-300"
@@ -294,7 +305,7 @@ export function ResearchConstellation({
           <span className="block font-serif text-lg text-ink">{areas[activeArea].name}</span>
         ) : (
           <span className="block text-sm text-ink-faint">
-            {copy.constellationHint}
+            {touch ? copy.constellationHintTouch : copy.constellationHint}
           </span>
         )}
       </figcaption>

@@ -489,6 +489,7 @@ export const tr: DictionaryOverlay = {
     constellation: "Araştırma alanlarından ve makalelerden oluşan bir takımyıldız",
     constellationHint:
       "Bir makaleyi alanı üzerinden izlemek için bir düğümün üzerine gelin.",
+    constellationHintTouch: "Bir düğüme dokunun, makaleyi alanına kadar izleyin.",
     globe:
       "Doğu yarımküre haritası; İstanbul'dan Almanya'ya, Katar'a, Birleşik Arap Emirlikleri'ne, Pakistan'a, Nepal'e ve Irak'a giden güzergâhlarla",
     branch:
