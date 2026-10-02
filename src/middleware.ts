@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { EDVIKO_COOKIE, edvikoTokenIsValid } from "@/lib/edviko/gate";
 import { IRIS_COOKIE, tokenIsValid } from "@/lib/irisGate";
 import { OPS_COOKIE, opsTokenIsValid } from "@/lib/ops/gate";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
@@ -28,22 +27,24 @@ import { defaultLocale, isLocale } from "@/lib/i18n/config";
  * The IRIS gate refuses the explainer film to anyone who has not entered the
  * access code. It has to live here because the film is a file in public/,
  * and a page cannot guard a file it does not serve.
+ *
+ * And one redirect: Edveko was built here and now lives at edveko.com, so
+ * the paths it used are sent on rather than left to 404.
  */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // The product was called Taraki until it became Edviko. Anything still
-  // pointing at the old name is moved rather than lost, and this runs before
-  // the gate so a bookmark does not answer 404 on the way to its new home.
-  if (pathname === "/taraki" || pathname.startsWith("/taraki/")) {
-    const url = request.nextUrl.clone();
-    url.pathname = pathname.replace("/taraki", "/edviko");
-    return NextResponse.redirect(url, 308);
+  // Edveko lived here, under two names, until it moved to a domain of its
+  // own. Anybody still holding a link to either is sent on rather than
+  // shown a 404, which costs one line and is the difference between a
+  // bookmark that works and one that looks like the thing was abandoned.
+  if (pathname === "/edviko" || pathname.startsWith("/edviko/") ||
+      pathname === "/taraki" || pathname.startsWith("/taraki/")) {
+    return NextResponse.redirect("https://edveko.com", 308);
   }
 
   if (pathname === "/iris-explainer.html") return irisGate(request);
   if (pathname.startsWith("/admin")) return adminGate(request);
-  if (pathname.startsWith("/edviko")) return edvikoGate(request);
   if (pathname.startsWith("/ops")) return opsGate(request);
 
   return languageRewrite(request);
@@ -62,28 +63,7 @@ function languageRewrite(request: NextRequest) {
   return NextResponse.rewrite(url);
 }
 
-/**
- * Refuses everything under /edviko to anyone without the code.
- *
- * A 404 rather than a redirect or a 403: a redirect to an unlock screen
- * announces that there is something there to unlock, and the whole point is
- * that a passer-by learns nothing. The one page allowed through is the one
- * that takes the code, and it is reachable only by someone who already knows
- * to ask for it.
- */
-async function edvikoGate(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  if (await edvikoTokenIsValid(request.cookies.get(EDVIKO_COOKIE)?.value)) {
-    return NextResponse.next();
-  }
-
-  if (pathname === "/edviko/unlock") return NextResponse.next();
-
-  return new NextResponse(null, { status: 404 });
-}
-
-/** The workroom. Same rule as Edviko: nothing, not even a login screen. */
+/** The workroom. Nothing is served without the code, not even a login screen. */
 async function opsGate(request: NextRequest) {
   if (await opsTokenIsValid(request.cookies.get(OPS_COOKIE)?.value)) return NextResponse.next();
   if (request.nextUrl.pathname === "/ops/unlock") return NextResponse.next();
