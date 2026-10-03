@@ -42,10 +42,11 @@ function houseCode(region: Region): string {
  * Every code a region will take, in the order they are tried.
  *
  * A region can have more than one, worth different things, and each is
- * somebody's: FARUKHOCA is Faruk Hoca's, for Türkiye, worth a fifth off
- * the book and the postage with it; IZZAZIA10 is Izza's, for Pakistan, a
- * tenth off. They are written here rather than in environment variables
- * because a named person's code is worth seeing come and go in the diff.
+ * somebody's. FARUKHOCA is Faruk Hoca's, for Türkiye, worth a fifth off the
+ * book and the postage with it. The Pakistan codes are Izza's, Noor's and
+ * Musa's, a tenth off each. They are written here rather than in
+ * environment variables because a named person's code is worth seeing come
+ * and go in the diff.
  *
  * Each order stores the code that was actually accepted, so two codes worth
  * the same thing can still be told apart afterwards.
@@ -67,7 +68,12 @@ function offersFor(region: Region): Offer[] {
     return [...house, { code: "FARUKHOCA", percentOff: 20, freeShipping: true }];
   }
   if (region === "pk") {
-    return [...house, { code: "IZZAZIA10", percentOff: 10, freeShipping: false }];
+    return [
+      ...house,
+      { code: "IZZAZIA10", percentOff: 10, freeShipping: false },
+      { code: "NOORPAK", percentOff: 10, freeShipping: false },
+      { code: "MUSAPAK", percentOff: 10, freeShipping: false },
+    ];
   }
   return house;
 }
