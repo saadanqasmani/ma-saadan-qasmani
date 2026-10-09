@@ -364,7 +364,7 @@ export const en = {
       trTab: "Türkiye",
       pkNote: "PKR 2,999",
       trNote: "₺799",
-      pkHow: "Leave your details and payment instructions are emailed to you straight away: a JazzCash number, what to send, and where to send the receipt.",
+      pkHow: "Leave your details and payment instructions are emailed to you straight away: an Easypaisa number, what to send, and where to send the receipt.",
       trHow: "Leave your details and payment instructions are emailed to you straight away: an IBAN, what to send, and where to send the receipt.",
       trHowCard: "Pay by card here, or leave your details and settle it by hand.",
       shipping: "Postage",

@@ -50,8 +50,8 @@ const SETTLEMENT: Record<"pk" | "tr", { method: string; label: string; value: st
     holder: "Muhammad Ahmed Saadan Qasmani",
   },
   pk: {
-    method: "jazzcash",
-    label: "JazzCash",
+    method: "easypaisa",
+    label: "Easypaisa",
     value: "0333 3012347",
     holder: "Muhammad Ahmed Saadan Qasmani",
   },
@@ -101,7 +101,7 @@ type Copy = {
   nextReserved: string;
   payHeading: string;
   payBank: string;
-  payJazzCash: string;
+  payEasypaisa: string;
   payHolder: string;
   payReference: string;
   payReceipt: string;
@@ -140,7 +140,7 @@ const copy: Record<Locale, Copy> = {
     nextReserved: "Nothing has been charged. The details for paying are below, and your copy goes out the week the book comes off the press.",
     payHeading: "How to pay",
     payBank: "Send the total to this account by bank transfer.",
-    payJazzCash: "Send the total to this JazzCash number.",
+    payEasypaisa: "Send the total to this Easypaisa number.",
     payHolder: "Account name",
     payReference: "Put your own name in the transfer note, so I can match the payment to your order.",
     payReceipt: "Then email the receipt to {email} and I will confirm it the same day.",
@@ -172,7 +172,7 @@ const copy: Record<Locale, Copy> = {
     nextReserved: "Hiçbir tahsilat yapılmadı. Ödeme bilgileri aşağıda; kitap baskıdan çıktığı hafta kopyanız yola çıkar.",
     payHeading: "Nasıl ödenir",
     payBank: "Toplam tutarı havale veya EFT ile bu hesaba gönderin.",
-    payJazzCash: "Toplam tutarı bu JazzCash numarasına gönderin.",
+    payEasypaisa: "Toplam tutarı bu Easypaisa numarasına gönderin.",
     payHolder: "Hesap adı",
     payReference: "Havale açıklamasına kendi adınızı yazın ki ödemeyi siparişinizle eşleştirebileyim.",
     payReceipt: "Sonra dekontu {email} adresine gönderin; aynı gün onaylayayım.",
@@ -204,7 +204,7 @@ const copy: Record<Locale, Copy> = {
     nextReserved: "Es wurde nichts abgebucht. Die Zahlungsangaben stehen unten, und Ihr Exemplar geht in der Woche raus, in der das Buch aus der Presse kommt.",
     payHeading: "So zahlen Sie",
     payBank: "Überweisen Sie den Gesamtbetrag auf dieses Konto.",
-    payJazzCash: "Senden Sie den Gesamtbetrag an diese JazzCash-Nummer.",
+    payEasypaisa: "Senden Sie den Gesamtbetrag an diese Easypaisa-Nummer.",
     payHolder: "Kontoinhaber",
     payReference: "Schreiben Sie Ihren Namen in den Verwendungszweck, damit ich die Zahlung Ihrer Bestellung zuordnen kann.",
     payReceipt: "Schicken Sie mir dann den Beleg an {email}, und ich bestätige ihn noch am selben Tag.",
@@ -236,7 +236,7 @@ const copy: Record<Locale, Copy> = {
     nextReserved: "Ничего не списано. Реквизиты для оплаты ниже, а книга уедет к вам на той неделе, когда сойдёт с печатного станка.",
     payHeading: "Как оплатить",
     payBank: "Переведите всю сумму на этот счёт банковским переводом.",
-    payJazzCash: "Отправьте всю сумму на этот номер JazzCash.",
+    payEasypaisa: "Отправьте всю сумму на этот номер Easypaisa.",
     payHolder: "Имя владельца счёта",
     payReference: "Укажите своё имя в назначении платежа, чтобы я мог сопоставить его с вашим заказом.",
     payReceipt: "Затем пришлите квитанцию на {email}, и я подтвержу её в тот же день.",
@@ -268,7 +268,7 @@ const copy: Record<Locale, Copy> = {
     nextReserved: "لم يُخصم شيء. تفاصيل الدفع في الأسفل، ونسختك تخرج إليك في الأسبوع الذي يُطبع فيه الكتاب.",
     payHeading: "كيفية الدفع",
     payBank: "حوّل المبلغ الإجمالي إلى هذا الحساب.",
-    payJazzCash: "أرسل المبلغ الإجمالي إلى رقم JazzCash هذا.",
+    payEasypaisa: "أرسل المبلغ الإجمالي إلى رقم Easypaisa هذا.",
     payHolder: "اسم صاحب الحساب",
     payReference: "اكتب اسمك في ملاحظة التحويل حتى أتمكن من مطابقة الدفعة بطلبك.",
     payReceipt: "ثم أرسل الإيصال إلى {email} وسأؤكّده في اليوم نفسه.",
@@ -300,7 +300,7 @@ const copy: Record<Locale, Copy> = {
     nextReserved: "کچھ وصول نہیں کیا گیا۔ ادائیگی کی تفصیل نیچے ہے، اور جس ہفتے کتاب چھپ کر آئے گی اُسی ہفتے آپ کی کاپی روانہ ہو جائے گی۔",
     payHeading: "ادائیگی کیسے کریں",
     payBank: "کل رقم بینک ٹرانسفر کے ذریعے اِس اکاؤنٹ میں بھیجیے۔",
-    payJazzCash: "کل رقم اِس جاز کیش نمبر پر بھیجیے۔",
+    payEasypaisa: "کل رقم اِس ایزی پیسہ نمبر پر بھیجیے۔",
     payHolder: "اکاؤنٹ کا نام",
     payReference: "ٹرانسفر کے نوٹ میں اپنا نام ضرور لکھیے تاکہ میں ادائیگی کو آپ کے آرڈر سے ملا سکوں۔",
     payReceipt: "پھر رسید {email} پر بھیج دیجیے، میں اُسی دن تصدیق کر دوں گا۔",
@@ -393,7 +393,7 @@ ${l.promoApplied ? `<p style="margin:10px 0 0;font:400 14px/1.5 ${sans};color:#6
     order.kind === "reserved" && (order.region === "tr" || order.region === "pk")
       ? SETTLEMENT[order.region]
       : null;
-  const settleHow = settle ? (settle.method === "bank" ? t.payBank : t.payJazzCash) : "";
+  const settleHow = settle ? (settle.method === "bank" ? t.payBank : t.payEasypaisa) : "";
   const receiptTo = replyAddress();
   const settleReceipt = settle ? t.payReceipt.replace("{email}", receiptTo) : "";
 

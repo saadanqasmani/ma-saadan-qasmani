@@ -341,7 +341,7 @@ export const de: DictionaryOverlay = {
       trTab: "Türkei",
       pkNote: "PKR 2.999",
       trNote: "799 ₺",
-      pkHow: "Hinterlassen Sie Ihre Angaben, und die Zahlungsanweisungen kommen sofort per E-Mail: eine JazzCash-Nummer, der Betrag und die Adresse für den Beleg.",
+      pkHow: "Hinterlassen Sie Ihre Angaben, und die Zahlungsanweisungen kommen sofort per E-Mail: eine Easypaisa-Nummer, der Betrag und die Adresse für den Beleg.",
       trHow: "Hinterlassen Sie Ihre Angaben, und die Zahlungsanweisungen kommen sofort per E-Mail: eine IBAN, der Betrag und die Adresse für den Beleg.",
       trHowCard: "Zahlen Sie hier mit Karte, oder hinterlassen Sie Ihre Angaben und begleichen Sie es persönlich.",
       shipping: "Versand",

@@ -348,7 +348,7 @@ export const tr: DictionaryOverlay = {
       trTab: "Türkiye",
       pkNote: "2.999 PKR",
       trNote: "799 ₺",
-      pkHow: "Bilgilerinizi bırakın; ödeme talimatları hemen e-postanıza gelsin: JazzCash numarası, gönderilecek tutar ve dekontun gideceği adres.",
+      pkHow: "Bilgilerinizi bırakın; ödeme talimatları hemen e-postanıza gelsin: Easypaisa numarası, gönderilecek tutar ve dekontun gideceği adres.",
       trHow: "Bilgilerinizi bırakın; ödeme talimatları hemen e-postanıza gelsin: IBAN, gönderilecek tutar ve dekontun gideceği adres.",
       trHowCard: "Burada kartla ödeyin ya da bilgilerinizi bırakıp elden ödeyin.",
       shipping: "Kargo",
