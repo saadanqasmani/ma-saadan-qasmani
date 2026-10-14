@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import { getResource, humanizeStatus } from "@/lib/admin/resources";
 import { updateInbox, type ActionResult } from "@/app/admin/actions";
@@ -82,14 +83,25 @@ export function InboxRow({
             })}
           </dl>
 
-          {row.email ? (
-            <a
-              href={`mailto:${String(row.email)}`}
-              className="t-label mt-5 inline-block text-azure underline-offset-4 hover:underline"
-            >
-              Reply by email →
-            </a>
-          ) : null}
+          <div className="mt-5 flex flex-wrap items-center gap-6">
+            {/* An order is the one kind of inbox item that gets an invoice. */}
+            {resourceKey === "orders" && (
+              <Link
+                href={`/admin/invoice/${id}`}
+                className="t-label text-azure underline-offset-4 hover:underline"
+              >
+                Open the invoice →
+              </Link>
+            )}
+            {row.email ? (
+              <a
+                href={`mailto:${String(row.email)}`}
+                className="t-label text-azure underline-offset-4 hover:underline"
+              >
+                Reply by email →
+              </a>
+            ) : null}
+          </div>
 
           <form action={action} className="mt-6 border-t border-line pt-5">
             <div className="flex flex-wrap items-end gap-4">

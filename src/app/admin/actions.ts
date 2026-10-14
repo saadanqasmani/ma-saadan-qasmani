@@ -10,6 +10,8 @@ import { isLocale } from "@/lib/i18n/config";
 import { SHARED } from "@/lib/content/overrides";
 import { getBlogPost } from "@/lib/data";
 import { letterEmail } from "@/lib/email/letter";
+import { invoiceEmail } from "@/lib/email/invoice";
+import { cleanInvoice, invoiceDate, type Invoice } from "@/lib/book/invoice";
 import { sendMail, sendMany, mailIsConfigured, checkResend, fromAddress, keyShape, type Mail } from "@/lib/email/send";
 
 export type ActionResult = { ok: boolean; message?: string };
@@ -512,4 +514,69 @@ export async function saveText(
   // Every page reads the dictionary, so every page is stale now.
   revalidatePath("/", "layout");
   return { ok: true };
+}
+
+/* ---- the invoice ------------------------------------------------------ */
+
+/**
+ * The invoice on the admin's screen, sent to the person it is for.
+ *
+ * What goes out is what was on the screen, not what the row says: the whole
+ * point of the page is that a figure can be corrected, a name spelled
+ * properly, a note added, before anybody sees it. So the draft is taken as
+ * given, with only the cleaning every untrusted object gets, and the order
+ * row is read afterwards for one reason: to write down that this invoice
+ * went out, to whom, and when. An invoice nobody can prove was sent is an
+ * invoice that gets sent twice.
+ */
+export async function sendInvoice(orderId: string, draft: Invoice): Promise<ActionResult> {
+  const { user, db } = await requireAdmin();
+  if (!mailIsConfigured()) {
+    return { ok: false, message: "RESEND_API_KEY is not set, so nothing can go out." };
+  }
+
+  const inv = cleanInvoice(draft);
+  const to = inv.customerEmail.trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(to)) {
+    return { ok: false, message: "That is not an email address, so nothing was sent." };
+  }
+
+  const sent = await sendMail(invoiceEmail(inv, to));
+  if (!sent.ok) {
+    return {
+      ok: false,
+      message:
+        sent.reason === "no-key"
+          ? "No mail key is set, so nothing was sent."
+          : `Resend refused it: ${sent.reason}`,
+    };
+  }
+
+  // Written to the notes rather than a column of its own, so no migration
+  // stands between the button and the record. Appended, never replacing:
+  // whatever was already noted about this order stays noted.
+  const stamp = `Invoice ${inv.number} emailed to ${to} on ${invoiceDate(new Date())} by ${user.email}. Total ${inv.total}.`;
+  try {
+    const { data } = await db
+      .from("book_orders")
+      .select("internal_notes")
+      .eq("id", orderId)
+      .maybeSingle();
+    const was = String(data?.internal_notes ?? "").trim();
+    await db
+      .from("book_orders")
+      .update({ internal_notes: was ? `${was}\n${stamp}` : stamp })
+      .eq("id", orderId);
+  } catch {
+    // The letter went. A note that did not get written is not a failure
+    // worth reporting back as one.
+  }
+
+  revalidatePath("/admin/orders");
+  return {
+    ok: true,
+    message: sent.id
+      ? `Sent to ${to}. Resend id ${sent.id}.`
+      : `Sent to ${to}.`,
+  };
 }

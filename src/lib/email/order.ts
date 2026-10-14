@@ -24,6 +24,7 @@
 
 import { highestBranch } from "@/content/site";
 import { moneyIn } from "@/lib/book/regions";
+import type { InvoicePayee } from "@/lib/book/invoice";
 import { localeMeta, type Locale } from "@/lib/i18n/config";
 import { absoluteUrl } from "@/lib/i18n/metadata";
 import { siteUrl } from "@/lib/siteUrl";
@@ -56,6 +57,26 @@ const SETTLEMENT: Record<"pk" | "tr", { method: string; label: string; value: st
     holder: "Muhammad Ahmed Saadan Qasmani",
   },
 };
+
+/**
+ * The same account, written the way the printed invoice asks for it.
+ *
+ * The number itself stays where it is. This hands out a copy for the
+ * invoice page to fill its payment block with, so there is one place in the
+ * codebase that knows where money goes.
+ */
+export function invoicePayee(region: OrderRegion | null | undefined): InvoicePayee | null {
+  if (region !== "pk" && region !== "tr") return null;
+  const settle = SETTLEMENT[region];
+  return {
+    how:
+      settle.method === "bank"
+        ? "Transfer the total to the bank account below"
+        : "Send the total to our Easypaisa account",
+    value: settle.value,
+    holder: settle.holder ?? "",
+  };
+}
 
 export type OrderLines = {
   currency: string;

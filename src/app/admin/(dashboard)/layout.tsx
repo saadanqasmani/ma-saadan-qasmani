@@ -32,7 +32,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-full flex-1 flex-col lg:flex-row">
-      <aside className="border-b border-line bg-canvas px-6 py-6 lg:w-64 lg:shrink-0 lg:border-b-0 lg:border-r lg:px-7 lg:py-8">
+      <aside className="border-b border-line bg-canvas px-6 py-6 print:hidden lg:w-64 lg:shrink-0 lg:border-b-0 lg:border-r lg:px-7 lg:py-8">
         <Link href="/admin" className="font-display text-xl">
           The desk
         </Link>
@@ -94,7 +94,7 @@ export default async function DashboardLayout({
         </nav>
       </aside>
 
-      <div className="min-w-0 flex-1 px-6 py-8 sm:px-10 sm:py-12">{children}</div>
+      <div className="min-w-0 flex-1 px-6 py-8 sm:px-10 sm:py-12 print:p-0">{children}</div>
     </div>
   );
 }

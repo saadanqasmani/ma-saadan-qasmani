@@ -1113,3 +1113,95 @@ body {
 .tb-dialog {
   inset: 0;
 }
+
+/* ---- the invoice sheet ------------------------------------------------ */
+
+/**
+ * The admin's invoice, on screen and on paper.
+ *
+ * The sheet is the artwork at its true size — 794 by 1123, which is A4 at
+ * 96dpi — so nothing is re-laid-out between the screen and the printer.
+ * That is wider than a laptop window with the desk's sidebar beside it, so
+ * on screen it scrolls sideways rather than reflowing.
+ */
+.inv-scroll {
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.inv-sheet {
+  box-shadow: 0 18px 50px rgb(34 34 58 / 0.18);
+  /*
+   * Every coloured band on this invoice is a background, and a browser
+   * drops backgrounds when printing unless it is told not to. Without this
+   * the ribbon, the table head and the navy panel come out of the printer
+   * as white space, which is most of the design gone.
+   */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.inv-sheet * {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* What can be changed should look like it can be changed. */
+.inv-edit {
+  border-bottom: 1px dotted rgb(59 61 122 / 0.45);
+  outline: none;
+  cursor: text;
+}
+
+.inv-edit:hover {
+  border-bottom-color: rgb(59 61 122 / 0.8);
+}
+
+.inv-edit:focus {
+  background: rgb(59 61 122 / 0.09);
+  border-bottom-color: rgb(59 61 122 / 0.9);
+}
+
+/* An empty line still has to be findable, or it cannot be filled in. */
+.inv-edit:empty::after {
+  content: "—";
+  color: rgb(106 106 128 / 0.55);
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  .inv-bar {
+    display: none !important;
+  }
+
+  .inv-scroll {
+    overflow: visible;
+    padding: 0;
+  }
+
+  /*
+   * A4 is 793.7 by 1122.5 CSS pixels, and a sheet drawn at 794 by 1123 is
+   * a hair too big for it: enough to tip a blank second page out of the
+   * printer. One pixel off each side costs nothing visible and keeps it to
+   * the single page it is.
+   */
+  .inv-sheet {
+    width: 793px !important;
+    height: 1122px !important;
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .inv-edit {
+    border-bottom: 0;
+    background: none !important;
+  }
+
+  .inv-edit:empty::after {
+    content: "";
+  }
+}
