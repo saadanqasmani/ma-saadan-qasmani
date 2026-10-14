@@ -502,6 +502,64 @@ export type BlogPost = {
 // the admin has them; until then this file is the record.
 export const blogPosts: BlogPost[] = [
   {
+    slug: "carrion",
+    title: "Carrion",
+    subtitle: "Poets are vultures, the Ship of Theseus, and the two ships I ended up with.",
+    date: "14 October 2026",
+    category: "Essay",
+    tags: ["The Highest Branch", "Ship of Theseus", "Writing"],
+    readingTime: "4 min",
+    excerpt:
+      "A ship is repaired plank by plank until none of the original wood is left, and somebody follows the repairmen, collecting the rot. That somebody wrote my book.",
+    body: `I read somewhere today that poets are vultures. That they circle high above beautiful things, patient and hungry, waiting for them to die, so they can land on the body and soil it with words.
+
+It did not feel like an insult. It felt like a confession I had been putting off.
+
+Everyone meets the Ship of Theseus eventually. A ship comes home from war and is kept in the harbour as a monument. A plank rots, so they replace it. Then another. Then the mast, the ropes, the ribs of the hull, until not one splinter of the original remains. Is it still the same ship?
+
+Hobbes made it worse. He asked: what if someone had been following the repairmen the whole time, collecting every rotten plank they tore out, and quietly rebuilt them in a warehouse somewhere? Now there are two ships. One has the name and none of the wood. The other has all the wood and no name. Which one belongs to Theseus?
+
+I used to think the answer mattered. I don’t anymore. What matters is that the ship had to die, plank by plank, slowly, for anyone to ask the question at all. Nobody writes philosophy about a ship that stays whole. The rot is the philosophy. The debate is just the sound the wood made as it split.
+
+I am not the man who left home. I am not the man I was a year ago. If I am honest, I am not the man who started this sentence.
+
+Heraclitus said you cannot step into the same river twice. He was being generous. He assumed the man was still standing.
+
+They say the body replaces itself, cell by cell, every few years. Nobody tells you that grief keeps the same schedule.
+
+I have died a lot these past few years. Not the clean kind. Not once, all at once. The other kind. The kind where a piece of you comes loose in a stairwell in a foreign city and you don’t notice it is missing until weeks later. The kind where someone spits on a part of you and you have to cut that part away, because it will never wash clean. Pulled out like teeth, one at a time, in no particular order, with no anaesthetic, and every morning you still get up and make tea with whatever hands you have left.
+
+Pieces broke off. Pieces were forgotten. Pieces were beaten, bruised, tarnished, bled out on borrowed floors and swept up by people who had no idea what they were sweeping.
+
+Here is the part I have never said out loud.
+
+There was a boy who wrote, back in 2020. He wrote all the time. Then, at the start of 2021, he stopped. He had run out of material. He had not suffered enough yet to be interesting.
+
+So he waited.
+
+He never left. He sat at the back of my skull like a bird on a telephone wire, and he watched. He watched every plank come off. He did not help. He did not warn me. He did not grieve. He waited and he watched, and he watched and he waited, and every time something in me broke, he leaned forward a little.
+
+And when enough of me was finally on the ground, he landed.
+
+He was the one following the repairmen. He was collecting the rot. Every plank they tore out of me, he carried off to his warehouse. He opened me up like a carcass on the shoulder of a highway and put his whole face inside. He used my blood as ink because it was warm and there was so much of it. When my soul was trying to leave, he caught it in his teeth and spat it onto the page, still twitching.
+
+That is how the book came into the world. Not written. Born. Wet and screaming and made entirely of parts I can no longer use.
+
+So now there are two ships.
+
+One walks around Istanbul in my coat. It has my name, my passport, my email signature. It answers when you call it Saadan. It goes to class. It is very tired. It is made of new wood and does not remember being anything else.
+
+The other lives in the book. It is built from everything I lost. Every plank. Every bruise. Every night I will never tell you about. It goes by a different name. It is called Sultan.
+
+In Arabic, my name means monkey. I gave him a crown instead. Maybe that was the boy from 2020’s idea of a joke. Maybe it was his apology.
+
+Is the Ship of Theseus still the Ship of Theseus?
+
+Is Saadan still Saadan?
+
+Or is the real one sitting in a warehouse somewhere, rebuilt from rot, wearing a crown, while I am only the ship that got to keep the name?`,
+  },
+  {
     slug: "before-anything-else",
     title: "Before Anything Else",
     subtitle: "A prayer, the work, and why this site exists.",
@@ -528,7 +586,7 @@ Those two halves rarely speak to each other. The people who do this work seldom 
 
 And then there is the novel.
 
-The Highest Branch is about a young boy who leaves a home that he knows by its seasons for a country that measures time in semesters. I am not going to pretend that boy is a stranger to me. He is me. The journey is mine, and so is most of what came after it: the first winter, the language that arrives long before the belonging does, the phone calls home in which initially everything is going well, the slow and unannounced business of becoming someone a mother might not entirely recognise. I wrote a hundred and forty-four thousand words across twenty-nine chapters because I went looking for that book on a shelf, could not find it, and could not leave it unwritten.
+The Highest Branch is about a young boy who leaves a home that he knows by its seasons for a country that measures time in semesters. I am not going to pretend that boy is a stranger to me. He is me. The journey is mine, and so is most of what came after it: the first winter, the language that arrives long before the belonging does, the phone calls home in which initially everything is going well, the slow and unannounced business of becoming someone a mother might not entirely recognise. I wrote a hundred and sixty thousand words across twenty-nine chapters because I went looking for that book on a shelf, could not find it, and could not leave it unwritten.
 
 For years these three things lived in three separate places. The research in journals, the training in rooms that emptied at five o'clock, the novel in a drawer. Anyone who came across one of them had no way of knowing the others were there. This site is me putting them in one room and admitting, finally, what I had been slow to admit: that they were never three projects. They were one, approached from three directions.
 
