@@ -22,6 +22,9 @@ export function AdminHeading({
   );
 }
 
+export const inputClass =
+  "w-full border border-line bg-canvas-light px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none";
+
 export const buttonClass =
   "t-label inline-flex items-center justify-center gap-2 border border-ink bg-ink px-5 py-2.5 text-canvas-light transition-opacity hover:opacity-85 disabled:opacity-50";
 

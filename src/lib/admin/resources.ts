@@ -26,6 +26,8 @@ export type Field = {
   type: FieldType;
   required?: boolean;
   options?: readonly string[];
+  /** What to show instead of the stored value, where the two differ. */
+  optionLabels?: Record<string, string>;
   help?: string;
   bucket?: "media" | "papers";
   /** How to read the value out. Money is never shown without its currency. */
@@ -51,6 +53,18 @@ export type Resource = {
   defaultSort: { column: string; ascending: boolean };
   /** Public paths to refresh after a write. */
   revalidate: string[];
+  /**
+   * Inbox only: the record itself can be corrected, not merely filed.
+   *
+   * Most of what visitors send is a statement of what they said, and should
+   * stay that way. An order is different: it is a working document, and the
+   * desk has to be able to fix a misspelled street, apply a code somebody
+   * was promised over the phone, or put an order in the right currency
+   * before the invoice goes out on it.
+   */
+  editable?: boolean;
+  /** Inbox only: it can be thrown away, for a test order or a duplicate. */
+  deletable?: boolean;
 };
 
 export const RESEARCH_AREAS = [
@@ -230,6 +244,8 @@ export const RESOURCES: Resource[] = [
     statusField: "status",
     statusOptions: ORDER_STATUSES,
     notesField: "internal_notes",
+    editable: true,
+    deletable: true,
     defaultSort: { column: "created_at", ascending: false },
     revalidate: [],
     listColumns: [
@@ -254,19 +270,35 @@ export const RESOURCES: Resource[] = [
       // Where the order came from, which decides what happens to it: a
       // Pakistani order is settled by hand, a Turkish one may already have
       // been paid by card, and a print-to-order request has no price yet.
-      { name: "region", label: "How it settles", type: "text", format: "regionLong", readOnly: true },
-      { name: "currency", label: "Currency", type: "text", readOnly: true },
+      {
+        name: "region",
+        label: "How it settles",
+        type: "select",
+        options: ["pk", "tr", "world"],
+        optionLabels: {
+          pk: "Pakistan · Easypaisa",
+          tr: "Türkiye · bank transfer",
+          world: "Everywhere else",
+        },
+        help: "It decides which account the invoice asks them to pay into.",
+      },
+      {
+        name: "currency",
+        label: "Currency",
+        type: "text",
+        help: "PKR, TRY or USD. Every figure below is printed in it.",
+      },
       // What was quoted when the order was placed. Worked out on the server
       // from the quantity and the code; kept here so a price change later
       // never rewrites what somebody was actually charged. The columns are
       // named _usd for historical reasons and hold whatever `currency` says,
       // which is why every one of them is printed with it.
-      { name: "quantity_priced", label: "Copies priced", type: "number", readOnly: true },
-      { name: "unit_price_usd", label: "Price per copy", type: "number", format: "money", currencyFrom: "currency", readOnly: true },
-      { name: "shipping_amount", label: "Postage", type: "number", format: "money", currencyFrom: "currency", readOnly: true },
-      { name: "promo_code", label: "Promo code used", type: "text", readOnly: true },
-      { name: "discount_usd", label: "Discount", type: "number", format: "money", currencyFrom: "currency", readOnly: true },
-      { name: "total_usd", label: "Total", type: "number", format: "money", currencyFrom: "currency", readOnly: true },
+      { name: "quantity_priced", label: "Copies priced", type: "number" },
+      { name: "unit_price_usd", label: "Price per copy", type: "number", format: "money", currencyFrom: "currency" },
+      { name: "shipping_amount", label: "Postage", type: "number", format: "money", currencyFrom: "currency" },
+      { name: "promo_code", label: "Promo code given", type: "text", help: "Whatever is here is what the invoice prints beside the discount." },
+      { name: "discount_usd", label: "Discount", type: "number", format: "money", currencyFrom: "currency" },
+      { name: "total_usd", label: "Total", type: "number", format: "money", currencyFrom: "currency", help: "What they actually owe: copies times price, less the discount, plus postage." },
       {
         name: "payment_status",
         label: "Payment",

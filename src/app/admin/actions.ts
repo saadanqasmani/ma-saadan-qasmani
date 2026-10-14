@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { getAdminUser, getSessionClient } from "@/lib/supabase/auth";
 import { isAllowlistedEmail } from "@/lib/supabase/env";
+import { moneyIn } from "@/lib/book/regions";
 import { getResource, type Field } from "@/lib/admin/resources";
 import { isLocale } from "@/lib/i18n/config";
 import { SHARED } from "@/lib/content/overrides";
@@ -183,7 +184,36 @@ export async function deleteRecord(resourceKey: string, id: string): Promise<voi
   redirect(`/admin/${resource.key}?deleted=1`);
 }
 
-/** Inbox items: only the status and the private notes are ever writable. */
+/**
+ * Does the total still agree with the lines it is made of?
+ *
+ * Nothing is recalculated here. A desk that gives somebody a discount over
+ * the phone and forgets the total would otherwise send an invoice that
+ * contradicts itself, and silently fixing the figure they did not type is
+ * the other way to get an invoice nobody meant to send. So it is checked,
+ * said out loud, and left to the person who knows which number is wrong.
+ */
+function tally(payload: Record<string, unknown>): string | null {
+  if (!("total_usd" in payload)) return null;
+  const n = (key: string) => Number(payload[key] ?? 0) || 0;
+  const currency = String(payload.currency ?? "") || "PKR";
+
+  const copies = n("quantity_priced") || n("quantity");
+  const expected = copies * n("unit_price_usd") - n("discount_usd") + n("shipping_amount");
+  const total = n("total_usd");
+  if (!expected || Math.abs(expected - total) < 0.01) return null;
+
+  return `Saved. One thing: the lines come to ${moneyIn(currency, expected)} and the total says ${moneyIn(currency, total)}. Change whichever of them is wrong.`;
+}
+
+/**
+ * Inbox items: the status, the private notes, and on an order, the order.
+ *
+ * Most of the inbox is a record of what somebody sent and stays that way.
+ * An order is a working document: a street spelled wrong, a code promised
+ * on the phone, the wrong currency — all of it has to be correctable here,
+ * because what is in this row is what the invoice prints.
+ */
 export async function updateInbox(
   resourceKey: string,
   id: string,
@@ -194,7 +224,9 @@ export async function updateInbox(
   if (!resource || resource.mode !== "inbox") return { ok: false, message: "Unknown section." };
 
   const { db } = await requireAdmin();
-  const payload: Record<string, unknown> = {};
+  const payload: Record<string, unknown> = resource.editable
+    ? buildPayload(resource.fields.filter((f) => !f.readOnly), formData)
+    : {};
 
   if (resource.statusField) {
     const status = String(formData.get("status") ?? "");
@@ -208,7 +240,73 @@ export async function updateInbox(
   if (error) return { ok: false, message: error.message };
 
   revalidatePath(`/admin/${resource.key}`);
-  return { ok: true, message: "Saved." };
+  return { ok: true, message: tally(payload) ?? "Saved." };
+}
+
+/**
+ * Throw one away.
+ *
+ * Only where the resource says it may be: a test order and a duplicate are
+ * worth deleting, a message somebody took the trouble to write is not.
+ * There is no undo, which is why the button asks first.
+ */
+export async function deleteInbox(resourceKey: string, id: string): Promise<void> {
+  const resource = getResource(resourceKey);
+  if (!resource || resource.mode !== "inbox" || !resource.deletable) return;
+
+  const { db } = await requireAdmin();
+  await db.from(resource.table).delete().eq("id", id);
+
+  revalidatePath(`/admin/${resource.key}`);
+  redirect(`/admin/${resource.key}?deleted=1`);
+}
+
+/**
+ * Set the password on an admin account, without going near Supabase.
+ *
+ * It can only ever touch an address on the allowlist, so this is not a way
+ * to mint a login for a stranger; and if that address has no account yet,
+ * it makes one, which is how somebody who will manage the orders gets a way
+ * in without being added to anything by hand.
+ */
+export async function setPassword(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
+  const { user, db } = await requireAdmin();
+
+  const email = (String(formData.get("email") ?? "").trim() || user.email).toLowerCase();
+  const password = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirm") ?? "");
+
+  if (password.length < 8) return { ok: false, message: "Choose a password of at least 8 characters." };
+  if (password !== confirm) return { ok: false, message: "The two boxes do not match." };
+  // Your own, always. Anybody else's only if the deployment already calls
+  // them an admin, so this cannot mint a login for a stranger.
+  const self = email === user.email.toLowerCase();
+  if (!self && !isAllowlistedEmail(email)) {
+    return {
+      ok: false,
+      message: `${email} is not on the admin list, so it cannot be given a password here. Add it to ADMIN_EMAILS first.`,
+    };
+  }
+
+  const { data } = await db.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  const found = (data?.users ?? []).find((u) => u.email?.trim().toLowerCase() === email);
+
+  if (!found) {
+    const { error } = await db.auth.admin.createUser({ email, password, email_confirm: true });
+    if (error) return { ok: false, message: error.message };
+    return { ok: true, message: `There was no account for ${email}, so one was made. It can sign in with this password now.` };
+  }
+
+  const { error } = await db.auth.admin.updateUserById(found.id, { password });
+  if (error) return { ok: false, message: error.message };
+
+  return {
+    ok: true,
+    message:
+      self
+        ? "Your password is changed. This session stays signed in; the new one is what to use next time."
+        : `Done. ${email} signs in with that password from now on.`,
+  };
 }
 
 // ──────────────────────────── singletons ────────────────────────────

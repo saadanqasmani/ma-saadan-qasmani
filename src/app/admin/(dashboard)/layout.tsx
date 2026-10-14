@@ -28,7 +28,11 @@ export default async function DashboardLayout({
   if (!user) redirect("/admin/login");
 
   const authored = RESOURCES.filter((r) => r.mode === "crud");
-  const inbox = RESOURCES.filter((r) => r.mode === "inbox");
+  // The orders are the part of this that somebody else works every day, so
+  // they sit at the top of the inbox and are marked as the way in.
+  const inbox = RESOURCES.filter((r) => r.mode === "inbox").sort(
+    (a, b) => Number(b.key === "orders") - Number(a.key === "orders")
+  );
 
   return (
     <div className="flex min-h-full flex-1 flex-col lg:flex-row">
@@ -64,16 +68,28 @@ export default async function DashboardLayout({
           <div>
             <p className="eyebrow">Inbox</p>
             <ul className="mt-3 space-y-1.5">
-              {inbox.map((r) => (
-                <li key={r.key}>
-                  <Link
-                    href={`/admin/${r.key}`}
-                    className="text-ink-soft transition-colors hover:text-ink"
-                  >
-                    {r.label}
-                  </Link>
-                </li>
-              ))}
+              {inbox.map((r) =>
+                r.key === "orders" ? (
+                  <li key={r.key} className="pb-1">
+                    <Link
+                      href={`/admin/${r.key}`}
+                      className="-mx-2 flex items-center justify-between gap-2 border-l-2 border-ember bg-canvas-light px-2.5 py-2 font-medium text-ink transition-colors hover:bg-canvas-deep"
+                    >
+                      {r.label}
+                      <span aria-hidden className="text-ember">→</span>
+                    </Link>
+                  </li>
+                ) : (
+                  <li key={r.key}>
+                    <Link
+                      href={`/admin/${r.key}`}
+                      className="text-ink-soft transition-colors hover:text-ink"
+                    >
+                      {r.label}
+                    </Link>
+                  </li>
+                )
+              )}
             </ul>
           </div>
 

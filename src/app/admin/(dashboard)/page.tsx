@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { getAdminClient } from "@/lib/supabase/admin";
+import { getAdminUser } from "@/lib/supabase/auth";
+import { adminEmails } from "@/lib/supabase/env";
 import { RESOURCES } from "@/lib/admin/resources";
 import { AdminHeading } from "@/components/admin/ui";
+import { PasswordForm } from "@/components/admin/PasswordForm";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +31,9 @@ async function counts() {
 
 export default async function AdminOverview() {
   const stats = await counts();
+  const user = await getAdminUser();
+  // Your own address first, then anyone else the deployment calls an admin.
+  const logins = Array.from(new Set([user?.email, ...adminEmails].filter(Boolean) as string[]));
   const inbox = RESOURCES.filter((r) => r.mode === "inbox");
   const authored = RESOURCES.filter((r) => r.mode === "crud");
 
@@ -77,6 +83,18 @@ export default async function AdminOverview() {
             </Link>
           ))}
         </div>
+      </section>
+
+      <section className="mt-14 border-t border-line pt-8">
+        <p className="eyebrow">Your login</p>
+        <h2 className="t-h3 mt-2">Change the password</h2>
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft">
+          This is the password for the desk itself, at saadanqasmani.com/admin. Setting it here
+          takes effect at once, and this session stays signed in. If the address chosen has no
+          login yet, saving makes one, which is how somebody else gets their own way in rather
+          than being handed yours.
+        </p>
+        <PasswordForm emails={logins} me={user?.email ?? ""} />
       </section>
 
       <section className="mt-14 border-t border-line pt-8">

@@ -4,16 +4,27 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { saveRecord, deleteRecord, type ActionResult } from "@/app/admin/actions";
 import type { Field, Resource } from "@/lib/admin/resources";
-import { buttonClass, ghostButtonClass } from "@/components/admin/ui";
+import { buttonClass, ghostButtonClass, inputClass } from "@/components/admin/ui";
 import { FilePicker } from "@/components/admin/FilePicker";
 
 const initial: ActionResult = { ok: false };
 
-const inputClass =
-  "w-full border border-line bg-canvas-light px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none";
-
-function FieldInput({ field, value }: { field: Field; value: unknown }) {
-  const id = field.name;
+/**
+ * One input, chosen by the field's type. Exported because the inbox uses it
+ * too: an order that can be corrected needs the same boxes as a record that
+ * can be written, and two sets of them would drift apart.
+ */
+export function FieldInput({
+  field,
+  value,
+  id = field.name,
+}: {
+  field: Field;
+  value: unknown;
+  /** Overridden where a page holds more than one of the same field, so a
+   *  label still points at its own box. */
+  id?: string;
+}) {
   const common = { id, name: field.name, className: inputClass };
 
   switch (field.type) {
@@ -40,7 +51,7 @@ function FieldInput({ field, value }: { field: Field; value: unknown }) {
           <option value="">Not set</option>
           {field.options?.map((o) => (
             <option key={o} value={o}>
-              {o}
+              {field.optionLabels?.[o] ?? o}
             </option>
           ))}
         </select>
