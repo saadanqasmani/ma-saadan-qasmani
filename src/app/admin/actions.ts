@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { getAdminUser, getSessionClient } from "@/lib/supabase/auth";
-import { isAllowlistedEmail } from "@/lib/supabase/env";
+import { createClient } from "@supabase/supabase-js";
+import { isAllowlistedEmail, supabaseAnonKey, supabaseUrl } from "@/lib/supabase/env";
 import { moneyIn } from "@/lib/book/regions";
 import { getResource, type Field } from "@/lib/admin/resources";
 import { isLocale } from "@/lib/i18n/config";
@@ -262,22 +263,53 @@ export async function deleteInbox(resourceKey: string, id: string): Promise<void
 }
 
 /**
+ * Does this person actually know the password they are signing in with?
+ *
+ * A session can outlive the person who opened it: a laptop left unlocked, a
+ * browser signed in on a machine that was handed on. Being inside the desk
+ * is therefore not proof of being the account holder, and the one thing
+ * that is, is the current password. It is checked against Supabase itself
+ * on a throwaway client that persists nothing, so the session doing the
+ * asking is neither used as proof nor disturbed by the asking.
+ */
+async function knowsCurrentPassword(email: string, password: string): Promise<boolean> {
+  if (!password || !supabaseUrl || !supabaseAnonKey) return false;
+  const probe = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { error } = await probe.auth.signInWithPassword({ email, password });
+  return !error;
+}
+
+/**
  * Set the password on an admin account, without going near Supabase.
  *
- * It can only ever touch an address on the allowlist, so this is not a way
- * to mint a login for a stranger; and if that address has no account yet,
- * it makes one, which is how somebody who will manage the orders gets a way
- * in without being added to anything by hand.
+ * Two locks. The current password has to be typed, so an open session is
+ * not a way in for whoever sits down at the machine next; and the address
+ * being changed has to be your own or one already on the allowlist, so this
+ * cannot mint a login for a stranger. If an allowlisted address has no
+ * account yet, saving makes one, which is how somebody who will work the
+ * orders gets their own way in without being added to anything by hand.
  */
 export async function setPassword(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
   const { user, db } = await requireAdmin();
 
   const email = (String(formData.get("email") ?? "").trim() || user.email).toLowerCase();
+  const current = String(formData.get("current") ?? "");
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
 
+  if (!(await knowsCurrentPassword(user.email, current))) {
+    return {
+      ok: false,
+      message:
+        "That is not the password this account signs in with, so nothing was changed. If it has been forgotten, it can only be reset from the Supabase dashboard.",
+    };
+  }
+
   if (password.length < 8) return { ok: false, message: "Choose a password of at least 8 characters." };
   if (password !== confirm) return { ok: false, message: "The two boxes do not match." };
+  if (password === current) return { ok: false, message: "That is the password it already has." };
   // Your own, always. Anybody else's only if the deployment already calls
   // them an admin, so this cannot mint a login for a stranger.
   const self = email === user.email.toLowerCase();

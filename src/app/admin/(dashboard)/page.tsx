@@ -89,10 +89,11 @@ export default async function AdminOverview() {
         <p className="eyebrow">Your login</p>
         <h2 className="t-h3 mt-2">Change the password</h2>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft">
-          This is the password for the desk itself, at saadanqasmani.com/admin. Setting it here
-          takes effect at once, and this session stays signed in. If the address chosen has no
-          login yet, saving makes one, which is how somebody else gets their own way in rather
-          than being handed yours.
+          This is the password for the desk itself, at saadanqasmani.com/admin. Type the one you
+          signed in with first: without it nothing can be changed here, so a screen left open is
+          not a way in. The new password takes effect at once and this session stays signed in.
+          If the address chosen has no login of its own yet, saving makes one, which is how
+          somebody else gets their own way in rather than being handed yours.
         </p>
         <PasswordForm emails={logins} me={user?.email ?? ""} />
       </section>
