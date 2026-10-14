@@ -54,7 +54,11 @@ const SETTLEMENT: Record<"pk" | "tr", { method: string; label: string; value: st
     method: "easypaisa",
     label: "Easypaisa",
     value: "0333 3012347",
-    holder: "Muhammad Ahmed Saadan Qasmani",
+    // The name the Easypaisa account is actually registered in, which is
+    // not the author's. A buyer who is sent a number and then shown a
+    // different name on the confirmation screen stops the transfer, so the
+    // letter and the invoice both have to say the name the phone will.
+    holder: "Mawra Eman Qasmani",
   },
 };
 
