@@ -54,8 +54,8 @@ export default async function SiteLayout({
           <MarginaliaPanel />
           <BookAnnouncement
             copy={dict.announcement}
-            newsletter={dict.newsletter}
             cover={book.coverImage ?? null}
+            amazonUrl={book.amazonUrl}
           />
         </CollectionProvider>
       </div>

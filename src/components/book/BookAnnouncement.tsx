@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { NewsletterForm, hasSubscribed } from "@/components/forms/NewsletterForm";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import type { Dictionary } from "@/content/i18n/en";
 import { defaultLocale, stripLocale } from "@/lib/i18n/config";
@@ -25,12 +24,11 @@ const VISIT = "thb-announcement-visit";
  * arrive first. It closes on Escape, on the backdrop, and on its own button,
  * and stays closed for the rest of that visit.
  *
- * It opens once per visit and asks for the pre-order, because in Türkiye
- * and Pakistan that is a thing a reader can act on today. Under it, for
- * everywhere else, is the address form for the day the Amazon listing goes
- * up. To someone already on that list the form is dropped and a line takes
- * its place: asking a subscriber to subscribe is the fastest way to look
- * like you are not paying attention.
+ * It opens once per visit and asks for the order, which since publication
+ * day is a thing every reader can act on: direct in Türkiye and Pakistan,
+ * and on Amazon everywhere Amazon reaches. Both are offered, the direct
+ * one first, because that is the one that does not take a cut and the one
+ * that reaches the two countries Amazon will not deliver to.
  *
  * A native <dialog> rather than a div: focus goes in and stays in, Escape
  * works, and the rest of the page is inert for a screen reader without any
@@ -39,15 +37,15 @@ const VISIT = "thb-announcement-visit";
 export function BookAnnouncement({
   copy,
   cover,
-  newsletter,
+  amazonUrl,
 }: {
   copy: Dictionary["announcement"];
   cover: string | null;
-  newsletter: Dictionary["newsletter"];
+  /** The paperback listing, when there is one to send a reader to. */
+  amazonUrl?: string | null;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [mounted, setMounted] = useState(false);
-  const [subscribed, setSubscribed] = useState(false);
   const pathname = usePathname();
 
   // Nobody needs to be told about the novel on the novel's own page.
@@ -81,9 +79,6 @@ export function BookAnnouncement({
     if (shownThisVisit) return;
 
     const timer = window.setTimeout(() => {
-      // Read at opening time, not at mount: a reader who subscribed a moment
-      // ago on this very page should not be asked again on the next one.
-      setSubscribed(hasSubscribed());
       setMounted(true);
       remember();
     }, 1400);
@@ -155,8 +150,8 @@ export function BookAnnouncement({
           <p className="t-body mt-3.5 text-canvas-light/85">
             {copy.body}
           </p>
-          {/* The pre-order, first and as a button: it is the thing being
-              asked for, and two countries can act on it today. */}
+          {/* The order, first and as a button: it is the thing being asked
+              for, and it is the only door open to Türkiye and Pakistan. */}
           <LocaleLink
             href="/the-highest-branch#purchase"
             onClick={close}
@@ -164,26 +159,24 @@ export function BookAnnouncement({
           >
             <span className="absolute inset-0 -translate-y-full bg-ember transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
             <span className="relative transition-colors group-hover:text-canvas-light">
-              {copy.preOrder}
+              {copy.order}
             </span>
           </LocaleLink>
 
-          {/* And under it, the rest of the world, who cannot yet. */}
-          {subscribed ? (
-            <p className="mt-6 flex items-start gap-2.5 text-sm leading-relaxed text-canvas-light/70">
-              <span aria-hidden className="mt-2 block h-px w-4 shrink-0 bg-ember-light" />
-              {copy.onList}
-            </p>
-          ) : (
+          {/* And under it, everywhere Amazon reaches. Second, and quieter:
+              it is the same book through somebody else's shop. */}
+          {amazonUrl && (
             <div className="mt-6 border-t border-canvas-light/15 pt-5">
               <p className="text-sm leading-relaxed text-canvas-light/70">{copy.ask}</p>
-
-              <div className="mt-4">
-                <NewsletterForm
-                  tone="light"
-                  copy={{ ...newsletter, subscribe: copy.submit, sending: copy.sending, done: copy.done, placeholder: copy.placeholder }}
-                />
-              </div>
+              <a
+                href={amazonUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={close}
+                className="t-label mt-4 inline-flex border border-canvas-light/40 px-6 py-3 text-canvas-light transition-colors hover:border-canvas-light hover:bg-canvas-light hover:text-ink"
+              >
+                {copy.amazon}
+              </a>
             </div>
           )}
 

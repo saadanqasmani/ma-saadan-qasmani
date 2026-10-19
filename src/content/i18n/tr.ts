@@ -43,19 +43,15 @@ export const tr: DictionaryOverlay = {
   },
 
   announcement: {
-    eyebrow: "Ön siparişler açıldı",
-    heading: "The Highest Branch\u2019i ön sipariş verin",
-    body: "19 Ekim 2026\u2019da çıkıyor. Türkiye veya Pakistan\u2019dan kopyanızı şimdi ayırtın; baskıdan çıktığı hafta size yola çıkar.",
-    preOrder: "Şimdi ön sipariş verin",
-    ask: "Diğer ülkelerde e-kitap bugünden Amazon'da ön siparişe açık, ciltsiz baskı ise çıktığı gün geliyor. Adresinizi bırakın, ciltsiz baskının ilanı açıldığında yazayım.",
-    placeholder: "siz@ornek.com",
-    submit: "Haber ver",
-    sending: "Gönderiliyor",
-    done: "O gün size yazacağım.",
+    eyebrow: "Çıktı",
+    heading: "The Highest Branch çıktı",
+    body: "19 Ekim 2026’da yayımlandı. Dört yüz kırk sayfa, ciltsiz baskı. Türkiye ve Pakistan’da doğrudan benden, Amazon’un ulaştığı her yerde Amazon’dan sipariş edin.",
+    order: "Kopyanızı sipariş edin",
+    ask: "Avrupa Birliği ve Amerika kıtasında Amazon gönderiyor: ciltsiz baskı ya da Kindle.",
+    amazon: "Amazon’dan satın alın",
     readMore: "Roman hakkında",
     dismiss: "Kapat",
     later: "Şimdi değil",
-    onList: "Listedesiniz. Amazon ilanı açıldığı gün yazacağım.",
   },
 
   newsletter: {
@@ -299,7 +295,7 @@ export const tr: DictionaryOverlay = {
       lockedTitle: "Gerisi kitapta.",
       lockedBody:
         "Bedelsiz verilen kısım burada bitiyor. Birinci bölüm buradan başlıyor ve ardından dört yüz kırk sayfa daha var.",
-      preOrderNow: "Şimdi ön sipariş verin",
+      preOrderNow: "Şimdi sipariş verin",
       preOrderAside: "Şimdilik Pakistan ve Türkiye, diğer her yerde Amazon üzerinden.",
     },
     toPurchase: "Kitabı edinin",
@@ -316,7 +312,7 @@ export const tr: DictionaryOverlay = {
     words: "Kelime",
     form: "Biçim",
     status: "Durum",
-    availability: "Ön sipariş",
+    availability: "Çıktı",
     orderACopy: "Kitabınızı ayırtın",
     byline: "{title} — {name} tarafından yazılmış bir roman",
     purchase: {
@@ -332,8 +328,8 @@ export const tr: DictionaryOverlay = {
       paperbackLabel: "Ciltsiz baskı",
       ebookLabel: "Kindle sürümü",
       ebookLive: "Amazon'da yayında",
-      ebookButton: "Kindle sürümünü ön sipariş verin",
-      waitForPaper: "Bekleyebiliyorsanız kâğıdı bekleyin. Kitap onun için dizildi: 15 × 23 santim, satır satır seçilmiş sayfa sonları ve sağ elinizde ne kadar az kaldığını gördüğünüzde başka türlü inen bir final. Kindle sürümü aynı metin ve bugün burada; ekim çok uzaksa ya da posta size yavaş geliyorsa.",
+      ebookButton: "Kindle sürümünü satın alın",
+      waitForPaper: "Elinizden geliyorsa kâğıdı tercih edin. Kitap onun için dizildi: 15 × 23 santim, satır satır seçilmiş sayfa sonları ve sağ elinizde ne kadar az kaldığını gördüğünüzde başka türlü inen bir final. Kindle sürümü aynı metin; postayı beklemek istemeyen okur için.",
       amazonSoon: "Ciltsiz baskının ilanı henüz yayında değil. Kitabın çıkacağı gün, {date} tarihinde açılacak; açıldığı anda size yazacağım.",
       notShipped: "Amazon sizin bölgenize göndermiyor mu?",
       notShippedTitle: "Size kendim yollayayım",
@@ -356,11 +352,11 @@ export const tr: DictionaryOverlay = {
       shippingNote: "Kargo {amount}; kaç adet alırsanız alın, sipariş başına bir kez eklenir.",
       promoShipping: "Kargo benden.",
       promoBoth: "%{percent} indirim, kargo da benden.",
-      preOrderNote: "şimdi ön sipariş",
-      preOrderEyebrow: "Ön sipariş · {where}",
-      shipsOn: "Yayımlandığında gönderilir, {date}",
+      preOrderNote: "şimdi sipariş",
+      preOrderEyebrow: "Sipariş · {where}",
+      shipsOn: "Çıktı, {date} tarihinde yayımlandı",
       encourage:
-        "Kitap şu anda Türkiye ve Pakistan için basılıyor; kaç adet basılacağını ön siparişler belirliyor. Bir adet ayırtın, ciltlendiği hafta yola çıksın.",
+        "Türkiye ve Pakistan için ilk baskı elimizde. Bir adet ayırtın, bu hafta size yola çıksın.",
       fewer: "Bir adet azalt",
       more: "Bir adet artır",
       perCopy: "adedi",
@@ -373,7 +369,7 @@ export const tr: DictionaryOverlay = {
       discountLine: "Promosyon kodu (%{percent} indirim)",
       total: "Toplam",
       yourDetails: "Nereye gönderilsin",
-      payByCard: "Ön sipariş — {total} öde",
+      payByCard: "Sipariş ver — {total} öde",
       reserveInstead: "Ya da ayırtın, ödemeyi elden yapın",
       reserve: "Kitabımı ayırt",
       payNote:
@@ -381,9 +377,9 @@ export const tr: DictionaryOverlay = {
       reserveNote: "Burada ödeme alınmaz. Bu düğmeye bastığınız anda ödeme bilgileri e-postayla size ulaşır.",
       paidTitle: "Kitabınız sizin.",
       paidBody:
-        "Ödeme alındı; makbuzunuz Stripe'tan geliyor. Kitap, baskıdan çıktığı hafta size yola çıkar.",
+        "Ödeme alındı; makbuzunuz Stripe'tan geliyor. Kitap bu hafta size yola çıkar.",
       reservedTitle: "Kopyanız ayrıldı.",
-      reservedBody: "Hiçbir tahsilat yapılmadı. Ödeme bilgileri şu anda e-postanıza gidiyor. Tutarı gönderin, dekontu bana e-postayla iletin; kitap baskıdan çıktığı hafta size yola çıkar.",
+      reservedBody: "Hiçbir tahsilat yapılmadı. Ödeme bilgileri şu anda e-postanıza gidiyor. Tutarı gönderin, dekontu bana e-postayla iletin; kitap bu hafta size yola çıkar.",
       cancelledBody: "Ödeme tamamlanmadı. Hiçbir tahsilat yapılmadı, bilgileriniz duruyor.",
       notifyLabel: "Ciltsiz baskı çıkınca haber ver",
       notify: "Haber ver",
@@ -549,7 +545,7 @@ export const trContent: ContentOverlay = {
   book: {
     genre: "Alegorik edebî kurmaca, bir fabl olarak anlatılmış",
     tagline: "Çünkü yukarısı, şeylerin düştüğü yerdir.",
-    status: "19 Ekim 2026'da çıkıyor",
+    status: "19 Ekim 2026'da yayımlandı",
     synopsis:
       "Sultan'a kimse yalan söylemez. Hırs, aidiyet, kimlik pazarlığı ve başkasının dünyasında okunabilir hâle gelmenin bedeli üzerine bir edebiyat romanı.",
     proverbMeaning:

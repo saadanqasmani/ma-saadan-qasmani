@@ -40,19 +40,15 @@ export const en = {
 
   /** The panel that opens once, on a first visit, about the novel. */
   announcement: {
-    eyebrow: "Pre-orders are open",
-    heading: "Pre-order The Highest Branch",
-    body: "Out 19 October 2026. Reserve your copy now in Türkiye or Pakistan and it goes out to you the week it comes off the press.",
-    preOrder: "Pre-order now",
-    ask: "Everywhere else, the ebook is on Amazon to pre-order today and the paperback follows on the day. Leave an address and I will write when the paperback listing goes up.",
-    placeholder: "you@example.com",
-    submit: "Notify me",
-    sending: "Sending",
-    done: "You will hear from me on the day.",
+    eyebrow: "Out now",
+    heading: "The Highest Branch is out",
+    body: "Published 19 October 2026. Four hundred and forty pages, in paperback. Order it direct in Türkiye and Pakistan, or on Amazon anywhere Amazon reaches.",
+    order: "Order a copy",
+    ask: "In the European Union and the Americas it ships from Amazon, in paperback or on Kindle.",
+    amazon: "Buy it on Amazon",
     readMore: "Read about the novel",
     dismiss: "Close",
     later: "Not now",
-    onList: "You are on the list. I will write the day the Amazon listing goes up.",
   },
 
   newsletter: {
@@ -327,10 +323,10 @@ export const en = {
       lockedTitle: "The rest is in the book.",
       lockedBody:
         "That is the end of what is given away. Chapter one begins here, and there are four hundred and forty pages after it.",
-      preOrderNow: "Pre-order now",
+      preOrderNow: "Order now",
       preOrderAside: "Pakistan and Türkiye now, everywhere else through Amazon.",
     },
-    availability: "Pre-order",
+    availability: "Out now",
     orderACopy: "Claim your copy",
     /** {name} is the author. */
     byline: "{title} — a novel by {name}",
@@ -348,8 +344,8 @@ export const en = {
       paperbackLabel: "Paperback",
       ebookLabel: "Kindle edition",
       ebookLive: "On Amazon now",
-      ebookButton: "Pre-order the Kindle edition",
-      waitForPaper: "If you can wait, wait for the paper. The book was set for it: six inches by nine, the breaks chosen line by line, and an ending that lands differently when you can see how little is left in your right hand. The Kindle edition is the same words and it is there today, if October is too far off or the post is slow where you are.",
+      ebookButton: "Buy the Kindle edition",
+      waitForPaper: "Take the paper if you can. The book was set for it: six inches by nine, the breaks chosen line by line, and an ending that lands differently when you can see how little is left in your right hand. The Kindle edition is the same words, for a reader who would rather not wait on the post.",
       amazonSoon: "The paperback listing is not live yet. It goes up on {date}, the day the book is out, and I will write to you the moment it does.",
       notShipped: "Amazon doesn't ship to your region?",
       notShippedTitle: "I will send you one myself",
@@ -372,12 +368,12 @@ export const en = {
       shippingNote: "Postage is {amount}, added once per order however many copies.",
       promoShipping: "Postage on me.",
       promoBoth: "{percent}% off, and postage on me.",
-      preOrderNote: "pre-order now",
-      preOrderEyebrow: "Pre-order · {where}",
+      preOrderNote: "order now",
+      preOrderEyebrow: "Order · {where}",
       /** {date} is publication day. */
-      shipsOn: "Ships on publication, {date}",
+      shipsOn: "Out now, published {date}",
       encourage:
-        "It is being printed for Türkiye and Pakistan now, and what is pre-ordered decides how many. Claim a copy and it goes out the week it is bound.",
+        "The first printing for Türkiye and Pakistan is here. Claim a copy and it goes out to you this week.",
       fewer: "One fewer copy",
       more: "One more copy",
       perCopy: "per copy",
@@ -393,7 +389,7 @@ export const en = {
       total: "Total",
       yourDetails: "Where it should go",
       /** {total} is what will be charged. */
-      payByCard: "Pre-order — pay {total}",
+      payByCard: "Order — pay {total}",
       reserveInstead: "Or reserve it and pay by hand",
       reserve: "Reserve my copy",
       payNote:
@@ -401,9 +397,9 @@ export const en = {
       reserveNote: "No payment is taken here. As soon as you press this, the payment details reach you by email.",
       paidTitle: "Your copy is claimed.",
       paidBody:
-        "Payment received, and a receipt is on its way from Stripe. The book goes out to you the week it comes off the press.",
+        "Payment received, and a receipt is on its way from Stripe. The book goes out to you this week.",
       reservedTitle: "Your copy is put aside.",
-      reservedBody: "Nothing has been charged. Payment details are on their way to your inbox now. Send the total, email me the receipt, and the book goes out to you the week it comes off the press.",
+      reservedBody: "Nothing has been charged. Payment details are on their way to your inbox now. Send the total, email me the receipt, and the book goes out to you this week.",
       cancelledBody: "The payment was not completed. Nothing has been charged, and your details are still here.",
       notifyLabel: "Tell me when the paperback is up",
       notify: "Notify me",

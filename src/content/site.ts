@@ -114,7 +114,7 @@ export const highestBranch = {
   coverByline: "M. A. Saadan Qasmani",
   wordCount: 160000,
   chapterCount: 29,
-  status: "Releasing 19 October 2026",
+  status: "Out now, published 19 October 2026",
   /** Written out on its own so the checkout line and the card can both say it. */
   releaseDate: "19 October 2026",
   /**
@@ -156,21 +156,21 @@ export const highestBranch = {
   coverImage: "/book-cover.png" as string | null,
   purchase: {
     amazon: {
-      /** The paperback listing. Null until it goes up on publication day. */
-      url: null as string | null,
+      /** The paperback. Live since publication day, 19 October 2026. */
+      url: "https://www.amazon.com/dp/B0HLBHM6B7" as string | null,
       regions: "European Union & the Americas",
     },
     /**
-     * The Kindle edition, which is up and taking pre-orders now. It is
-     * offered second and with a word of discouragement, because the book
-     * was set for paper and reads better there.
+     * The Kindle edition. It is offered second and with a word of
+     * discouragement, because the book was set for paper and reads better
+     * there, and the paper is now a click away too.
      */
     ebook: {
       url: "https://www.amazon.com/dp/B0HK7T7HLJ" as string | null,
     },
     direct: {
       regions: "Türkiye & Pakistan",
-      note: "Pre-order direct — pay online, or reserve a copy and settle it by hand.",
+      note: "Order direct — pay online, or claim a copy and settle it by hand.",
     },
   },
 } as const;
