@@ -950,37 +950,24 @@ body {
  *
  * White space alone says nothing when it falls at the foot of a page, and
  * in a book of this length it falls there often: the reader turns, the
- * scene has changed, and nothing on the paper said so. So the break is set
- * the way a printed novel sets it, three spaced asterisks, centred and
- * light enough to be a pause rather than an announcement. The indent
- * cancels the letter-spacing that trails the last asterisk, or the row
- * sits a little left of centre.
+ * scene has changed, and nothing on the paper said so. The printed
+ * interior sets the break as a small ornament, and the ornament is the
+ * book's own mark, so the same file the header wears is dropped in at
+ * fifteen pixels and lightened to a pause rather than an announcement.
  */
 .tb-flow .tb-gap {
-  margin: 10px 0;
-  font-size: 11px;
-  line-height: 18px;
-  text-align: center;
-  text-indent: 0.5em;
-  letter-spacing: 0.5em;
-  opacity: 0.4;
-}
-.tb-flow .tb-gap::before {
-  content: "***";
+  height: 21px;
+  margin: 12px 0;
+  background: center / auto 21px no-repeat url("/logo.png");
+  opacity: 0.5;
 }
 
 /* The same mark on a phone, where the leaf scrolls rather than turns. */
 .tb-scroll .tb-gap {
-  margin: 14px 0;
-  font-size: 11px;
-  line-height: 18px;
-  text-align: center;
-  text-indent: 0.5em;
-  letter-spacing: 0.5em;
-  opacity: 0.4;
-}
-.tb-scroll .tb-gap::before {
-  content: "***";
+  height: 24px;
+  margin: 15px 0;
+  background: center / auto 24px no-repeat url("/logo.png");
+  opacity: 0.5;
 }
 .tb-flow .tb-sub {
   margin: 20px 0;
