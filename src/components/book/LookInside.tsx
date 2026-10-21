@@ -324,7 +324,7 @@ function Poured({ lines }: { lines: readonly Line[] }) {
   return (
     <>
       {lines.map((line, i) => {
-        if (line.tag === "gap") return <div key={i} className="h-5" aria-hidden />;
+        if (line.tag === "gap") return <div key={i} className="tb-gap" aria-hidden />;
         if (line.tag === "sub")
           return (
             <p key={i} className="tb-open mb-2 mt-7 text-center text-xs font-semibold uppercase tracking-[0.12em]">

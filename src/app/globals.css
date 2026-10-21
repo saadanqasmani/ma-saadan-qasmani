@@ -945,8 +945,42 @@ body {
 .tb-flow p.tb-open {
   text-indent: 0;
 }
+/*
+ * A scene break, printed rather than left blank.
+ *
+ * White space alone says nothing when it falls at the foot of a page, and
+ * in a book of this length it falls there often: the reader turns, the
+ * scene has changed, and nothing on the paper said so. So the break is set
+ * the way a printed novel sets it, three spaced asterisks, centred and
+ * light enough to be a pause rather than an announcement. The indent
+ * cancels the letter-spacing that trails the last asterisk, or the row
+ * sits a little left of centre.
+ */
 .tb-flow .tb-gap {
-  height: 20px;
+  margin: 10px 0;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  text-indent: 0.5em;
+  letter-spacing: 0.5em;
+  opacity: 0.4;
+}
+.tb-flow .tb-gap::before {
+  content: "***";
+}
+
+/* The same mark on a phone, where the leaf scrolls rather than turns. */
+.tb-scroll .tb-gap {
+  margin: 14px 0;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  text-indent: 0.5em;
+  letter-spacing: 0.5em;
+  opacity: 0.4;
+}
+.tb-scroll .tb-gap::before {
+  content: "***";
 }
 .tb-flow .tb-sub {
   margin: 20px 0;
