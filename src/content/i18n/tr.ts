@@ -290,11 +290,11 @@ export const tr: DictionaryOverlay = {
       eyebrow: "Okuma nüshası",
       title: "The Highest Branch",
       open: "İçini görün",
-      coverHint: "Kitabı açın: iç kapak, içindekiler, yazarın notu, kimin için yazıldığı ve önsözün tamamı.",
+      coverHint: "Kitabı açın: iç kapak, içindekiler, yazarın notu, kimin için yazıldığı, önsözün tamamı, ilk beş bölüm ve altıncı bölümün başı.",
       contents: "İçindekiler",
       lockedTitle: "Gerisi kitapta.",
       lockedBody:
-        "Bedelsiz verilen kısım burada bitiyor. Birinci bölüm buradan başlıyor ve ardından dört yüz kırk sayfa daha var.",
+        "Örnek okuma burada bitiyor. Bu bölümün geri kalanı ve ardından gelen üç yüz elli sayfa kitapta.",
       preOrderNow: "Şimdi sipariş verin",
       preOrderAside: "Şimdilik Pakistan ve Türkiye, diğer her yerde Amazon üzerinden.",
     },

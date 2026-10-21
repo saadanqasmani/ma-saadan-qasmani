@@ -318,11 +318,11 @@ export const en = {
       eyebrow: "Reading copy",
       title: "The Highest Branch",
       open: "Look inside",
-      coverHint: "Open the book: the title page, the contents, the author\u2019s note, who it is for, and the whole of the prologue.",
+      coverHint: "Open the book: the title page, the contents, the author’s note, who it is for, the prologue, the first five chapters, and the opening of the sixth.",
       contents: "Contents",
       lockedTitle: "The rest is in the book.",
       lockedBody:
-        "That is the end of what is given away. Chapter one begins here, and there are four hundred and forty pages after it.",
+        "That is as far as the sample goes. The rest of this chapter, and the three hundred and fifty pages after it, are in the book.",
       preOrderNow: "Order now",
       preOrderAside: "Pakistan and Türkiye now, everywhere else through Amazon.",
     },

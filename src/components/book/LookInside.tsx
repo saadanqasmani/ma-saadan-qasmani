@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
-import { aboutTheAuthor, contents, sections, type Line } from "@/content/book/interior";
+import { aboutTheAuthor, contents, sections, stopsAt, type Line } from "@/content/book/interior";
 import { goToPurchase } from "@/components/book/ToPurchase";
 import type { Dictionary } from "@/content/i18n/en";
 
@@ -67,9 +67,18 @@ function opensFlush(lines: readonly Line[], i: number): boolean {
   return before === "gap" || before === "sub" || before === "quote";
 }
 
-function Flow({ heading, lines }: { heading?: string; lines: readonly Line[] }) {
+function Flow({
+  chapter,
+  heading,
+  lines,
+}: {
+  chapter?: number;
+  heading?: string;
+  lines: readonly Line[];
+}) {
   return (
     <>
+      {chapter != null && <p className="tb-chapter">{chapter}</p>}
       {heading && <p className="tb-head">{heading}</p>}
       {lines.map((line, i) => {
         if (line.tag === "gap") return <div key={i} className="tb-gap" aria-hidden />;
@@ -126,17 +135,19 @@ function useColumnHeights(): [
 
 /** The sheets one section comes to, as windows onto one continuous column. */
 function Sheets({
+  chapter,
   heading,
   running,
   lines,
-  folio,
+  folioAt,
   pages,
 }: {
+  chapter?: number;
   heading: string;
   running: string;
   lines: readonly Line[];
-  /** The printed page this section opens on. */
-  folio: number;
+  /** What the book prints at the foot of this section's nth sheet. */
+  folioAt: (sheet: number) => number;
   pages: number;
 }) {
   return (
@@ -151,10 +162,10 @@ function Sheets({
           )}
           <div className="tb-win">
             <div className="tb-flow" lang="en" style={{ marginTop: -i * CONTENT_H }} aria-hidden={i > 0}>
-              <Flow heading={heading} lines={lines} />
+              <Flow chapter={chapter} heading={heading} lines={lines} />
             </div>
           </div>
-          <div className="tb-folio" aria-hidden>{folio + i}</div>
+          <div className="tb-folio" aria-hidden>{folioAt(i)}</div>
         </div>
       ))}
     </>
@@ -228,15 +239,15 @@ function LockedPlate({
   copy: Dictionary["novel"]["preview"];
   onPreOrder: () => void;
 }) {
-  const first = contents.find((row) => row.chapter === 1);
+  const locked = contents.find((row) => row.chapter === stopsAt);
   return (
     <div className="tb-sheet" style={geometry}>
       <div className="tb-plate" aria-hidden>
         <p style={{ fontFamily: "var(--font-latin-display), Georgia, serif", fontSize: 40, textAlign: "center", marginTop: 40 }}>
-          {first?.chapter}
+          {locked?.chapter}
         </p>
         <p style={{ fontFamily: "var(--font-latin-display), Georgia, serif", fontSize: 24, textAlign: "center", marginTop: 14, marginBottom: 46 }}>
-          {first?.title}
+          {locked?.title}
         </p>
         {REDACTION.map((w, i) => (
           <div key={i} className="tb-redact">
@@ -353,7 +364,7 @@ function Leaves({
   copy: Dictionary["novel"]["preview"];
   onPreOrder: () => void;
 }) {
-  const first = contents.find((row) => row.chapter === 1);
+  const locked = contents.find((row) => row.chapter === stopsAt);
   const [here, setHere] = useState<string | null>(null);
 
   /**
@@ -429,17 +440,22 @@ function Leaves({
 
         {sections.map((section) => (
           <Leaf key={section.id} id={`tb-${section.id}`} folio={folioOf(section.heading)}>
-            <p className="mb-9 mt-3 text-center font-display text-2xl">{section.heading}</p>
+            {section.chapter != null && (
+              <p className="mt-3 text-center font-display text-3xl opacity-60">{section.chapter}</p>
+            )}
+            <p className={`mb-9 text-center font-display text-2xl ${section.chapter != null ? "mt-2" : "mt-3"}`}>
+              {section.heading}
+            </p>
             <Poured lines={section.lines} />
           </Leaf>
         ))}
 
         <Leaf>
           <p className="text-center font-display text-3xl opacity-40" aria-hidden>
-            {first?.chapter}
+            {locked?.chapter}
           </p>
           <p className="mt-2 text-center font-display text-xl opacity-40" aria-hidden>
-            {first?.title}
+            {locked?.title}
           </p>
           <div className="mt-7 space-y-2.5" aria-hidden>
             {REDACTION.slice(0, 6).map((w, i) => (
@@ -499,14 +515,23 @@ function Paged({
     return h > 0 ? Math.max(1, Math.ceil(h / CONTENT_H)) : 1;
   };
 
-  // The folios run on from one section to the next, so the book does not
-  // start again at page five three times over.
-  let folio = FIRST_FOLIO;
-  const opensAt: Record<string, number> = {};
-  for (const section of sections) {
-    opensAt[section.id] = folio;
-    folio += sheetsFor(section.id);
-  }
+  /**
+   * What to print at the foot of a sheet.
+   *
+   * A browser needs more sheets for a chapter than the press did, because
+   * a page of this facsimile holds a little less than a page of the book.
+   * Counting sheets would therefore have the foot of the page drift away
+   * from the contents plate two sheets earlier in the same reader, and by
+   * the sixth chapter it would be out by seventeen pages. So each section
+   * opens on the page the book opens it on and its folios are spread
+   * across its own printed span: never backwards, never contradicting the
+   * contents, occasionally resting twice on one number.
+   */
+  const folioAt = (section: (typeof poured)[number]) => (sheet: number) => {
+    const sheets = sheetsFor(section.id);
+    const into = Math.floor((sheet * section.printedPages) / Math.max(1, sheets));
+    return section.opensOn + Math.min(section.printedPages - 1, into);
+  };
 
   return (
     <div className="flex flex-col items-center gap-7 px-4 py-9 sm:gap-9 sm:py-12">
@@ -516,7 +541,7 @@ function Paged({
         {poured.map((section) => (
           <div key={section.id} style={{ width: PAGE_W - PAD_X * 2 }}>
             <div ref={attach(section.id)} className="tb-flow" lang="en">
-              <Flow heading={section.heading} lines={section.lines} />
+              <Flow chapter={section.chapter} heading={section.heading} lines={section.lines} />
             </div>
           </div>
         ))}
@@ -527,10 +552,11 @@ function Paged({
       {sections.map((section) => (
         <Sheets
           key={section.id}
+          chapter={section.chapter}
           heading={section.heading}
           running={section.running}
           lines={section.lines}
-          folio={opensAt[section.id]}
+          folioAt={folioAt(section)}
           pages={sheetsFor(section.id)}
         />
       ))}
@@ -539,7 +565,7 @@ function Paged({
         heading={aboutTheAuthor.heading}
         running={aboutTheAuthor.running}
         lines={aboutTheAuthor.lines}
-        folio={contents[contents.length - 1].page}
+        folioAt={folioAt(aboutTheAuthor)}
         pages={sheetsFor(aboutTheAuthor.id)}
       />
     </div>
