@@ -24,6 +24,25 @@ export type ProgramMonth = { key: string; name: string; theme: string; goal: str
 
 export type ProgramMilestone = { date: string; label: string };
 
+/** The six numbers the funnel is counted in. */
+export type FunnelKey =
+  | "submissions"
+  | "accepted"
+  | "paid"
+  | "registered"
+  | "onsite"
+  | "countries";
+
+/** What each of them should stand at by the end of a month. */
+export type FunnelMonth = { key: string } & Record<FunnelKey, number>;
+
+export type Funnel = {
+  /** Shown while the campaign is still before the first month in the table. */
+  beforeNote?: string;
+  stages: { key: FunnelKey; label: string }[];
+  months: FunnelMonth[];
+};
+
 export type Program = {
   id: string;
   short: string;
@@ -33,6 +52,20 @@ export type Program = {
   deadlineAt: string;
   launch: string;
   venue: string;
+  /**
+   * The dates as the posters write them, which is not something a machine
+   * should derive: a conference over three days in two formats is not
+   * "22 October" with an end date bolted on.
+   */
+  datesLabel?: string;
+  /** What the deadline in the countdown is called. */
+  deadlineLabel?: string;
+  /** The promise under "Every day, all season". */
+  ongoingNote?: string;
+  /** The one number the chair asks about. */
+  target?: { label: string; value: number };
+  /** Where the funnel should stand each month, for the scoreboard. */
+  funnel?: Funnel;
   months: ProgramMonth[];
   milestones: ProgramMilestone[];
   ongoing: string[];
@@ -47,6 +80,10 @@ export const AJSRC: Program = {
   deadlineAt: "2027-03-20T23:59:00+03:00",
   launch: "2026-11-17",
   venue: "Istanbul Aydın University, Florya Campus",
+  datesLabel: "27–28 March 2027",
+  deadlineLabel: "submissions close",
+  ongoingNote:
+    "Every abstract gets an answer within 7 days, and every payment a receipt within 2 working days.",
   months: [
   {
     "key": "2026-11",
@@ -1238,5 +1275,3 @@ export const AJSRC: Program = {
   }
 ],
 };
-
-export const PROGRAMS: Program[] = [AJSRC];

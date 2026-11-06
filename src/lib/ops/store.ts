@@ -12,6 +12,7 @@ import {
   type Book,
   type Piece,
   type Presence,
+  type ProgramCounts,
   type ProgramProgress,
   type Shelf,
   type Material,
@@ -324,6 +325,23 @@ export function toggleProgramItem(programId: string, itemId: string, who: Person
   setState({ ...shell.state, programs: { ...shell.state.programs, [programId]: next } });
   persist("programs", programId, next);
   return nowDone;
+}
+
+/**
+ * Writes the week's numbers against a programme.
+ *
+ * Merged rather than replaced, so a Friday where only the paid count is
+ * known does not wipe the rest, and stamped, so the board can say how old
+ * it is. Same document as the ticks: one row per programme, no new table.
+ */
+export function setProgramCounts(programId: string, counts: Partial<ProgramCounts>) {
+  const current = shell.state.programs[programId] ?? { done: {} };
+  const next: ProgramProgress = {
+    ...current,
+    counts: { ...current.counts, ...counts, updatedAt: new Date().toISOString() },
+  };
+  setState({ ...shell.state, programs: { ...shell.state.programs, [programId]: next } });
+  persist("programs", programId, next);
 }
 
 /** Something got done today. Counts toward the streak and the day's XP. */

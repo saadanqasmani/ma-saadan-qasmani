@@ -399,7 +399,10 @@
 .ops-top__end {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px;
+  row-gap: 6px;
 }
 
 .xp {
@@ -435,6 +438,9 @@
   animation: sheen 2.8s ease-in-out infinite;
 }
 .xp__txt {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 0.8rem;
   font-weight: 600;
   white-space: nowrap;
@@ -1988,6 +1994,8 @@ select.field {
 .prog-btn {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
   gap: 8px;
   min-height: 40px;
   padding: 0 12px 0 14px;
@@ -2014,6 +2022,14 @@ select.field {
   color: #0b0d12;
   font-size: 0.75rem;
   letter-spacing: 0;
+}
+
+/* Two programmes plus the persona switch: the rank gives up its name
+   before anything that can be pressed gives up its own. */
+@media (max-width: 1180px) {
+  .xp .xp__txt:last-child {
+    display: none;
+  }
 }
 
 .prog-hero {
@@ -2201,4 +2217,39 @@ select.field {
 }
 .prog-2 {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+}
+
+/* The Friday numbers, and the board that reads them. */
+.prog-counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.prog-counts__f {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.prog-counts__f input {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.prog-counts__f input:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 1px;
+}
+
+.prog-funnel {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 11px;
 }

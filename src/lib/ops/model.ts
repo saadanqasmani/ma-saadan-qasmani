@@ -356,8 +356,28 @@ export function partsByRole(piece: Piece, role: PartRole): Part[] {
  * by whom. One document per programme, so ticking a post never touches a
  * task row.
  */
+/**
+ * Where the funnel actually stands, as counted off the Master Registry.
+ *
+ * Ticked tasks say the work was done. They do not say whether anybody
+ * registered, which for a conference selling five hundred places is the
+ * only question the chair has. These are typed in by hand on Fridays,
+ * because no system on this desk is connected to the registration form.
+ */
+export type ProgramCounts = {
+  submissions?: number;
+  accepted?: number;
+  paid?: number;
+  registered?: number;
+  onsite?: number;
+  countries?: number;
+  /** When they were last typed in, so a stale board says so itself. */
+  updatedAt?: string;
+};
+
 export type ProgramProgress = {
   done: Record<string, { at: string; by: Persona }>;
+  counts?: ProgramCounts;
 };
 
 export type OpsState = {

@@ -16,7 +16,7 @@ import { TaskForm } from "./TaskForm";
 import { Today } from "./Today";
 import { PresenceChip } from "./Presence";
 import { ProgramDesk, ProgramOverview, useProgramProgress } from "./Program";
-import { AJSRC } from "@/lib/ops/programs/ajsrc";
+import { PROGRAMS, type Program } from "@/lib/ops/programs";
 import { Avatar, CelebrateProvider, nameOf, useCelebrate } from "./ui";
 import { WinsView } from "./Wins";
 
@@ -63,7 +63,9 @@ function Desk() {
   const [tab, setTab] = useState<string>("");
   const [focus, setFocus] = useState<string | null>(null);
   const [newOpen, setNewOpen] = useState(false);
-  const [program, setProgram] = useState(false);
+  // Which programme is open, by id. Null is the desk itself.
+  const [program, setProgram] = useState<string | null>(null);
+  const open = PROGRAMS.find((p) => p.id === program) ?? null;
   // `run` only ever counts up, so switching back to the same persona still
   // remounts the entrance and plays it again.
   const [entering, setEntering] = useState<Persona | null>(null);
@@ -135,7 +137,7 @@ function Desk() {
   const needs = persona === "saadan" ? notifications(state).length : awaitingOsman(state).length;
 
   function go(t: string, id?: string) {
-    setProgram(false);
+    setProgram(null);
     setTab(t);
     setFocus(id ?? null);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -146,7 +148,7 @@ function Desk() {
     setPersona(p);
     setTab("");
     setFocus(null);
-    setProgram(false);
+    setProgram(null);
     show(p);
   }
 
@@ -181,7 +183,17 @@ function Desk() {
             <span className="dot" data-busy={saving > 0} data-bad={!!error} title={error ?? (saving > 0 ? "Saving" : live ? "Saved" : "On this device only")} />
           </div>
           <div className="ops-top__end">
-            <ProgramButton on={program} onClick={() => { setProgram((v) => !v); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
+            {PROGRAMS.map((p) => (
+              <ProgramButton
+                key={p.id}
+                program={p}
+                on={program === p.id}
+                onClick={() => {
+                  setProgram((was) => (was === p.id ? null : p.id));
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              />
+            ))}
             <div className="persona" role="radiogroup" aria-label="Who is here">
               {(["saadan", "osman"] as Persona[]).map((p) => (
                 <button key={p} type="button" role="radio" aria-checked={persona === p} className="persona__opt" data-on={persona === p} data-who={p} onClick={() => switchTo(p)}>
@@ -205,14 +217,14 @@ function Desk() {
           </p>
         )}
 
-        {program ? (
-          <section key={`${persona}-ajsrc`} className="stack" style={{ animation: "rise 0.4s var(--ease) both" }}>
+        {open ? (
+          <section key={`${persona}-${open.id}`} className="stack" style={{ animation: "rise 0.4s var(--ease) both" }}>
             <div className="row row--between">
-              <button type="button" className="btn btn--sm btn--ghost" onClick={() => setProgram(false)}>
+              <button type="button" className="btn btn--sm btn--ghost" onClick={() => setProgram(null)}>
                 ← Back to the desk
               </button>
             </div>
-            {persona === "saadan" ? <ProgramDesk program={AJSRC} who={persona} /> : <ProgramOverview program={AJSRC} />}
+            {persona === "saadan" ? <ProgramDesk program={open} who={persona} /> : <ProgramOverview program={open} />}
           </section>
         ) : (
         <>
@@ -266,11 +278,26 @@ function Desk() {
   );
 }
 
-function ProgramButton({ on, onClick }: { on: boolean; onClick: () => void }) {
-  const { percent } = useProgramProgress(AJSRC);
+function ProgramButton({
+  program,
+  on,
+  onClick,
+}: {
+  program: Program;
+  on: boolean;
+  onClick: () => void;
+}) {
+  const { percent } = useProgramProgress(program);
   return (
-    <button type="button" className="prog-btn" data-on={on} aria-pressed={on} onClick={onClick} title={`AJSRC 2027 · ${percent}% done`}>
-      <span>AJSRC</span>
+    <button
+      type="button"
+      className="prog-btn"
+      data-on={on}
+      aria-pressed={on}
+      onClick={onClick}
+      title={`${program.name} · ${percent}% done`}
+    >
+      <span>{program.short}</span>
       <span className="prog-btn__pct">{percent}%</span>
     </button>
   );

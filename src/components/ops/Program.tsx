@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { todayISO, type Persona } from "@/lib/ops/model";
-import type { Program, ProgramItem } from "@/lib/ops/programs/ajsrc";
-import { addXp, toggleProgramItem, useOps } from "@/lib/ops/store";
+import { todayISO, type Persona, type ProgramCounts } from "@/lib/ops/model";
+import type { Program, ProgramItem } from "@/lib/ops/programs";
+import { addXp, setProgramCounts, toggleProgramItem, useOps } from "@/lib/ops/store";
 import { Chevron, Seg, Tick, useCelebrate, whenLabel } from "./ui";
 
 /**
@@ -49,6 +49,7 @@ function useNow(): number {
 export function useProgramProgress(program: Program) {
   const { state } = useOps();
   const done = state.programs[program.id]?.done ?? {};
+  const counts = state.programs[program.id]?.counts;
   const today = todayISO();
   const total = program.items.length;
   const doneCount = program.items.filter((i) => done[i.id]).length;
@@ -57,13 +58,14 @@ export function useProgramProgress(program: Program) {
   const behind = dueSoFar.filter((i) => !done[i.id] && i.date < today);
   const percent = total ? Math.round((doneCount / total) * 100) : 0;
   const expected = total ? Math.round((dueSoFar.length / total) * 100) : 0;
-  return { done, today, total, doneCount, dueSoFar, dueDone, behind, percent, expected };
+  return { done, counts, today, total, doneCount, dueSoFar, dueDone, behind, percent, expected };
 }
 
 function Countdown({ program, compact }: { program: Program; compact?: boolean }) {
   const now = useNow();
   const left = Math.max(0, Date.parse(program.startsAt) - now);
   const deadline = Date.parse(program.deadlineAt) - now;
+  const deadlineLabel = program.deadlineLabel ?? "the deadline";
   const parts = [
     { n: Math.floor(left / 86_400_000), l: "days" },
     { n: Math.floor((left % 86_400_000) / 3_600_000), l: "hours" },
@@ -82,7 +84,11 @@ function Countdown({ program, compact }: { program: Program; compact?: boolean }
       </div>
       <p className="small muted">
         {left > 0 ? "until the conference opens" : "The conference is on"}
-        {deadline > 0 ? ` · submissions close in ${Math.ceil(deadline / 86_400_000)} days` : left > 0 ? " · submissions closed" : ""}
+        {deadline > 0
+          ? ` · ${deadlineLabel} in ${Math.ceil(deadline / 86_400_000)} days`
+          : left > 0
+            ? ` · ${deadlineLabel} passed`
+            : ""}
       </p>
     </div>
   );
@@ -114,6 +120,126 @@ function Pace({ percent, expected, behind }: { percent: number; expected: number
 
 type View = "today" | "week" | "month" | "plan";
 
+/* --- the funnel, which tasks cannot answer ----------------------------- */
+
+/**
+ * Where the plan says the funnel should stand today.
+ *
+ * The table is written by month, so before the first month in it there is
+ * nothing to be behind on and the first row is shown as what is coming;
+ * after the last, the last row stands.
+ */
+function funnelNow(program: Program, today: string) {
+  const funnel = program.funnel;
+  if (!funnel || funnel.months.length === 0) return null;
+  const key = today.slice(0, 7);
+  const exact = funnel.months.find((m) => m.key === key);
+  const before = key < funnel.months[0].key;
+  const row = exact ?? (before ? funnel.months[0] : funnel.months[funnel.months.length - 1]);
+  return { funnel, row, before };
+}
+
+/**
+ * Friday's numbers, typed in by hand.
+ *
+ * Six boxes, saved when each one loses focus rather than on every
+ * keystroke: the figure is read off a spreadsheet and typed in one go, and
+ * a write per digit would put four rows in the database for one number.
+ * An empty box is not a zero, it is a figure not counted yet, so it is
+ * left out rather than written as none.
+ */
+function CountsCard({ program, counts }: { program: Program; counts?: ProgramCounts }) {
+  const funnel = program.funnel;
+  if (!funnel) return null;
+  return (
+    <div className="g" style={{ padding: 18 }}>
+      <div className="row row--between">
+        <span className="label">Update the numbers</span>
+        <span className="small muted">
+          {counts?.updatedAt ? `Updated ${whenLabel(counts.updatedAt)}` : "Not counted yet"}
+        </span>
+      </div>
+      <p className="small muted" style={{ marginTop: 6 }}>
+        Off the Master Registry, on Fridays. This is what the chair&rsquo;s board reads.
+      </p>
+      <div className="prog-counts">
+        {funnel.stages.map((st) => (
+          <label key={st.key} className="prog-counts__f">
+            <span className="small muted">{st.label}</span>
+            <input
+              type="number"
+              min={0}
+              step={1}
+              inputMode="numeric"
+              defaultValue={counts?.[st.key] ?? ""}
+              onBlur={(e) => {
+                const raw = e.currentTarget.value.trim();
+                const patch: Partial<ProgramCounts> = {};
+                patch[st.key] = raw === "" ? undefined : Math.max(0, Math.trunc(Number(raw) || 0));
+                setProgramCounts(program.id, patch);
+              }}
+            />
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Actual against the plan, one bar a stage, for the chair. */
+function FunnelCard({ program, counts, today }: { program: Program; counts?: ProgramCounts; today: string }) {
+  const now = funnelNow(program, today);
+  if (!now || !program.target) return null;
+  const { funnel, row, before } = now;
+  const monthName = program.months.find((m) => m.key === row.key)?.name ?? row.key;
+
+  return (
+    <div className="g" style={{ padding: 18 }}>
+      <div className="row row--between">
+        <span className="label">Funnel to {program.target.value}</span>
+        <span className="small muted">
+          {before && funnel.beforeNote ? funnel.beforeNote : `Plan for end of ${monthName}`}
+        </span>
+      </div>
+      <ul className="prog-funnel">
+        {funnel.stages.map((st) => {
+          const target = row[st.key];
+          const actual = counts?.[st.key];
+          const has = typeof actual === "number";
+          const share = target > 0 && has ? actual / target : 0;
+          const tone = !has || before ? "" : share >= 1 ? "ok" : share >= 0.85 ? "soon" : "due";
+          const word = share >= 1 ? "On track" : share >= 0.85 ? "Close" : "Behind";
+          return (
+            <li key={st.key}>
+              <div className="row row--between small">
+                <span style={{ fontWeight: 600 }}>{st.label}</span>
+                <span className="row" style={{ gap: 8 }}>
+                  <span className="muted">
+                    {has ? actual : "–"} / {target}
+                  </span>
+                  {tone && <span className={`chip chip--${tone}`}>{word}</span>}
+                </span>
+              </div>
+              <div className="bar" style={{ marginTop: 4 }}>
+                <div
+                  className="bar__fill"
+                  data-done={share >= 1}
+                  style={{ width: `${Math.min(100, Math.round(share * 100))}%` }}
+                />
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="small muted" style={{ marginTop: 10 }}>
+        {counts?.updatedAt
+          ? `Updated ${whenLabel(counts.updatedAt)} · ${program.target.value} ${program.target.label} is the year's target`
+          : `No numbers counted yet · ${program.target.value} ${program.target.label} is the year's target`}
+      </p>
+    </div>
+  );
+}
+
 export function ProgramDesk({ program, who }: { program: Program; who: Persona }) {
   const p = useProgramProgress(program);
   const [view, setView] = useState<View>("today");
@@ -139,6 +265,7 @@ export function ProgramDesk({ program, who }: { program: Program; who: Persona }
       <div className="g" style={{ padding: 18 }}>
         <Pace percent={p.percent} expected={p.expected} behind={p.behind.length} />
       </div>
+      {program.funnel && <CountsCard program={program} counts={p.counts} />}
       <Seg<View>
         value={view}
         onChange={setView}
@@ -168,7 +295,7 @@ function Hero({ program }: { program: Program }) {
           {program.name}
         </h2>
         <p className="small muted" style={{ marginTop: 4 }}>
-          27–28 March 2027 · {program.venue}
+          {[program.datesLabel, program.venue].filter(Boolean).join(" · ")}
         </p>
       </div>
       <Countdown program={program} />
@@ -259,9 +386,11 @@ function TodayList({ program, done, today, behind, onTick }: ListProps & { behin
             <li key={o}>• {o}</li>
           ))}
         </ul>
-        <p className="small muted" style={{ marginTop: 6 }}>
-          Every abstract gets an answer within 7 days, and every payment a receipt within 2 working days.
-        </p>
+        {program.ongoingNote && (
+          <p className="small muted" style={{ marginTop: 6 }}>
+            {program.ongoingNote}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -431,6 +560,7 @@ export function ProgramOverview({ program }: { program: Program }) {
   return (
     <div className="stack">
       <Hero program={program} />
+      <FunnelCard program={program} counts={p.counts} today={p.today} />
       <div className="grid prog-2">
         <div className="g prog-ring-card">
           <svg viewBox="0 0 120 120" className="prog-ring" aria-hidden>
