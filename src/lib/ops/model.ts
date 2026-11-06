@@ -351,6 +351,15 @@ export function partsByRole(piece: Piece, role: PartRole): Part[] {
   return piece.parts.filter((p) => p.role === role);
 }
 
+/**
+ * How far a programme has got: which of its dated items are done, when and
+ * by whom. One document per programme, so ticking a post never touches a
+ * task row.
+ */
+export type ProgramProgress = {
+  done: Record<string, { at: string; by: Persona }>;
+};
+
 export type OpsState = {
   tasks: Task[];
   meetings: Meeting[];
@@ -363,6 +372,7 @@ export type OpsState = {
   shelves: Shelf[];
   books: Book[];
   pieces: Piece[];
+  programs: Record<string, ProgramProgress>;
 };
 
 export const XP: Record<string, number> = {

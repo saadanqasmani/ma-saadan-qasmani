@@ -12,6 +12,7 @@ import {
   type Book,
   type Piece,
   type Presence,
+  type ProgramProgress,
   type Shelf,
   type Material,
   type Meeting,
@@ -44,7 +45,8 @@ type Collection =
   | "presence"
   | "shelves"
   | "books"
-  | "pieces";
+  | "pieces"
+  | "programs";
 
 export type Shell = {
   ready: boolean;
@@ -73,6 +75,7 @@ function empty(): OpsState {
     asks: [],
     appointments: [],
     presence: {},
+    programs: {},
   };
 }
 
@@ -128,6 +131,7 @@ function fromDocs(docs: Record<string, Record<string, unknown>>): OpsState {
     // Soonest first, because this list is a diary rather than a history.
     appointments: (Object.values(docs.appointments ?? {}) as Appointment[]).sort((a, b) => a.at.localeCompare(b.at)),
     presence: (docs.presence ?? {}) as Record<string, Presence>,
+    programs: (docs.programs ?? {}) as Record<string, ProgramProgress>,
   };
 }
 
@@ -147,6 +151,7 @@ function readLocal(): OpsState | null {
       asks: parsed.asks ?? [],
       appointments: parsed.appointments ?? [],
       presence: parsed.presence ?? {},
+      programs: parsed.programs ?? {},
     };
   } catch {
     return null;
@@ -306,6 +311,19 @@ export function patchMeta(patch: Partial<Meta> | ((m: Meta) => Partial<Meta>)) {
   const meta = { ...shell.state.meta, ...(typeof patch === "function" ? patch(shell.state.meta) : patch) };
   setState({ ...shell.state, meta });
   persist("meta", "main", meta);
+}
+
+/** Ticks one dated item of a programme on or off. */
+export function toggleProgramItem(programId: string, itemId: string, who: Persona): boolean {
+  const current = shell.state.programs[programId] ?? { done: {} };
+  const done = { ...current.done };
+  const nowDone = !done[itemId];
+  if (nowDone) done[itemId] = { at: new Date().toISOString(), by: who };
+  else delete done[itemId];
+  const next: ProgramProgress = { ...current, done };
+  setState({ ...shell.state, programs: { ...shell.state.programs, [programId]: next } });
+  persist("programs", programId, next);
+  return nowDone;
 }
 
 /** Something got done today. Counts toward the streak and the day's XP. */

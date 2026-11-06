@@ -50,6 +50,7 @@ const writeSchema = z.object({
     "shelves",
     "books",
     "pieces",
+    "programs",
   ]),
   id: z.string().min(1).max(120),
   data: z.record(z.string(), z.unknown()).nullable(),
